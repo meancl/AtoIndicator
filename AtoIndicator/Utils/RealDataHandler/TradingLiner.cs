@@ -28,7 +28,7 @@ namespace AtoTrader
             try
             {
                 #region 실매수요청 접근시점 기록 및 처리
-                if (ea[nCurIdx].myStrategy.nStrategyNum >= REAL_BUY_MAX_NUM || ea[nCurIdx].fakeBuyStrategy.arrStrategy[nRealStrategyNum] > (2 + nExtraChance)) // 한 전략당 6번제한
+                if (ea[nCurIdx].myStrategy.nStrategyNum >= REAL_BUY_MAX_NUM || ea[nCurIdx].fakeBuyStrategy.arrStrategy[nRealStrategyNum] > (4 + nExtraChance)) // 한 전략당 5번제한
                     return;
 
 
@@ -198,8 +198,8 @@ namespace AtoTrader
                                 ea[nCurIdx].timeLines1m.upTailList.Count,
                                 ea[nCurIdx].timeLines1m.downTailList.Count,
                                 ea[nCurIdx].timeLines1m.shootingList.Count,
-                                ea[nCurIdx].sequenceStrategy.nCandleTwoOverRealCount,
-                                ea[nCurIdx].sequenceStrategy.nCandleTwoOverRealNoLeafCount,
+                                0,
+                                0,
                                 ea[nCurIdx].speedStatus.fCur,
                                 ea[nCurIdx].hogaSpeedStatus.fCur,
                                 ea[nCurIdx].tradeStatus.fCur,

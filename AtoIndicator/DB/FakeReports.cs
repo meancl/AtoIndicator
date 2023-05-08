@@ -245,8 +245,6 @@ namespace AtoTrader.DB
         public int nUpTailCnt { get; set; }
         public int nDownTailCnt { get; set; }
         public int nShootingCnt { get; set; }
-        public int nCandleTwoOverRealCnt { get; set; }
-        public int nCandleTwoOverRealNoLeafCnt { get; set; }
         #endregion
         public int nFs { get; set; }
         public int nFb { get; set; }

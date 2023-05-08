@@ -16,75 +16,79 @@ namespace AtoTrader
     public partial class MainForm
     {
 
-        void UpFakeCount(int nEaIdx, int nFakeNum, int nBuyStrategyNum= -1)
+        void UpFakeCount(int nEaIdx, int nFakeNum, int? nBuyStrategyNum= null)
         {
-            ea[nEaIdx].myStrategy.nTotalBlockCount++;
-            FakeDBStruct newF = new FakeDBStruct();
-            ea[nEaIdx].GetFakeFix(newF.fr);
-
-            newF.fr.nRqTime = nSharedTime;
-            newF.fr.nOverPrice = newF.fr.nFb;
-            for (int i = 0; i < EYES_CLOSE_NUM; i++)
-                newF.fr.nOverPrice += GetIntegratedMarketGap(newF.fr.nOverPrice);
-            newF.nTimeLineIdx = nTimeLineIdx;
-
-            switch (nFakeNum)
+            try
             {
-                case FAKE_BUY_SIGNAL:
-                    ea[nEaIdx].myStrategy.nTotalFakeCount++;
-                    newF.fr.nBuyStrategyIdx = -10 * (FAKE_BUY_SIGNAL + 1);
-                    newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeBuyStrategy.nStrategyNum;
-                    PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 1. 페이크매수 누적 횟수 : {ea[nEaIdx].fakeBuyStrategy.nStrategyNum} 페이크매수 분포 : {ea[nEaIdx].fakeBuyStrategy.nMinuteLocationCount}", nEaIdx);
-                    break;
-                case FAKE_RESIST_SIGNAL:
-                    ea[nEaIdx].myStrategy.nTotalFakeCount++;
-                    newF.fr.nBuyStrategyIdx = -10 * (FAKE_RESIST_SIGNAL + 1);
-                    newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeResistStrategy.nStrategyNum;
-                    PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 2. 페이크저항 누적 횟수 : {ea[nEaIdx].fakeResistStrategy.nStrategyNum} 페이크저항 분포 : {ea[nEaIdx].fakeResistStrategy.nMinuteLocationCount}", nEaIdx);
-                    break;
-                case FAKE_ASSISTANT_SIGNAL:
-                    ea[nEaIdx].myStrategy.nTotalFakeCount++;
-                    newF.fr.nBuyStrategyIdx = -10 * (FAKE_ASSISTANT_SIGNAL + 1);
-                    newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeAssistantStrategy.nStrategyNum;
-                    PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 3. 페이크보조 누적 횟수 : {ea[nEaIdx].fakeAssistantStrategy.nStrategyNum} 페이크보조 분포 : {ea[nEaIdx].fakeAssistantStrategy.nMinuteLocationCount}", nEaIdx);
-                    break;
-                case PRICE_UP_SIGNAL:
-                    ea[nEaIdx].myStrategy.nTotalFakeCount++;
-                    newF.fr.nBuyStrategyIdx = -10 * (PRICE_UP_SIGNAL + 1);
-                    newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].priceUpStrategy.nStrategyNum;
-                    PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 4. 페이크가격업 누적 횟수 : {ea[nEaIdx].priceUpStrategy.nStrategyNum} 페이크가격업 분포 : {ea[nEaIdx].priceUpStrategy.nMinuteLocationCount}", nEaIdx);
-                    break;
-                case PRICE_DOWN_SIGNAL:
-                    ea[nEaIdx].myStrategy.nTotalFakeCount++;
-                    newF.fr.nBuyStrategyIdx = -10 * (PRICE_DOWN_SIGNAL + 1);
-                    newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].priceDownStrategy.nStrategyNum;
-                    PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 5. 페이크가격다운 누적 횟수 : {ea[nEaIdx].priceDownStrategy.nStrategyNum} 페이크가격다운 분포 : {ea[nEaIdx].priceDownStrategy.nMinuteLocationCount}", nEaIdx);
-                    break;
-                case REAL_BUY_SIGNAL:
-                    newF.fr.nBuyStrategyIdx = strategyNameDict[strategyName.arrRealBuyStrategyName[nBuyStrategyNum]];
-                    newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].myStrategy.nStrategyNum;
-                    PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 6. 실제 매수 누적 횟수 : {ea[nEaIdx].myStrategy.nStrategyNum} 실제 매수 분포 : {ea[nEaIdx].myStrategy.nMinuteLocationCount}", nEaIdx);
-                    break;
-                default:
-                    break;
-            }
+                ea[nEaIdx].myStrategy.nTotalBlockCount++;
+                FakeDBStruct newF = new FakeDBStruct();
+                ea[nEaIdx].GetFakeFix(newF.fr);
 
-            ea[nEaIdx].myStrategy.fd.Add(newF);
+                newF.fr.nRqTime = nSharedTime;
+                newF.fr.nOverPrice = newF.fr.nFb;
+                for (int i = 0; i < EYES_CLOSE_NUM; i++)
+                    newF.fr.nOverPrice += GetIntegratedMarketGap(newF.fr.nOverPrice);
+                newF.nTimeLineIdx = nTimeLineIdx;
+
+                switch (nFakeNum)
+                {
+                    case FAKE_BUY_SIGNAL:
+                        ea[nEaIdx].myStrategy.nTotalFakeCount++;
+                        newF.fr.nBuyStrategyIdx = -10 * (FAKE_BUY_SIGNAL + 1);
+                        newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeBuyStrategy.nStrategyNum;
+                        PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 1. 페이크매수 누적 횟수 : {ea[nEaIdx].fakeBuyStrategy.nStrategyNum} 페이크매수 분포 : {ea[nEaIdx].fakeBuyStrategy.nMinuteLocationCount}", nEaIdx);
+                        break;
+                    case FAKE_RESIST_SIGNAL:
+                        ea[nEaIdx].myStrategy.nTotalFakeCount++;
+                        newF.fr.nBuyStrategyIdx = -10 * (FAKE_RESIST_SIGNAL + 1);
+                        newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeResistStrategy.nStrategyNum;
+                        PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 2. 페이크저항 누적 횟수 : {ea[nEaIdx].fakeResistStrategy.nStrategyNum} 페이크저항 분포 : {ea[nEaIdx].fakeResistStrategy.nMinuteLocationCount}", nEaIdx);
+                        break;
+                    case FAKE_ASSISTANT_SIGNAL:
+                        ea[nEaIdx].myStrategy.nTotalFakeCount++;
+                        newF.fr.nBuyStrategyIdx = -10 * (FAKE_ASSISTANT_SIGNAL + 1);
+                        newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeAssistantStrategy.nStrategyNum;
+                        PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 3. 페이크보조 누적 횟수 : {ea[nEaIdx].fakeAssistantStrategy.nStrategyNum} 페이크보조 분포 : {ea[nEaIdx].fakeAssistantStrategy.nMinuteLocationCount}", nEaIdx);
+                        break;
+                    case PRICE_UP_SIGNAL:
+                        ea[nEaIdx].myStrategy.nTotalFakeCount++;
+                        newF.fr.nBuyStrategyIdx = -10 * (PRICE_UP_SIGNAL + 1);
+                        newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].priceUpStrategy.nStrategyNum;
+                        PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 4. 페이크가격업 누적 횟수 : {ea[nEaIdx].priceUpStrategy.nStrategyNum} 페이크가격업 분포 : {ea[nEaIdx].priceUpStrategy.nMinuteLocationCount}", nEaIdx);
+                        break;
+                    case PRICE_DOWN_SIGNAL:
+                        ea[nEaIdx].myStrategy.nTotalFakeCount++;
+                        newF.fr.nBuyStrategyIdx = -10 * (PRICE_DOWN_SIGNAL + 1);
+                        newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].priceDownStrategy.nStrategyNum;
+                        PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 5. 페이크가격다운 누적 횟수 : {ea[nEaIdx].priceDownStrategy.nStrategyNum} 페이크가격다운 분포 : {ea[nEaIdx].priceDownStrategy.nMinuteLocationCount}", nEaIdx);
+                        break;
+                    case REAL_BUY_SIGNAL:
+                        newF.fr.nBuyStrategyIdx = strategyNameDict[strategyName.arrRealBuyStrategyName[(int)nBuyStrategyNum]];
+                        newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].myStrategy.nStrategyNum;
+                        PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 6. 실제 매수 누적 횟수 : {ea[nEaIdx].myStrategy.nStrategyNum} 실제 매수 분포 : {ea[nEaIdx].myStrategy.nMinuteLocationCount}", nEaIdx);
+                        break;
+                    default:
+                        break;
+                }
+
+                ea[nEaIdx].myStrategy.fd.Add(newF);
 
 #if AI
-            // AI 서비스 요청
-            double[] features102 = GetParameters(nCurIdx: nCurIdx, 102, eTradeMethod: GET_FEATURE_FAKE, nRealStrategyNum: newF.fr.nBuyStrategyIdx);
+                // AI 서비스 요청
+                double[] features102 = GetParameters(nCurIdx: nCurIdx, 102, eTradeMethod: GET_FEATURE_FAKE, nRealStrategyNum: newF.fr.nBuyStrategyIdx);
 
-            var nMMFNum = mmf.RequestAIService(sCode: ea[nCurIdx].sCode, nRqTime: nSharedTime, nRqType: FAKE_AI_NUM, inputData: features102);
-            if (nMMFNum == -1)
-            {
-                PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
-                return;
-            }
-            aiSlot.nRequestId = FAKE_REQUEST_SIGNAL;
-            aiSlot.nMMFNumber = nMMFNum;
-            aiQueue.Enqueue(aiSlot);
+                var nMMFNum = mmf.RequestAIService(sCode: ea[nCurIdx].sCode, nRqTime: nSharedTime, nRqType: FAKE_AI_NUM, inputData: features102);
+                if (nMMFNum == -1)
+                {
+                    PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
+                    return;
+                }
+                aiSlot.nRequestId = FAKE_REQUEST_SIGNAL;
+                aiSlot.nMMFNumber = nMMFNum;
+                aiQueue.Enqueue(aiSlot);
 #endif
+            }
+            catch { }
         }
         #region SetThisFakeBuy
         void SetThisFakeBuy(int nFakeBuyStrategyNum)
@@ -488,11 +492,10 @@ namespace AtoTrader
         #endregion
 
         #region GetAccess
-        public bool GetAccess(ref MyStrategy my, int nStrategy, int? nTrial = null, int? nFailToApprove = null, int? nCycle = null)
+        public bool GetAccess(ref MyStrategy my, int nStrategy, int? nTrial = null, int? nCycle = null)
         {
             bool isRet;
             int nTrial_ = (nTrial == null) ? 1 : (int)nTrial;
-            int nFailToApprove_ = (nFailToApprove == null) ? 0 : (int)nFailToApprove;
             int nCycle_ = (nCycle == null) ? 0 : (int)nCycle;
 
             // 사이클이 없다면 기본 실패 0회 도전 1회이다.
@@ -502,20 +505,16 @@ namespace AtoTrader
                 if (nTrial_ > 1)
                     isTrialOnceDefense = my.arrPrevMinuteIdx[nStrategy] < nTimeLineIdx; // 1분 당 최대 한번만 거래가능
 
-                isRet = isTrialOnceDefense && my.arrReqFail[nStrategy] <= nFailToApprove_ && my.arrStrategy[nStrategy] < nTrial_;
+                isRet = isTrialOnceDefense && my.arrStrategy[nStrategy] < nTrial_;
             }
             else
             {
                 bool isTrial = true;
-                bool isFailurePass = true;
 
                 if (nTrial == null) // default일때는 검사 안함 
                     isTrial = my.arrStrategy[nStrategy] < nTrial_;
 
-                if (nFailToApprove == null) // default일때는 검사 안함
-                    isFailurePass = my.arrReqFail[nStrategy] <= nFailToApprove_;
-
-                isRet = isTrial && isFailurePass && (my.arrPrevMinuteIdx[nStrategy] == 0 || my.arrPrevMinuteIdx[nStrategy] + nCycle_ - 1 < nTimeLineIdx);
+                isRet = isTrial && (my.arrPrevMinuteIdx[nStrategy] == 0 || my.arrPrevMinuteIdx[nStrategy] + nCycle_ - 1 < nTimeLineIdx); // 30분 주기일 수 도 있으니
             }
             return isRet;
         }

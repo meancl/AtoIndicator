@@ -30,7 +30,6 @@ namespace AtoTrader.View.EachStockHistory
         private void InitializeComponent()
         {
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -39,7 +38,6 @@ namespace AtoTrader.View.EachStockHistory
             System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.historyChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.totalClockLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -58,11 +56,7 @@ namespace AtoTrader.View.EachStockHistory
             | System.Windows.Forms.AnchorStyles.Right)));
             chartArea1.CursorX.IsUserSelectionEnabled = true;
             chartArea1.Name = "TotalArea";
-            chartArea2.CursorX.IsUserSelectionEnabled = true;
-            chartArea2.Name = "EachArea";
-            chartArea2.Visible = false;
             this.historyChart.ChartAreas.Add(chartArea1);
-            this.historyChart.ChartAreas.Add(chartArea2);
             legend1.Name = "Legend1";
             this.historyChart.Legends.Add(legend1);
             this.historyChart.Location = new System.Drawing.Point(14, 55);
@@ -88,26 +82,24 @@ namespace AtoTrader.View.EachStockHistory
             series4.Color = System.Drawing.Color.DarkOrange;
             series4.Legend = "Legend1";
             series4.Name = "Ma2h";
-            series5.ChartArea = "EachArea";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
+            series5.ChartArea = "TotalArea";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series5.Color = System.Drawing.Color.RoyalBlue;
+            series5.Enabled = false;
             series5.Legend = "Legend1";
-            series5.Name = "BuyedBlockStick";
-            series5.YValuesPerPoint = 4;
-            series6.ChartArea = "EachArea";
+            series5.Name = "Ma20mGap";
+            series6.ChartArea = "TotalArea";
             series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series6.Color = System.Drawing.Color.RoyalBlue;
+            series6.Color = System.Drawing.Color.LimeGreen;
+            series6.Enabled = false;
             series6.Legend = "Legend1";
-            series6.Name = "Ma2m_b";
-            series7.ChartArea = "EachArea";
+            series6.Name = "Ma1hGap";
+            series7.ChartArea = "TotalArea";
             series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series7.Color = System.Drawing.Color.LimeGreen;
+            series7.Color = System.Drawing.Color.Navy;
+            series7.Enabled = false;
             series7.Legend = "Legend1";
-            series7.Name = "Ma10m_b";
-            series8.ChartArea = "EachArea";
-            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series8.Color = System.Drawing.Color.Navy;
-            series8.Legend = "Legend1";
-            series8.Name = "Ma20m_b";
+            series7.Name = "Ma2hGap";
             this.historyChart.Series.Add(series1);
             this.historyChart.Series.Add(series2);
             this.historyChart.Series.Add(series3);
@@ -115,7 +107,6 @@ namespace AtoTrader.View.EachStockHistory
             this.historyChart.Series.Add(series5);
             this.historyChart.Series.Add(series6);
             this.historyChart.Series.Add(series7);
-            this.historyChart.Series.Add(series8);
             this.historyChart.Size = new System.Drawing.Size(1088, 708);
             this.historyChart.TabIndex = 2;
             this.historyChart.Text = "chart1";
@@ -158,7 +149,7 @@ namespace AtoTrader.View.EachStockHistory
             this.메뉴ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1320, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1320, 30);
             this.menuStrip1.TabIndex = 13;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -167,7 +158,7 @@ namespace AtoTrader.View.EachStockHistory
             this.메뉴ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.showVarToolStripMenuItem});
             this.메뉴ToolStripMenuItem.Name = "메뉴ToolStripMenuItem";
-            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
+            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 26);
             this.메뉴ToolStripMenuItem.Text = "메뉴";
             // 
             // showVarToolStripMenuItem

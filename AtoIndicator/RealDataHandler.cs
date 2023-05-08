@@ -23,9 +23,6 @@ namespace AtoTrader
         public const int AI_ONCE_MAXNUM = 5;
         public Queue<AIResponseSlot> aiQueue = new Queue<AIResponseSlot>(); // 매매신청을 담는 큐, 매매컨트롤러가 사용할 큐 // real
       
-        public List<StrategyHistory>[] strategyHistoryList;
-        public List<StrategyHistory> totalTradeHistoryList = new List<StrategyHistory>();
-
         public AIResponseSlot aiSlot;
 
 
@@ -158,7 +155,7 @@ namespace AtoTrader
         public const int MAX_REQ_SEC = 150; // 최대매수요청시간
         public const int BUY_CANCEL_ACCESS_SEC = 15;  // 매수취소 가능할때까지 시간
 
-        public const int REAL_BUY_MAX_NUM = 100; // 최대 매매블록 갯수
+        public const int REAL_BUY_MAX_NUM = 200; // 최대 매매블록 갯수
         public const int BAR_REAL_BUY_MAX_NUM = 3; // 한 봉에
 
         public const int PRICE_UP_MAX_NUM = 200; // 최대 가격up 갯수
@@ -295,7 +292,6 @@ namespace AtoTrader
                 // nPrevBoardUpdateTime은 장시작시간 + MINUTE_SEC 에 처음 접근이 가능해야함.
                 if (SubTimeToTimeAndSec(nSharedTime, nPrevBoardUpdateTime) >= MINUTE_SEC && nSharedTime <= MARKET_END_TIME) // 매 분마다 업데이트 진행 
                 {
-                    PrintLog($"{nSharedTime} 누적 화면번호 수 {nUsingScreenNum}");
                     PrintMemoryUsage();
                     #region 순위 지정
                     // ===========================================================================================================
@@ -732,8 +728,8 @@ namespace AtoTrader
                         // 이평선 Part
                         // ===========================================================================================================
                         {
-                            int nShareIdx, nSummation;
-                            double fMaVal;
+                            int nShareIdx, nSummation, nSummationGap;
+                            double fMaVal, fMaGapVal;
 
                             // -----------
                             // DownFs 이평선
@@ -748,11 +744,13 @@ namespace AtoTrader
                             // 20분 이평선
                             nShareIdx = MA20M - nTimeLineIdx - 1;
                             nSummation = 0;
+                            nSummationGap = 0;
                             if (nShareIdx <= 0) // 0보다 작다면 더미데이터가 아니라 전부 리얼데이터로 채울 수 있다는 의미
                             {
                                 for (j = nTimeLineIdx; j > nTimeLineIdx - MA20M; j--)
                                 {
                                     nSummation += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
+                                    nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs; 
                                 }
                             }
                             else // 부족하다는 의미
@@ -760,15 +758,18 @@ namespace AtoTrader
                                 for (j = 0; j <= nTimeLineIdx; j++)
                                 {
                                     nSummation += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
+                                    nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs; 
                                 }
                                 for (j = 0; j < nShareIdx; j++)
                                 {
                                     nSummation += ea[i].nTodayStartPrice; // 0~ BRUSH -1 까지는 다 같지만 그냥 0번째 데이터를 넣어줌
+                                    nSummationGap += ea[i].nYesterdayEndPrice;
                                 }
                             }
                             fMaVal = (double)nSummation / MA20M; // 현재의 N이동평균선 값
+                            fMaGapVal = (double)nSummationGap / MA20M;
                             ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMa0 = ea[i].maOverN.fCurMa20m = fMaVal;
-
+                            ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMaGap0 = fMaGapVal;
                             if (ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nDownFs > fMaVal) // 현재의 저가보다 이평선이 아래에 있다면
                             {
                                 ea[i].maOverN.nDownCntMa20m++; // 아래가 좋은거임
@@ -801,11 +802,13 @@ namespace AtoTrader
                             // 60분 이평선
                             nShareIdx = MA1H - nTimeLineIdx - 1;
                             nSummation = 0;
+                            nSummationGap = 0;
                             if (nShareIdx <= 0) // 0보다 작다면 더미데이터가 아니라 전부 리얼데이터로 채울 수 있다는 의미
                             {
                                 for (j = nTimeLineIdx; j > nTimeLineIdx - MA1H; j--)
                                 {
                                     nSummation += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
+                                    nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
                                 }
                             }
                             else // 부족하다는 의미
@@ -813,15 +816,18 @@ namespace AtoTrader
                                 for (j = 0; j <= nTimeLineIdx; j++)
                                 {
                                     nSummation += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
+                                    nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
                                 }
                                 for (j = 0; j < nShareIdx; j++)
                                 {
                                     nSummation += ea[i].nTodayStartPrice; // 0~ BRUSH -1 까지는 다 같지만 그냥 0번째 데이터를 넣어줌
+                                    nSummationGap += ea[i].nYesterdayEndPrice; // 0~ BRUSH -1 까지는 다 같지만 그냥 0번째 데이터를 넣어줌
                                 }
                             }
                             fMaVal = (double)nSummation / MA1H; // 현재의 N이동평균선 값
+                            fMaGapVal = (double)nSummationGap / MA1H; // 현재의 N이동평균선 값
                             ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMa1 = ea[i].maOverN.fCurMa1h = fMaVal;
-
+                            ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMaGap1 = fMaGapVal;
                             if (ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nDownFs > fMaVal) // 현재의 저가보다 이평선이 아래에 있다면
                             {
                                 ea[i].maOverN.nDownCntMa1h++; // 아래가 좋은거임
@@ -855,11 +861,13 @@ namespace AtoTrader
                             // 120분 이평선
                             nShareIdx = MA2H - nTimeLineIdx - 1;
                             nSummation = 0;
+                            nSummationGap = 0;
                             if (nShareIdx <= 0) // 0보다 작다면 더미데이터가 아니라 전부 리얼데이터로 채울 수 있다는 의미
                             {
                                 for (j = nTimeLineIdx; j > nTimeLineIdx - MA2H; j--)
                                 {
                                     nSummation += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
+                                    nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
                                 }
                             }
                             else // 부족하다는 의미
@@ -867,15 +875,18 @@ namespace AtoTrader
                                 for (j = 0; j <= nTimeLineIdx; j++)
                                 {
                                     nSummation += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
+                                    nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
                                 }
                                 for (j = 0; j < nShareIdx; j++)
                                 {
                                     nSummation += ea[i].nTodayStartPrice; // 0~ BRUSH -1 까지는 다 같지만 그냥 0번째 데이터를 넣어줌
+                                    nSummationGap += ea[i].nYesterdayEndPrice; // 0~ BRUSH -1 까지는 다 같지만 그냥 0번째 데이터를 넣어줌
                                 }
                             }
                             fMaVal = (double)nSummation / MA2H; // 현재의 N이동평균선 값
+                            fMaGapVal = (double)nSummationGap / MA2H; // 현재의 N이동평균선 값
                             ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMa2 = ea[i].maOverN.fCurMa2h = fMaVal;
-
+                            ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMaGap2 = fMaGapVal;
                             if (ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nDownFs > fMaVal) // 현재의 저가보다 이평선이 아래에 있다면
                             {
                                 ea[i].maOverN.nDownCntMa2h++; // 아래가 좋은거임
@@ -997,9 +1008,7 @@ namespace AtoTrader
                         { // START ---- 분봉 Sequence Strategy 분기문
 
                             double fCurPower = (double)(ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs - ea[i].nTodayStartPrice) / ea[i].nYesterdayEndPrice;
-                            if (fCurPower >= 0.05)
-                                ea[i].sequenceStrategy.isFiveReachedMinute = true; // 분봉상으로 갭제외 5퍼를 도달했나
-
+                        
                             ea[i].sequenceStrategy.botUpMinute421.Trace(fCurPower, nSharedTime);
                             ea[i].sequenceStrategy.botUpMinute432.Trace(fCurPower, nSharedTime);
                             ea[i].sequenceStrategy.botUpMinute642.Trace(fCurPower, nSharedTime);
@@ -1009,13 +1018,6 @@ namespace AtoTrader
                             ea[i].sequenceStrategy.botUpMinute953.Trace(fCurPower, nSharedTime);
 
 
-                            #region RealTime Sequence Strategy 초기화
-                            {
-                                ea[i].sequenceStrategy.isCandleTwoOverReal = false;
-                                ea[i].sequenceStrategy.isCandleTwoOverRealNoLeaf = false;
-                                ea[i].sequenceStrategy.nResistUpCount = 0;
-                            }
-                            #endregion
                         } // END ---- 분봉 Sequence Strategy 분기문
                         #endregion
 
@@ -1361,7 +1363,8 @@ namespace AtoTrader
 
                         GenerateFrontLine(lineManager: ref ea[nCurIdx].timeLines1m,
                                             nIter: BRUSH + ea[nCurIdx].nJumpCnt, nBirthTime: nFirstTime,
-                                            nBirthPrice: ea[nCurIdx].nTodayStartPrice
+                                            nBirthPrice: ea[nCurIdx].nTodayStartPrice,
+                                            nYesterdayPrice:ea[nCurIdx].nYesterdayEndPrice
                                             );
 
                         int nCutSharedT = nSharedTime - nSharedTime % MINUTE_KIWOOM;
@@ -1440,6 +1443,12 @@ namespace AtoTrader
                         ea[nCurIdx].crushMinuteManager.isCrushRealTimeCheck = true;
                     } // END ---- 실시간 전고점
                     #endregion
+
+
+                    
+
+                        
+                    
 
                     #region 순위 선정용 변수 세팅
                     // ==================================================
@@ -1694,102 +1703,7 @@ namespace AtoTrader
                     { // START ---- 실시간 Sequence Strategy 분기문
 
                         double fCurPower = (double)(ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].nLastFs - ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].nStartFs) / ea[nCurIdx].nYesterdayEndPrice;
-                        #region 5퍼 달성
-                        if (ea[nCurIdx].fPowerWithoutGap >= 0.05)
-                        {
-                            if (!ea[nCurIdx].sequenceStrategy.isFiveReachedReal && nSharedTime <= AddTimeBySec(nFirstTime, 600))
-                            {
-                                ea[nCurIdx].sequenceStrategy.nFiveReachedRealTimeLineIdx = nTimeLineIdx;
-                                ea[nCurIdx].sequenceStrategy.isFiveKeepingForTwoTimeLine = true;
-                            }
-                            ea[nCurIdx].sequenceStrategy.isFiveReachedReal = true; // 실시간으로 갭제외 5퍼 도달했나
-
-                            if (!ea[nCurIdx].sequenceStrategy.isFiveReachedRealLeafEntranceBlocked)
-                            {
-                                ea[nCurIdx].sequenceStrategy.isFiveReachedRealLeafEntranceBlocked = true;
-                                if (ea[nCurIdx].lTotalTradePrice > 2 * BILLION) // 20억 이상 
-                                    ea[nCurIdx].sequenceStrategy.isFiveReachedRealBillionUp = true;
-                                else if (ea[nCurIdx].lTotalTradePrice > 5 * HUNDRED_MILLION) // 5억 이상  20억 이하
-                                    ea[nCurIdx].sequenceStrategy.isFiveReachedRealHundredMillion = true;
-                                else // 5억이하 
-                                    ea[nCurIdx].sequenceStrategy.isFiveReachedRealLeafBan = true;
-                            }
-                        }
-
-                        if (ea[nCurIdx].sequenceStrategy.nFiveReachedRealTimeLineIdx != 0)
-                        {
-                            if (ea[nCurIdx].sequenceStrategy.nFiveReachedRealTimeLineIdx + 2 >= nTimeLineIdx)
-                            {
-                                if (ea[nCurIdx].sequenceStrategy.isFiveKeepingForTwoTimeLine)
-                                    ea[nCurIdx].sequenceStrategy.isFiveKeepingForTwoTimeLine = (ea[nCurIdx].sequenceStrategy.nFiveReachedRealTimeLineIdx == nTimeLineIdx && ea[nCurIdx].fPowerWithoutGap >= 0.04) || ea[nCurIdx].fPowerWithoutGap >= 0.05;
-                            }
-                            else
-                            {
-                                if (ea[nCurIdx].sequenceStrategy.isFiveKeepingForTwoTimeLine) // 2분동안 계속 5퍼를 지속했었다면
-                                {
-                                    ea[nCurIdx].sequenceStrategy.isFiveKeepingSuccessForTwoTimeLine = true;
-                                }
-                            }
-                        }
-
-                        #endregion
-
-                        #region 캔들 2퍼
-                        if (fCurPower >= 0.02)
-                        {
-                            if (!ea[nCurIdx].sequenceStrategy.isCandleTwoOverReal)
-                            {
-                                ea[nCurIdx].sequenceStrategy.nCandleTwoOverRealCount++;
-                                ea[nCurIdx].sequenceStrategy.isCandleTwoOverReal = true;
-                                ea[nCurIdx].sequenceStrategy.nCandleTwoOverRealTimeLineIdx = nTimeLineIdx;
-                            }
-
-                            if (ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].lTotalPrice > 1.5 * HUNDRED_MILLION)
-                            {
-                                if (!ea[nCurIdx].sequenceStrategy.isCandleTwoOverRealNoLeaf)
-                                {
-                                    ea[nCurIdx].sequenceStrategy.nCandleTwoOverRealNoLeafCount++;
-                                    ea[nCurIdx].sequenceStrategy.isCandleTwoOverRealNoLeaf = true;
-                                    ea[nCurIdx].sequenceStrategy.nCandleTwoOverRealNoLeafTimeLineIdx = nTimeLineIdx;
-                                }
-                            }
-                        }
-                        #endregion
-
-                        #region 저항라인 만들기
-                        if (ea[nCurIdx].lFixedMarketCap <= TRILLION) // 시가총액 1조 안넘는 항목들만
-                        {
-                            if (ea[nCurIdx].sequenceStrategy.nResistFs != 0 && ea[nCurIdx].sequenceStrategy.nResistFs < ea[nCurIdx].nFs)
-                            {
-                                // 다른 timeLineIdx이다
-                                if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].sequenceStrategy.nResistTime) > 60)
-                                {
-                                    // 저항선 뚫은거야 
-                                    if (!ea[nCurIdx].sequenceStrategy.isResistPeircing)
-                                        ea[nCurIdx].sequenceStrategy.nResistPiercingTime = nSharedTime;
-                                    ea[nCurIdx].sequenceStrategy.isResistPeircing = true;
-                                }
-                            }
-
-                            // 현재 거래대금 10억 넘으면
-                            if ((ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].lTotalPrice >= TEN_BILLION &&
-                                ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].lBuyPrice > ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].lSellPrice
-                                ) || (nTimeLineIdx <= ea[nCurIdx].sequenceStrategy.nResistTimeLineIdx + 1))
-                            {
-                                if (ea[nCurIdx].sequenceStrategy.nResistFs < ea[nCurIdx].nFs)
-                                {
-                                    ea[nCurIdx].sequenceStrategy.nResistFs = ea[nCurIdx].nFs;
-                                    ea[nCurIdx].sequenceStrategy.nResistTime = nSharedTime;
-                                    ea[nCurIdx].sequenceStrategy.nResistTimeLineIdx = nTimeLineIdx;
-                                    ea[nCurIdx].sequenceStrategy.nResistUpCount++;
-                                }
-
-                            }
-
-
-                        }
-
-                        #endregion
+                       
 
                         #region BotUp Trace
                         //ea[nCurIdx].sequenceStrategy.botUpReal532_51.Trace(ea[nCurIdx].fPowerWithoutGap, nSharedTime);
@@ -2938,1640 +2852,263 @@ namespace AtoTrader
                         {
                             // 전략 0번째는 추가매수의 슬롯이다
                             int nRealBuyStrategyPointer = 1;
+
                             void RealBuyPointerMove()
                             {
                                 nRealBuyStrategyPointer++;
                             }
 
-                            { // 실매수 구역1
-                                if (nSharedTime < AddTimeBySec(nFirstTime, 300) &&
-                                    ea[nCurIdx].fPower >= 0.06 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                  )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            bool TestPriceDiff(int nDiffMinuteNum, double fDiffPower)
+                            {
+                                return ea[nCurIdx].timeLines1m.nRealDataIdx >= BRUSH + nDiffMinuteNum - 1 && (double)(ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nLastFs - ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx - nDiffMinuteNum].nLastFs) / ea[nCurIdx].nYesterdayEndPrice > fDiffPower;
                             }
-                            RealBuyPointerMove();
 
-                            { // 실매수 구역2
-                                if (nSharedTime < AddTimeBySec(nFirstTime, 600) &&
-                                    ea[nCurIdx].fPower >= 0.085 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                  )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
 
-                            { // 실매수 구역3
-                                if (ea[nCurIdx].crushMinuteManager.isCrushCheck &&
-                                    ea[nCurIdx].sequenceStrategy.isFiveReachedReal &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역4
-                                if (ea[nCurIdx].fPlusCnt07 - ea[nCurIdx].fMinusCnt07 >= 15 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                            // 실매수 구역# 차분 1 0.015 1분주기
+                            if ( TestPriceDiff(nDiffMinuteNum: 1, fDiffPower:0.015) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle:1)
                                )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역5
-                                if (ea[nCurIdx].fPlusCnt07 - ea[nCurIdx].fMinusCnt07 >= 25 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역6
-                                if (ea[nCurIdx].fPlusCnt07 + ea[nCurIdx].fMinusCnt07 >= 30 &&
-                                    ea[nCurIdx].fPlusCnt07 - ea[nCurIdx].fMinusCnt07 >= 15 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역7
-                                if (ea[nCurIdx].fPlusCnt07 + ea[nCurIdx].fMinusCnt07 >= 50 &&
-                                   ea[nCurIdx].fPlusCnt07 - ea[nCurIdx].fMinusCnt07 >= 15 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                            // 실매수 구역# 차분 1 0.025 1분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 1, fDiffPower: 0.025) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 1)
                                )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역8
-                                if (ea[nCurIdx].fPlusCnt09 + ea[nCurIdx].fMinusCnt09 >= 50 &&
-                                    ea[nCurIdx].fPlusCnt09 - ea[nCurIdx].fMinusCnt09 >= 15 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                  )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역9
-                                if (ea[nCurIdx].fPlusCnt09 + ea[nCurIdx].fMinusCnt09 >= 70 &&
-                                    ea[nCurIdx].fPlusCnt09 - ea[nCurIdx].fMinusCnt09 >= 15 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                  )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역10
-                                if (ea[nCurIdx].fPlusCnt09 + ea[nCurIdx].fMinusCnt09 >= 90 &&
-                                    ea[nCurIdx].fPlusCnt09 - ea[nCurIdx].fMinusCnt09 >= 10 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                  )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역11
-                                if (ea[nCurIdx].fPlusCnt09 + ea[nCurIdx].fMinusCnt09 >= 90 &&
-                                    ea[nCurIdx].fPlusCnt09 - ea[nCurIdx].fMinusCnt09 >= 20 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                  )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역12
-                                if (ea[nCurIdx].fPlusCnt09 - ea[nCurIdx].fMinusCnt09 >= 30 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                  )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역13
-                                if (ea[nCurIdx].fPowerJar >= 0.02 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역14
-                                if (ea[nCurIdx].fPowerJar >= 0.03 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역15
-                                if (ea[nCurIdx].fPowerJar >= 0.04 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역16
-                                if (ea[nCurIdx].rankSystem.nSummationRanking == 1 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역17
-                                if (ea[nCurIdx].rankSystem.nMinutePowerRanking == 1 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역18
-                                if (ea[nCurIdx].rankSystem.nSummationRanking == 2 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역19
-                                if (ea[nCurIdx].rankSystem.nMinutePowerRanking == 2 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역20
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].nCount >= 1000 &&
-                                     ea[nCurIdx].fPlusCnt07 - ea[nCurIdx].fMinusCnt07 >= 15 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                      )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역21
-                                if (ea[nCurIdx].crushMinuteManager.isCrushCheck &&
-                                    ea[nCurIdx].rankSystem.nSummationRanking > 0 &&
-                                    ea[nCurIdx].rankSystem.nSummationRanking <= 30 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역22
-                                if (ea[nCurIdx].crushMinuteManager.isCrushCheck &&
-                                    ea[nCurIdx].rankSystem.nSummationRanking > 0 &&
-                                    ea[nCurIdx].rankSystem.nSummationRanking <= 10 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역23
-                                if (ea[nCurIdx].rankSystem.nMinuteSummationRanking == 1 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역24
-                                if (ea[nCurIdx].timeLines1m.fRecentMedianAngle >= 50 &&
-                                    GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역25
-                                if (ea[nCurIdx].myStrategy.isOrderCheck &&
-                                    ea[nCurIdx].fPowerJar > 0.117
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역26
-                                if (ea[nCurIdx].myStrategy.isOrderCheck &&
-                                    ea[nCurIdx].fStartGap >= 0.06 &&
-                                    ea[nCurIdx].speedStatus.fCur >= 700
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역27
-                                if (ea[nCurIdx].myStrategy.isOrderCheck &&
-                                     ea[nCurIdx].fStartGap >= 0.07 &&
-                                     ea[nCurIdx].fMinusCnt09 >= 100
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역28
-                                if (ea[nCurIdx].myStrategy.isOrderCheck &&
-                                    ea[nCurIdx].speedStatus.fCur >= 1200 &&
-                                    ea[nCurIdx].speedStatus.fCur <= 1350
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역29
-                                if (ea[nCurIdx].myStrategy.isManualOrderSignal)
-                                {
-                                    ea[nCurIdx].myStrategy.isManualOrderSignal = false;
-                                    if (nTimeBetweenPrev >= ea[nCurIdx].myStrategy.nManualEndurationTime)
-                                    {
-                                        PrintLog("시간 : " + nSharedTime.ToString() + ", 종목코드 : " + ea[nCurIdx].sCode + ", 종목명 : " + ea[nCurIdx].sCodeName + " 전략 : " + nRealBuyStrategyPointer.ToString() + " " + nTimeBetweenPrev.ToString() + "초동안 체결전적이 없어" + " 직접입력매수신청 기각 ", nCurIdx);
-                                    }
-                                    else
-                                    {
-                                        RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, nExtraChance: 3);
-                                    }
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역30
-                                if (
-                                    ea[nCurIdx].sequenceStrategy.botUpMinute421.isM3Passed &&
-                                    !ea[nCurIdx].sequenceStrategy.botUpMinute421.CheckIsRedundancy()
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역31
-                                if (
-                                    ea[nCurIdx].sequenceStrategy.botUpMinute432.isM3Passed &&
-                                    !ea[nCurIdx].sequenceStrategy.botUpMinute432.CheckIsRedundancy()
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역32
-                                if (
-                                    ea[nCurIdx].sequenceStrategy.botUpMinute642.isM3Passed &&
-                                    !ea[nCurIdx].sequenceStrategy.botUpMinute642.CheckIsRedundancy()
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역33
-                                if (
-                                    ea[nCurIdx].sequenceStrategy.botUpMinute643.isM3Passed &&
-                                    !ea[nCurIdx].sequenceStrategy.botUpMinute643.CheckIsRedundancy()
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역34
-                                if (
-                                    ea[nCurIdx].sequenceStrategy.botUpMinute732.isM3Passed &&
-                                    !ea[nCurIdx].sequenceStrategy.botUpMinute732.CheckIsRedundancy()
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역35
-                                if (
-                                    ea[nCurIdx].sequenceStrategy.botUpMinute743.isM3Passed &&
-                                    !ea[nCurIdx].sequenceStrategy.botUpMinute743.CheckIsRedundancy()
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역36
-                                if (
-                                    ea[nCurIdx].sequenceStrategy.botUpMinute953.isM3Passed &&
-                                    !ea[nCurIdx].sequenceStrategy.botUpMinute953.CheckIsRedundancy()
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역37
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.botUpMinute421.isJumped
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역38
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.botUpMinute432.isJumped
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역39
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.botUpMinute642.isJumped
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역40
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.botUpMinute643.isJumped
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역41
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.botUpMinute732.isJumped
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역42
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.botUpMinute743.isJumped
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역43
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.botUpMinute953.isJumped
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역44
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.botUpMinute421.isCrushed
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역45
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.botUpMinute432.isCrushed
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역46
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.botUpMinute642.isCrushed
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역47
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.botUpMinute643.isCrushed
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역48
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.botUpMinute732.isCrushed
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역49
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.botUpMinute743.isCrushed
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역50
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.botUpMinute953.isCrushed
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역51
-                                if (
-                                        ea[nCurIdx].maOverN.nDownCntMa1h >= 30 &&
-                                        ea[nCurIdx].fPower >= 0.04 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역52
-                                if (
-                                         ea[nCurIdx].fStartGap >= 0.02 &&
-                                         ea[nCurIdx].fStartGap < 0.03 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역53
-                                if (
-                                        ea[nCurIdx].fStartGap >= 0.03 &&
-                                        ea[nCurIdx].fStartGap < 0.04 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역54
-                                if (
-                                        ea[nCurIdx].fStartGap >= 0.04 &&
-                                        ea[nCurIdx].fStartGap < 0.05 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역55
-                                if (
-                                        ea[nCurIdx].fStartGap >= 0.05 &&
-                                        ea[nCurIdx].fStartGap < 0.06 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역56
-                                if (
-                                        ea[nCurIdx].fStartGap >= 0.06 &&
-                                        ea[nCurIdx].fStartGap < 0.07 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역57
-                                if (
-                                        ea[nCurIdx].fStartGap >= 0.07 &&
-                                        ea[nCurIdx].fStartGap < 0.1 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역58
-                                if (
-                                        ea[nCurIdx].fStartGap >= 0.1 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역59
-                                if (
-                                        (double)(ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].nRealDataIdxVi].nLastFs - ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].nRealDataIdxVi].nStartFs) / ea[nCurIdx].nYesterdayEndPrice >= 0.02 &&
-                                        (double)(ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].nRealDataIdxVi].nLastFs - ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].nRealDataIdxVi].nStartFs) / ea[nCurIdx].nYesterdayEndPrice < 0.03 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 1)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역60
-                                if (
-                                        (double)(ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].nRealDataIdxVi].nLastFs - ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].nRealDataIdxVi].nStartFs) / ea[nCurIdx].nYesterdayEndPrice >= 0.03 &&
-                                        (double)(ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].nRealDataIdxVi].nLastFs - ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].nRealDataIdxVi].nStartFs) / ea[nCurIdx].nYesterdayEndPrice < 0.04 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 1)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역61
-                                if (
-                                        (double)(ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].nRealDataIdxVi].nLastFs - ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].nRealDataIdxVi].nStartFs) / ea[nCurIdx].nYesterdayEndPrice >= 0.04 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 1)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역62
-                                if (
-                                        ea[nCurIdx].timeLines1m.fDAngle <= -60 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역63
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.isFiveReachedMinute &&
-                                        ea[nCurIdx].timeLines1m.fDAngle <= -40 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역64
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.isFiveReachedMinute &&
-                                        ea[nCurIdx].timeLines1m.fDAngle <= -50 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역65
-                                if (
-                                        ea[nCurIdx].sequenceStrategy.isFiveReachedMinute &&
-                                        ea[nCurIdx].timeLines1m.fDAngle <= -60 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역66
-                                if (
-                                        ea[nCurIdx].fakeBuyStrategy.nStrategyNum >= 10 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역67
-                                if (
-                                        ea[nCurIdx].fakeBuyStrategy.nStrategyNum >= 20 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역68
-                                if (
-                                        ea[nCurIdx].fakeBuyStrategy.nStrategyNum >= 30 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역69
-                                if (
-                                        ea[nCurIdx].fakeResistStrategy.nStrategyNum >= 10 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역70
-                                if (
-                                        ea[nCurIdx].fakeResistStrategy.nStrategyNum >= 20 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역71
-                                if (
-                                        ea[nCurIdx].priceUpStrategy.nStrategyNum >= 10 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역72
-                                if (
-                                        ea[nCurIdx].priceUpStrategy.nStrategyNum >= 20 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역73
-                                if (
-                                        ea[nCurIdx].fakeAssistantStrategy.nStrategyNum >= 20 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역74
-                                if (
-                                        ea[nCurIdx].fakeBuyStrategy.nUpperCount >= 10 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역75
-                                if (
-                                        ea[nCurIdx].fakeAssistantStrategy.nUpperCount >= 10 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역76
-                                if (
-                                        ea[nCurIdx].priceUpStrategy.nUpperCount >= 10 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역77
-                                if (
-                                        ea[nCurIdx].fakeAssistantStrategy.nHitNum + ea[nCurIdx].fakeBuyStrategy.nHitNum + ea[nCurIdx].priceUpStrategy.nHitNum >= 10 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역78
-                                if (
-                                        ea[nCurIdx].fakeAssistantStrategy.nHitNum + ea[nCurIdx].fakeBuyStrategy.nHitNum + ea[nCurIdx].priceUpStrategy.nHitNum + ea[nCurIdx].fakeResistStrategy.nHitNum >= 20 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역79
-                                if (
-                                        ea[nCurIdx].fPowerWithoutGap <= -0.05 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역80
-                                if (
-                                        ea[nCurIdx].fPowerWithoutGap <= -0.08 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역81
-                                if (
-                                        ea[nCurIdx].fPowerWithoutGap <= -0.1 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역82
-                                if (
-                                        ea[nCurIdx].fPowerWithoutGap <= -0.13 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역83
-                                if (
-                                        ea[nCurIdx].fPowerWithoutGap <= -0.17 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역84
-                                if (nSharedTime < AddTimeBySec(nFirstTime, 300) &&
-                                    ea[nCurIdx].sequenceStrategy.isFiveReachedReal &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                  )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역85
-                                if (nSharedTime >= AddTimeBySec(nFirstTime, 300) &&
-                                    nSharedTime < AddTimeBySec(nFirstTime, 600) &&
-                                    ea[nCurIdx].sequenceStrategy.isFiveReachedReal &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                  )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역86
-                                if (ea[nCurIdx].sequenceStrategy.isFiveKeepingSuccessForTwoTimeLine &&
-                                      GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                 )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역87
-                                if (ea[nCurIdx].fakeBuyStrategy.nStrategyNum >= 40 &&
-                                   GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
+                            // 실매수 구역# 차분 3 0.02 3분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 3, fDiffPower: 0.02) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 3)
                                )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역88
-                                if (ea[nCurIdx].fakeBuyStrategy.nMinuteLocationCount >= 3 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역89
-                                if (ea[nCurIdx].fakeBuyStrategy.nMinuteLocationCount >= 5 &&
-                                      GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역90
-                                if (ea[nCurIdx].fakeBuyStrategy.nMinuteLocationCount >= 10 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
+                            // 실매수 구역# 차분 5 0.02 5분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 5, fDiffPower: 0.02) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 5)
                                )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역91
-                                if (ea[nCurIdx].fakeBuyStrategy.nMinuteLocationCount >= 15 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                  )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 5 0.03 5분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 5, fDiffPower: 0.03) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 5)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역92
-                                if (ea[nCurIdx].priceUpStrategy.nMinuteLocationCount >= 5 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                  )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 5 0.05 5분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 5, fDiffPower: 0.05) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 5)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역93
-                                if (ea[nCurIdx].priceUpStrategy.nMinuteLocationCount >= 10 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                  )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 10 0.03 10분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 10, fDiffPower: 0.03) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 10)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역94
-                                if (ea[nCurIdx].priceUpStrategy.nMinuteLocationCount >= 15 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                  )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 10 0.04 6분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 10, fDiffPower: 0.04) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 6)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역95
-                                if (ea[nCurIdx].priceUpStrategy.nMinuteLocationCount >= 25 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                  )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 20 0.05 10분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 20, fDiffPower: 0.05) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 10)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역96
-                                if (ea[nCurIdx].myStrategy.nSharedMinuteLocationCount >= 20 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 20 0.04 15분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 20, fDiffPower: 0.04) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 15)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역97
-                                if (ea[nCurIdx].myStrategy.nSharedMinuteLocationCount >= 30 &&
-                                      GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 15 0.04 12분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 15, fDiffPower: 0.04) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 12)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역98
-                                if (ea[nCurIdx].myStrategy.nSharedMinuteLocationCount >= 40 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+
+                            // 실매수 구역# 차분 5 0.07 10분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 5, fDiffPower: 0.07) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 10)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역99
-                                if (ea[nCurIdx].myStrategy.nMinuteLocationCount >= 3 &&
-                                      GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 3 0.05 10분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 3, fDiffPower: 0.05) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 10)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역100
-                                if (ea[nCurIdx].myStrategy.nMinuteLocationCount >= 5 &&
-                                      GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+
+                            // 실매수 구역# 차분 4 0.04 10분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 4, fDiffPower: 0.04) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 10)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역101
-                                if (ea[nCurIdx].myStrategy.nMinuteLocationCount >= 10 &&
-                                      GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+
+                            // 실매수 구역# 차분 20 0.1 15분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 20, fDiffPower: 0.1) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 15)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역102
-                                if (ea[nCurIdx].myStrategy.nMinuteLocationCount >= 15 &&
-                                      GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+
+                            // 실매수 구역# 차분 30 0.05 10분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 30, fDiffPower: 0.05) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 10)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역103
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].nStartFs > 0 &&
-                                    (double)(ea[nCurIdx].nFs - ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].nStartFs) / ea[nCurIdx].nYesterdayEndPrice >= 0.03 &&
-                                      GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 10)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+
+                            // 실매수 구역# 차분 23 0.12 20분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 23, fDiffPower: 0.12) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 20)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역104
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].nStartFs > 0 &&
-                                    (double)(ea[nCurIdx].nFs - ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].nStartFs) / ea[nCurIdx].nYesterdayEndPrice >= 0.05 &&
-                                      GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 5)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 37 0.04 20분주기
+                            if (TestPriceDiff(nDiffMinuteNum:37, fDiffPower: 0.04) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 20)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역105
-                                if (ea[nCurIdx].fPowerWithoutGap >= 0.065 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 34 0.05 10분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 34, fDiffPower: 0.05) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 10)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역106
-                                if (ea[nCurIdx].fPowerWithoutGap >= 0.08 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 35 0.07 20분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 35, fDiffPower: 0.07) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 20)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역107
-                                if (ea[nCurIdx].fPowerWithoutGap >= 0.11 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 30 0.04 30분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 30, fDiffPower: 0.04) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 30)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역108
-                                if (ea[nCurIdx].timeLines1m.fTotalMedianAngle >= 20 &&
-                                    ea[nCurIdx].timeLines1m.fHourMedianAngle >= 30 &&
-                                    ea[nCurIdx].timeLines1m.fRecentMedianAngle >= 40 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 30 0.03 20분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 30, fDiffPower: 0.03) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 20)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역109
-                                if (ea[nCurIdx].rankSystem.nAccumCountRanking > 0 &&
-                                    ea[nCurIdx].rankSystem.nAccumCountRanking <= 10 &&
-                                    ea[nCurIdx].rankSystem.nMinuteSummationRanking <= 3 &&
-                                      GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 7 0.04 20분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 7, fDiffPower: 0.04) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 20)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역110
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].nCount >= 1000 &&
-                                    ea[nCurIdx].fPlusCnt07 - ea[nCurIdx].fMinusCnt07 >= 15 &&
-                                      GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                     )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 8 0.02 10분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 8, fDiffPower: 0.02) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 10)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역111
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].nCount >= 600 &&
-                                   ea[nCurIdx].fPlusCnt07 - ea[nCurIdx].fMinusCnt07 >= 20 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 12 0.02 11분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 12, fDiffPower: 0.02) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역112
-                                if (ea[nCurIdx].fPowerWithoutGap >= 0.04 &&
-                                        GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer))
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 13 0.03 10분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 13, fDiffPower: 0.03) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 10)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 
-                            { // 실매수 구역113
-                                if (ea[nCurIdx].crushMinuteManager.isCrushCheck &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nTrial: 2)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역114
-                                if (ea[nCurIdx].timeLines1m.fRecentMedianAngle >= 60 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역115
-                                if (ea[nCurIdx].fStartGap >= 0.03 &&
-                                    ea[nCurIdx].fPowerJar >= 0.02 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역116
-                                if (ea[nCurIdx].fStartGap >= 0.04 &&
-                                    ea[nCurIdx].fPowerJar >= 0.02 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역117
-                                if (ea[nCurIdx].fStartGap >= 0.04 &&
-                                    ea[nCurIdx].fPowerJar >= 0.03 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역118
-                                if (ea[nCurIdx].fStartGap >= 0.03 &&
-                                    ea[nCurIdx].speedStatus.fCur >= 300 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역119
-                                if (ea[nCurIdx].fStartGap >= 0.03 &&
-                                    ea[nCurIdx].speedStatus.fCur >= 500 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역120
-                                if (ea[nCurIdx].fStartGap >= 0.03 &&
-                                    ea[nCurIdx].speedStatus.fCur >= 800 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역121
-                                if (ea[nCurIdx].crushMinuteManager.nUpCnt == 1 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역122
-                                if (ea[nCurIdx].crushMinuteManager.nUpCnt == 2 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역123
-                                if (ea[nCurIdx].crushMinuteManager.nUpCnt == 3 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역124
-                                if (ea[nCurIdx].myStrategy.nTotalFakeMinuteAreaNum >= 10 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역125
-                                if (ea[nCurIdx].myStrategy.nTotalFakeMinuteAreaNum >= 15 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역126
-                                if (ea[nCurIdx].myStrategy.nTotalFakeMinuteAreaNum >= 20 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역127
-                                if (ea[nCurIdx].myStrategy.nTotalFakeMinuteAreaNum >= 30 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역128
-                                if (ea[nCurIdx].fakeBuyStrategy.nHitNum >= 5 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역129
-                                if (ea[nCurIdx].fakeBuyStrategy.nHitNum >= 7 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역130
-                                if (ea[nCurIdx].fakeAssistantStrategy.nHitNum >= 7 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역131
-                                if (ea[nCurIdx].fMinusCnt09 >= 100 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역132
-                                if (ea[nCurIdx].fStartGap >= 0.03 &&
-                                    ea[nCurIdx].fPlusCnt09 - ea[nCurIdx].fMinusCnt09 >= 20 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역133
-                                if (ea[nCurIdx].fStartGap >= 0.03 &&
-                                    ea[nCurIdx].fPlusCnt09 - ea[nCurIdx].fMinusCnt09 >= 30 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역134
-                                if (ea[nCurIdx].fPlusCnt09 >= 70 &&
-                                    ea[nCurIdx].fPlusCnt09 > ea[nCurIdx].fMinusCnt09 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역135
-                                if (ea[nCurIdx].fSharePerHoga < 100 &&
-                                    ea[nCurIdx].fHogaPerTrade < 25 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역136
-                                if (ea[nCurIdx].fSharePerTrade < 200 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역137
-                                if (ea[nCurIdx].fPower <= -0.07 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역138
-                                if (ea[nCurIdx].fPower <= -0.1 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역139
-                                if (ea[nCurIdx].fPower <= -0.13 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역140
-                                if (ea[nCurIdx].fPower <= -0.15 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역141
-                                if (ea[nCurIdx].fPower <= -0.2 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역142
-                                if (ea[nCurIdx].fOnlyUpPowerJar >= 0.02 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역143
-                                if (ea[nCurIdx].fOnlyUpPowerJar >= 0.03 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역144
-                                if (ea[nCurIdx].fOnlyUpPowerJar >= 0.04 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 11)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역145
-                                if (nSharedTime <= AddTimeBySec(nFirstTime, 1800) &&
-                                    ea[nCurIdx].fPowerWithoutGap >= 0.07 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역146
-                                if (nSharedTime <= AddTimeBySec(nFirstTime, 1800) &&
-                                    ea[nCurIdx].fPowerWithoutGap >= 0.1 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역147
-                                if (nSharedTime <= AddTimeBySec(nFirstTime, 1800) &&
-                                    ea[nCurIdx].fPowerWithoutGap >= 0.12 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역148
-                                if (nSharedTime <= AddTimeBySec(nFirstTime, 3600) &&
-                                    ea[nCurIdx].fPowerWithoutGap >= 0.08 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역149
-                                if (nSharedTime <= AddTimeBySec(nFirstTime, 3600) &&
-                                    ea[nCurIdx].fPowerWithoutGap >= 0.12 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역150
-                                if (nSharedTime <= AddTimeBySec(nFirstTime, 3600) &&
-                                    ea[nCurIdx].fPowerWithoutGap >= 0.15 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역151
-                                if (ea[nCurIdx].speedStatus.fCur >= 400 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역152
-                                if (ea[nCurIdx].speedStatus.fCur >= 600 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
-                            }
-                            RealBuyPointerMove();
-
-                            { // 실매수 구역153
-                                if (ea[nCurIdx].speedStatus.fCur >= 500 &&
-                                    ea[nCurIdx].hogaRatioStatus.fCur >= 0.3 &&
-                                     GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer)
-                                    )
-                                {
-                                    RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
-                                }
+                            // 실매수 구역# 차분 16 0.025 6분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 16, fDiffPower: 0.025) &&
+                                 GetAccess(ref ea[nCurIdx].myStrategy, nRealBuyStrategyPointer, nCycle: 6)
+                               )
+                            {
+                                RequestThisRealBuy(nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
                             }
                             RealBuyPointerMove();
 

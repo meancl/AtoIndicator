@@ -301,6 +301,10 @@
     <Compile Include="Migrations\20230508081210_mig_add_fake_bound.designer.cs">
       <DependentUpon>20230508081210_mig_add_fake_bound.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20230508120137_mig_add_candle_delete.cs" />
+    <Compile Include="Migrations\20230508120137_mig_add_candle_delete.designer.cs">
+      <DependentUpon>20230508120137_mig_add_candle_delete.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\myDbContextModelSnapshot.cs" />
     <Compile Include="Models\Constants.cs">
       <SubType>Form</SubType>

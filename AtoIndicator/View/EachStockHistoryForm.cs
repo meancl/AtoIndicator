@@ -69,7 +69,6 @@ namespace AtoTrader.View.EachStockHistory
         public MainForm.StrategyNames strategyNames;
         #endregion
 
-
         #region 생성자
         public EachStockHistoryForm(MainForm parentForm, int nCallIdx, int? specificStrategy = null)
         {
@@ -90,7 +89,6 @@ namespace AtoTrader.View.EachStockHistory
             totalClockLabel.Text = "현재시간 : " + mainForm.nSharedTime;
 
             SendToFrontSeriesName("MinuteStick");
-
 
             timer.Elapsed += delegate (Object sender, System.Timers.ElapsedEventArgs e)
             {
@@ -203,7 +201,6 @@ namespace AtoTrader.View.EachStockHistory
         }
         #endregion
 
-      
         #region 1분 차트 초기화
         /// <summary>
         /// 처음 분당 차트데이터를 삽입할때 
@@ -225,6 +222,16 @@ namespace AtoTrader.View.EachStockHistory
                 historyChart.Series["Ma20m"].ChartType = SeriesChartType.Line;
                 historyChart.Series["Ma1h"].ChartType = SeriesChartType.Line;
                 historyChart.Series["Ma2h"].ChartType = SeriesChartType.Line;
+
+                historyChart.Series["Ma20mGap"].Points.Clear();
+                historyChart.Series["Ma1hGap"].Points.Clear();
+                historyChart.Series["Ma2hGap"].Points.Clear();
+                historyChart.Series["Ma20mGap"].ChartType = SeriesChartType.Line;
+                historyChart.Series["Ma1hGap"].ChartType = SeriesChartType.Line;
+                historyChart.Series["Ma2hGap"].ChartType = SeriesChartType.Line;
+                historyChart.Series["Ma20mGap"].Enabled = isViewGapMa;
+                historyChart.Series["Ma1hGap"].Enabled = isViewGapMa;
+                historyChart.Series["Ma2hGap"].Enabled = isViewGapMa;
 
                 historyChart.Series["MinuteStick"].SetCustomProperty("PriceUpColor", "Red");
                 historyChart.Series["MinuteStick"].SetCustomProperty("PriceDownColor", "Blue");
@@ -252,8 +259,7 @@ namespace AtoTrader.View.EachStockHistory
 
                 int nTimeNow;
                 string sTime;
-                bool isExtraOdd = false;
-
+                
                 curEa = mainForm.ea[nCurIdx];
 
                 if (curEa.timeLines1m.nRealDataIdx > 0) // 데이터가 초기화돼야 접근가능, 0이 넘지 않을경우 인덱스 오류에 걸릴 수 도 있다.(어차피 금방 초기화돼서 접근 가능하게 된다)
@@ -274,6 +280,9 @@ namespace AtoTrader.View.EachStockHistory
                             historyChart.Series["Ma20m"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMa0);
                             historyChart.Series["Ma1h"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMa1);
                             historyChart.Series["Ma2h"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMa2);
+                            historyChart.Series["Ma20m_b"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMaGap0);
+                            historyChart.Series["Ma1h_b"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMaGap1);
+                            historyChart.Series["Ma2h_b"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMaGap2);
                             historyChart.Series["MinuteStick"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nMaxFs);
                             historyChart.Series["MinuteStick"].Points[nLastMinuteIdx].YValues[1] = curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nMinFs;
                             historyChart.Series["MinuteStick"].Points[nLastMinuteIdx].YValues[2] = curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nStartFs;
@@ -314,7 +323,6 @@ namespace AtoTrader.View.EachStockHistory
                         {
                             nTimeNow = AddTimeBySec(curEa.timeLines1m.arrTimeLine[curEa.timeLines1m.nRealDataIdx].nTime, MainForm.MINUTE_SEC);
                             sTime = nTimeNow.ToString();
-                            isExtraOdd = true;
 
                             historyChart.Series["MinuteStick"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[curEa.timeLines1m.nPrevTimeLineIdx].nMaxFs);
                             historyChart.Series["MinuteStick"].Points[nLastMinuteIdx].YValues[1] = curEa.timeLines1m.arrTimeLine[curEa.timeLines1m.nPrevTimeLineIdx].nMinFs;
@@ -712,7 +720,6 @@ namespace AtoTrader.View.EachStockHistory
                 voidDelegate();
         }
         #endregion 
-
 
         #region 변수&현재상황 출력
         public void ShowVariables()
@@ -1137,6 +1144,9 @@ namespace AtoTrader.View.EachStockHistory
             }
 
         }
+
+        public bool isViewGapMa = false;
+
 
         #region 마우스 이벤트 핸들러
         /// <summary>
@@ -1694,6 +1704,7 @@ namespace AtoTrader.View.EachStockHistory
         }
         #endregion
 
+        
         #region 키보드 이벤트 핸들러
         public void KeyUpHandler(object sender, KeyEventArgs e)
         {
@@ -1718,7 +1729,11 @@ namespace AtoTrader.View.EachStockHistory
             {
                 ShowVariables();
             }
-
+            if(cUp == 'G')
+            {
+                isViewGapMa = !isViewGapMa;
+                ResetMinuteChart();
+            }
             if (cUp == 27) // esc
                 this.Close();
 

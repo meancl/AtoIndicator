@@ -53,8 +53,7 @@ namespace AtoTrader
             public TimeLineManager timeLines1m;       // 차트데이터 변수
             public CrushManager crushMinuteManager;   // 전고점 변수
             public RankSystem rankSystem;             // 랭킹데이터 변수
-            public SequenceStrategy sequenceStrategy; // 순차적전략 변수
-            public FeeManager feeMgr;                 // 세금, 수수료 관련 변수
+            public SequenceStrategy sequenceStrategy; // 순차적전략 변
             public ReservationManager reserveMgr;     // 예약매수 관련 변수
 
             // ----------------------------------
@@ -274,8 +273,6 @@ namespace AtoTrader
                 rep.nUpTailCnt = timeLines1m.upTailList.Count;
                 rep.nDownTailCnt = timeLines1m.downTailList.Count;
                 rep.nShootingCnt = timeLines1m.shootingList.Count;
-                rep.nCandleTwoOverRealCnt = sequenceStrategy.nCandleTwoOverRealCount;
-                rep.nCandleTwoOverRealNoLeafCnt = sequenceStrategy.nCandleTwoOverRealNoLeafCount;
                 rep.nCrushCnt = crushMinuteManager.nCurCnt;
                 rep.nCrushUpCnt = crushMinuteManager.nUpCnt;
                 rep.nCrushDownCnt = crushMinuteManager.nDownCnt;
@@ -325,8 +322,6 @@ namespace AtoTrader
                         $"슈팅 : {timeLines1m.shootingList.Count}{NEW_LINE}" +
                         $"전고점 카운트 : {crushMinuteManager.nCurCnt}{NEW_LINE}" +
                         $"전고점   업 : {crushMinuteManager.nUpCnt}{NEW_LINE}" +
-                        $"2퍼 : {sequenceStrategy.nCandleTwoOverRealCount}{NEW_LINE}" +
-                        $"깃털 2퍼 : {sequenceStrategy.nCandleTwoOverRealNoLeafCount}{NEW_LINE}" +
                         $"=================현상태=============={NEW_LINE}" +
                         $"체결속도 : {speedStatus.fCur}{NEW_LINE}" +
                         $"호가속도 : {hogaSpeedStatus.fCur}{NEW_LINE}" +
@@ -361,6 +356,7 @@ namespace AtoTrader
                 return sMessage;
             }
         }
+
         // ============================================
         // AI서비스 웨이터 큐에 저장하기 위한 구조체변수
         // ============================================
@@ -371,7 +367,6 @@ namespace AtoTrader
             public int nRequestId;
         }
 
-    
         public struct CurStatus
         {
             public double fVal; // 과거
@@ -395,7 +390,6 @@ namespace AtoTrader
             }
         }
 
-        
         // 예약 관리용 클래스
         public struct ReservationManager
         {
@@ -440,7 +434,6 @@ namespace AtoTrader
             public int nTargetLimitTime; // 예약매수 제한시간
         }
 
-            
         // 매수후 맥스값과 민값을 기록하기위한 구조체
         public struct MaxMinRecorder
         {
@@ -538,21 +531,6 @@ namespace AtoTrader
         }
 
         // ============================================
-        // 현재보유종목 열람용 구조체변수
-        // ============================================
-        public struct Holdings
-        {
-            public string sCode;
-            public string sCodeName;
-            public double fYield;
-            public int nHoldingQty;
-            public int nBuyedPrice;
-            public int nCurPrice;
-            public int nTotalPL;
-            public int nNumPossibleToSell;
-        }
-
-        // ============================================
         // 게시판용 변수
         // ============================================
         public struct StockDashBoard
@@ -630,7 +608,6 @@ namespace AtoTrader
             }
         }
 
-
         public struct TimeLine
         {
             public int nTime;
@@ -668,7 +645,13 @@ namespace AtoTrader
             public int nDownTimeOverMa1;
             public int nDownTimeOverMa2;
 
+            public double fOverMaGap0;
+            public double fOverMaGap1;
+            public double fOverMaGap2;
+
+
         }
+
         public struct CrushManager
         {
             public int nCrushMaxPrice;
@@ -754,7 +737,6 @@ namespace AtoTrader
             }
         }
 
-
         public struct Ranking
         {
             public int nRecordTime; // 기록용 시간
@@ -808,38 +790,12 @@ namespace AtoTrader
             public int nDownCntMa2h;
         }
 
-
-        /// <summary>
-        /// 매매하면 기록을 StrategyHistory list에 strategy idx에 맞게 삽입한다.
-        /// </summary>
-        public struct StrategyHistory
-        {
-            public int nEaIdx; // nEaIdx
-            public int nBuyedIdx; // 매매블럭 인덱스
-
-            public StrategyHistory(int nEaIdx, int nBuyedIdx)
-            {
-                this.nEaIdx = nEaIdx;
-                this.nBuyedIdx = nBuyedIdx;
-            }
-        }
-
-        // 전략분석에 필요한 각 매매블럭의 데이터 구조체
-        public struct EachResultTracker
-        {
-            public int nEaIdx;
-            public int nBuyedIdx;
-            public double fProfit;
-            public int nTradingHoldingTime; // 매매 유지시간
-        }
-
         /// <summary>
         /// ABOUT 실제전략
         /// </summary>
         public struct MyStrategy
         {
             public int[] arrStrategy; // 나의 전략을 담는 배열, 인덱스는 자신만의 전략마다 임의로 설정
-            public int[] arrReqFail; // 실패한 시도횟수를 저장한다.
             public int[] arrLastTouch; // 가장최근에 해당전략 요청한 시간
 
             public int[] arrMinuteIdx;
@@ -914,7 +870,6 @@ namespace AtoTrader
             public void Init(int s)
             {
                 arrStrategy = new int[s];
-                arrReqFail = new int[s];
                 arrLastTouch = new int[s];
                 arrPrevMinuteIdx = new int[s];
 
@@ -931,26 +886,6 @@ namespace AtoTrader
                 fd = new List<FakeDBStruct>();
             }
 
-        }
-
-        public class FakeDBStruct
-        {
-            public FakeReports fr;
-
-            public int nTimeLineIdx;
-
-            public MaxMinRecorder maxMinRealTilThree;
-            public MaxMinRecorder maxMinRealWhile10;
-            public MaxMinRecorder maxMinRealWhile30;
-            public MaxMinRecorder maxMinRealWhile60;
-            public MaxMinRecorder maxMinMinuteTilThree;
-            public MaxMinRecorder maxMinMinuteTilThreeWhile10;
-            public MaxMinRecorder maxMinMinuteTilThreeWhile30;
-            
-            public FakeDBStruct()
-            {
-                fr = new FakeReports();
-            }
         }
 
         /// <summary>
@@ -1018,6 +953,7 @@ namespace AtoTrader
             }
 
         }
+
         /// <summary>
         /// ABOUT 가격하락
         /// </summary>
@@ -1081,6 +1017,7 @@ namespace AtoTrader
             }
 
         }
+
         /// <summary>
         ///  가짜 전략 해당 종목의 과열성을 체크함과 동시에 고점 정도를 파악한다.
         /// </summary>
@@ -1151,30 +1088,6 @@ namespace AtoTrader
                 listApproachTime19 = new List<int>();
             }
 
-        }
-
-        public struct FeeManager
-        {
-
-            /*
-             * 당사 수수료 징수는 종목별 매수/매도를 기준으로 하며, 동일종목의 분할매매시는 매수별, 매도별 체결합계금액을 기준으로 산정합니다.
-             * 매매수수료는 10원 미만 절사이며, (ex. 3,000원 X 50주 = 150,000원 체결 시, 온라인 매체 매매수수료는 150,000원 X 0.015% = 22.5원 -> 20원 부과)
-             * 세금은 원 미만 절사 입니다. (ex. 2,050원 X 50주 = 102,500원 체결 시, 거래세는 102,500원 X 0.23%(코스닥) = 235.75원 -> 235원 부과)
-             */
-
-            /// 임시로 빼는 수수료
-            public int GetRoughFee(int nPrice)
-            {
-                double retFee = nPrice * STOCK_FEE; // 수수료를 소수점까지 구한다.
-                return (int)retFee; // 현 세금(원 미만 절사)
-            }
-
-            // 매수할때 임시로 했던 금액 실제로 변경
-            public int GetRoughTax(int nPrice)
-            {
-                double retTax = nPrice * STOCK_TAX; // 수수료를 소수점까지 구한다.
-                return (int)retTax; // 현 세금(원 미만 절사)
-            }
         }
 
         /// <summary>
@@ -1289,70 +1202,25 @@ namespace AtoTrader
 
         }
 
-        /// <summary>
-        /// 매매정보를 전략별로 분석해 결과struct에 삽입한다.
-        /// </summary>
-        public struct Statisticer
+        public class FakeDBStruct
         {
-            public int nCurStrategyNum;
-            public List<EachResultTracker> eachTotalTracker;
-            public List<EachResultTracker> eachTradedTracker;
-            public StrategyResult[] strategyResult;
+            public FakeReports fr;
 
-            public void Init(int s)
+            public int nTimeLineIdx;
+
+            public MaxMinRecorder maxMinRealTilThree;
+            public MaxMinRecorder maxMinRealWhile10;
+            public MaxMinRecorder maxMinRealWhile30;
+            public MaxMinRecorder maxMinRealWhile60;
+            public MaxMinRecorder maxMinMinuteTilThree;
+            public MaxMinRecorder maxMinMinuteTilThreeWhile10;
+            public MaxMinRecorder maxMinMinuteTilThreeWhile30;
+
+            public FakeDBStruct()
             {
-                eachTotalTracker = new List<EachResultTracker>();
-                eachTradedTracker = new List<EachResultTracker>();
-                strategyResult = new StrategyResult[s];
-            }
-
-            public void Clear()
-            {
-                if (eachTotalTracker.Count > 0)
-                    eachTotalTracker.Clear();
-
-                if (eachTradedTracker.Count > 0)
-                    eachTradedTracker.Clear();
-
-                for (int _ = 0; _ < strategyResult.Length; _++)
-                    strategyResult[_].Clear();
+                fr = new FakeReports();
             }
         }
-
-        /// <summary>
-        /// 전략별 결과를 저장한다.
-        /// </summary>
-        public struct StrategyResult
-        {
-            public bool isTradeDataExists; // 매매데이터가 있는지
-            public int nTradingNum; // 매매중 총합갯수
-            public int nTradedNum; // 매매완료 총합갯수
-            public int nCanceledNum; // 전량매수취소 총합갯수
-            public int nAllTradeNum; // 매수중, 매매중, 매매완료, 전량매수취소 총합갯수
-            public int nStrategyNum; // 전략번호
-            public StaticMember<double> traded; // 매매완료
-            public StaticMember<double> total; // 매매완료 + 매매중
-
-            public void Clear()
-            {
-                isTradeDataExists = false;
-                nTradingNum = 0;
-                nTradedNum = 0;
-                nCanceledNum = 0;
-                nAllTradeNum = 0;
-                nStrategyNum = -1;
-                traded.min = 0;
-                traded.max = 0;
-                traded.everage = 0;
-                traded.median = 0;
-                total.min = 0;
-                total.max = 0;
-                total.everage = 0;
-                total.median = 0;
-            }
-        }
-
-
         /// <summary>
         /// P버튼의 결과 구조체
         /// </summary>
@@ -1439,36 +1307,6 @@ namespace AtoTrader
         // 조건의 순서를 연결해 매수 타이밍을 잡으려함.
         public struct SequenceStrategy
         {
-            #region 5퍼 달성
-            public bool isFiveReachedMinute;
-            public bool isFiveReachedReal;
-            public int nFiveReachedRealTimeLineIdx;
-            public bool isFiveKeepingForTwoTimeLine;
-            public bool isFiveKeepingSuccessForTwoTimeLine;
-            public bool isFiveReachedRealLeafEntranceBlocked; // 5퍼달성 단한번 접근 
-            public bool isFiveReachedRealLeafBan; // 5퍼 달성할때 거래대금 1억 못넘으면 깃털
-            public bool isFiveReachedRealHundredMillion; // 5퍼 달성할때 거래대금 1억 이상 10억 이하
-            public bool isFiveReachedRealBillionUp; // 5퍼 달성할때 거래대금 10억 이상
-            #endregion
-
-            #region 캔들 2퍼
-            public bool isCandleTwoOverReal; // 실시간 2퍼 
-            public int nCandleTwoOverRealTimeLineIdx; // 실시간 2퍼의 timeLineIdx
-            public int nCandleTwoOverRealCount;
-            public bool isCandleTwoOverRealNoLeaf; // 실시간 2퍼 + 1억원 넘음 
-            public int nCandleTwoOverRealNoLeafTimeLineIdx; // 실시간 2퍼 + 1억원 넘은 timeLineIdx
-            public int nCandleTwoOverRealNoLeafCount; // 실시간 2퍼 + 1억원 넘은 timeLineIdx
-            #endregion
-
-            #region 저항라인 만들기( 보완필요 )
-            public int nResistPiercingTime;
-            public bool isResistPeircing;
-            public int nResistFs;
-            public int nResistTimeLineIdx;
-            public int nResistTime;
-            public int nResistUpCount;
-            #endregion
-
             #region botUp
 
             #region Minute botUp
@@ -1717,168 +1555,6 @@ namespace AtoTrader
 
                 try
                 {
-                    arrRealBuyStrategyName.Add("추가매수");
-                    arrRealBuyStrategyName.Add("5분전 갭포함 6퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("10분전 갭포함 8.5퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("5퍼돌파후 전고점(매매:전고점) .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p7-m7>=15 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p7-m7>=25 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p7+m7>=30 and p7-m7>=15 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p7+m7>=50 and p7-m7>=15 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p9+m9>=50 and p9-m9>=15 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p9+m9>=70 and p9-m9>=15 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p9+m9>=90 and p9-m9>=10 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p9+m9>=90 and p9-m9>=20 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p9-m9>=30 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("파워자 2퍼 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("파워자 3퍼 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("파워자 4퍼 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("총 순위 1위 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("현재 분당 파워 순위 1위 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("총 순위 2위 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("현재 분당 파워 순위 2위 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("분당 속도 1000이상 p7-m7>= 15 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("전고점 총순위 30위 이전(매매:전고점) .. 11분 주기");
-                    arrRealBuyStrategyName.Add("전고점 총순위 10위 이전(매매:전고점) .. 11분 주기");
-                    arrRealBuyStrategyName.Add("분당 순위 1위 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("R각도 50도 이상 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("fPowerJar > 0.117 .. 반복");
-                    arrRealBuyStrategyName.Add("fStartGap >= 0.06 and fSpeedCur >= 700 .. 반복");
-                    arrRealBuyStrategyName.Add("fStartGap >= 0.07 and fMinusCnt09 >= 100 .. 반복");
-                    arrRealBuyStrategyName.Add("1200 <= fSpeedCur <= 1350 .. 반복");
-                    arrRealBuyStrategyName.Add("직접입력매수");
-                    arrRealBuyStrategyName.Add("botUp 421 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 432 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 642 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 643 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 732 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 743 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 953 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 421 전고점 일점돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 432 전고점 일점돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 642 전고점 일점돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 643 전고점 일점돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 732 전고점 일점돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 743 전고점 일점돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 953 전고점 일점돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 421 전고점 돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 432 전고점 돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 642 전고점 돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 643 전고점 돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 732 전고점 돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 743 전고점 돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 953 전고점 돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("다운카운트1h 30 & 가격 4퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("초기갭 2퍼 ~ 3퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("초기갭 3퍼 ~ 4퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("초기갭 4퍼 ~ 5퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("초기갭 5퍼 ~ 6퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("초기갭 6퍼 ~ 7퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("초기갭 7퍼 ~ 10퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("초기갭 10퍼 이상 .. 단한번");
-                    arrRealBuyStrategyName.Add("분 양봉 2퍼 ~ 3퍼.. 1분 주기");
-                    arrRealBuyStrategyName.Add("분 양봉 3퍼 ~ 4퍼.. 1분 주기");
-                    arrRealBuyStrategyName.Add("분 양봉 4퍼 이상.. 1분 주기");
-                    arrRealBuyStrategyName.Add("D각도 -60도 .. 단 한번");
-                    arrRealBuyStrategyName.Add("5퍼 달성 D각도 -40도 .. 단 한번");
-                    arrRealBuyStrategyName.Add("5퍼 달성 D각도 -50도 .. 단 한번");
-                    arrRealBuyStrategyName.Add("5퍼 달성 D각도 -60도 .. 단 한번");
-                    arrRealBuyStrategyName.Add("페이크매수 10회 .. 단 한번");
-                    arrRealBuyStrategyName.Add("페이크매수 20회 .. 단 한번");
-                    arrRealBuyStrategyName.Add("페이크매수 30회 .. 단 한번");
-                    arrRealBuyStrategyName.Add("페이크저항 10회 .. 단 한번");
-                    arrRealBuyStrategyName.Add("페이크저항 20회 .. 단 한번");
-                    arrRealBuyStrategyName.Add("가격업 10회 .. 단 한번");
-                    arrRealBuyStrategyName.Add("가격업 20회 .. 단 한번");
-                    arrRealBuyStrategyName.Add("페이크보조 20회 .. 단 한번");
-                    arrRealBuyStrategyName.Add("페이크매수 어깨상승 10회 .. 단 한번");
-                    arrRealBuyStrategyName.Add("페이크보조 어깨상승 10회 .. 단 한번");
-                    arrRealBuyStrategyName.Add("가격업 어깨상승 10회 .. 단 한번");
-                    arrRealBuyStrategyName.Add("히트 10회 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("히트 20회 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("갭제외 -5퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("갭제외 -8퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("갭제외 -10퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("갭제외 -13퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("갭제외 -17퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("5분전 5퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("5~10분전 5퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("10분전 5퍼 2분동안 유지하고 .. 단한번 ");
-                    arrRealBuyStrategyName.Add("페이크매수 40회 .. 단한번");
-                    arrRealBuyStrategyName.Add("페이크매수 분포 3회 .. 단한번");
-                    arrRealBuyStrategyName.Add("페이크매수 분포 5회 .. 단한번");
-                    arrRealBuyStrategyName.Add("페이크매수 분포 10회 .. 단한번");
-                    arrRealBuyStrategyName.Add("페이크매수 분포 15회 .. 단한번");
-                    arrRealBuyStrategyName.Add("가격업 분포 5회 .. 단한번");
-                    arrRealBuyStrategyName.Add("가격업 분포 10회 .. 단한번");
-                    arrRealBuyStrategyName.Add("가격업 분포 15회 .. 단한번");
-                    arrRealBuyStrategyName.Add("가격업 분포 25회 .. 단한번");
-                    arrRealBuyStrategyName.Add("페이크공유 분포 20회 .. 단한번");
-                    arrRealBuyStrategyName.Add("페이크공유 분포 30회 .. 단한번");
-                    arrRealBuyStrategyName.Add("페이크공유 분포 40회 .. 단한번");
-                    arrRealBuyStrategyName.Add("실매수 분포 3회 .. 단한번");
-                    arrRealBuyStrategyName.Add("실매수 분포 5회 .. 단한번");
-                    arrRealBuyStrategyName.Add("실매수 분포 10회 .. 단한번");
-                    arrRealBuyStrategyName.Add("실매수 분포 15회 .. 단한번");
-                    arrRealBuyStrategyName.Add("실시간 가격 3퍼 .. 10분 주기");
-                    arrRealBuyStrategyName.Add("실시간 가격 5퍼 .. 5분 주기");
-                    arrRealBuyStrategyName.Add("갭제외 +6.5퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("갭제외 +8퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("갭제외 +11퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("T각 20도 H각 30도 R각 40도 이상 .. 단한번");
-                    arrRealBuyStrategyName.Add("속도 10위 분당순위 3위 이하 .. 단한번");
-                    arrRealBuyStrategyName.Add("분당 속도 1000이상 p7-m7>= 15 .. 단한번");
-                    arrRealBuyStrategyName.Add("분당 속도 600이상 p7-m7>= 20 .. 단한번");
-                    arrRealBuyStrategyName.Add("갭제외 +4퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("전고점 .. 2번 제한");
-                    arrRealBuyStrategyName.Add("R각도 60도 이상 .. 단한번");
-                    arrRealBuyStrategyName.Add("초기갭 3퍼 & fPowerJar 2퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("초기갭 4퍼 & fPowerJar 2퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("초기갭 4퍼 & fPowerJar 3퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("초기갭 3퍼 & fSpeed 300 .. 단한번");
-                    arrRealBuyStrategyName.Add("초기갭 3퍼 & fSpeed 500 .. 단한번");
-                    arrRealBuyStrategyName.Add("초기갭 3퍼 & fSpeed 800 .. 단한번");
-                    arrRealBuyStrategyName.Add("전고점 업 1번 .. 단한번");
-                    arrRealBuyStrategyName.Add("전고점 업 2번 .. 단한번");
-                    arrRealBuyStrategyName.Add("전고점 업 3번 .. 단한번");
-                    arrRealBuyStrategyName.Add("페이크 분들 갯수 10회 .. 단한번");
-                    arrRealBuyStrategyName.Add("페이크 분들 갯수 15회 .. 단한번");
-                    arrRealBuyStrategyName.Add("페이크 분들 갯수 20회 .. 단한번");
-                    arrRealBuyStrategyName.Add("페이크 분들 갯수 30회 .. 단한번");
-                    arrRealBuyStrategyName.Add("페이크 매수 히트 5회 .. 단한번");
-                    arrRealBuyStrategyName.Add("페이크 매수 히트 7회 .. 단한번");
-                    arrRealBuyStrategyName.Add("페이크 보조 히트 7회 .. 단한번");
-                    arrRealBuyStrategyName.Add("fM09 100 이상 .. 단한번");
-                    arrRealBuyStrategyName.Add("초기갭 3퍼 && fP09 - fM09 20 이상 .. 단한번");
-                    arrRealBuyStrategyName.Add("초기갭 3퍼 && fP09 - fM09 30 이상 .. 단한번");
-                    arrRealBuyStrategyName.Add("fP09 70 이상 fP09 > fM09.. 단한번");
-                    arrRealBuyStrategyName.Add("fSharePerHoga < 100 & fHogaPerTrade < 25 .. 단한번");
-                    arrRealBuyStrategyName.Add("fSharePerTrade < 200 .. 단한번");
-                    arrRealBuyStrategyName.Add("갭포함 -7퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("갭포함 -10퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("갭포함 -13퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("갭포함 -15퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("갭포함 -20퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("onlyUpPowerJar 2퍼 .. 11분주기");
-                    arrRealBuyStrategyName.Add("onlyUpPowerJar 3퍼 .. 11분주기");
-                    arrRealBuyStrategyName.Add("onlyUpPowerJar 4퍼 .. 11분주기");
-                    arrRealBuyStrategyName.Add("9시 30분 전 7퍼 상승 .. 단한번");
-                    arrRealBuyStrategyName.Add("9시 30분 전 10퍼 상승 .. 단한번");
-                    arrRealBuyStrategyName.Add("9시 30분 전 12퍼 상승 .. 단한번");
-                    arrRealBuyStrategyName.Add("10시 전 8퍼 상승 .. 단한번");
-                    arrRealBuyStrategyName.Add("10시 전 12퍼 상승 .. 단한번");
-                    arrRealBuyStrategyName.Add("10시 전 15퍼 상승 .. 단한번");
-                    arrRealBuyStrategyName.Add("speedCur 400 이상 .. 단한번");
-                    arrRealBuyStrategyName.Add("speedCur 600 이상 .. 단한번");
-                    arrRealBuyStrategyName.Add("speedCur 500 이상 ratio 0.3 이상 .. 단한번");
-                }
-                catch (Exception IdxError)
-                {
-
-                }
-
-                try
-                {
                     arrPriceUpStrategyName.Add("실시간 양봉2퍼 1번 .. 리사이클");
                     arrPriceUpStrategyName.Add("양봉1퍼 2번 .. 리사이클");
                     arrPriceUpStrategyName.Add("양봉1퍼 3번 .. 리사이클");
@@ -1907,6 +1583,43 @@ namespace AtoTrader
                     arrPriceDownStrategyName.Add("음봉2퍼 2번 .. 리사이클");
                 }
                 catch (Exception indexError)
+                {
+
+                }
+
+                try
+                {
+                    arrRealBuyStrategyName.Add("추가매수");
+                    arrRealBuyStrategyName.Add("차분 1 0.015 1분주기");
+                    arrRealBuyStrategyName.Add("차분 1 0.025 1분주기");
+                    arrRealBuyStrategyName.Add("차분 3 0.02 3분주기");
+                    arrRealBuyStrategyName.Add("차분 5 0.02 5분주기");
+                    arrRealBuyStrategyName.Add("차분 5 0.03 5분주기");
+                    arrRealBuyStrategyName.Add("차분 5 0.05 5분주기");
+                    arrRealBuyStrategyName.Add("차분 10 0.03 10분주기");
+                    arrRealBuyStrategyName.Add("차분 10 0.04 6분주기");
+                    arrRealBuyStrategyName.Add("차분 20 0.05 10분주기");
+                    arrRealBuyStrategyName.Add("차분 20 0.04 15분주기");
+                    arrRealBuyStrategyName.Add("차분 15 0.04 12분주기");
+                    arrRealBuyStrategyName.Add("차분 5 0.07 10분주기");
+                    arrRealBuyStrategyName.Add("차분 3 0.05 10분주기");
+                    arrRealBuyStrategyName.Add("차분 4 0.04 10분주기");
+                    arrRealBuyStrategyName.Add("차분 20 0.1 15분주기");
+                    arrRealBuyStrategyName.Add("차분 30 0.05 10분주기");
+                    arrRealBuyStrategyName.Add("차분 23 0.12 20분주기");
+                    arrRealBuyStrategyName.Add("차분 37 0.04 20분주기");
+                    arrRealBuyStrategyName.Add("차분 34 0.05 10분주기");
+                    arrRealBuyStrategyName.Add("차분 35 0.07 20분주기");
+                    arrRealBuyStrategyName.Add("차분 30 0.04 30분주기");
+                    arrRealBuyStrategyName.Add("차분 30 0.03 20분주기");
+                    arrRealBuyStrategyName.Add("차분 7 0.04 20분주기");
+                    arrRealBuyStrategyName.Add("차분 8 0.02 10분주기");
+                    arrRealBuyStrategyName.Add("차분 12 0.02 11분주기");
+                    arrRealBuyStrategyName.Add("차분 13 0.03 10분주기");
+                    arrRealBuyStrategyName.Add("차분 16 0.025 6분주기");
+
+                }
+                catch (Exception IdxError)
                 {
 
                 }

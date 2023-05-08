@@ -19,10 +19,18 @@ namespace AtoTrader
         public bool isBuyDeny = true;
         // ============================================
         // 버튼 클릭 이벤트의 핸들러 메소드
-        // 1. buyButton
         // 2. checkChartButton
         // ============================================
-        private void Button_Click(object sender, EventArgs e)
+        private void CheckChartByButtonHandler(object sender, EventArgs e)
+        {
+            if (sender.Equals(checkChartButton))
+            {
+                CheckChartByButton();
+
+            }
+        } // End ---- 버튼클릭 핸들러
+
+        public void CheckChartByButton()
         {
             string sCodeTxt = sCodeToBuyTextBox.Text.Trim();
             bool isCorrect;
@@ -42,19 +50,19 @@ namespace AtoTrader
                 catch
                 {
                     isCorrect = false;
-                }   
+                }
             }
 
-            if (sender.Equals(checkChartButton))
+
+            if (isCorrect)
             {
-                if (isCorrect)
-                {
-                    CallThreadEachStockHistoryForm(nCurIdx);
-                }
-                else
-                    MessageBox.Show("입력오류거나 해당종목이 리스트에 없습니다.");
+                CallThreadEachStockHistoryForm(nCurIdx);
             }
-        } // End ---- 버튼클릭 핸들러
+            else
+                MessageBox.Show("입력오류거나 해당종목이 리스트에 없습니다.");
+
+        }
+
 
         public bool isCtrlPushed = false;
         public bool isShiftPushed = false;
@@ -64,12 +72,13 @@ namespace AtoTrader
 
             char cUp = (char)e.KeyValue; // 대문자로 준다.
 
-            if (cUp == 'M') // 수동작업 on/off
+            if (cUp == 191) // 수동작업 on/off (/)
             {
                 manualGroupBox.Visible = !manualGroupBox.Visible;
                 if (manualGroupBox.Visible)
                 {
                     sCodeToBuyTextBox.Clear();
+                    this.ActiveControl = this.sCodeToBuyTextBox;
                     PrintLog("수동매수창 출력 완료");
                 }
                 else
@@ -143,7 +152,7 @@ namespace AtoTrader
             {
                 CallThreadTextLogForm();
             }
-            if (cUp == 'I')
+            if (cUp == 'R')
             {
                 CallThreadFastInfo();
             }
@@ -182,9 +191,13 @@ namespace AtoTrader
         public void KeyDownHandler(Object sender, KeyEventArgs e)
         {
             char cPressed = (char)e.KeyValue; // 대문자로 준다.
-            
+
             if (manualGroupBox.Visible)
+            {
+                if(cPressed == 13)
+                CheckChartByButton();
                 return;
+            }
 
 
             if (cPressed == 16)

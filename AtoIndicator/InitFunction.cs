@@ -90,7 +90,7 @@ namespace AtoTrader
             stockDashBoard.stockPanel = new StockPiece[nStockLength]; // 순위 결정을 위한 구조체 배열 생성
 
             strategyName = new StrategyNames();
-            strategyHistoryList = new List<StrategyHistory>[strategyName.arrRealBuyStrategyName.Count]; // 전략매매후 정보를 담는 list
+
             for (int i = 0;i < nStockLength; i++)
             {
                 ea[i].myStrategy.Init(strategyName.arrRealBuyStrategyName.Count); // 개인전략 구조체 초기화
@@ -101,9 +101,6 @@ namespace AtoTrader
                 ea[i].priceDownStrategy.Init(strategyName.arrPriceDownStrategyName.Count);
             }
 
-            // 각 전략마다 기록용 리스트 생성
-            for (int i = 0; i < strategyName.arrRealBuyStrategyName.Count; i++)
-                strategyHistoryList[i] = new List<StrategyHistory>();
 
 
             // 전략명을 Key로 DB에서 전략번호를 받아온다.
