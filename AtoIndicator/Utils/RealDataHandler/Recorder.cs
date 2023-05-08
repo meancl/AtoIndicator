@@ -47,7 +47,6 @@ namespace AtoTrader
                             // 페이크 슬롯정보
                             for (int nFakeRecordNum = 0; nFakeRecordNum < curEa.myStrategy.nTotalBlockCount; nFakeRecordNum++)
                             {
-
                                 try
                                 {
                                     if (curEa.myStrategy.fd[nFakeRecordNum].fr != null)
@@ -64,6 +63,12 @@ namespace AtoTrader
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nTopPriceAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealTilThree.nTopPriceAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nTopTimeAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealTilThree.nTopTimeAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.fTopPowerAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealTilThree.fTopPowerWithFeeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundBottomPriceAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealTilThree.nBoundBottomPriceAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundBottomTimeAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealTilThree.nBoundBottomTimeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.fBoundBottomPowerAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealTilThree.fBoundBottomPowerWithFeeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundTopPriceAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealTilThree.nBoundTopPriceAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundTopTimeAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealTilThree.nBoundTopTimeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.fBoundTopPowerAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealTilThree.fBoundTopPowerWithFeeAfterBuy;
 
 
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nMaxPriceMinuteAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThree.nMaxPriceAfterBuy;
@@ -78,7 +83,12 @@ namespace AtoTrader
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nTopPriceMinuteAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThree.nTopPriceAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nTopTimeMinuteAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThree.nTopTimeAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.fTopPowerMinuteAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThree.fTopPowerWithFeeAfterBuy;
-
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundBottomPriceMinuteAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThree.nBoundBottomPriceAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundBottomTimeMinuteAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThree.nBoundBottomTimeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.fBoundBottomPowerMinuteAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThree.fBoundBottomPowerWithFeeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundTopPriceMinuteAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThree.nBoundTopPriceAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundTopTimeMinuteAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThree.nBoundTopTimeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.fBoundTopPowerMinuteAfterBuy = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThree.fBoundTopPowerWithFeeAfterBuy;
 
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nMaxPriceAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile10.nMaxPriceAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nMaxTimeAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile10.nMaxTimeAfterBuy;
@@ -92,6 +102,12 @@ namespace AtoTrader
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nTopPriceAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile10.nTopPriceAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nTopTimeAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile10.nTopTimeAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.fTopPowerAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile10.fTopPowerWithFeeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundBottomPriceAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile10.nBoundBottomPriceAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundBottomTimeAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile10.nBoundBottomTimeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.fBoundBottomPowerAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile10.fBoundBottomPowerWithFeeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundTopPriceAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile10.nBoundTopPriceAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundTopTimeAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile10.nBoundTopTimeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.fBoundTopPowerAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile10.fBoundTopPowerWithFeeAfterBuy;
 
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nMaxPriceAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile30.nMaxPriceAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nMaxTimeAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile30.nMaxTimeAfterBuy;
@@ -105,7 +121,12 @@ namespace AtoTrader
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nTopPriceAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile30.nTopPriceAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nTopTimeAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile30.nTopTimeAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.fTopPowerAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile30.fTopPowerWithFeeAfterBuy;
-
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundBottomPriceAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile30.nBoundBottomPriceAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundBottomTimeAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile30.nBoundBottomTimeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.fBoundBottomPowerAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile30.fBoundBottomPowerWithFeeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundTopPriceAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile30.nBoundTopPriceAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundTopTimeAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile30.nBoundTopTimeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.fBoundTopPowerAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile30.fBoundTopPowerWithFeeAfterBuy;
 
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nMaxPriceAfterBuyWhile60 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile60.nMaxPriceAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nMaxTimeAfterBuyWhile60 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile60.nMaxTimeAfterBuy;
@@ -119,7 +140,12 @@ namespace AtoTrader
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nTopPriceAfterBuyWhile60 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile60.nTopPriceAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nTopTimeAfterBuyWhile60 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile60.nTopTimeAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.fTopPowerAfterBuyWhile60 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile60.fTopPowerWithFeeAfterBuy;
-
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundBottomPriceAfterBuyWhile60 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile60.nBoundBottomPriceAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundBottomTimeAfterBuyWhile60 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile60.nBoundBottomTimeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.fBoundBottomPowerAfterBuyWhile60 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile60.fBoundBottomPowerWithFeeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundTopPriceAfterBuyWhile60 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile60.nBoundTopPriceAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundTopTimeAfterBuyWhile60 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile60.nBoundTopTimeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.fBoundTopPowerAfterBuyWhile60 = curEa.myStrategy.fd[nFakeRecordNum].maxMinRealWhile60.fBoundTopPowerWithFeeAfterBuy;
 
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nMaxPriceMinuteAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile10.nMaxPriceAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nMaxTimeMinuteAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile10.nMaxTimeAfterBuy;
@@ -133,6 +159,12 @@ namespace AtoTrader
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nTopPriceMinuteAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile10.nTopPriceAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nTopTimeMinuteAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile10.nTopTimeAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.fTopPowerMinuteAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile10.fTopPowerWithFeeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundBottomPriceMinuteAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile10.nBoundBottomPriceAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundBottomTimeMinuteAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile10.nBoundBottomTimeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.fBoundBottomPowerMinuteAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile10.fBoundBottomPowerWithFeeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundTopPriceMinuteAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile10.nBoundTopPriceAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundTopTimeMinuteAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile10.nBoundTopTimeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.fBoundTopPowerMinuteAfterBuyWhile10 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile10.fBoundTopPowerWithFeeAfterBuy;
 
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nMaxPriceMinuteAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile30.nMaxPriceAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nMaxTimeMinuteAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile30.nMaxTimeAfterBuy;
@@ -146,6 +178,12 @@ namespace AtoTrader
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nTopPriceMinuteAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile30.nTopPriceAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.nTopTimeMinuteAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile30.nTopTimeAfterBuy;
                                         curEa.myStrategy.fd[nFakeRecordNum].fr.fTopPowerMinuteAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile30.fTopPowerWithFeeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundBottomPriceMinuteAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile30.nBoundBottomPriceAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundBottomTimeMinuteAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile30.nBoundBottomTimeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.fBoundBottomPowerMinuteAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile30.fBoundBottomPowerWithFeeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundTopPriceMinuteAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile30.nBoundTopPriceAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.nBoundTopTimeMinuteAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile30.nBoundTopTimeAfterBuy;
+                                        curEa.myStrategy.fd[nFakeRecordNum].fr.fBoundTopPowerMinuteAfterBuyWhile30 = curEa.myStrategy.fd[nFakeRecordNum].maxMinMinuteTilThreeWhile30.fBoundTopPowerWithFeeAfterBuy;
 
                                         entitiesFakeReports.Add(curEa.myStrategy.fd[nFakeRecordNum].fr);
                                     }

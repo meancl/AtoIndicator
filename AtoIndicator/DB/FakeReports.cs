@@ -22,17 +22,17 @@ namespace AtoTrader.DB
         #region 매매블럭 정보
         // 매매슬롯 정보
         #region 3시 시점의 정보 슬리피지 파악용
-        public int nSlotHogaEndCnt { get; set; }
-        public int nSlotChegyulEndCnt { get; set; }
-        public int nSlotUpDownEndCnt { get; set; }
-        public double fSlotUpEndPower { get; set; }
-        public double fSlotDownEndPower { get; set; }
-        public int nNoMoveEndCnt { get; set; } // 노무브카운트
-        public int nFewSpeedEndCnt { get; set; } // 적은거래
-        public int nMissEndCnt { get; set; } // 거래없음
-        public long lTotalTradeEndPrice { get; set; }
-        public long lTotalBuyEndPrice { get; set; }
-        public long lTotalSellEndPrice { get; set; }
+        public int nHogaCntAfterCheck { get; set; }
+        public int nChegyulCntAfterCheck { get; set; }
+        public int nUpDownCntAfterCheck { get; set; }
+        public double fUpPowerAfterCheck { get; set; }
+        public double fDownPowerAfterCheck { get; set; }
+        public int nNoMoveCntAfterCheck { get; set; } // 노무브카운트
+        public int nFewSpeedCntAfterCheck { get; set; } // 적은거래
+        public int nMissCntAfterCheck { get; set; } // 거래없음
+        public long lTotalTradePriceAfterCheck { get; set; }
+        public long lTotalBuyPriceAfterCheck { get; set; }
+        public long lTotalSellPriceAfterCheck { get; set; }
         #endregion
 
         #region 맥스민값
@@ -48,6 +48,13 @@ namespace AtoTrader.DB
         public int nTopPriceAfterBuy { get; set; }
         public int nTopTimeAfterBuy { get; set; }
         public double fTopPowerAfterBuy { get; set; }
+        public int nBoundBottomPriceAfterBuy { get; set; }
+        public int nBoundBottomTimeAfterBuy { get; set; }
+        public double fBoundBottomPowerAfterBuy { get; set; }
+        public int nBoundTopPriceAfterBuy { get; set; }
+        public int nBoundTopTimeAfterBuy { get; set; }
+        public double fBoundTopPowerAfterBuy { get; set; }
+
 
         public int nMaxPriceMinuteAfterBuy { get; set; }
         public int nMaxTimeMinuteAfterBuy { get; set; }
@@ -61,6 +68,12 @@ namespace AtoTrader.DB
         public int nTopPriceMinuteAfterBuy { get; set; }
         public int nTopTimeMinuteAfterBuy { get; set; }
         public double fTopPowerMinuteAfterBuy { get; set; }
+        public int nBoundBottomPriceMinuteAfterBuy { get; set; }
+        public int nBoundBottomTimeMinuteAfterBuy { get; set; }
+        public double fBoundBottomPowerMinuteAfterBuy { get; set; }
+        public int nBoundTopPriceMinuteAfterBuy { get; set; }
+        public int nBoundTopTimeMinuteAfterBuy { get; set; }
+        public double fBoundTopPowerMinuteAfterBuy { get; set; }
 
         public int nMaxPriceAfterBuyWhile10 { get; set; }
         public int nMaxTimeAfterBuyWhile10 { get; set; }
@@ -74,6 +87,13 @@ namespace AtoTrader.DB
         public int nTopPriceAfterBuyWhile10 { get; set; }
         public int nTopTimeAfterBuyWhile10 { get; set; }
         public double fTopPowerAfterBuyWhile10 { get; set; }
+        public int nBoundBottomPriceAfterBuyWhile10 { get; set; }
+        public int nBoundBottomTimeAfterBuyWhile10 { get; set; }
+        public double fBoundBottomPowerAfterBuyWhile10 { get; set; }
+        public int nBoundTopPriceAfterBuyWhile10 { get; set; }
+        public int nBoundTopTimeAfterBuyWhile10 { get; set; }
+        public double fBoundTopPowerAfterBuyWhile10 { get; set; }
+
 
         public int nMaxPriceAfterBuyWhile30 { get; set; }
         public int nMaxTimeAfterBuyWhile30 { get; set; }
@@ -87,6 +107,13 @@ namespace AtoTrader.DB
         public int nTopPriceAfterBuyWhile30 { get; set; }
         public int nTopTimeAfterBuyWhile30 { get; set; }
         public double fTopPowerAfterBuyWhile30 { get; set; }
+        public int nBoundBottomPriceAfterBuyWhile30 { get; set; }
+        public int nBoundBottomTimeAfterBuyWhile30 { get; set; }
+        public double fBoundBottomPowerAfterBuyWhile30 { get; set; }
+        public int nBoundTopPriceAfterBuyWhile30 { get; set; }
+        public int nBoundTopTimeAfterBuyWhile30 { get; set; }
+        public double fBoundTopPowerAfterBuyWhile30 { get; set; }
+
 
         public int nMaxPriceAfterBuyWhile60 { get; set; }
         public int nMaxTimeAfterBuyWhile60 { get; set; }
@@ -100,6 +127,13 @@ namespace AtoTrader.DB
         public int nTopPriceAfterBuyWhile60 { get; set; }
         public int nTopTimeAfterBuyWhile60 { get; set; }
         public double fTopPowerAfterBuyWhile60 { get; set; }
+        public int nBoundBottomPriceAfterBuyWhile60 { get; set; }
+        public int nBoundBottomTimeAfterBuyWhile60 { get; set; }
+        public double fBoundBottomPowerAfterBuyWhile60 { get; set; }
+        public int nBoundTopPriceAfterBuyWhile60 { get; set; }
+        public int nBoundTopTimeAfterBuyWhile60 { get; set; }
+        public double fBoundTopPowerAfterBuyWhile60 { get; set; }
+
 
         public int nMaxPriceMinuteAfterBuyWhile10 { get; set; }
         public int nMaxTimeMinuteAfterBuyWhile10 { get; set; }
@@ -113,6 +147,12 @@ namespace AtoTrader.DB
         public int nTopPriceMinuteAfterBuyWhile10 { get; set; }
         public int nTopTimeMinuteAfterBuyWhile10 { get; set; }
         public double fTopPowerMinuteAfterBuyWhile10 { get; set; }
+        public int nBoundBottomPriceMinuteAfterBuyWhile10 { get; set; }
+        public int nBoundBottomTimeMinuteAfterBuyWhile10 { get; set; }
+        public double fBoundBottomPowerMinuteAfterBuyWhile10 { get; set; }
+        public int nBoundTopPriceMinuteAfterBuyWhile10 { get; set; }
+        public int nBoundTopTimeMinuteAfterBuyWhile10 { get; set; }
+        public double fBoundTopPowerMinuteAfterBuyWhile10 { get; set; }
 
         public int nMaxPriceMinuteAfterBuyWhile30 { get; set; }
         public int nMaxTimeMinuteAfterBuyWhile30 { get; set; }
@@ -126,6 +166,12 @@ namespace AtoTrader.DB
         public int nTopPriceMinuteAfterBuyWhile30 { get; set; }
         public int nTopTimeMinuteAfterBuyWhile30 { get; set; }
         public double fTopPowerMinuteAfterBuyWhile30 { get; set; }
+        public int nBoundBottomPriceMinuteAfterBuyWhile30 { get; set; }
+        public int nBoundBottomTimeMinuteAfterBuyWhile30 { get; set; }
+        public double fBoundBottomPowerMinuteAfterBuyWhile30 { get; set; }
+        public int nBoundTopPriceMinuteAfterBuyWhile30 { get; set; }
+        public int nBoundTopTimeMinuteAfterBuyWhile30 { get; set; }
+        public double fBoundTopPowerMinuteAfterBuyWhile30 { get; set; }
         #endregion
         #endregion 매매블럭 정보
 

@@ -440,55 +440,6 @@ namespace AtoTrader
             public int nTargetLimitTime; // 예약매수 제한시간
         }
 
-        public struct RecordGroup
-        {
-            public int nLen;
-            public List<RecordStruct> recList;
-
-            public void Init()
-            {
-                recList = new List<RecordStruct>();
-                recList.Add(new RecordStruct());
-                nLen = recList.Count;
-            }
-        }
-
-        public class RecordStruct
-        {
-            public SellReport fixedSellingInfo;
-
-            public MaxMinRecorder maxMinRealTilThree;
-            public MaxMinRecorder maxMinRealWhile10;
-            public MaxMinRecorder maxMinRealWhile30;
-            public MaxMinRecorder maxMinRealWhile60;
-
-            public MaxMinRecorder maxMinMinuteTilThree;
-            public MaxMinRecorder maxMinMinuteTilThreeWhile10;
-            public MaxMinRecorder maxMinMinuteTilThreeWhile30;
-
-
-            public int nCnt { get; set; }
-            public int nHogaCnt { get; set; }
-            public int nUpDownCnt { get; set; }
-            public double fUpPower { get; set; }
-            public double fDownPower { get; set; }
-            public int nNoMoveCount { get; set; }
-            public int nFewSpeedCount { get; set; }
-            public int nMissCount { get; set; }
-            public long lTotalTradePrice { get; set; }
-            public long lOnlyBuyPrice { get; set; }
-            public long lOnlySellPrice { get; set; }
-
-            public bool isSelled { get; set; }
-            public int nTotalSellVolume { get; set; }
-            public int nTotalSellPrice { get; set; }
-            public string sSellDescription { get; set; }
-            public int nDeathTime { get; set; }
-            public int nSellRequestTime { get; set; }
-            public int nDeathPrice { get; set; }
-            public double fProfit { get; set; }
-
-        }
             
         // 매수후 맥스값과 민값을 기록하기위한 구조체
         public struct MaxMinRecorder
@@ -508,6 +459,14 @@ namespace AtoTrader
             public int nTopPriceAfterBuy;// 바닥 직후 맥스 값
             public int nTopTimeAfterBuy;// 바닥 직후 맥스 시간
             public double fTopPowerWithFeeAfterBuy; // 바닥 직후 맥스 파워
+
+            public int nBoundBottomPriceAfterBuy;
+            public int nBoundBottomTimeAfterBuy;
+            public double fBoundBottomPowerWithFeeAfterBuy;
+
+            public int nBoundTopPriceAfterBuy;
+            public int nBoundTopTimeAfterBuy;
+            public double fBoundTopPowerWithFeeAfterBuy; 
 
             public void CheckMaxMin(int nT, int nDownPrice, int nUpPrice, int nBuyedPrice, int nDenomPrice)
             {
@@ -537,6 +496,34 @@ namespace AtoTrader
                     nMaxPriceAfterBuy = nUpPrice;
                     nMaxTimeAfterBuy = nT;
                     fMaxPowerWithFeeAfterBuy = (double)(nMaxPriceAfterBuy - nBuyedPrice) / nDenomPrice - REAL_STOCK_COMMISSION;
+
+                    nBoundBottomPriceAfterBuy = 0;
+                    nBoundBottomTimeAfterBuy = 0;
+                    fBoundBottomPowerWithFeeAfterBuy = 0;
+
+                    nBoundTopPriceAfterBuy = 0;
+                    nBoundTopTimeAfterBuy = 0;
+                    fBoundTopPowerWithFeeAfterBuy = 0;
+                }
+
+                // 맥스 찍은 후 최저점
+                if(nBoundBottomPriceAfterBuy == 0  || nBoundBottomPriceAfterBuy > nDownPrice)
+                {
+                    nBoundBottomPriceAfterBuy = nDownPrice;
+                    nBoundBottomTimeAfterBuy = nT;
+                    fBoundBottomPowerWithFeeAfterBuy = (double)(nBoundBottomPriceAfterBuy - nBuyedPrice) / nDenomPrice - REAL_STOCK_COMMISSION;
+
+                    nBoundTopPriceAfterBuy = 0;
+                    nBoundTopTimeAfterBuy = 0;
+                    fBoundTopPowerWithFeeAfterBuy = 0;
+                }
+
+                // 맥스 찍은 후 바닥 이후 최고점
+                if (nBoundTopPriceAfterBuy < nUpPrice)
+                {
+                    nBoundTopPriceAfterBuy = nUpPrice;
+                    nBoundTopTimeAfterBuy = nT;
+                    fBoundTopPowerWithFeeAfterBuy = (double)(nBoundTopPriceAfterBuy - nBuyedPrice) / nDenomPrice - REAL_STOCK_COMMISSION;
                 }
 
                 // 매수된 후부터 가장 높은 가격을 발견하기 전까지의 민 값을 측정한다. 
@@ -546,6 +533,7 @@ namespace AtoTrader
                     nMinTimeAfterBuyBeforeMax = nBottomTimeAfterBuy;
                     fMinPowerWithFeeAfterBuyBeforeMax = fBottomPowerWithFeeAfterBuy;
                 }
+
             }
         }
 

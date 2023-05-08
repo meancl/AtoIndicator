@@ -209,11 +209,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DB\BuyReport.cs" />
     <Compile Include="DB\FakeReports.cs" />
     <Compile Include="DB\LocationUser.cs" />
-    <Compile Include="DB\ScaleDatas.cs" />
-    <Compile Include="DB\SellReport.cs" />
     <Compile Include="DB\StrategyNameDict.cs" />
     <Compile Include="KiwoomLib\Errors.cs" />
     <Compile Include="Migrations\20221227031747_mig1.cs" />
@@ -299,6 +296,10 @@
     <Compile Include="Migrations\20230507021448_mig_add_buyreports_top_bottom.cs" />
     <Compile Include="Migrations\20230507021448_mig_add_buyreports_top_bottom.designer.cs">
       <DependentUpon>20230507021448_mig_add_buyreports_top_bottom.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20230508081210_mig_add_fake_bound.cs" />
+    <Compile Include="Migrations\20230508081210_mig_add_fake_bound.designer.cs">
+      <DependentUpon>20230508081210_mig_add_fake_bound.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\myDbContextModelSnapshot.cs" />
     <Compile Include="Models\Constants.cs">

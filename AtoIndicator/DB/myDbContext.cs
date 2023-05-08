@@ -10,12 +10,9 @@ namespace AtoTrader.DB
     public class myDbContext : DbContext
     {
         public DbSet<BasicInfo> basicInfo { get; set; }
-        public DbSet<BuyReport> buyReports { get; set; }
-        public DbSet<SellReport> sellReports { get; set; }
         public DbSet<FakeReports> fakeReports { get; set; }
         public DbSet<StrategyNameDict> strategyNameDict { get; set; }
         public DbSet<LocationUser> locationUserDict { get; set; }
-        public DbSet<ScaleDatas> scaleDatasDict { get; set; }
         // Entity를 DB에 삽입하는 과정 
         // nuget console에서
         // add-migration "mig-name"
@@ -67,25 +64,6 @@ namespace AtoTrader.DB
                 entity.HasIndex(i => i.nStrategyNameIdx).IsUnique();
             });
 
-            modelBuilder.Entity<BuyReport>(entity =>
-            {
-                entity.HasKey(k => new { k.dTradeTime, k.sCode, k.nBuyStrategyIdx, k.nBuyStrategySequenceIdx, k.nLocationOfComp });
-                entity.Property(k => k.dTradeTime).IsRequired();
-                entity.Property(k => k.sCode).IsRequired();
-                entity.Property(k => k.sCodeName).IsRequired();
-                entity.Property(k => k.nBuyStrategyIdx).IsRequired();
-                entity.Property(k => k.nBuyStrategySequenceIdx).IsRequired();
-            });
-
-            modelBuilder.Entity<SellReport>(entity =>
-            {
-                entity.HasKey(k => new { k.dTradeTime, k.sCode, k.nBuyStrategyIdx, k.nBuyStrategySequenceIdx , k.nLocationOfComp });
-                entity.Property(k => k.dTradeTime).IsRequired();
-                entity.Property(k => k.sCode).IsRequired();
-                entity.Property(k => k.sCodeName).IsRequired();
-                entity.Property(k => k.nBuyStrategyIdx).IsRequired();
-                entity.Property(k => k.nBuyStrategySequenceIdx).IsRequired();
-            });
 
             modelBuilder.Entity<FakeReports>(entity =>
             {
@@ -100,11 +78,6 @@ namespace AtoTrader.DB
             modelBuilder.Entity<LocationUser>(entity =>
             {
                 entity.HasKey(k => new { k.sUserName });
-            });
-
-            modelBuilder.Entity<ScaleDatas>(entity =>
-            {
-                entity.HasKey(k => new { k.dTime, k.sScaleMethod, k.sVariableName, k.sModelName });
             });
 
         }

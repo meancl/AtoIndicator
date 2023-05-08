@@ -42,7 +42,6 @@ namespace AtoTrader
         public StrategyNames strategyName;
         public Dictionary<string, int> strategyNameDict = new Dictionary<string, int>(); // {"전략명" : DB내 전략번호}
 
-        public Dictionary<string, Dictionary<int, ScaleDatas>> scaleDict; 
         public MLContext mlContext;
 
 #if AI

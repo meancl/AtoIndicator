@@ -4618,6 +4618,9 @@ namespace AtoTrader
                             {
                                 for (int i = 0; i < ea[nCurIdx].myStrategy.nTotalBlockCount; i++)
                                 {
+                                    if(ea[nCurIdx].myStrategy.fd[i].fr.nPriceAfter1Sec == 0 && ea[nCurIdx].myStrategy.fd[i].fr.nRqTime < nSharedTime)
+                                        ea[nCurIdx].myStrategy.fd[i].fr.nPriceAfter1Sec = ea[nCurIdx].nFs;
+
                                     int nOverPrice = ea[nCurIdx].myStrategy.fd[i].fr.nOverPrice;
                                     // 거래하고 3시전까지 실시간으로
                                     ea[nCurIdx].myStrategy.fd[i].maxMinRealTilThree.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
@@ -4645,30 +4648,31 @@ namespace AtoTrader
                                         ea[nCurIdx].myStrategy.fd[i].maxMinRealWhile60.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
 
                                     #region 슬리피지용 변수 기록
-                                    ea[nCurIdx].myStrategy.fd[i].fr.nNoMoveEndCnt = ea[nCurIdx].nNoMoveCount;
-                                    ea[nCurIdx].myStrategy.fd[i].fr.nFewSpeedEndCnt = ea[nCurIdx].nFewSpeedCount;
-                                    ea[nCurIdx].myStrategy.fd[i].fr.nMissEndCnt = ea[nCurIdx].nMissCount;
-                                    ea[nCurIdx].myStrategy.fd[i].fr.lTotalTradeEndPrice = ea[nCurIdx].lTotalTradePrice;
-                                    ea[nCurIdx].myStrategy.fd[i].fr.lTotalBuyEndPrice = ea[nCurIdx].lOnlyBuyPrice;
-                                    ea[nCurIdx].myStrategy.fd[i].fr.lTotalSellEndPrice = ea[nCurIdx].lOnlySellPrice;
+                                    ea[nCurIdx].myStrategy.fd[i].fr.nNoMoveCntAfterCheck = ea[nCurIdx].nNoMoveCount - ea[nCurIdx].myStrategy.fd[i].fr.nNoMoveCnt;
+                                    ea[nCurIdx].myStrategy.fd[i].fr.nFewSpeedCntAfterCheck = ea[nCurIdx].nFewSpeedCount - ea[nCurIdx].myStrategy.fd[i].fr.nFewSpeedCnt;
+                                    ea[nCurIdx].myStrategy.fd[i].fr.nMissCntAfterCheck = ea[nCurIdx].nMissCount - ea[nCurIdx].myStrategy.fd[i].fr.nMissCnt;
+                                    ea[nCurIdx].myStrategy.fd[i].fr.lTotalTradePriceAfterCheck = ea[nCurIdx].lTotalTradePrice - ea[nCurIdx].myStrategy.fd[i].fr.lTotalTradePrice;
+                                    ea[nCurIdx].myStrategy.fd[i].fr.lTotalBuyPriceAfterCheck = ea[nCurIdx].lOnlyBuyPrice - ea[nCurIdx].myStrategy.fd[i].fr.lTotalBuyPrice;
+                                    ea[nCurIdx].myStrategy.fd[i].fr.lTotalSellPriceAfterCheck = ea[nCurIdx].lOnlySellPrice - ea[nCurIdx].myStrategy.fd[i].fr.lTotalSellPrice;
                                     #endregion
 
                                     if (isHogaJanRyang)
-                                        ea[nCurIdx].myStrategy.fd[i].fr.nSlotHogaEndCnt++;
+                                        ea[nCurIdx].myStrategy.fd[i].fr.nHogaCntAfterCheck++;
+
                                     if (isZooSikCheGyul)
                                     {
-                                        ea[nCurIdx].myStrategy.fd[i].fr.nSlotChegyulEndCnt++;
+                                        ea[nCurIdx].myStrategy.fd[i].fr.nChegyulCntAfterCheck++;
 
                                         if (ea[nCurIdx].fPowerDiff != 0)
                                         {
-                                            ea[nCurIdx].myStrategy.fd[i].fr.nSlotUpDownEndCnt++;
+                                            ea[nCurIdx].myStrategy.fd[i].fr.nUpDownCntAfterCheck++;
                                             if (ea[nCurIdx].fPowerDiff > 0)
                                             {
-                                                ea[nCurIdx].myStrategy.fd[i].fr.fSlotUpEndPower += ea[nCurIdx].fPowerDiff;
+                                                ea[nCurIdx].myStrategy.fd[i].fr.fUpPowerAfterCheck += ea[nCurIdx].fPowerDiff;
                                             }
                                             else
                                             {
-                                                ea[nCurIdx].myStrategy.fd[i].fr.fSlotDownEndPower -= ea[nCurIdx].fPowerDiff;
+                                                ea[nCurIdx].myStrategy.fd[i].fr.fDownPowerAfterCheck -= ea[nCurIdx].fPowerDiff;
                                             }
                                         }
                                     }

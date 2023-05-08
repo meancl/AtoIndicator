@@ -63,6 +63,7 @@ namespace AutoServer.Shared_Memory
         public void OpenSharedMemory()
         {
 #if AI
+            CallEvent();
             while (true)
             {
                 try
