@@ -1,0 +1,9 @@
+packages/
+AtoTrader/obj/
+AtoTrader/bin/
+
+*.onnx
+*.suo
+*.cache
+
+

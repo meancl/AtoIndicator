@@ -1,0 +1,10 @@
+2023-05-08 오후 4:14:01 ## Msg : 개체 참조가 개체의 인스턴스로 설정되지 않았습니다.
+======================================================
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm..ctor(MainForm parentForm, Int32 nCallIdx, Nullable`1 specificStrategy) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoTrader\View\EachStockHistoryForm.cs:줄 137
+   위치: AtoTrader.MainForm.<>c__DisplayClass296_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoTrader\WinFormHandler.cs:줄 256
+   위치: System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   위치: System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   위치: System.Threading.ThreadHelper.ThreadStart()
+

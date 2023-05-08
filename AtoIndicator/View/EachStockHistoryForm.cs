@@ -1,0 +1,2000 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
+using static AtoTrader.KiwoomLib.TimeLib;
+using static AtoTrader.KiwoomLib.PricingLib;
+using static AtoTrader.Utils.Comparer;
+using AtoTrader.View.ScrollableMsgBox;
+
+namespace AtoTrader.View.EachStockHistory
+{
+    #region EachStockHistoryForm
+    public partial class EachStockHistoryForm : Form
+    {
+        #region 변수
+        public int? nSpecificStrategyIdx; // 특정한 nStrategyIdx만 보여주게 돼있다 
+        public int nCurIdx;
+        public MainForm mainForm;
+        public MainForm.EachStock curEa;
+        public int rdCnt;
+
+        public const int RADIO_BUTTON_REMOVAL = 1;
+        public const int RADIO_BUTTON_CHECKED = 2;
+        public int nB = RADIO_BUTTON_CHECKED; // radioButton 취소용
+
+        public bool isMinuteVisible = false;
+
+        public bool isBuyArrowVisible = true;
+        public bool isFakeBuyArrowVisible = true;
+        public bool isFakeResistArrowVisible = true;
+        public bool isFakeAssistantArrowVisible = true;
+        public bool isPriceUpArrowVisible = true;
+        public bool isPriceDownArrowVisible = true;
+        public bool isAllArrowVisible = true;
+
+
+        public int nLastMinuteIdx = 0;
+        public int nLastBuyedBlockIdx = 0;
+
+        public int nCurBuyedId;
+
+        public int nMinPositionX1;
+        public int nMinPositionY1;
+        public int nMinPositionX2;
+        public int nMinPositionY2;
+        public int xMinLoc1;
+        public int xMinLoc2;
+
+        public int nBuyedPositionX1;
+        public int nBuyedPositionY1;
+        public int nBuyedPositionX2;
+        public int nBuyedPositionY2;
+        public int xBuyedLoc1;
+        public int xBuyedLoc2;
+
+        public bool isArrowGrouping = true;
+
+        public System.Timers.Timer timer = new System.Timers.Timer(100); // 타이머 선택이유는 비동기기 떄문에 Windows.Forms.Timer는 크로스 쓰레드 문제가 없는대신 UI쓰레드에서 돌아감
+        public int d = 0;
+        public delegate void SetRadioDelegate();
+        public SetRadioDelegate setRadioDelegate;
+        public int nPrevRadioCnt = 0;
+
+        public string NEW_LINE = Environment.NewLine;
+        public bool isAutoBoundaryCheck;
+
+        public MainForm.PResult pResult;
+        public MainForm.StrategyNames strategyNames;
+        #endregion
+
+
+        #region 생성자
+        public EachStockHistoryForm(MainForm parentForm, int nCallIdx, int? specificStrategy = null)
+        {
+            InitializeComponent();
+
+            FormClosing += new FormClosingEventHandler(delegate (Object o, FormClosingEventArgs e)
+            {
+                this.timer.Enabled = false;
+            });
+
+            mainForm = parentForm;
+            nCurIdx = nCallIdx; // nCurIdx 설정 
+            strategyNames = mainForm.strategyName;
+            curEa = mainForm.ea[nCurIdx]; // 해당 개인구조체 설정            
+            this.Text = curEa.sCode + " - " + curEa.sCodeName;
+            this.ActiveControl = historyChart;
+
+            totalClockLabel.Text = "현재시간 : " + mainForm.nSharedTime;
+
+            SendToFrontSeriesName("MinuteStick");
+
+
+            timer.Elapsed += delegate (Object sender, System.Timers.ElapsedEventArgs e)
+            {
+                updateDelegate();
+            };
+
+            timer.Enabled = false;
+
+
+            historyChart.AxisViewChanged += ChartViewChanged;
+
+            showVarToolStripMenuItem.Click += ToolTipItemClickHandler;
+
+            historyChart.MouseMove += ChartMouseMoveHandler; // this.MouseMove로 바꾸면 chart cursor이런거 동작 안한다.
+            historyChart.MouseClick += ChartMouseClickHandler; // 이하동문
+            this.KeyPreview = true;
+            this.KeyDown += KeyDownHandler;
+            this.KeyUp += KeyUpHandler;
+
+            nSpecificStrategyIdx = specificStrategy;
+
+            ResetMinuteChart(); // 이게 먼저 실행되어야 chart를 초기화시켜줌. 먼저 실행안되면 차트가 candleStickType아니라 오류생김
+            // END ---- Radio Button 파트 
+
+            historyChart.ChartAreas["TotalArea"].Visible = true;
+            isMinuteVisible = true;
+
+        }
+        #endregion
+
+        #region 전체 업데이트
+        public void updateDelegate()
+        {
+            try // 해당 폼이 닫혀도 실시간버튼을 통해 timer스레드가 updateDelegate를 실행시키면 오류가 발생하기 때문
+            {
+                curEa = mainForm.ea[nCurIdx];
+
+
+                if (totalClockLabel.InvokeRequired)
+                {
+                    totalClockLabel.Invoke(new MethodInvoker(delegate { totalClockLabel.Text = "현재시간 : " + mainForm.nSharedTime; }));
+                }
+                else
+                    totalClockLabel.Text = "현재시간 : " + mainForm.nSharedTime;
+
+                if (historyChart.InvokeRequired)
+                    historyChart.Invoke(new MethodInvoker(delegate { historyChart.Annotations.Clear(); }));
+                else
+                    historyChart.Annotations.Clear();
+
+
+                UpdateMinuteHistoryData();
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+        #endregion
+
+        #region 차트화면 재조정
+        /// <summary>
+        /// x값 범위내 y값에 맞게 범위를 지정해준다.
+        /// </summary>
+        /// <param name="viewMin"></param>
+        /// <param name="viewMax"></param>
+        /// <param name="max"></param>
+        /// <param name="min"></param>
+        /// <param name="chartName"></param>
+        public void SetChartViewRange(int viewMin, int viewMax, int max, int min, string chartName)
+        {
+            MainForm.TimeLineManager timeLineManager;
+            int nSeriesCnt;
+            curEa = mainForm.ea[nCurIdx];
+
+            timeLineManager = curEa.timeLines1m;
+            nSeriesCnt = historyChart.Series["MinuteStick"].Points.Count;
+
+            if (viewMin == 0) // 뷰를 바꿀때 양쪽에 1씩 패딩을 자동으로 측정해주는데 맨왼쪽에서는 왼쪽패딩을 못주는데 여튼 그렇게 됐다.
+                viewMin++;
+
+            for (int i = viewMin - 1; i < viewMax; i++)
+            {
+                if (i >= nSeriesCnt)
+                    break;
+
+                if (timeLineManager.arrTimeLine[i].nMaxFs > max)
+                    max = timeLineManager.arrTimeLine[i].nMaxFs;
+                if (timeLineManager.arrTimeLine[i].nMinFs < min)
+                    min = timeLineManager.arrTimeLine[i].nMinFs;
+            }
+
+            max += GetAutoGap(curEa.nMarketGubun, curEa.nFs) * 1;
+            min -= GetAutoGap(curEa.nMarketGubun, curEa.nFs) * 1;
+
+            historyChart.ChartAreas[chartName].AxisX.MajorGrid.Enabled = false;
+            historyChart.ChartAreas[chartName].AxisY.Maximum = max;
+            historyChart.ChartAreas[chartName].AxisY.Minimum = min;
+            historyChart.ChartAreas[chartName].AxisY.MajorGrid.LineColor = Color.LightGray;
+
+        }
+
+
+        public void ChartViewChanged(Object sender, ViewEventArgs e)
+        {
+            if (sender.Equals(historyChart))
+            {
+                SetChartViewRange((int)e.Axis.ScaleView.ViewMinimum, (int)e.Axis.ScaleView.ViewMaximum, (int)e.ChartArea.AxisY.ScaleView.ViewMinimum, (int)e.ChartArea.AxisY.ScaleView.ViewMaximum, e.ChartArea.Name);
+            }
+        }
+        #endregion
+
+      
+        #region 1분 차트 초기화
+        /// <summary>
+        /// 처음 분당 차트데이터를 삽입할때 
+        /// </summary>
+        public void ResetMinuteChart()
+        {
+            void voidDelegate()
+            {
+                nLastMinuteIdx = 0;
+
+                historyChart.Series["MinuteStick"].Points.Clear();
+                historyChart.Series["Ma20m"].Points.Clear();
+                historyChart.Series["Ma1h"].Points.Clear();
+                historyChart.Series["Ma2h"].Points.Clear();
+
+                historyChart.Series["MinuteStick"].ChartType = SeriesChartType.Candlestick;
+                historyChart.Series["MinuteStick"].ChartArea = "TotalArea";
+
+                historyChart.Series["Ma20m"].ChartType = SeriesChartType.Line;
+                historyChart.Series["Ma1h"].ChartType = SeriesChartType.Line;
+                historyChart.Series["Ma2h"].ChartType = SeriesChartType.Line;
+
+                historyChart.Series["MinuteStick"].SetCustomProperty("PriceUpColor", "Red");
+                historyChart.Series["MinuteStick"].SetCustomProperty("PriceDownColor", "Blue");
+
+                UpdateMinuteHistoryData();
+            }
+
+            if (historyChart.InvokeRequired)
+                historyChart.Invoke(new MethodInvoker(voidDelegate));
+            else
+                voidDelegate();
+        }
+        #endregion
+
+        #region 1분 차트 업데이트
+        public void UpdateMinuteHistoryData()
+        {
+            void voidDelegate()
+            {
+                for (int i = historyChart.Annotations.Count - 1; i >= 0; i--) // 삭제가 돼도 실시간으로 바뀐다.
+                {
+                    if (historyChart.Annotations[i].Name[0] == 'M' || historyChart.Annotations[i].Name[0] == 'F') // 실매수와 페이크
+                        historyChart.Annotations.RemoveAt(i);
+                }
+
+                int nTimeNow;
+                string sTime;
+                bool isExtraOdd = false;
+
+                curEa = mainForm.ea[nCurIdx];
+
+                if (curEa.timeLines1m.nRealDataIdx > 0) // 데이터가 초기화돼야 접근가능, 0이 넘지 않을경우 인덱스 오류에 걸릴 수 도 있다.(어차피 금방 초기화돼서 접근 가능하게 된다)
+                {
+
+                    if (historyChart.Series["MinuteStick"].Points.Count != historyChart.Series["Ma20m"].Points.Count) /// candleStick과 ma의 갯수가 다르다면
+                    {
+                        historyChart.Series["MinuteStick"].Points.RemoveAt(historyChart.Series["MinuteStick"].Points.Count - 1);
+                    }
+
+                    try
+                    {
+                        while (nLastMinuteIdx <= curEa.timeLines1m.nRealDataIdx)
+                        {
+                            nTimeNow = curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nTime;
+                            sTime = nTimeNow.ToString();
+
+                            historyChart.Series["Ma20m"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMa0);
+                            historyChart.Series["Ma1h"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMa1);
+                            historyChart.Series["Ma2h"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMa2);
+                            historyChart.Series["MinuteStick"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nMaxFs);
+                            historyChart.Series["MinuteStick"].Points[nLastMinuteIdx].YValues[1] = curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nMinFs;
+                            historyChart.Series["MinuteStick"].Points[nLastMinuteIdx].YValues[2] = curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nStartFs;
+                            historyChart.Series["MinuteStick"].Points[nLastMinuteIdx].YValues[3] = curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nLastFs;
+                            historyChart.Series["MinuteStick"].Points[nLastMinuteIdx].ToolTip =
+                                $"해당시각 : {nTimeNow},  인덱스 : {nLastMinuteIdx}{NEW_LINE}" +
+                                $"종가 : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nLastFs}{NEW_LINE}" + 
+                                $"시가 : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nStartFs}{NEW_LINE}" + 
+                                $"고가 : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nMaxFs}{NEW_LINE}" + 
+                                $"저가 : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nMinFs}{NEW_LINE}" + 
+                                $"거래량 : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nTotalVolume}, 매수/매도비율 : {Math.Round((double)(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nBuyVolume - curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nSellVolume) / (curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nTotalVolume + 1) * 100, 2)}(%){NEW_LINE}" +
+                                $"속도 : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nCount}{NEW_LINE}" +
+                                $"*거래대금 : {Math.Round((double)(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].lTotalPrice / MainForm.MILLION), 2)}(백만원){NEW_LINE}" + 
+                                $"매수대금 : {Math.Round((double)(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].lBuyPrice / MainForm.MILLION), 2)}(백만원){NEW_LINE}" +
+                                $"매도대금 : {Math.Round((double)(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].lSellPrice / MainForm.MILLION), 2)}(백만원){NEW_LINE}" + 
+                                $"누적상승 : {Math.Round(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fAccumUpPower * 100, 2)}(%),  누적하락 : {Math.Round(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fAccumDownPower * 100, 2)}(%){NEW_LINE}" +
+                                $"손익률 : {Math.Round(((double)(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nLastFs - curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nStartFs) / curEa.nYesterdayEndPrice) * 100, 2)}(%){NEW_LINE}" + 
+                                $"T각도 : {Math.Round(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fMedianAngle, 2)}{NEW_LINE}" + 
+                                $"*H각도 : {Math.Round(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fHourAngle, 2)}{NEW_LINE}" + 
+                                $"*R각도 : {Math.Round(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fRecentAngle, 2)}{NEW_LINE}" + 
+                                $"*D각도 : {Math.Round(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fDAngle, 2)}{NEW_LINE}" + 
+                                $"*Ma20m > Ma1h: {(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMa0 > curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMa1)}{NEW_LINE}" + 
+                                $"*Ma1h > Ma2h: {(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMa1 > curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMa2)}{NEW_LINE}" + 
+                                $"Ma20m > Ma2h: {(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMa0 > curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMa2)}{NEW_LINE}" + 
+                                $"*Ma20m-- : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nDownTimeOverMa0}{NEW_LINE}" + 
+                                $"*Ma1h-- : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nDownTimeOverMa1}{NEW_LINE}" + 
+                                $"*Ma2h-- : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nDownTimeOverMa2}{NEW_LINE}" + 
+                                $"Ma20m++ : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nUpTimeOverMa0}{NEW_LINE}" + 
+                                $"Ma1h++ : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nUpTimeOverMa1}{NEW_LINE}" + 
+                                $"Ma2h++ : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nUpTimeOverMa2}{NEW_LINE}" + 
+                                $"*총순위 : {curEa.rankSystem.arrRanking[nLastMinuteIdx].nSummationRanking}위( {curEa.rankSystem.arrRanking[nLastMinuteIdx].nSummationMove} ){NEW_LINE}" +
+                                $"*분당순위 : {curEa.rankSystem.arrRanking[nLastMinuteIdx].nMinuteRanking} 위";
+                            nLastMinuteIdx++;
+                        }
+
+
+                        if (curEa.timeLines1m.arrTimeLine[curEa.timeLines1m.nPrevTimeLineIdx].nLastFs != 0) // 최근의 기록이 입력돼있으면
+                        {
+                            nTimeNow = AddTimeBySec(curEa.timeLines1m.arrTimeLine[curEa.timeLines1m.nRealDataIdx].nTime, MainForm.MINUTE_SEC);
+                            sTime = nTimeNow.ToString();
+                            isExtraOdd = true;
+
+                            historyChart.Series["MinuteStick"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[curEa.timeLines1m.nPrevTimeLineIdx].nMaxFs);
+                            historyChart.Series["MinuteStick"].Points[nLastMinuteIdx].YValues[1] = curEa.timeLines1m.arrTimeLine[curEa.timeLines1m.nPrevTimeLineIdx].nMinFs;
+                            historyChart.Series["MinuteStick"].Points[nLastMinuteIdx].YValues[2] = curEa.timeLines1m.arrTimeLine[curEa.timeLines1m.nPrevTimeLineIdx].nStartFs;
+                            historyChart.Series["MinuteStick"].Points[nLastMinuteIdx].YValues[3] = curEa.timeLines1m.arrTimeLine[curEa.timeLines1m.nPrevTimeLineIdx].nLastFs;
+                            historyChart.Series["MinuteStick"].Points[nLastMinuteIdx].ToolTip = 
+                                $"**해당시각 : {nTimeNow},  업데이트시각 : {mainForm.nSharedTime},  인덱스 : {nLastMinuteIdx}{NEW_LINE}" +
+                                $"종가 : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nLastFs}{NEW_LINE}" +
+                                $"시가 : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nStartFs}{NEW_LINE}" +
+                                $"고가 : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nMaxFs}{NEW_LINE}" +
+                                $"저가 : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nMinFs}{NEW_LINE}" +
+                                $"거래량 : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nTotalVolume}, 매수/매도비율 : {Math.Round((double)(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nBuyVolume - curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nSellVolume) / (curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nTotalVolume + 1) * 100, 2)}(%){NEW_LINE}" +
+                                $"속도 : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nCount}{NEW_LINE}" +
+                                $"*거래대금 : {Math.Round((double)(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].lTotalPrice / MainForm.MILLION), 2)}(백만원){NEW_LINE}" +
+                                $"매수대금 : {Math.Round((double)(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].lBuyPrice / MainForm.MILLION), 2)}(백만원){NEW_LINE}" +
+                                $"매도대금 : {Math.Round((double)(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].lSellPrice / MainForm.MILLION), 2)}(백만원){NEW_LINE}" +
+                                $"누적상승 : {Math.Round(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fAccumUpPower * 100, 2)}(%),  누적하락 : {Math.Round(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fAccumDownPower * 100, 2)}(%){NEW_LINE}" +
+                                $"손익률 : {Math.Round(((double)(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nLastFs - curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nStartFs) / curEa.nYesterdayEndPrice) * 100, 2)}(%){NEW_LINE}";
+                        }
+                    }
+                    catch (Exception ex) // 장끝나면 idx에러
+                    {
+
+                    }
+
+                  
+                    int nNumInjector = 0;
+                    //START ---- REAL BUY ARROW
+                    if (curEa.myStrategy.nStrategyNum > 0 && isBuyArrowVisible)
+                    {
+                        int nPrevRealBuyMinArrowIdx = -1;
+                        int nRealBuyOverlapCount = 0;
+                        string sRealBuyArrowToolTip = "";
+
+                        for (int p = 0; p < curEa.myStrategy.nStrategyNum; p++)
+                        {
+                            nNumInjector++;
+                            if (nPrevRealBuyMinArrowIdx == curEa.myStrategy.arrMinuteIdx[p]) // 같은 minute Idx랑 겹친다면
+                            {
+                                nRealBuyOverlapCount++;
+                            }
+                            else
+                            {
+                                nPrevRealBuyMinArrowIdx = curEa.myStrategy.arrMinuteIdx[p];
+                                nRealBuyOverlapCount = 0;
+                                sRealBuyArrowToolTip = "";
+                            }
+
+                            // 매도 어노테이션 삽입
+                            ArrowAnnotation arrowRealBuy = new ArrowAnnotation();
+                            if (!isArrowGrouping)
+                            {
+                                arrowRealBuy.Width = -3; // -가 왼쪽으로 기움, + 가 오른쪽으로 기움 , 0이 수직자세
+                            }
+                            else
+                            {
+                                arrowRealBuy.Width = -1; // -가 왼쪽으로 기움, + 가 오른쪽으로 기움 , 0이 수직자세
+
+                            }
+                            arrowRealBuy.Height = -4;// -면 아래쪽방향, + 면 위쪽방향
+                            arrowRealBuy.AnchorOffsetY = -1.5;
+                            sRealBuyArrowToolTip +=
+                            $"*중첩 : {nRealBuyOverlapCount + 1}( {p} )  실제전략 : {curEa.myStrategy.arrSpecificStrategy[p]}  주문시간 : {curEa.myStrategy.arrBuyTime[p]}  실매수가격 : {curEa.myStrategy.arrBuyPrice[p]}(원){NEW_LINE}" +
+                            $"실매수명 : {strategyNames.arrRealBuyStrategyName[curEa.myStrategy.arrSpecificStrategy[p]]}{NEW_LINE}{NEW_LINE}";
+
+                            arrowRealBuy.ToolTip = $"*실매수 총 갯수 : {nRealBuyOverlapCount + 1}개\n" +
+                               $"=====================================================\n" + sRealBuyArrowToolTip;
+                            if (nRealBuyOverlapCount == 0)
+                                arrowRealBuy.Height = -4;
+                            else
+                            {
+                                historyChart.Annotations.RemoveAt(historyChart.Annotations.Count - 1);
+                                arrowRealBuy.Height = -7;
+                            }
+                            arrowRealBuy.BackColor = Color.Red;
+                            arrowRealBuy.SetAnchor(historyChart.Series["MinuteStick"].Points[curEa.myStrategy.arrMinuteIdx[p]]);
+                            
+                            arrowRealBuy.Name = "M" + nNumInjector;
+                            arrowRealBuy.LineColor = Color.Black;
+
+                            historyChart.Annotations.Add(arrowRealBuy);
+                        }
+                    }//END ---- REAL BUY ARROW
+
+
+                    //START ---- FAKE BUY ARROW
+                    if (curEa.fakeBuyStrategy.nStrategyNum > 0 && isFakeBuyArrowVisible)
+                    {
+                        int nPrevFakeBuyMinArrowIdx = -1;
+                        int nFakeBuyOverlapCount = 0;
+                        string sFakeBuyArrowToolTip = "";
+
+                        for (int p = 0; p < curEa.fakeBuyStrategy.nStrategyNum; p++)
+                        {
+                            nNumInjector++;
+                            if (nPrevFakeBuyMinArrowIdx == curEa.fakeBuyStrategy.arrMinuteIdx[p]) // 같은 minute Idx랑 겹친다면
+                            {
+                                nFakeBuyOverlapCount++;
+                            }
+                            else
+                            {
+                                nPrevFakeBuyMinArrowIdx = curEa.fakeBuyStrategy.arrMinuteIdx[p];
+                                nFakeBuyOverlapCount = 0;
+                                sFakeBuyArrowToolTip = "";
+                            }
+
+                            // 매도 어노테이션 삽입
+                            ArrowAnnotation arrowFakeBuy = new ArrowAnnotation();
+                            if (!isArrowGrouping)
+                            {
+                                arrowFakeBuy.Width = -2; // -가 왼쪽으로 기움, + 가 오른쪽으로 기움 , 0이 수직자세
+                            }
+                            else
+                            {
+                                arrowFakeBuy.Width = -0.7; // -가 왼쪽으로 기움, + 가 오른쪽으로 기움 , 0이 수직자세
+
+                            }
+                            arrowFakeBuy.Height = -4;// -면 아래쪽방향, + 면 위쪽방향
+                            arrowFakeBuy.AnchorOffsetY = -1.5;
+                            sFakeBuyArrowToolTip +=
+                            $"*중첩 : {nFakeBuyOverlapCount + 1}( {p} )  가짜전략 : {curEa.fakeBuyStrategy.arrSpecificStrategy[p]}  주문시간 : {curEa.fakeBuyStrategy.arrBuyTime[p]}  페이크매수가격 : {curEa.fakeBuyStrategy.arrBuyPrice[p]}(원){NEW_LINE}" +
+                            $"페이크명 : {strategyNames.arrFakeBuyStrategyName[curEa.fakeBuyStrategy.arrSpecificStrategy[p]]}{NEW_LINE}{NEW_LINE}";
+
+                            arrowFakeBuy.ToolTip = $"*페이크매수 총 갯수 : {nFakeBuyOverlapCount + 1}개\n" +
+                               $"=====================================================\n" + sFakeBuyArrowToolTip;
+                            if (nFakeBuyOverlapCount == 0)
+                                arrowFakeBuy.Height = -4;
+                            else
+                            {
+                                historyChart.Annotations.RemoveAt(historyChart.Annotations.Count - 1);
+                                arrowFakeBuy.Height = -7;
+                            }
+                            arrowFakeBuy.BackColor = Color.Orange;
+                            arrowFakeBuy.SetAnchor(historyChart.Series["MinuteStick"].Points[curEa.fakeBuyStrategy.arrMinuteIdx[p]]);
+                            // arrowFakeBuy.AnchorY = historyChart.Series["MinuteStick"].Points[curEa.fakeBuyStrategy.arrMinuteIdx[p]].YValues[1]; // 고.저.시종
+                            arrowFakeBuy.Name = "F" + nNumInjector;
+                            arrowFakeBuy.LineColor = Color.Black;
+
+                            historyChart.Annotations.Add(arrowFakeBuy);
+                        }
+                    }//END ---- FAKE BUY ARROW
+
+
+                    //START ---- FAKE ASSISTANT ARROW
+                    if (curEa.fakeAssistantStrategy.nStrategyNum > 0 && isFakeAssistantArrowVisible)
+                    {
+                        int nPrevFakeAssistantMinArrowIdx = -1;
+                        int nFakeAssistantOverlapCount = 0;
+                        string sFakeAssistantArrowToolTip = "";
+
+                        for (int p = 0; p < curEa.fakeAssistantStrategy.nStrategyNum; p++)
+                        {
+                            nNumInjector++;
+                            if (nPrevFakeAssistantMinArrowIdx == curEa.fakeAssistantStrategy.arrMinuteIdx[p]) // 같은 minute Idx랑 겹친다면
+                            {
+                                nFakeAssistantOverlapCount++;
+                            }
+                            else
+                            {
+                                nPrevFakeAssistantMinArrowIdx = curEa.fakeAssistantStrategy.arrMinuteIdx[p];
+                                nFakeAssistantOverlapCount = 0;
+                                sFakeAssistantArrowToolTip = "";
+                            }
+
+                            // 매도 어노테이션 삽입
+                            ArrowAnnotation arrowFakeAssistant = new ArrowAnnotation();
+                            if (!isArrowGrouping)
+                            {
+                                arrowFakeAssistant.Width = -1; // -가 왼쪽으로 기움, + 가 오른쪽으로 기움 , 0이 수직자세
+                            }
+                            else
+                            {
+                                arrowFakeAssistant.Width = -0.4; // -가 왼쪽으로 기움, + 가 오른쪽으로 기움 , 0이 수직자세
+                            }
+
+                            arrowFakeAssistant.Height = -4;// -면 아래쪽방향, + 면 위쪽방향
+                            arrowFakeAssistant.AnchorOffsetY = -1.5;
+
+                            sFakeAssistantArrowToolTip +=
+                          $"*중첩 : {nFakeAssistantOverlapCount + 1}( {p} )  가짜전략 : {curEa.fakeAssistantStrategy.arrSpecificStrategy[p]}  주문시간 : {curEa.fakeAssistantStrategy.arrAssistantTime[p]}  페이크보조가격 : {curEa.fakeAssistantStrategy.arrAssistantPrice[p]}(원){NEW_LINE}" +
+                          $"페이크명 : {strategyNames.arrFakeAssistantStrategyName[curEa.fakeAssistantStrategy.arrSpecificStrategy[p]]}{NEW_LINE}{NEW_LINE}";
+
+                            arrowFakeAssistant.ToolTip =
+                            $"*페이크보조 총 갯수 : {nFakeAssistantOverlapCount + 1}개\n" +
+                            $"주문인덱스 : {curEa.fakeAssistantStrategy.arrMinuteIdx[p]}\n" +
+                               $"=====================================================\n" + sFakeAssistantArrowToolTip;
+                            if (nFakeAssistantOverlapCount == 0)
+                                arrowFakeAssistant.Height = -4;
+                            else
+                            {
+                                historyChart.Annotations.RemoveAt(historyChart.Annotations.Count - 1);
+                                arrowFakeAssistant.Height = -7;
+                            }
+                            arrowFakeAssistant.SetAnchor(historyChart.Series["MinuteStick"].Points[curEa.fakeAssistantStrategy.arrMinuteIdx[p]]);
+                            // arrowFakeAssistant.AnchorY = historyChart.Series["MinuteStick"].Points[curEa.fakeAssistantStrategy.arrMinuteIdx[p]].YValues[1]; // 고.저.시종
+                            arrowFakeAssistant.Name = "F" + nNumInjector;
+                            arrowFakeAssistant.BackColor = Color.Yellow;
+                            arrowFakeAssistant.LineColor = Color.Black;
+
+                            historyChart.Annotations.Add(arrowFakeAssistant);
+                        }
+                    }//END ---- FAKE ASSISTANT ARROWz
+
+
+                    //START ---- FAKE RESIST ARROW
+                    if (curEa.fakeResistStrategy.nStrategyNum > 0 && isFakeResistArrowVisible)
+                    {
+                        int nPrevFakeResistMinArrowIdx = -1;
+                        int nFakeResistOverlapCount = 0;
+                        string sFakeResistArrowToolTip = "";
+
+                        for (int p = 0; p < curEa.fakeResistStrategy.nStrategyNum; p++)
+                        {
+                            nNumInjector++;
+                            if (nPrevFakeResistMinArrowIdx == curEa.fakeResistStrategy.arrMinuteIdx[p]) // 같은 minute Idx랑 겹친다면
+                            {
+                                nFakeResistOverlapCount++;
+                            }
+                            else
+                            {
+                                nPrevFakeResistMinArrowIdx = curEa.fakeResistStrategy.arrMinuteIdx[p];
+                                nFakeResistOverlapCount = 0;
+                                sFakeResistArrowToolTip = "";
+                            }
+
+                            // 매도 어노테이션 삽입
+                            ArrowAnnotation arrowFakeResist = new ArrowAnnotation();
+                            if (!isArrowGrouping)
+                            {
+                                arrowFakeResist.Width = 0; // -가 왼쪽으로 기움, + 가 오른쪽으로 기움 , 0이 수직자세
+                            }
+                            else
+                            {
+                                arrowFakeResist.Width = -0.1; // -가 왼쪽으로 기움, + 가 오른쪽으로 기움 , 0이 수직자세\
+                            }
+                            arrowFakeResist.Height = -4;// -면 아래쪽방향, + 면 위쪽방향
+                            arrowFakeResist.AnchorOffsetY = -1.5;
+
+                            sFakeResistArrowToolTip +=
+                          $"*중첩 : {nFakeResistOverlapCount + 1}( {p} )  가짜전략 : {curEa.fakeResistStrategy.arrSpecificStrategy[p]}  주문시간 : {curEa.fakeResistStrategy.arrResistTime[p]}  페이크저항가격 : {curEa.fakeResistStrategy.arrResistPrice[p]}(원){NEW_LINE}" +
+                          $"페이크명 : {strategyNames.arrFakeResistStrategyName[curEa.fakeResistStrategy.arrSpecificStrategy[p]]}{NEW_LINE}{NEW_LINE}";
+
+                            arrowFakeResist.ToolTip = $"주문인덱스 : {curEa.fakeResistStrategy.arrMinuteIdx[p]}\n" +
+                                $"*페이크저항 총 갯수 : {nFakeResistOverlapCount + 1}개\n" +
+                               $"=====================================================\n" + sFakeResistArrowToolTip;
+                            if (nFakeResistOverlapCount == 0)
+                                arrowFakeResist.Height = -4;
+                            else
+                            {
+                                historyChart.Annotations.RemoveAt(historyChart.Annotations.Count - 1);
+                                arrowFakeResist.Height = -7;
+                            }
+                            arrowFakeResist.SetAnchor(historyChart.Series["MinuteStick"].Points[curEa.fakeResistStrategy.arrMinuteIdx[p]]);
+                            // arrowFakeResist.AnchorY = historyChart.Series["MinuteStick"].Points[curEa.fakeResistStrategy.arrMinuteIdx[p]].YValues[1]; // 고.저.시종
+                            arrowFakeResist.Name = "F" + nNumInjector;
+                            arrowFakeResist.BackColor = Color.Green;
+                            arrowFakeResist.LineColor = Color.Black;
+
+                            historyChart.Annotations.Add(arrowFakeResist);
+                        }
+                    }//END ---- FAKE RESIST ARROW
+
+
+                    //START ---- PRICE UP ARROW
+                    if (curEa.priceUpStrategy.nStrategyNum > 0 && isPriceUpArrowVisible)
+                    {
+                        int nPrevPriceUpMinArrowIdx = -1;
+                        int nPriceUpOverlapCount = 0;
+                        string sPriceUpArrowToolTip = "";
+
+                        for (int p = 0; p < curEa.priceUpStrategy.nStrategyNum; p++)
+                        {
+                            nNumInjector++;
+                            if (nPrevPriceUpMinArrowIdx == curEa.priceUpStrategy.arrMinuteIdx[p]) // 같은 minute Idx랑 겹친다면
+                            {
+                                nPriceUpOverlapCount++;
+                            }
+                            else
+                            {
+                                nPrevPriceUpMinArrowIdx = curEa.priceUpStrategy.arrMinuteIdx[p];
+                                nPriceUpOverlapCount = 0;
+                                sPriceUpArrowToolTip = "";
+                            }
+
+                            ArrowAnnotation arrowPriceUp = new ArrowAnnotation();
+                            if (!isArrowGrouping)
+                            {
+                                arrowPriceUp.Width = 2;
+                            }
+                            else
+                            {
+                                arrowPriceUp.Width = 0.5; // -가 왼쪽으로 기움, + 가 오른쪽으로 기움 , 0이 수직자세
+                            }
+
+
+                            arrowPriceUp.Height = -4;// -면 아래쪽방향, + 면 위쪽방향
+                            arrowPriceUp.AnchorOffsetY = -1.5;
+
+                            sPriceUpArrowToolTip +=
+                          $"*중첩 : {nPriceUpOverlapCount + 1}( {p} )  가격업전략 : {curEa.priceUpStrategy.arrSpecificStrategy[p]}  주문시간 : {curEa.priceUpStrategy.arrUpTime[p]}  가격업가격 : {curEa.priceUpStrategy.arrUpPrice[p]}(원){NEW_LINE}" +
+                          $"페이크명 : {strategyNames.arrPriceUpStrategyName[curEa.priceUpStrategy.arrSpecificStrategy[p]]}{NEW_LINE}{NEW_LINE}";
+
+                            arrowPriceUp.ToolTip =
+                            $"*가격업 총 갯수 : {nPriceUpOverlapCount + 1}개\n" +
+                               $"=====================================================\n" + sPriceUpArrowToolTip;
+                            if (nPriceUpOverlapCount == 0)
+                                arrowPriceUp.Height = -4;
+                            else
+                            {
+                                historyChart.Annotations.RemoveAt(historyChart.Annotations.Count - 1);
+                                arrowPriceUp.Height = -7;
+                            }
+
+                            arrowPriceUp.SetAnchor(historyChart.Series["MinuteStick"].Points[curEa.priceUpStrategy.arrMinuteIdx[p]]);
+                            // arrowPriceUp.AnchorY = historyChart.Series["MinuteStick"].Points[curEa.priceUpStrategy.arrMinuteIdx[p]].YValues[1]; // 고.저.시종
+                            arrowPriceUp.Name = "F" + nNumInjector;
+                            arrowPriceUp.BackColor = Color.Navy;
+                            arrowPriceUp.LineColor = Color.Black;
+
+                            historyChart.Annotations.Add(arrowPriceUp);
+                        }
+                    }//END ---- PRICE UP ARROW
+
+
+                    //START ---- PRICE DOWN ARROW
+                    if (curEa.priceDownStrategy.nStrategyNum > 0 && isPriceDownArrowVisible)
+                    {
+                        int nPrevPriceDownMinArrowIdx = -1;
+                        int nPriceDownOverlapCount = 0;
+                        string sPriceDownArrowToolTip = "";
+
+                        for (int p = 0; p < curEa.priceDownStrategy.nStrategyNum; p++)
+                        {
+                            nNumInjector++;
+                            if (nPrevPriceDownMinArrowIdx == curEa.priceDownStrategy.arrMinuteIdx[p]) // 같은 minute Idx랑 겹친다면
+                            {
+                                nPriceDownOverlapCount++;
+                            }
+                            else
+                            {
+                                nPrevPriceDownMinArrowIdx = curEa.priceDownStrategy.arrMinuteIdx[p];
+                                nPriceDownOverlapCount = 0;
+                                sPriceDownArrowToolTip = "";
+                            }
+
+                            // 매도 어노테이션 삽입
+                            ArrowAnnotation arrowPriceDown = new ArrowAnnotation();
+                            if (!isArrowGrouping)
+                            {
+                                arrowPriceDown.Width = 3;
+                            }
+                            else
+                            {
+                                arrowPriceDown.Width = 0.8; // -가 왼쪽으로 기움, + 가 오른쪽으로 기움 , 0이 수직자세
+
+                            }
+                            arrowPriceDown.Height = -4;// -면 아래쪽방향, + 면 위쪽방향
+                            arrowPriceDown.AnchorOffsetY = -1.5;
+
+                            sPriceDownArrowToolTip +=
+                          $"*중첩 : {nPriceDownOverlapCount + 1}( {p} )  가격다운전략 : {curEa.priceDownStrategy.arrSpecificStrategy[p]}  주문시간 : {curEa.priceDownStrategy.arrDownTime[p]}  가격다운가격 : {curEa.priceDownStrategy.arrDownPrice[p]}(원){NEW_LINE}" +
+                          $"페이크명 : {strategyNames.arrPriceDownStrategyName[curEa.priceDownStrategy.arrSpecificStrategy[p]]}{NEW_LINE}{NEW_LINE}";
+
+                            arrowPriceDown.ToolTip =
+                            $"*가격다운 총 갯수 : {nPriceDownOverlapCount + 1}개\n" +
+                               $"=====================================================\n" + sPriceDownArrowToolTip;
+                            if (nPriceDownOverlapCount == 0)
+                                arrowPriceDown.Height = -4;
+                            else
+                            {
+                                historyChart.Annotations.RemoveAt(historyChart.Annotations.Count - 1);
+                                arrowPriceDown.Height = -7;
+                            }
+                            arrowPriceDown.SetAnchor(historyChart.Series["MinuteStick"].Points[curEa.priceDownStrategy.arrMinuteIdx[p]]);
+                            // arrowPriceDown.AnchorY = historyChart.Series["MinuteStick"].Points[curEa.priceDownStrategy.arrMinuteIdx[p]].YValues[1]; // 고.저.시종
+                            arrowPriceDown.Name = "F" + nNumInjector;
+                            arrowPriceDown.BackColor = Color.Purple;
+                            arrowPriceDown.LineColor = Color.Black;
+
+                            historyChart.Annotations.Add(arrowPriceDown);
+                        }
+                    }//END ---- PRICE DOWN ARROW
+
+
+
+
+
+                    SetChartViewRange(0, nLastMinuteIdx + 2, curEa.nFs, curEa.nFs, "TotalArea");
+                } // END ---- if (curEa.timeLines1m.nRealDataIdx > 0)
+            } // END --- voidDelegate
+
+            if (historyChart.InvokeRequired)
+                historyChart.Invoke(new MethodInvoker(voidDelegate));
+            else
+                voidDelegate();
+        }
+        #endregion 
+
+
+        #region 변수&현재상황 출력
+        public void ShowVariables()
+        {
+            curEa = mainForm.ea[nCurIdx];
+            string sTitle = $"[전체] {mainForm.nSharedTime} {curEa.sCode} {curEa.sCodeName} {curEa.sMarketGubunTag}";
+            string sMessage =
+                $"현재 매매횟수 : {curEa.myStrategy.nStrategyNum}{NEW_LINE}" +
+                $"=====================  랭킹  ========================={NEW_LINE}" + 
+                $"----------------------- 총 -------------------------------{NEW_LINE}" +
+                $"누적속도 순위 : {curEa.rankSystem.nAccumCountRanking}{NEW_LINE}" + 
+                $"시가총액 순위 : {curEa.rankSystem.nMarketCapRanking}{NEW_LINE}" +
+                $"파워 랭킹 : {curEa.rankSystem.nPowerRanking}{NEW_LINE}" +
+                $"총매수가 순위 : {curEa.rankSystem.nTotalBuyPriceRanking}{NEW_LINE}" +
+                $"총매수량 순위 : {curEa.rankSystem.nTotalBuyVolumeRanking}{NEW_LINE}" +
+                $"총체결가 순위 : {curEa.rankSystem.nTotalTradePriceRanking}{NEW_LINE}" +
+                $"총체결량 순위 : {curEa.rankSystem.nTotalTradeVolumeRanking}{NEW_LINE}" +
+                $"총 순위 : {curEa.rankSystem.nSummationRanking}위 ( {curEa.rankSystem.nSummationMove} ){NEW_LINE}" +
+                $"----------------------- 분당 ------------------------------{NEW_LINE}" +
+                $"분당 매수가 순위 : {curEa.rankSystem.nMinuteBuyPriceRanking}{NEW_LINE}" +
+                $"분당 매수량 순위 : {curEa.rankSystem.nMinuteBuyVolumeRanking}{NEW_LINE}" +
+                $"분당 속도 순위 : {curEa.rankSystem.nMinuteCountRanking}{NEW_LINE}" +
+                $"분당 파워 순위 : {curEa.rankSystem.nMinutePowerRanking}{NEW_LINE}" +
+                $"분당 체결가 순위 : {curEa.rankSystem.nMinuteTradePriceRanking}{NEW_LINE}" +
+                $"분당 체결량 순위 : {curEa.rankSystem.nMinuteTradeVolumeRanking}{NEW_LINE}" +
+                $"분당 업다운 순위 : {curEa.rankSystem.nMinuteUpDownRanking}{NEW_LINE}" +
+                $"분당 순위 : {curEa.rankSystem.nMinuteSummationRanking}위{NEW_LINE}" +
+                $"---------------------- 순위 홀드 --------------------{NEW_LINE}" +
+                $"10홀드 : {curEa.rankSystem.nRankHold10}{NEW_LINE}" +
+                $"20홀드 : {curEa.rankSystem.nRankHold20}{NEW_LINE}" +
+                $"50홀드 : {curEa.rankSystem.nRankHold50}{NEW_LINE}" +
+                $"100홀드 : {curEa.rankSystem.nRankHold100}{NEW_LINE}" +
+                $"200홀드 : {curEa.rankSystem.nRankHold200}{NEW_LINE}{NEW_LINE}" +
+                $"================= ARROW ============={NEW_LINE}" +
+                $"페이크매수 : {curEa.fakeBuyStrategy.nStrategyNum}{NEW_LINE}" +
+                $"페이크보조 : {curEa.fakeAssistantStrategy.nStrategyNum}{NEW_LINE}" +
+                $"페이크저항 : {curEa.fakeResistStrategy.nStrategyNum}{NEW_LINE}" +
+                $"가격업   : {curEa.priceUpStrategy.nStrategyNum}{NEW_LINE}" +
+                $"가격다운 : {curEa.priceDownStrategy.nStrategyNum}{NEW_LINE}" +
+                $"총 Arrow : {curEa.fakeBuyStrategy.nStrategyNum + curEa.fakeAssistantStrategy.nStrategyNum + curEa.fakeResistStrategy.nStrategyNum + curEa.priceUpStrategy.nStrategyNum + curEa.priceDownStrategy.nStrategyNum}{NEW_LINE}" +
+                $"총 ArrowMinute : {curEa.myStrategy.nTotalFakeMinuteAreaNum}{NEW_LINE}{NEW_LINE}" +
+                $"================= 분 봉 ============={NEW_LINE}" +
+                $"위캔들 : {curEa.timeLines1m.upCandleList.Count}{NEW_LINE}" +
+                $"아래캔들 : {curEa.timeLines1m.downCandleList.Count}{NEW_LINE}" +
+                $"위꼬리 : {curEa.timeLines1m.upTailList.Count}{NEW_LINE}" +
+                $"아래꼬리 : {curEa.timeLines1m.downTailList.Count}{NEW_LINE}" +
+                $"슈팅 : {curEa.timeLines1m.shootingList.Count}{NEW_LINE}{NEW_LINE}" + 
+                $"=====================이동평균선========================={NEW_LINE}" +
+                $"---------------------- 이평값 -------------------------{NEW_LINE}" +
+                $"현재최저값 : {curEa.timeLines1m.arrTimeLine[curEa.timeLines1m.nRealDataIdx].nDownFs}{NEW_LINE}" +
+                $"ma20m : {curEa.maOverN.fCurMa20m}{NEW_LINE}" +
+                $"ma1h : {curEa.maOverN.fCurMa1h}{NEW_LINE}" +
+                $"ma2h : {curEa.maOverN.fCurMa2h}{NEW_LINE}" +
+                $"-------------------- 조건 --------------------{NEW_LINE}" +
+                $"downFs > 20m : {(curEa.timeLines1m.arrTimeLine[curEa.timeLines1m.nRealDataIdx].nDownFs > curEa.maOverN.fCurMa20m)}{NEW_LINE}" +
+                $"downFs > 1h : {(curEa.timeLines1m.arrTimeLine[curEa.timeLines1m.nRealDataIdx].nDownFs > curEa.maOverN.fCurMa1h)}{NEW_LINE}" +
+                $"20m > 1h : {(curEa.maOverN.fCurMa20m > curEa.maOverN.fCurMa1h)}{NEW_LINE}" +
+                $"1h > 2h : {(curEa.maOverN.fCurMa1h > curEa.maOverN.fCurMa2h)}{NEW_LINE}" +
+                $"------------------ 다운 Good ----------------{NEW_LINE}" +
+                $"다운20m : {curEa.maOverN.nDownCntMa20m}{NEW_LINE}" +
+                $"다운1h : {curEa.maOverN.nDownCntMa1h}{NEW_LINE}" +
+                $"다운2h : {curEa.maOverN.nDownCntMa2h}{NEW_LINE}" +
+                $"------------------- 업 Bad ------------------{NEW_LINE}" +
+                $"업20m : {curEa.maOverN.nUpCntMa20m}{NEW_LINE}" +
+                $"업1h : {curEa.maOverN.nUpCntMa1h}{NEW_LINE}" +
+                $"업2h : {curEa.maOverN.nUpCntMa2h}{NEW_LINE}{NEW_LINE}" +
+                $"=====================  전고점  ========================={NEW_LINE}" +
+                $"전고점 카운트 : {curEa.crushMinuteManager.nCurCnt}{NEW_LINE}" +
+                $"전고점   업 : {curEa.crushMinuteManager.nUpCnt}{NEW_LINE}" +
+                $"전고점 다운 : {curEa.crushMinuteManager.nDownCnt}{NEW_LINE}" +
+                $"전고점 스페셜 다운 : {curEa.crushMinuteManager.nSpecialDownCnt}{NEW_LINE}{NEW_LINE}" +  
+
+                $"=====================  추세각도  ======================={NEW_LINE}" +
+                $"초기각도 : {curEa.timeLines1m.fInitAngle}( {curEa.timeLines1m.fInitSlope} ){NEW_LINE}" +
+                $"맥스각도 : {curEa.timeLines1m.fMaxAngle}( {curEa.timeLines1m.fMaxSlope} ){NEW_LINE}" +
+                $"중위각도 : {curEa.timeLines1m.fTotalMedianAngle}( {curEa.timeLines1m.fTotalMedian} ){NEW_LINE}" +
+                $"한시간각도 : {curEa.timeLines1m.fHourMedianAngle}( {curEa.timeLines1m.fHourMedian} ){NEW_LINE}" +
+                $"최근각도 : {curEa.timeLines1m.fRecentMedianAngle}( {curEa.timeLines1m.fRecentMedian} ){NEW_LINE}" +
+                $"차이각도 : {curEa.timeLines1m.fDAngle}{NEW_LINE}{NEW_LINE}" +
+
+                $"===================== 실시간정보 ========================{NEW_LINE}" + 
+                $"최근 주식체결시간 : {curEa.nLastRecordTime}{NEW_LINE}" +
+                $"접근가능 인덱스 : {curEa.timeLines1m.nRealDataIdx}{NEW_LINE}" +
+                $"체결강도 : {curEa.fTs}{NEW_LINE}" +
+                $"노무브 : {curEa.nNoMoveCount}{NEW_LINE}" +
+                $"적은거래 : {curEa.nFewSpeedCount}{NEW_LINE}" +
+                $"거래없음 : {curEa.nMissCount}{NEW_LINE}" +
+                $"초기갭 : {curEa.fStartGap}{NEW_LINE}" +
+                $"갭제외파워 : {curEa.fPowerWithoutGap}{NEW_LINE}" +
+                $"호가비율 : {curEa.fHogaRatio}{NEW_LINE}" +
+                $"마카07 : {curEa.fMinusCnt07}{NEW_LINE}" +
+                $"마카09 : {curEa.fMinusCnt09}{NEW_LINE}" +
+                $"플카07 : {curEa.fPlusCnt07}{NEW_LINE}" +
+                $"플카09 : {curEa.fPlusCnt09}{NEW_LINE}" +
+                $"현재파워 : {curEa.fPower}{NEW_LINE}" +
+                $"파워항아리 : {curEa.fPowerJar}{NEW_LINE}" +
+                $"유통 대 호가 : {curEa.fSharePerHoga}{NEW_LINE}" +
+                $"유통 대 체결 : {curEa.fSharePerTrade}{NEW_LINE}" +
+                $"호가 대 체결 : {curEa.fHogaPerTrade}{NEW_LINE}" +
+                $"체결 대 순체결 : {curEa.fTradePerPure}{NEW_LINE}" +
+                $"체결 누적빈도 : {curEa.nChegyulCnt}{NEW_LINE}" +
+                $"호가 누적빈도 : {curEa.nHogaCnt}{NEW_LINE}" +
+                $"시가총액 : {curEa.lMarketCap / (double)MainForm.HUNDRED_MILLION}(억원){NEW_LINE}" +
+                $"* 총 거래대금 : {curEa.lTotalTradePrice / (double)MainForm.HUNDRED_MILLION}(억원){NEW_LINE}" +
+                $"총 매수대금 : {curEa.lOnlyBuyPrice / (double)MainForm.HUNDRED_MILLION}(억원){NEW_LINE}" +
+                $"총 매도대금 : {curEa.lOnlySellPrice / (double)MainForm.HUNDRED_MILLION}(억원){NEW_LINE}" +
+                $"----------------- 상태변수 --------------------{NEW_LINE}" +
+                $"실시간 호가비율상태 : {curEa.hogaRatioStatus.fCur}{NEW_LINE}" +
+                $"실시간 호가속도상태 : {curEa.hogaSpeedStatus.fCur}{NEW_LINE}" +
+                $"실시간 순매수상태 : {curEa.pureBuyStatus.fCur}{NEW_LINE}" +
+                $"실시간 순체결상태 : {curEa.pureTradeStatus.fCur}{NEW_LINE}" +
+                $"실시간 속도상태 : {curEa.speedStatus.fCur}{NEW_LINE}" +
+                $"실시간 호가총량상태 : {curEa.totalHogaVolumeStatus.fCur}{NEW_LINE}" +
+                $"실시간 체결상태 : {curEa.tradeStatus.fCur}";
+            new ScrollableMessageBox().Show(sMessage, sTitle);
+        }
+
+        public void ShowPriceUp()
+        {
+            curEa = mainForm.ea[nCurIdx];
+            double fPriceUpFlexEverage = 0;
+            if (curEa.priceUpStrategy.nStrategyNum > 0)
+                fPriceUpFlexEverage = (double)curEa.priceUpStrategy.nSumShoulderPrice / curEa.priceUpStrategy.nStrategyNum;
+            string sTitle = "[가격업 전략] " + mainForm.nSharedTime + " " + curEa.sCode + " " + curEa.sCodeName + " " + curEa.sMarketGubunTag;
+            string sMessage = $"가격업 전략 횟수 : {curEa.priceUpStrategy.nStrategyNum}번{NEW_LINE}" +
+                $"가격업 전략 마지막 접근시각 : {curEa.priceUpStrategy.nLastTouchTime}{NEW_LINE}" +
+                $"가격업 전략 최고 어깨점 : {curEa.priceUpStrategy.nMaxShoulderPrice}(원){NEW_LINE}" +
+                $"가격업 전략 단순평균 어깨점 : {Math.Round(curEa.priceUpStrategy.fEverageShoulderPrice, 2)}(원){NEW_LINE}" +
+                $"가격업 전략 종합평균 어깨점 : {Math.Round(fPriceUpFlexEverage, 2)}(원){NEW_LINE}" +
+                $"가격업 전략 어깨 상승횟수 : {curEa.priceUpStrategy.nUpperCount}번{NEW_LINE}" +
+                $"가격업 전략 분포횟수 : {curEa.priceUpStrategy.nMinuteLocationCount}번{NEW_LINE}" +
+                $"공유 전략 분포횟수 : {curEa.myStrategy.nSharedMinuteLocationCount}번{NEW_LINE}" +
+                $"--------------------------------------------------{NEW_LINE}{NEW_LINE}";
+
+            for (int i = 0; i < strategyNames.arrPriceUpStrategyName.Count; i++)
+            {
+                sMessage += $"==================== {i}번째 가격업 전략 ===================={NEW_LINE}" +
+                    $"##전략명 : {strategyNames.arrPriceUpStrategyName[i]}  !!!!!!!!!!!!{NEW_LINE}";
+
+                if (curEa.priceUpStrategy.arrStrategy[i] == 0)
+                {
+                    sMessage += $"--> 해당전략은 활성화되지 않았습니다.{NEW_LINE}";
+                }
+                else
+                {
+                    sMessage +=
+                        $"--> 마지막 접근시각 : {curEa.priceUpStrategy.arrLastTouch[i]}{NEW_LINE}" +
+                        $"--> 접근 횟수 : {curEa.priceUpStrategy.arrStrategy[i]}번{NEW_LINE}";
+                }
+
+                sMessage += $"{NEW_LINE}";
+            }
+            new ScrollableMessageBox().Show(sMessage, sTitle);
+        }
+
+        public void ShowPriceDown()
+        {
+            curEa = mainForm.ea[nCurIdx];
+            double fPriceDownFlexEverage = 0;
+            if (curEa.priceDownStrategy.nStrategyNum > 0)
+                fPriceDownFlexEverage = (double)curEa.priceDownStrategy.nSumShoulderPrice / curEa.priceDownStrategy.nStrategyNum;
+            string sTitle = "[가격다운 전략] " + mainForm.nSharedTime + " " + curEa.sCode + " " + curEa.sCodeName + " " + curEa.sMarketGubunTag;
+            string sMessage = $"가격다운 전략 횟수 : {curEa.priceDownStrategy.nStrategyNum}번{NEW_LINE}" +
+                $"가격다운 전략 마지막 접근시각 : {curEa.priceDownStrategy.nLastTouchTime}{NEW_LINE}" +
+                $"가격다운 전략 최고 어깨점 : {curEa.priceDownStrategy.nMaxShoulderPrice}(원){NEW_LINE}" +
+                $"가격다운 전략 단순평균 어깨점 : {Math.Round(curEa.priceDownStrategy.fEverageShoulderPrice, 2)}(원){NEW_LINE}" +
+                $"가격다운 전략 종합평균 어깨점 : {Math.Round(fPriceDownFlexEverage, 2)}(원){NEW_LINE}" +
+                $"가격다운 전략 어깨 상승횟수 : {curEa.priceDownStrategy.nUpperCount}번{NEW_LINE}" +
+                $"가격다운 전략 분포횟수 : {curEa.priceDownStrategy.nMinuteLocationCount}번{NEW_LINE}" +
+                $"공유 전략 분포횟수 : {curEa.myStrategy.nSharedMinuteLocationCount}번{NEW_LINE}" +
+                $"--------------------------------------------------{NEW_LINE}{NEW_LINE}";
+
+            for (int i = 0; i < strategyNames.arrPriceDownStrategyName.Count; i++)
+            {
+                sMessage += $"==================== {i}번째 가격다운 전략 ===================={NEW_LINE}" +
+                    $"##전략명 : {strategyNames.arrPriceDownStrategyName[i]}  !!!!!!!!!!!!{NEW_LINE}";
+
+                if (curEa.priceDownStrategy.arrStrategy[i] == 0)
+                {
+                    sMessage += $"--> 해당전략은 활성화되지 않았습니다.{NEW_LINE}";
+                }
+                else
+                {
+                    sMessage +=
+                        $"--> 마지막 접근시각 : {curEa.priceDownStrategy.arrLastTouch[i]}{NEW_LINE}" +
+                        $"--> 접근 횟수 : {curEa.priceDownStrategy.arrStrategy[i]}번{NEW_LINE}";
+                }
+
+                sMessage += $"{NEW_LINE}";
+            }
+            new ScrollableMessageBox().Show(sMessage, sTitle);
+        }
+        public void ShowRealBuy()
+        {
+            curEa = mainForm.ea[nCurIdx];
+            string sTitle = "[실매수 전략] " + mainForm.nSharedTime + " " + curEa.sCode + " " + curEa.sCodeName + " " + curEa.sMarketGubunTag;
+            string sMessage = $"실매수 전략 횟수 : {curEa.myStrategy.nStrategyNum}번{NEW_LINE}" +
+                $"실매수 전략 마지막 접근시각 : {curEa.myStrategy.nLastTouchTime}{NEW_LINE}" +
+                $"실매수 전략 최고 어깨점 : {curEa.myStrategy.nMaxShoulderPrice}(원){NEW_LINE}" +
+                $"실매수 전략 단순평균 어깨점 : {Math.Round(curEa.myStrategy.fEverageShoulderPrice, 2)}(원){NEW_LINE}" +
+                $"실매수 전략 어깨 상승횟수 : {curEa.myStrategy.nUpperCount}번{NEW_LINE}" +
+                $"실매수 전략 분포횟수 : {curEa.myStrategy.nMinuteLocationCount}번{NEW_LINE}" +
+                $"공유 전략 분포횟수 : {curEa.myStrategy.nSharedMinuteLocationCount}번{NEW_LINE}" +
+                $"--------------------------------------------------{NEW_LINE}{NEW_LINE}";
+
+            for (int i = 0; i < strategyNames.arrRealBuyStrategyName.Count; i++)
+            {
+                sMessage += $"==================== {i}번째 실매수 전략 ===================={NEW_LINE}" +
+                    $"##전략명 : {strategyNames.arrRealBuyStrategyName[i]}  !!!!!!!!!!!!{NEW_LINE}";
+
+                if (curEa.myStrategy.arrStrategy[i] == 0)
+                {
+                    sMessage += $"--> 해당전략은 활성화되지 않았습니다.{NEW_LINE}";
+                }
+                else
+                {
+                    sMessage +=
+                        $"--> 마지막 접근시각 : {curEa.myStrategy.arrLastTouch[i]}{NEW_LINE}" +
+                        $"--> 접근 횟수 : {curEa.myStrategy.arrStrategy[i]}번{NEW_LINE}";
+                }
+
+                sMessage += $"{NEW_LINE}";
+            }
+            new ScrollableMessageBox().Show(sMessage, sTitle);
+        }
+        public void ShowFakeBuy()
+        {
+            curEa = mainForm.ea[nCurIdx];
+            double fBuyFlexEverage = 0;
+            if (curEa.fakeBuyStrategy.nStrategyNum > 0)
+                fBuyFlexEverage = (double)curEa.fakeBuyStrategy.nSumShoulderPrice / curEa.fakeBuyStrategy.nStrategyNum;
+            string sTitle = "[페이크매수 전략] " + mainForm.nSharedTime + " " + curEa.sCode + " " + curEa.sCodeName + " " + curEa.sMarketGubunTag;
+            string sMessage = $"페이크매수 전략 횟수 : {curEa.fakeBuyStrategy.nStrategyNum}번{NEW_LINE}" +
+                $"페이크매수 전략 마지막 접근시각 : {curEa.fakeBuyStrategy.nLastTouchTime}{NEW_LINE}" +
+                $"페이크매수 전략 최고 어깨점 : {curEa.fakeBuyStrategy.nMaxShoulderPrice}(원){NEW_LINE}" +
+                $"페이크매수 전략 단순평균 어깨점 : {Math.Round(curEa.fakeBuyStrategy.fEverageShoulderPrice, 2)}(원){NEW_LINE}" +
+                $"페이크매수 전략 종합평균 어깨점 : {Math.Round(fBuyFlexEverage, 2)}(원){NEW_LINE}" +
+                $"페이크매수 전략 어깨 상승횟수 : {curEa.fakeBuyStrategy.nUpperCount}번{NEW_LINE}" +
+                $"페이크매수 전략 분포횟수 : {curEa.fakeBuyStrategy.nMinuteLocationCount}번{NEW_LINE}" +
+                $"공유 전략 분포횟수 : {curEa.myStrategy.nSharedMinuteLocationCount}번{NEW_LINE}" +
+                $"--------------------------------------------------{NEW_LINE}{NEW_LINE}";
+
+            for (int i = 0; i < strategyNames.arrFakeBuyStrategyName.Count; i++)
+            {
+                sMessage += $"==================== {i}번째 페이크매수 전략 ===================={NEW_LINE}" +
+                    $"##전략명 : {strategyNames.arrFakeBuyStrategyName[i]}  !!!!!!!!!!!!{NEW_LINE}";
+
+                if (curEa.fakeBuyStrategy.arrStrategy[i] == 0)
+                {
+                    sMessage += $"--> 해당전략은 활성화되지 않았습니다.{NEW_LINE}";
+                }
+                else
+                {
+                    sMessage +=
+                        $"--> 마지막 접근시각 : {curEa.fakeBuyStrategy.arrLastTouch[i]}{NEW_LINE}" +
+                        $"--> 접근 횟수 : {curEa.fakeBuyStrategy.arrStrategy[i]}번{NEW_LINE}";
+                }
+
+                sMessage += $"{NEW_LINE}";
+            }
+
+
+            new ScrollableMessageBox().Show(sMessage, sTitle);
+        }
+        public void ShowFakeAssistant()
+        {
+            curEa = mainForm.ea[nCurIdx];
+            double fAssistantFlexEverage = 0;
+            if (curEa.fakeAssistantStrategy.nStrategyNum > 0)
+                fAssistantFlexEverage = (double)curEa.fakeAssistantStrategy.nSumShoulderPrice / curEa.fakeAssistantStrategy.nStrategyNum;
+            string sTitle = "[페이크보조 전략] " + mainForm.nSharedTime + " " + curEa.sCode + " " + curEa.sCodeName + " " + curEa.sMarketGubunTag;
+            string sMessage = $"페이크보조 전략 횟수 : {curEa.fakeAssistantStrategy.nStrategyNum}번{NEW_LINE}" +
+                $"페이크보조 전략 마지막 접근시각 : {curEa.fakeAssistantStrategy.nLastTouchTime}{NEW_LINE}" +
+                $"페이크보조 전략 최고 어깨점 : {curEa.fakeAssistantStrategy.nMaxShoulderPrice}(원){NEW_LINE}" +
+                $"페이크보조 전략 단순평균 어깨점 : {Math.Round(curEa.fakeAssistantStrategy.fEverageShoulderPrice, 2)}(원){NEW_LINE}" +
+                $"페이크보조 전략 종합평균 어깨점 : {Math.Round(fAssistantFlexEverage, 2)}(원){NEW_LINE}" +
+                $"페이크보조 전략 어깨 상승횟수 : {curEa.fakeAssistantStrategy.nUpperCount}번{NEW_LINE}" +
+                $"페이크보조 전략 분포횟수 : {curEa.fakeAssistantStrategy.nMinuteLocationCount}번{NEW_LINE}" +
+                $"공유 전략 분포횟수 : {curEa.myStrategy.nSharedMinuteLocationCount}번{NEW_LINE}" +
+                $"--------------------------------------------------{NEW_LINE}{NEW_LINE}";
+            
+            for (int i = 0; i < strategyNames.arrFakeAssistantStrategyName.Count; i++)
+            {
+                sMessage += $"==================== {i}번째 페이크보조 전략 ===================={NEW_LINE}" +
+                    $"##전략명 : {strategyNames.arrFakeAssistantStrategyName[i]}  !!!!!!!!!!!!{NEW_LINE}";
+
+                if (curEa.fakeAssistantStrategy.arrStrategy[i] == 0)
+                {
+                    sMessage += $"--> 해당전략은 활성화되지 않았습니다.{NEW_LINE}";
+                }
+                else
+                {
+                    sMessage +=
+                        $"--> 마지막 접근시각 : {curEa.fakeAssistantStrategy.arrLastTouch[i]}{NEW_LINE}" +
+                        $"--> 접근 횟수 : {curEa.fakeAssistantStrategy.arrStrategy[i]}번{NEW_LINE}";
+                }
+
+                sMessage += $"{NEW_LINE}";
+            }
+
+
+            new ScrollableMessageBox().Show(sMessage, sTitle);
+        }
+        public void ShowFakeResist()
+        {
+            curEa = mainForm.ea[nCurIdx];
+            double fResistFlexEverage = 0;
+            if (curEa.fakeResistStrategy.nStrategyNum > 0)
+                fResistFlexEverage = (double)curEa.fakeResistStrategy.nSumShoulderPrice / curEa.fakeResistStrategy.nStrategyNum;
+            string sTitle = "[페이크저항 전략] " + mainForm.nSharedTime + " " + curEa.sCode + " " + curEa.sCodeName + " " + curEa.sMarketGubunTag;
+            string sMessage = $"페이크저항 전략 횟수 : {curEa.fakeResistStrategy.nStrategyNum}번{NEW_LINE}" +
+                $"페이크저항 전략 마지막 접근시각 : {curEa.fakeResistStrategy.nLastTouchTime}{NEW_LINE}" +
+                $"페이크저항 전략 마지막 접근시각 : {curEa.fakeResistStrategy.nLastTouchTime}{NEW_LINE}" +
+                $"페이크저항 전략 최고 어깨점 : {curEa.fakeResistStrategy.nMaxShoulderPrice}(원){NEW_LINE}" +
+                $"페이크저항 전략 단순평균 어깨점 : {Math.Round(curEa.fakeResistStrategy.fEverageShoulderPrice, 2)}(원){NEW_LINE}" +
+                $"페이크저항 전략 종합평균 어깨점 : {Math.Round(fResistFlexEverage, 2)}(원){NEW_LINE}" +
+                $"페이크저항 전략 어깨 상승횟수 : {curEa.fakeResistStrategy.nUpperCount}번{NEW_LINE}" +
+                $"페이크저항 전략 분포횟수 : {curEa.fakeResistStrategy.nMinuteLocationCount}번{NEW_LINE}" +
+                $"공유 전략 분포횟수 : {curEa.myStrategy.nSharedMinuteLocationCount}번{NEW_LINE}" +
+                $"--------------------------------------------------{NEW_LINE}{NEW_LINE}";
+
+            for (int i = 0; i < strategyNames.arrFakeResistStrategyName.Count; i++)
+            {
+                sMessage += $"==================== {i}번째 페이크저항 전략 ===================={NEW_LINE}" +
+                    $"##전략명 : {strategyNames.arrFakeResistStrategyName[i]}  !!!!!!!!!!!!{NEW_LINE}";
+
+                if (curEa.fakeResistStrategy.arrStrategy[i] == 0)
+                {
+                    sMessage += $"--> 해당전략은 활성화되지 않았습니다.{NEW_LINE}";
+                }
+                else
+                {
+                    sMessage +=
+                        $"--> 마지막 접근시각 : {curEa.fakeResistStrategy.arrLastTouch[i]}{NEW_LINE}" +
+                        $"--> 접근 횟수 : {curEa.fakeResistStrategy.arrStrategy[i]}번{NEW_LINE}";
+                }
+
+                sMessage += $"{NEW_LINE}";
+            }
+
+
+            new ScrollableMessageBox().Show(sMessage, sTitle);
+        }
+        #endregion
+
+
+        public void ToolTipItemClickHandler(object sender, EventArgs e)
+        {
+            ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
+            curEa = mainForm.ea[nCurIdx];
+
+            
+            if (menuItem.Name.Equals("showVarToolStripMenuItem"))
+            {
+                ShowVariables();
+            }
+
+        }
+
+
+        /// <summary>
+        /// 1 부터 nEnd까지 모두 더해 반환한다.
+        /// </summary>
+        /// <param name="nEnd"></param>
+        /// <returns></returns>
+        public int SumTil(int nEnd)
+        {
+            int retVal = 0;
+            for (int i = 1; i <= nEnd; i++)
+                retVal += i;
+            return retVal;
+
+        }
+        ////private void autoBoundaryCheckBox_CheckedChanged(object sender, EventArgs e)
+        ////{
+        ////    if (autoBoundaryCheckBox.Checked)
+        ////    {
+        ////        isAutoBoundaryCheck = true;
+        ////    }
+        ////    else
+        ////    {
+        ////        isAutoBoundaryCheck = false;
+        ////    }
+        ////}
+
+        /// <summary>
+        /// Series를 차트.시리즈 맨 앞에 삽입한다
+        /// 드로잉 순서를 가장 첫번째로 만드는 작업이다.
+        /// </summary>
+        /// <param name="sSeriesName"></param>
+        public void SendToBackSeriesName(string sSeriesName)
+        {
+            try
+            {
+                historyChart.Series.Remove(historyChart.Series[sSeriesName]);
+                historyChart.Series.Insert(0, new Series(sSeriesName));
+
+            }
+            catch (Exception e)
+            {
+                historyChart.Series.Insert(0, new Series(sSeriesName));
+            }
+
+        }
+
+
+        /// <summary>
+        /// Series를 차트.시리즈 맨 뒤에 삽입한다
+        /// 드로잉 순서를 가장 마지막으로 만드는 작업이다.
+        /// </summary>
+        /// <param name="sSeriesName"></param>
+        public void SendToFrontSeriesName(string sSeriesName)
+        {
+            try
+            {
+                historyChart.Series.Remove(historyChart.Series[sSeriesName]);
+                historyChart.Series.Add(sSeriesName);
+            }
+            catch (Exception e)
+            {
+                historyChart.Series.Add(sSeriesName);
+            }
+
+        }
+
+        #region 마우스 이벤트 핸들러
+        /// <summary>
+        /// 차트에서 마우스가 움직였을때 히트테스트를 진행한 후 이벤트핸들러
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="e"></param>
+        public int prevXPos = 0, prevYPos = 0;
+        public int prevXMove = 0, prevYMove = 0; // 최근 마우스 무브의 움직인 x,y좌표
+        public void ChartMouseMoveHandler(Object o, MouseEventArgs e) // 마우스가 안움직이더라도 차트 안에 있으면 호출된다.
+        {
+
+            if (e.X != prevXMove || e.Y != prevYMove)  // 움직임이 조금이라도 있으면?
+            {
+                prevXMove = e.X;
+                prevYMove = e.Y;
+            }
+            else // 전혀 움직이지 않았다면
+                return;
+
+            double xCoord = 0, yCoord = 0;
+
+
+            HitTestResult hit = historyChart.HitTest(e.X, e.Y);
+
+            if (hit.ChartArea == null)
+            {
+                prevXPos = 0;
+                prevYPos = 0;
+                historyChart.ChartAreas["TotalArea"].CursorX.LineDashStyle = ChartDashStyle.NotSet;
+                historyChart.ChartAreas["TotalArea"].CursorY.LineDashStyle = ChartDashStyle.NotSet;
+            }
+            else
+            {
+
+                if (isMinuteVisible && historyChart.Series["MinuteStick"].Points.Count > 0) // 전체 접근가능 조건
+                {
+                    xCoord = historyChart.ChartAreas["TotalArea"].AxisX.PixelPositionToValue(e.X);
+                    yCoord = historyChart.ChartAreas["TotalArea"].AxisY.PixelPositionToValue(e.Y);
+                    historyChart.ChartAreas["TotalArea"].CursorX.LineDashStyle = ChartDashStyle.Solid;
+                    historyChart.ChartAreas["TotalArea"].CursorY.LineDashStyle = ChartDashStyle.Solid;
+
+                    if (isAutoBoundaryCheck) // 자동 체크 바운더리
+                    {
+
+                        int xIdx = 0;
+                        int xLoc = GetCursorIdx(xCoord, nPadding, historyChart.Series["MinuteStick"].Points.Count, ref xIdx);
+
+                        double fUpperVal;
+                        //if (historyChart.Series["MinuteStick"].Points[xIdx].YValues[3] > historyChart.Series["MinuteStick"].Points[xIdx].YValues[2])
+                        //    fUpperVal = historyChart.Series["MinuteStick"].Points[xIdx].YValues[3];
+                        //else
+                        //    fUpperVal = historyChart.Series["MinuteStick"].Points[xIdx].YValues[2];
+                        fUpperVal = historyChart.Series["MinuteStick"].Points[xIdx].YValues[3]; // 0 1 2 3  => 고 저 시 종 
+                        int nUpperVal = (int)fUpperVal; // 시가와 종가 중 고가(현재는 그냥 종가)
+
+                        if (prevXPos != xIdx || prevYPos != nUpperVal) // xIdx를 벗어나거나 가격이 다르다면
+                        {
+                            prevXPos = xIdx;
+                            prevYPos = nUpperVal;
+                            System.Windows.Forms.Cursor.Position = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y - (int)(e.Y - historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(fUpperVal))); // x는 움직여야하니 그대로 y는 현재위치에서 차트에서의 커서 위치와 그 위치에서의 값의 차이만큼 조정해준다.(더하고 빼고 복잡함)
+
+                        }
+
+                        historyChart.ChartAreas["TotalArea"].CursorX.SetCursorPosition(xLoc); // padding 있는 상태의 x좌표니까 xLoc으로 가고 idx필요할때는 xIdx로 간다
+                        historyChart.ChartAreas["TotalArea"].CursorY.SetCursorPosition(fUpperVal);
+
+                    }
+                    else
+                    {
+                        historyChart.ChartAreas["TotalArea"].CursorX.SetCursorPixelPosition(new Point(e.X, e.Y), false);
+                        historyChart.ChartAreas["TotalArea"].CursorY.SetCursorPixelPosition(new Point(e.X, e.Y), false);
+                    }
+
+                    if (hit.Series != null && hit.Series.Name.Equals("MinuteStick"))
+                    {
+                        historyChart.ChartAreas["TotalArea"].CursorX.LineColor = Color.Yellow;
+                        historyChart.ChartAreas["TotalArea"].CursorY.LineColor = Color.Yellow;
+                    }
+                    else
+                    {
+                        historyChart.ChartAreas["TotalArea"].CursorX.LineColor = Color.Red;
+                        historyChart.ChartAreas["TotalArea"].CursorY.LineColor = Color.Red;
+                    }
+                }
+
+            }
+
+
+            if (double.IsNaN(xCoord))
+                xCoord = 0;
+            if (double.IsNaN(yCoord))
+                yCoord = 0;
+            xCoord = Math.Round(xCoord, 3);
+            yCoord = Math.Round(yCoord, 3);
+            label1.Text = $"현재좌표 : {xCoord} {yCoord}";
+
+            if (isRightPressed || isPreciselyCheck)
+            {
+                moveLabel.Text = $"{cPressed}\n{nPressed}\n{sOwnerPressed}\n( {x1}, {y1} )\n( {x2}, {y2} )\n";
+                if (nPressed == 1)
+                {
+                    gp.DrawEllipse(cPen, new Rectangle(x1 - Cursor.Size.Width / nCircleDenom, y1 - Cursor.Size.Height / nCircleDenom, nCircleSize, nCircleSize));
+                }
+                else if (nPressed == 2)
+                {
+                    gp.DrawLine(lpen, x1, y1, x2, y2);
+                    double fX1 = historyChart.ChartAreas[sOwnerPressed].AxisX.PixelPositionToValue(x1);
+                    double fY1 = historyChart.ChartAreas[sOwnerPressed].AxisY.PixelPositionToValue(y1);
+                    double fX2 = historyChart.ChartAreas[sOwnerPressed].AxisX.PixelPositionToValue(x2);
+                    double fY2 = historyChart.ChartAreas[sOwnerPressed].AxisY.PixelPositionToValue(y2);
+                    if (CheckIsNormalChartYValue(fY1, fY2) )
+                    {
+                        moveLabel.Text += $"( {Math.Round(fX1, 2)}, {Math.Round(fY1, 2)} ) -> ( {Math.Round(fX2, 2)},  {Math.Round(fY2, 2)})\n" +
+                            $"손익(시초값기준) : {Math.Round((fY2 - fY1) / curEa.nTodayStartPrice * 100, 2)}(%)\n" +
+                            $"손익( 종가기준 ) : {Math.Round((fY2 - fY1) / curEa.nYesterdayEndPrice * 100, 2)}(%)\n" +
+                            $"손익(첫번째기준) : {Math.Round((fY2 - fY1) / fY1 * 100, 2)}(%)\n" +
+                            $"x2 - x1 : {Math.Round(fX2, 0) - Math.Round(fX1, 0)}칸\n";
+                    }
+                    else
+                        moveLabel.Text += "포인트를 다시 지정하세요\n";
+
+                    if (isPreciselyCheck)
+                    {
+                        // 여기서는 mouseClick에서 계산해놓은것을 그대로 출력만 할거
+                        {
+                            if (isMinuteVisible && CheckIsNormalChartYValue(nMinPositionY1, nMinPositionY2))
+                                gp.DrawLine(pPen, nMinPositionX1, nMinPositionY1, nMinPositionX2, nMinPositionY2);
+                            moveLabel.Text += $"================== 분당 정보 ==================\n" +
+                                    $"R각도 => 저 : {Math.Round(pResult.rAngle.min, 1)}, 고 : {Math.Round(pResult.rAngle.max, 1)}, 평균 : {Math.Round(pResult.rAngle.everage, 1)}, 중위 : {Math.Round(pResult.rAngle.median, 1)}{NEW_LINE}" +
+                                    $"H각도 => 저 : {Math.Round(pResult.hAngle.min, 1)}, 고 : {Math.Round(pResult.hAngle.max, 1)}, 평균 : {Math.Round(pResult.hAngle.everage, 1)}, 중위 : {Math.Round(pResult.hAngle.median, 1)}{NEW_LINE}" +
+                                    $"D각도 => 저 : {Math.Round(pResult.dAngle.min, 1)}, 고 : {Math.Round(pResult.dAngle.max, 1)}, 평균 : {Math.Round(pResult.dAngle.everage, 1)}, 중위 : {Math.Round(pResult.dAngle.median, 1)}{NEW_LINE}" +
+                                    $"T각도 => 저 : {Math.Round(pResult.tAngle.min, 1)}, 고 : {Math.Round(pResult.tAngle.max, 1)}, 평균 : {Math.Round(pResult.tAngle.everage, 1)}, 중위 : {Math.Round(pResult.tAngle.median, 1)}{NEW_LINE}" +
+
+                                    $"downFs > 20m : {pResult.isDownFs20m}{NEW_LINE}" +
+                                    $"downFs > 1h : {pResult.isDownFs1h}{NEW_LINE}" +
+                                    $"downFs > 2h : {pResult.isDownFs2h}{NEW_LINE}" +
+
+                                    $"1h > 2h : {pResult.is1h2h}{NEW_LINE}" +
+                                    $"20m > 1h : {pResult.is20m1h}{NEW_LINE}{NEW_LINE}";
+                        }
+                    }
+                }
+            }
+            else
+                moveLabel.Text = "";
+
+            //if (isMinuteVisible )
+            //{
+            //if (isRealBuyLinePressed)
+            //{
+            //    curEa = mainForm.ea[nCurIdx];
+            //    if (curEa.myStrategy.nStrategyNum > 0)
+            //    {
+            //        int x0 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Minimum);
+            //        int x1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Maximum);
+            //        int yMax = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.myStrategy.nMaxShoulderPrice);
+            //        int ySimpleEverage = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.myStrategy.fEverageShoulderPrice);
+            //        int yFlexEverage = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition((double)curEa.myStrategy.nSumShoulderPrice / curEa.myStrategy.nStrategyNum);
+
+            //        gpHorizontal.DrawLine(linePenOrange, x0, yMax, x1, yMax);
+            //        gpHorizontal.DrawLine(linePenViolet, x0, ySimpleEverage, x1, ySimpleEverage);
+            //        gpHorizontal.DrawLine(linePenYellow, x0, yFlexEverage, x1, yFlexEverage);
+            //    }
+            //}
+            //else if (isFakeBuyLinePressed)
+            //{
+            //    curEa = mainForm.ea[nCurIdx];
+            //    if (curEa.fakeBuyStrategy.nStrategyNum > 0)
+            //    {
+            //        int x0 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Minimum);
+            //        int x1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Maximum);
+            //        int yMax = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.fakeBuyStrategy.nMaxShoulderPrice);
+            //        int ySimpleEverage = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.fakeBuyStrategy.fEverageShoulderPrice);
+            //        int yFlexEverage = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition((double)curEa.fakeBuyStrategy.nSumShoulderPrice / curEa.fakeBuyStrategy.nStrategyNum);
+
+            //        gpHorizontal.DrawLine(linePenOrange, x0, yMax, x1, yMax);
+            //        gpHorizontal.DrawLine(linePenViolet, x0, ySimpleEverage, x1, ySimpleEverage);
+            //        gpHorizontal.DrawLine(linePenYellow, x0, yFlexEverage, x1, yFlexEverage);
+            //    }
+            //}
+            //else if (isFakeSellLinePressed)
+            //{
+            //    curEa = mainForm.ea[nCurIdx];
+            //    if (curEa.fakeSellStrategy.nStrategyNum > 0)
+            //    {
+            //        int x0 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Minimum);
+            //        int x1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Maximum);
+            //        int yMax = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.fakeSellStrategy.nMaxShoulderPrice);
+            //        int ySimpleEverage = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.fakeSellStrategy.fEverageShoulderPrice);
+            //        int yFlexEverage = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition((double)curEa.fakeSellStrategy.nSumShoulderPrice / curEa.fakeSellStrategy.nStrategyNum);
+
+            //        gpHorizontal.DrawLine(linePenOrange, x0, yMax, x1, yMax);
+            //        gpHorizontal.DrawLine(linePenViolet, x0, ySimpleEverage, x1, ySimpleEverage);
+            //        gpHorizontal.DrawLine(linePenYellow, x0, yFlexEverage, x1, yFlexEverage);
+            //    }
+            //}
+            //else if (isFakeAssistantLinePressed)
+            //{
+            //    curEa = mainForm.ea[nCurIdx];
+            //    if (curEa.fakeAssistantStrategy.nStrategyNum > 0)
+            //    {
+            //        int x0 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Minimum);
+            //        int x1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Maximum);
+            //        int yMax = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.fakeAssistantStrategy.nMaxShoulderPrice);
+            //        int ySimpleEverage = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.fakeAssistantStrategy.fEverageShoulderPrice);
+            //        int yFlexEverage = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition((double)curEa.fakeAssistantStrategy.nSumShoulderPrice / curEa.fakeAssistantStrategy.nStrategyNum);
+
+            //        gpHorizontal.DrawLine(linePenOrange, x0, yMax, x1, yMax);
+            //        gpHorizontal.DrawLine(linePenViolet, x0, ySimpleEverage, x1, ySimpleEverage);
+            //        gpHorizontal.DrawLine(linePenYellow, x0, yFlexEverage, x1, yFlexEverage);
+            //    }
+            //}
+            //else if (isPriceUpLinePressed)
+            //{
+            //    curEa = mainForm.ea[nCurIdx];
+            //    if (curEa.priceUpStrategy.nStrategyNum > 0)
+            //    {
+            //        int x0 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Minimum);
+            //        int x1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Maximum);
+            //        int yMax = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.priceUpStrategy.nMaxShoulderPrice);
+            //        int ySimpleEverage = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.priceUpStrategy.fEverageShoulderPrice);
+            //        int yFlexEverage = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition((double)curEa.priceUpStrategy.nSumShoulderPrice / curEa.priceUpStrategy.nStrategyNum);
+
+            //        gpHorizontal.DrawLine(linePenOrange, x0, yMax, x1, yMax);
+            //        gpHorizontal.DrawLine(linePenViolet, x0, ySimpleEverage, x1, ySimpleEverage);
+            //        gpHorizontal.DrawLine(linePenYellow, x0, yFlexEverage, x1, yFlexEverage);
+            //    }
+            //}
+            //else if (isPriceDownLinePressed)
+            //{
+            //    curEa = mainForm.ea[nCurIdx];
+            //    if (curEa.priceDownStrategy.nStrategyNum > 0)
+            //    {
+            //        int x0 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Minimum);
+            //        int x1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Maximum);
+            //        int yMax = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.priceDownStrategy.nMaxShoulderPrice);
+            //        int ySimpleEverage = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.priceDownStrategy.fEverageShoulderPrice);
+            //        int yFlexEverage = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition((double)curEa.priceDownStrategy.nSumShoulderPrice / curEa.priceDownStrategy.nStrategyNum);
+
+            //        gpHorizontal.DrawLine(linePenOrange, x0, yMax, x1, yMax);
+            //        gpHorizontal.DrawLine(linePenViolet, x0, ySimpleEverage, x1, ySimpleEverage);
+            //        gpHorizontal.DrawLine(linePenYellow, x0, yFlexEverage, x1, yFlexEverage);
+            //    }
+            //}
+            //}
+
+        }
+
+        Graphics gp;
+        Graphics gpHorizontal;
+        Pen lpen = new Pen(Color.Black, 2);
+        Pen cPen = new Pen(Color.LightGreen, 2);
+        Pen pPen = new Pen(Color.MediumPurple, 2);
+
+        Pen linePenOrange = new Pen(Color.OrangeRed, 3);
+        Pen linePenYellow = new Pen(Color.GreenYellow, 3);
+        Pen linePenViolet = new Pen(Color.Violet, 3);
+
+        int nCircleDenom = 6;
+        int nCircleSize = 10;
+
+        // P 변수
+        public bool isMinuteArea = false;
+        public int nMinuteFrontIdx;
+        public int nMinuteBackIdx;
+
+        public int nPadding = 1;
+
+        public void ChartMouseClickHandler(object sender, MouseEventArgs e)
+        {
+            
+
+            HitTestResult hit = historyChart.HitTest(e.X, e.Y);
+            gp = historyChart.CreateGraphics();
+
+            if (hit.ChartArea == null)
+            {
+            }
+            else
+            {
+                if (isRightPressed || isPreciselyCheck)
+                {
+                    if (!sOwnerPressed.Equals(hit.ChartArea.Name))
+                    {
+                        if (hit.ChartArea.Name.Equals("TotalArea"))
+                        {
+                            sOwnerPressed = "TotalArea";
+                            isMinuteArea = true;
+                        }
+                        nPressed = 0;
+                        x1 = y1 = x2 = y2 = 0;
+                        xMinIdx1 = xMinIdx2 = xBuyedIdx1 = xBuyedIdx2 = 0;
+                        xBuyedLoc1 = xBuyedLoc2 = xMinLoc1 = xMinLoc2 = 0;
+                        nBuyedPositionX1 = nBuyedPositionX2 = nBuyedPositionY1 = nBuyedPositionY2 = 0;
+                        nMinPositionX1 = nMinPositionX2 = nMinPositionY1 = nMinPositionY2 = 0;
+                    }
+
+                    nPressed++;
+
+                    if (nPressed == 1) // 한번 눌렸을때
+                    {
+                        x1 = e.X;
+                        y1 = e.Y;
+                        gp.DrawEllipse(cPen, new Rectangle(x1 - Cursor.Size.Width / nCircleDenom, y1 - Cursor.Size.Height / nCircleDenom, nCircleSize, nCircleSize));
+
+                        if (isPreciselyCheck)
+                        {
+                            double xCoord = historyChart.ChartAreas[sOwnerPressed].AxisX.PixelPositionToValue(e.X);
+                            if (isMinuteArea)
+                            {
+                                GetCursorIdx(xCoord, nPadding, historyChart.Series["MinuteStick"].Points.Count, ref xMinIdx1);
+                            }
+                           
+                            xMinLoc1 = xMinIdx1 + nPadding;
+                            if (xMinIdx1 > 0)
+                            {
+                                xMinIdx1--;
+                                xMinLoc1--;
+                            }
+                        }
+                    }
+                    else if (nPressed == 2) // 두번 눌렸을때
+                    {
+                        if (x1 > e.X) // 순서가 반대로 찍혔다?
+                        {
+                            x2 = x1;
+                            y2 = y1;
+                            x1 = e.X;
+                            y1 = e.Y;
+                        }
+                        else
+                        {
+                            x2 = e.X;
+                            y2 = e.Y;
+                        }
+                        gp.DrawLine(lpen, x1, y1, x2, y2);
+
+                        if (isPreciselyCheck)
+                        {
+                            double xCoord = historyChart.ChartAreas[sOwnerPressed].AxisX.PixelPositionToValue(e.X);
+                            if (isMinuteArea)
+                            {
+                                GetCursorIdx(xCoord, nPadding, historyChart.Series["MinuteStick"].Points.Count, ref xMinIdx2);
+                            }
+                           
+                            xMinLoc2 = xMinIdx2 + nPadding;
+                            if (xMinIdx2 > 0)
+                            {
+                                xMinIdx2--;
+                                xMinLoc2--;
+                            }
+
+                            if (xBuyedIdx1 > xBuyedIdx2)
+                            {
+                                Swap<int>(ref xBuyedIdx1, ref xBuyedIdx2);
+                                Swap<int>(ref xBuyedLoc1, ref xBuyedLoc2);
+                            }
+                            if (xMinIdx1 > xMinIdx2)
+                            {
+                                Swap<int>(ref xMinIdx1, ref xMinIdx2);
+                                Swap<int>(ref xMinLoc1, ref xMinLoc2);
+                            }
+
+                            // --------------------------------------------
+                            // 여기서 계산을 쫙 다 해놓을거임
+                            nMinPositionX1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinLoc1);
+                            nMinPositionY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1].nLastFs);
+                            nMinPositionX2 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinLoc2);
+                            nMinPositionY2 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx2].nLastFs);
+                            if (isMinuteVisible && CheckIsNormalChartYValue(nMinPositionY1, nMinPositionY2))
+                                gp.DrawLine(pPen, nMinPositionX1, nMinPositionY1, nMinPositionX2, nMinPositionY2);
+
+
+                            pResult.Init();
+
+                            double[] fRAngleArr;
+                            double[] fHAngleArr;
+                            double[] fDAngleArr;
+                            double[] fTAngleArr;
+
+                            double fRSum = 0;
+                            double fHSum = 0;
+                            double fDSum = 0;
+                            double fTSum = 0;
+
+                            double fRMin = double.MaxValue;
+                            double fHMin = double.MaxValue;
+                            double fDMin = double.MaxValue;
+                            double fTMin = double.MaxValue;
+
+                            double fRMax = double.MinValue;
+                            double fHMax = double.MinValue;
+                            double fDMax = double.MinValue;
+                            double fTMax = double.MinValue;
+
+                            int nTotalCnt = 0;
+                            { // 분당영역은 일단 무조건 출력하게 돼있음
+
+                                fRAngleArr = new double[xMinIdx2 - xMinIdx1 + 1];
+                                fHAngleArr = new double[xMinIdx2 - xMinIdx1 + 1];
+                                fDAngleArr = new double[xMinIdx2 - xMinIdx1 + 1];
+                                fTAngleArr = new double[xMinIdx2 - xMinIdx1 + 1];
+                                pResult.isDownFs20m = true;
+                                pResult.isDownFs1h = true;
+                                pResult.isDownFs2h = true;
+                                pResult.is1h2h = true;
+                                pResult.is20m1h = true;
+
+                                for (int i = 0; i <= xMinIdx2 - xMinIdx1; i++)
+                                {
+                                    nTotalCnt++;
+                                    fRAngleArr[i] = mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].fRecentAngle;
+                                    fRSum += fRAngleArr[i];
+                                    if (fRAngleArr[i] > fRMax)
+                                        fRMax = fRAngleArr[i];
+                                    if (fRAngleArr[i] < fRMin)
+                                        fRMin = fRAngleArr[i];
+
+                                    fHAngleArr[i] = mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].fHourAngle;
+                                    fHSum += fHAngleArr[i];
+                                    if (fHAngleArr[i] > fHMax)
+                                        fHMax = fHAngleArr[i];
+                                    if (fHAngleArr[i] < fHMin)
+                                        fHMin = fHAngleArr[i];
+
+                                    fDAngleArr[i] = mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].fDAngle;
+                                    fDSum += fDAngleArr[i];
+                                    if (fDAngleArr[i] > fDMax)
+                                        fDMax = fDAngleArr[i];
+                                    if (fDAngleArr[i] < fDMin)
+                                        fDMin = fDAngleArr[i];
+
+                                    fTAngleArr[i] = mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].fMedianAngle;
+                                    fTSum += fTAngleArr[i];
+                                    if (fTAngleArr[i] > fTMax)
+                                        fTMax = fTAngleArr[i];
+                                    if (fTAngleArr[i] < fTMin)
+                                        fTMin = fTAngleArr[i];
+
+                                    if (mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].nDownTimeOverMa0 == 0)
+                                        pResult.isDownFs20m = false;
+                                    if (mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].nDownTimeOverMa1 == 0)
+                                        pResult.isDownFs1h = false;
+                                    if (mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].nDownTimeOverMa2 == 0)
+                                        pResult.isDownFs2h = false;
+                                    if (mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].fOverMa1 <= mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].fOverMa2)
+                                        pResult.is1h2h = false;
+                                    if (mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].fOverMa0 <= mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].fOverMa1)
+                                        pResult.is20m1h = false;
+                                }
+                                pResult.rAngle.min = fRMin;
+                                pResult.hAngle.min = fHMin;
+                                pResult.dAngle.min = fDMin;
+                                pResult.tAngle.min = fTMin;
+
+                                pResult.rAngle.max = fRMax;
+                                pResult.hAngle.max = fHMax;
+                                pResult.dAngle.max = fDMax;
+                                pResult.tAngle.max = fTMax;
+
+                                pResult.rAngle.everage = fRSum / nTotalCnt;
+                                pResult.hAngle.everage = fHSum / nTotalCnt;
+                                pResult.dAngle.everage = fDSum / nTotalCnt;
+                                pResult.tAngle.everage = fTSum / nTotalCnt;
+
+                                Array.Sort(fRAngleArr, (x, y) => x.CompareTo(y));
+                                Array.Sort(fHAngleArr, (x, y) => x.CompareTo(y));
+                                Array.Sort(fDAngleArr, (x, y) => x.CompareTo(y));
+                                Array.Sort(fTAngleArr, (x, y) => x.CompareTo(y));
+
+                                if (nTotalCnt % 2 == 0) // 짝수면
+                                {
+                                    int nRight = nTotalCnt / 2;
+                                    pResult.rAngle.median = (fRAngleArr[nRight - 1] + fRAngleArr[nRight]) / 2;
+                                    pResult.hAngle.median = (fHAngleArr[nRight - 1] + fHAngleArr[nRight]) / 2;
+                                    pResult.dAngle.median = (fDAngleArr[nRight - 1] + fDAngleArr[nRight]) / 2;
+                                    pResult.tAngle.median = (fTAngleArr[nRight - 1] + fTAngleArr[nRight]) / 2;
+                                }
+                                else
+                                {
+                                    if (nTotalCnt == 1) // 한개면
+                                    {
+                                        pResult.rAngle.median = fRAngleArr[0];
+                                        pResult.hAngle.median = fHAngleArr[0];
+                                        pResult.dAngle.median = fDAngleArr[0];
+                                        pResult.tAngle.median = fTAngleArr[0];
+                                    }
+                                    else
+                                    {
+                                        pResult.rAngle.median = fRAngleArr[nTotalCnt / 2];
+                                        pResult.hAngle.median = fHAngleArr[nTotalCnt / 2];
+                                        pResult.dAngle.median = fDAngleArr[nTotalCnt / 2];
+                                        pResult.tAngle.median = fTAngleArr[nTotalCnt / 2];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if (nPressed > 2)
+                    {
+                        x2 = y2 = 0;
+                        nPressed = 1;
+                        x1 = e.X;
+                        y1 = e.Y;
+                        if (isPreciselyCheck)
+                        {
+                            xMinIdx2 = xBuyedIdx2 = 0;
+                            xBuyedLoc2 = xMinLoc2 = 0;
+                            nBuyedPositionX2 = nBuyedPositionY2 = 0;
+                            nMinPositionX2 = nMinPositionY2 = 0;
+
+                            double xCoord = historyChart.ChartAreas[sOwnerPressed].AxisX.PixelPositionToValue(e.X);
+                            if (isMinuteArea)
+                            {
+                                GetCursorIdx(xCoord, nPadding, historyChart.Series["MinuteStick"].Points.Count, ref xMinIdx1);
+                            }
+                          
+                            xMinLoc1 = xMinIdx1 + nPadding;
+                            if (xMinIdx1 > 0)
+                            {
+                                xMinIdx1--;
+                                xMinLoc1--;
+                            }
+                        }
+                    }
+                }
+            } // END ---- HIT 영역
+        }
+
+        public int GetCursorIdx(double xCoord, int frontPad, int backPad, ref int xIdx)
+        {
+            xIdx = (int)xCoord - frontPad;
+            int xLoc = xIdx + frontPad;
+
+            if ((xCoord % 1) > 0.5) // ex) 25.52가 나오면 26이라 판단
+            {
+                xIdx++;
+                xLoc++;
+            }
+
+            if (xIdx < frontPad)
+            {
+                xIdx = 0;
+                xLoc = frontPad;
+            }
+
+            else if (xIdx >= backPad)
+            {
+                xIdx = backPad - 1;
+                xLoc = xIdx + frontPad;
+            }
+
+            return xLoc;
+        }
+        #endregion
+
+        #region 키보드 이벤트 핸들러
+        public void KeyUpHandler(object sender, KeyEventArgs e)
+        {
+            char cUp = (char)e.KeyValue;
+
+            if (cUp == 'O') // 각도기
+            {
+                isRightPressed = false;
+            }
+            if (cUp == 'C') // 오토 바운더리
+            {
+                isAutoBoundaryCheck = false;
+            }
+            if (cUp == 'P') // precisely
+            {
+                // 각도기의 확장버전
+                // 지정된 X사이에 정보들을 모두 가져온다. ( max 각도 , min 각도, 이평선 침범 여부, 침범 횟수 등등을 계산해서 가져온다)
+                // TODO.
+                isPreciselyCheck = false;
+            }
+            if (cUp == 'V') // 변수출력
+            {
+                ShowVariables();
+            }
+
+            if (cUp == 27) // esc
+                this.Close();
+
+            if (cUp == 17) // ctrl
+            {
+                isCtrlPushed = false;
+                //isRealBuyLinePressed = false;
+                //isFakeBuyLinePressed = false;
+                //isFakeSellLinePressed = false;
+                //isFakeAssistantLinePressed = false;
+                //isPriceUpLinePressed = false;
+                //isPriceDownLinePressed = false;
+            }
+
+            if (cUp == 32) // space
+            {
+                isSpacePushed = false;
+            }
+
+            if (cUp == 16) // shift
+                isShiftPushed = false;
+
+            if (cUp == 'U') // update
+            {
+                if (isCtrlPushed)
+                    timer.Enabled = !timer.Enabled;
+                updateDelegate();
+            }
+
+            if (isShiftPushed) // 무조건 true;
+            {
+                if (cUp == 189) // -
+                {
+                    isArrowGrouping = true;
+                    UpdateMinuteHistoryData();
+                }
+                if (cUp == 187) // +
+                {
+                    isArrowGrouping = false;
+                    UpdateMinuteHistoryData();
+                }
+            }
+
+            if (cUp == 'Q') // q가 눌렸는데 실매수
+            {
+                if (isSpacePushed) // 스페이도 눌린상태라면 
+                {
+                    ShowRealBuy(); // 전략현황을 출력해주고
+                    isSpacePushed = false;
+                }
+                else // 아니라면
+                {
+                    isBuyArrowVisible = !isBuyArrowVisible;
+                    UpdateMinuteHistoryData(); // 단순 Q이기 때문에 updateMinuteHistory만 해주면 된다.
+                }
+            }
+
+
+            if (cUp == 'E') // 페이크매수
+            {
+                if (isSpacePushed) // 스페이도 눌린상태라면 
+                {
+                    ShowFakeBuy(); // 전략현황을 출력해주고
+                    isSpacePushed = false;
+                }
+                else
+                {
+                    isFakeBuyArrowVisible = !isFakeBuyArrowVisible;
+                    UpdateMinuteHistoryData();
+                }
+            }
+
+            if (cUp == 'R') // 페이크저항
+            {
+                if (isSpacePushed) // 스페이도 눌린상태라면 
+                {
+                    ShowFakeResist(); // 전략현황을 출력해주고
+                    isSpacePushed = false;
+                }
+                else
+                {
+                    isFakeResistArrowVisible = !isFakeResistArrowVisible;
+                    UpdateMinuteHistoryData();
+                }
+            }
+
+            if (cUp == 'S') // 페이크보조
+            {
+                if (isSpacePushed) // 스페이도 눌린상태라면 
+                {
+                    ShowFakeAssistant(); // 전략현황을 출력해주고
+                    isSpacePushed = false;
+                }
+                else
+                {
+                    isFakeAssistantArrowVisible = !isFakeAssistantArrowVisible;
+                    UpdateMinuteHistoryData();
+                }
+            }
+
+            if (cUp == 'D') // 가격업
+            {
+                if (isSpacePushed) // 스페이도 눌린상태라면 
+                {
+                    ShowPriceUp(); // 전략현황을 출력해주고
+                    isSpacePushed = false;
+                }
+                else
+                {
+                    isPriceUpArrowVisible = !isPriceUpArrowVisible;
+                    UpdateMinuteHistoryData();
+                }
+            }
+
+            if (cUp == 'F') // 가격다운
+            {
+                if (isSpacePushed) // 스페이도 눌린상태라면 
+                {
+                    ShowPriceDown(); // 전략현황을 출력해주고
+                    isSpacePushed = false;
+                }
+                else
+                {
+                    isPriceDownArrowVisible = !isPriceDownArrowVisible;
+                    UpdateMinuteHistoryData();
+                }
+            }
+
+            if (cUp == 'A')
+            {
+                ReverseAllArrowVisible();
+                UpdateMinuteHistoryData();
+            }
+
+        }
+
+
+        public bool isCtrlPushed = false;
+        public bool isShiftPushed = false;
+        public bool isSpacePushed = false;
+
+        public void KeyDownHandler(object sender, KeyEventArgs e)
+        {
+            cPressed = (char)e.KeyValue; // 대문자로 준다.
+
+            if (cPressed == 'O') // 기본각도기
+            {
+                if (!isRightPressed)
+                {
+                    DeepClean();
+                    isRightPressed = true;
+                }
+            }
+
+            if (cPressed == 'C') // 오토 바운더리
+                isAutoBoundaryCheck = true;
+
+            if (cPressed == 'P') // precisely
+            {
+                // 각도기의 확장버전
+                // 지정된 X사이에 정보들을 모두 가져온다. ( max 각도 , min 각도, 이평선 침범 여부, 침범 횟수 등등을 계산해서 가져온다)
+                // TODO.
+                if (!isPreciselyCheck)
+                {
+                    DeepClean();
+                    isPreciselyCheck = true;
+                }
+            }
+
+            if (cPressed == 17) // ctrl
+                isCtrlPushed = true;
+
+            if (cPressed == 16) // shift
+                isShiftPushed = true;
+
+            if (cPressed == 32) // space 
+                isSpacePushed = true;
+
+            //if(isCtrlPushed)
+            //{
+            //    if(cPressed == 'Q')
+            //    {
+            //        isRealBuyLinePressed = true;
+            //        gpHorizontal = historyChart.CreateGraphics();
+            //    }
+            //    else if (cPressed == 'E')
+            //    {
+
+            //        isFakeBuyLinePressed = true;
+            //        gpHorizontal = historyChart.CreateGraphics();
+            //    }
+            //    else if (cPressed == 'R')
+            //    {
+
+            //        isFakeSellLinePressed = true;
+            //        gpHorizontal = historyChart.CreateGraphics();
+            //    }
+            //    else if (cPressed == 'S')
+            //    {
+
+            //        isFakeAssistantLinePressed = true;
+            //        gpHorizontal = historyChart.CreateGraphics();
+            //    }
+            //    else if (cPressed == 'D')
+            //    {
+
+            //        isPriceUpLinePressed = true;
+            //        gpHorizontal = historyChart.CreateGraphics();
+            //    }
+            //    else if (cPressed == 'F')
+            //    {
+
+            //        isPriceDownLinePressed = true;
+            //        gpHorizontal = historyChart.CreateGraphics();
+            //    }
+            //}
+        }
+
+        #endregion
+
+        public void ReverseAllArrowVisible()
+        {
+            isAllArrowVisible = !isAllArrowVisible;
+            isBuyArrowVisible = isAllArrowVisible;
+            isFakeBuyArrowVisible = isAllArrowVisible;
+            isFakeResistArrowVisible = isAllArrowVisible;
+            isFakeAssistantArrowVisible = isAllArrowVisible;
+            isPriceUpArrowVisible = isAllArrowVisible;
+            isPriceDownArrowVisible = isAllArrowVisible;
+        }
+
+
+
+        public char cPressed;
+        public int x1, x2, y1, y2;
+
+
+
+        public int xMinIdx1, xMinIdx2, xBuyedIdx1, xBuyedIdx2;
+
+   
+        public int nPressed;
+        public bool isRightPressed;
+        //public bool isFakeBuyLinePressed;
+        //public bool isFakeSellLinePressed;
+        //public bool isFakeAssistantLinePressed;
+        //public bool isPriceUpLinePressed;
+        //public bool isPriceDownLinePressed;
+        //public bool isRealBuyLinePressed;
+        public bool isPreciselyCheck;
+        public string sOwnerPressed = "";
+
+
+        public void DeepClean()
+        {
+            x1 = x2 = y1 = y2 = 0;
+            xBuyedLoc1 = xBuyedLoc2 = xMinLoc1 = xMinLoc2 = 0;
+            nMinPositionX1 = nMinPositionX2 = nMinPositionY1 = nMinPositionY2 = 0;
+            isRightPressed = false;
+            isPreciselyCheck = false;
+            nPressed = 0;
+            sOwnerPressed = "";
+
+        }
+
+        public bool CheckIsNormalChartYValue(params double[] yList)
+        {
+            bool ret = false;
+            for (int i =0; i < yList.Length; i++)
+            {
+                ret = (yList[i] > 0) && !double.IsNaN(yList[i]);
+                if (!ret)
+                    break;
+            }
+            return ret;
+        }
+    }
+    #endregion
+}
