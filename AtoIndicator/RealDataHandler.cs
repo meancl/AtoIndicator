@@ -1340,7 +1340,7 @@ namespace AtoTrader
                         GenerateFrontLine(lineManager: ref ea[nCurIdx].timeLines1m,
                                             nIter: BRUSH + ea[nCurIdx].nJumpCnt, nBirthTime: nFirstTime,
                                             nBirthPrice: ea[nCurIdx].nTodayStartPrice,
-                                            nYesterdayPrice:ea[nCurIdx].nYesterdayEndPrice
+                                            nYesterdayPrice: ea[nCurIdx].nYesterdayEndPrice
                                             );
 
                         int nCutSharedT = nSharedTime - nSharedTime % MINUTE_KIWOOM;

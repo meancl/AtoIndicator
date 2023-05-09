@@ -87,8 +87,8 @@ namespace AtoTrader.View
                 fakeBuyTxtBox.Text = "";
                 fakeAssistantTxtBox.Text = "";
                 fakeResistTxtBox.Text = "";
+                fakeVolatilityTxtBox.Text = "";
                 totalFakeTxtBox.Text = "";
-                totalTrialTxtBox.Text = "";
                 totalFakePassTxtBox.Text = "";
                 startGapTxtBox.Text = "";
                 powerWithoutGapTxtBox.Text = "";
@@ -101,6 +101,7 @@ namespace AtoTrader.View
                 fakeBuyMinTxtBox.Text = "";
                 fakeAssistantMinTxtBox.Text = "";
                 fakeResistMinTxtBox.Text = "";
+                fakeVolatilityMinTxtBox.Text = "";
                 totalFakeMinTxtBox.Text = "";
                 powerJarTxtBox.Text = "";
                 upPowerJarTxtBox.Text = "";
@@ -142,7 +143,16 @@ namespace AtoTrader.View
                 minTradePriceRankTxtBox.Text = "";
                 minTradeVolumeRankTxtBox.Text = "";
                 minTotalRankTxtBox.Text = "";
-               
+                rankMoveTxtBox.Text = "";
+                maDiff20mTxtBox.Text = "";
+                maDiff1hTxtBox.Text = "";
+                maDiff2hTxtBox.Text = "";
+                maCurDiff20mTxtBox.Text = "";
+                maCurDiff1hTxtBox.Text = "";
+                maCurDiff2hTxtBox.Text = "";
+                maGapDiff20mTxtBox.Text = "";
+                maGapDiff1hTxtBox.Text = "";
+                maGapDiff2hTxtBox.Text = "";
             }
         }
 
@@ -178,7 +188,6 @@ namespace AtoTrader.View
                 string sFakeResist = fakeResistTxtBox.Text.Trim();
                 string sFakeVolatility = fakeVolatilityTxtBox.Text.Trim();
                 string sTotalFake = totalFakeTxtBox.Text.Trim();
-                string sTotalTrial = totalTrialTxtBox.Text.Trim();
                 string sTotalFakePass = totalFakePassTxtBox.Text.Trim();
                 string sStartGap = startGapTxtBox.Text.Trim();
                 string sWithoutGap = powerWithoutGapTxtBox.Text.Trim();
@@ -233,15 +242,22 @@ namespace AtoTrader.View
                 string sMinTradePriceRank = minTradePriceRankTxtBox.Text.Trim();
                 string sMinTradeVolumeRank = minTradeVolumeRankTxtBox.Text.Trim();
                 string sMinTotalRank = minTotalRankTxtBox.Text.Trim();
-
-
+                string sRankMove = rankMoveTxtBox.Text.Trim();
+                string sMaDiff20mTxtBox = maDiff20mTxtBox.Text.Trim();
+                string sMaDiff1hTxtBox = maDiff1hTxtBox.Text.Trim();
+                string sMaDiff2hTxtBox = maDiff2hTxtBox.Text.Trim();
+                string sMaCurDiff20mTxtBox = maCurDiff20mTxtBox.Text.Trim();
+                string sMaCurDiff1hTxtBox = maCurDiff1hTxtBox.Text.Trim();
+                string sMaCurDiff2hTxtBox = maCurDiff2hTxtBox.Text.Trim();
+                string sMaGapDiff20mTxtBox = maGapDiff20mTxtBox.Text.Trim();
+                string sMaGapDiff1hTxtBox = maGapDiff1hTxtBox.Text.Trim();
+                string sMaGapDiff2hTxtBox = maGapDiff2hTxtBox.Text.Trim();
 
                 bool isFakeBuy = !sFakeBuy.Equals("");
                 bool isFakeAssistant = !sFakeAssistant.Equals("");
                 bool isFakeResist = !sFakeResist.Equals("");
                 bool isFakeVolatility = !sFakeVolatility.Equals("");
                 bool isTotalFake = !sTotalFake.Equals("");
-                bool isTotalTrial = !sTotalTrial.Equals("");
                 bool isTotalFakePass = !sTotalFakePass.Equals("");
                 bool isStartGap = !sStartGap.Equals("");
                 bool isWithoutGap = !sWithoutGap.Equals("");
@@ -296,6 +312,17 @@ namespace AtoTrader.View
                 bool isMinTradePriceRank = !sMinTradePriceRank.Equals("");
                 bool isMinTradeVolumeRank = !sMinTradeVolumeRank.Equals("");
                 bool isMinTotalRank = !sMinTotalRank.Equals("");
+                bool isRankMove = !sRankMove.Equals("");
+                bool isMaDiff20mTxtBox = !sMaDiff20mTxtBox.Equals("");
+                bool isMaDiff1hTxtBox = !sMaDiff1hTxtBox.Equals("");
+                bool isMaDiff2hTxtBox = !sMaDiff2hTxtBox.Equals("");
+                bool isMaCurDiff20mTxtBox = !sMaCurDiff20mTxtBox.Equals("");
+                bool isMaCurDiff1hTxtBox = !sMaCurDiff1hTxtBox.Equals("");
+                bool isMaCurDiff2hTxtBox = !sMaCurDiff2hTxtBox.Equals("");
+                bool isMaGapDiff20mTxtBox = !sMaGapDiff20mTxtBox.Equals("");
+                bool isMaGapDiff1hTxtBox = !sMaGapDiff1hTxtBox.Equals("");
+                bool isMaGapDiff2hTxtBox = !sMaGapDiff2hTxtBox.Equals("");
+
 
                 int nPass; // pass cnt
                 int nPassLen = 0;
@@ -305,7 +332,6 @@ namespace AtoTrader.View
                                         isFakeResist,
                                         isFakeVolatility,
                                         isTotalFake,
-                                        isTotalTrial,
                                         isTotalFakePass,
                                         isStartGap,
                                         isWithoutGap,
@@ -359,8 +385,19 @@ namespace AtoTrader.View
                                         isMinBuyVolumeRank,
                                         isMinTradePriceRank,
                                         isMinTradeVolumeRank,
-                                        isMinTotalRank
-                });
+                                        isMinTotalRank,
+                                        isRankMove,
+                                        isMaDiff20mTxtBox ,
+                                        isMaDiff1hTxtBox ,
+                                        isMaDiff2hTxtBox ,
+                                        isMaCurDiff20mTxtBox ,
+                                        isMaCurDiff1hTxtBox ,
+                                        isMaCurDiff2hTxtBox ,
+                                        isMaGapDiff20mTxtBox ,
+                                        isMaGapDiff1hTxtBox,
+                                        isMaGapDiff2hTxtBox
+                                });
+
                 string sPassNum = passNumTxtBox.Text.Trim();
                 int nPassMinusNum = 0;
 
@@ -402,8 +439,6 @@ namespace AtoTrader.View
                         nPass += (int.Parse(sFakeVolatility) <= mainForm.ea[i].fakeVolatilityStrategy.nStrategyNum) ? 1 : 0;
                     if (isTotalFake)
                         nPass += (int.Parse(sTotalFake) <= mainForm.ea[i].fakeStrategyMgr.nTotalFakeCount) ? 1 : 0;
-                    if (isTotalTrial)
-                        nPass += (int.Parse(sTotalTrial) <= mainForm.ea[i].fakeStrategyMgr.nTotalFakeCount) ? 1 : 0;
                     if (isTotalFakePass)
                         nPass += (int.Parse(sTotalFakePass) <= mainForm.ea[i].fakeStrategyMgr.nFakeAccumPassed) ? 1 : 0;
                     if (isStartGap)
@@ -512,6 +547,27 @@ namespace AtoTrader.View
                         nPass += (int.Parse(sMinTradeVolumeRank) >= mainForm.ea[i].rankSystem.nMinuteTradeVolumeRanking) ? 1 : 0;
                     if (isMinTotalRank)
                         nPass += (int.Parse(sMinTotalRank) >= mainForm.ea[i].rankSystem.nMinuteSummationRanking) ? 1 : 0;
+                    if(isRankMove)
+                        nPass += (int.Parse(sRankMove) * (-1) >= mainForm.ea[i].rankSystem.nSummationMove) ? 1 : 0;
+                    if (isMaDiff20mTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
+                        nPass += (double.Parse(sMaDiff20mTxtBox) <= (mainForm.ea[i].maOverN.fCurDownFs - mainForm.ea[i].maOverN.fCurMa20m)/ mainForm.ea[i].nYesterdayEndPrice ) ? 1 : 0;
+                    if (isMaDiff1hTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
+                        nPass += (double.Parse(sMaDiff1hTxtBox) <= (mainForm.ea[i].maOverN.fCurDownFs - mainForm.ea[i].maOverN.fCurMa1h) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
+                    if (isMaDiff2hTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
+                        nPass += (double.Parse(sMaDiff2hTxtBox) <= (mainForm.ea[i].maOverN.fCurDownFs - mainForm.ea[i].maOverN.fCurMa2h) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
+                    if (isMaCurDiff20mTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
+                        nPass += (double.Parse(sMaCurDiff20mTxtBox) <= (mainForm.ea[i].nFs - mainForm.ea[i].maOverN.fCurMa20m) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
+                    if (isMaCurDiff1hTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
+                        nPass += (double.Parse(sMaCurDiff1hTxtBox) <= (mainForm.ea[i].nFs - mainForm.ea[i].maOverN.fCurMa1h) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
+                    if (isMaCurDiff2hTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
+                        nPass += (double.Parse(sMaCurDiff2hTxtBox) <= (mainForm.ea[i].nFs - mainForm.ea[i].maOverN.fCurMa2h) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
+                    if (isMaGapDiff20mTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
+                        nPass += (double.Parse(sMaGapDiff20mTxtBox) <= (mainForm.ea[i].nFs - mainForm.ea[i].maOverN.fCurGapMa20m) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
+                    if (isMaGapDiff1hTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
+                        nPass += (double.Parse(sMaGapDiff1hTxtBox) <= (mainForm.ea[i].nFs - mainForm.ea[i].maOverN.fCurGapMa1h) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
+                    if (isMaGapDiff2hTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
+                        nPass += (double.Parse(sMaGapDiff2hTxtBox) <= (mainForm.ea[i].nFs - mainForm.ea[i].maOverN.fCurGapMa2h) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
+
 
 
 

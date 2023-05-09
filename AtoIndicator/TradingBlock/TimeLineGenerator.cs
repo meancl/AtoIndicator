@@ -5,7 +5,7 @@ namespace AtoTrader.TradingBlock
 {
     internal static class TimeLineGenerator
     {
-        public static void GenerateFrontLine(ref TimeLineManager lineManager, int nBirthTime, int nBirthPrice, int nIter = BRUSH, int? nYesterdayPrice = null)
+        public static void GenerateFrontLine(ref TimeLineManager lineManager, int nBirthTime, int nYesterdayPrice, int nBirthPrice, int nIter = BRUSH)
         {
             try
             {
@@ -29,20 +29,9 @@ namespace AtoTrader.TradingBlock
                     lineManager.arrTimeLine[i].fOverMa0 = nBirthPrice;
                     lineManager.arrTimeLine[i].fOverMa1 = nBirthPrice;
                     lineManager.arrTimeLine[i].fOverMa2 = nBirthPrice;
-
-                    if(nYesterdayPrice == null)
-                    {
-                        lineManager.arrTimeLine[i].fOverMaGap0 = nBirthPrice;
-                        lineManager.arrTimeLine[i].fOverMaGap1 = nBirthPrice;
-                        lineManager.arrTimeLine[i].fOverMaGap2 = nBirthPrice;
-                    }
-                    else
-                    {
-                        lineManager.arrTimeLine[i].fOverMaGap0 = (int)nYesterdayPrice;
-                        lineManager.arrTimeLine[i].fOverMaGap1 = (int)nYesterdayPrice;
-                        lineManager.arrTimeLine[i].fOverMaGap2 = (int)nYesterdayPrice;
-                    }
-
+                    lineManager.arrTimeLine[i].fOverMaGap0 = nYesterdayPrice;
+                    lineManager.arrTimeLine[i].fOverMaGap1 = nYesterdayPrice;
+                    lineManager.arrTimeLine[i].fOverMaGap2 = nYesterdayPrice;
                 }
             }
             catch

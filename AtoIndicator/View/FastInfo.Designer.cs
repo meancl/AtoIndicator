@@ -42,6 +42,10 @@ namespace AtoTrader.View
             this.fakeResistTxtBox = new System.Windows.Forms.TextBox();
             this.totalFakeTxtBox = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.fakeVolatilityMinTxtBox = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.fakeVolatilityTxtBox = new System.Windows.Forms.TextBox();
             this.sellPriceTxtBox = new System.Windows.Forms.TextBox();
             this.label76 = new System.Windows.Forms.Label();
             this.buyPriceTxtBox = new System.Windows.Forms.TextBox();
@@ -149,8 +153,6 @@ namespace AtoTrader.View
             this.label21 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
-            this.totalTrialTxtBox = new System.Windows.Forms.TextBox();
-            this.label18 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
             this.ma2hTxtBox = new System.Windows.Forms.TextBox();
             this.ma1hTxtBox = new System.Windows.Forms.TextBox();
@@ -161,10 +163,29 @@ namespace AtoTrader.View
             this.label14 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.listView1 = new System.Windows.Forms.ListView();
-            this.label3 = new System.Windows.Forms.Label();
-            this.fakeVolatilityTxtBox = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.fakeVolatilityMinTxtBox = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.rankMoveTxtBox = new System.Windows.Forms.TextBox();
+            this.maDiff2hTxtBox = new System.Windows.Forms.TextBox();
+            this.maDiff1hTxtBox = new System.Windows.Forms.TextBox();
+            this.maDiff20mTxtBox = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.maCurDiff2hTxtBox = new System.Windows.Forms.TextBox();
+            this.maCurDiff1hTxtBox = new System.Windows.Forms.TextBox();
+            this.maCurDiff20mTxtBox = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label24 = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
+            this.maGapDiff2hTxtBox = new System.Windows.Forms.TextBox();
+            this.maGapDiff1hTxtBox = new System.Windows.Forms.TextBox();
+            this.maGapDiff20mTxtBox = new System.Windows.Forms.TextBox();
+            this.label31 = new System.Windows.Forms.Label();
+            this.label57 = new System.Windows.Forms.Label();
+            this.label77 = new System.Windows.Forms.Label();
+            this.label78 = new System.Windows.Forms.Label();
+            this.label79 = new System.Windows.Forms.Label();
+            this.label80 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -172,7 +193,7 @@ namespace AtoTrader.View
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(23, 162);
+            this.label1.Location = new System.Drawing.Point(23, 95);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(41, 12);
             this.label1.TabIndex = 1;
@@ -197,7 +218,7 @@ namespace AtoTrader.View
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(90, 160);
+            this.label4.Location = new System.Drawing.Point(90, 93);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(29, 12);
             this.label4.TabIndex = 6;
@@ -206,7 +227,7 @@ namespace AtoTrader.View
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(90, 193);
+            this.label5.Location = new System.Drawing.Point(90, 126);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(29, 12);
             this.label5.TabIndex = 7;
@@ -215,7 +236,7 @@ namespace AtoTrader.View
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(90, 222);
+            this.label6.Location = new System.Drawing.Point(90, 155);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(29, 12);
             this.label6.TabIndex = 8;
@@ -224,7 +245,7 @@ namespace AtoTrader.View
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(90, 320);
+            this.label9.Location = new System.Drawing.Point(90, 223);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(57, 12);
             this.label9.TabIndex = 11;
@@ -232,34 +253,57 @@ namespace AtoTrader.View
             // 
             // fakeBuyTxtBox
             // 
-            this.fakeBuyTxtBox.Location = new System.Drawing.Point(158, 157);
+            this.fakeBuyTxtBox.Location = new System.Drawing.Point(158, 90);
             this.fakeBuyTxtBox.Name = "fakeBuyTxtBox";
             this.fakeBuyTxtBox.Size = new System.Drawing.Size(100, 21);
             this.fakeBuyTxtBox.TabIndex = 12;
             // 
             // fakeAssistantTxtBox
             // 
-            this.fakeAssistantTxtBox.Location = new System.Drawing.Point(158, 190);
+            this.fakeAssistantTxtBox.Location = new System.Drawing.Point(158, 123);
             this.fakeAssistantTxtBox.Name = "fakeAssistantTxtBox";
             this.fakeAssistantTxtBox.Size = new System.Drawing.Size(100, 21);
             this.fakeAssistantTxtBox.TabIndex = 13;
             // 
             // fakeResistTxtBox
             // 
-            this.fakeResistTxtBox.Location = new System.Drawing.Point(158, 219);
+            this.fakeResistTxtBox.Location = new System.Drawing.Point(158, 152);
             this.fakeResistTxtBox.Name = "fakeResistTxtBox";
             this.fakeResistTxtBox.Size = new System.Drawing.Size(100, 21);
             this.fakeResistTxtBox.TabIndex = 14;
             // 
             // totalFakeTxtBox
             // 
-            this.totalFakeTxtBox.Location = new System.Drawing.Point(158, 317);
+            this.totalFakeTxtBox.Location = new System.Drawing.Point(158, 220);
             this.totalFakeTxtBox.Name = "totalFakeTxtBox";
             this.totalFakeTxtBox.Size = new System.Drawing.Size(100, 21);
             this.totalFakeTxtBox.TabIndex = 17;
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label80);
+            this.groupBox1.Controls.Add(this.label79);
+            this.groupBox1.Controls.Add(this.label78);
+            this.groupBox1.Controls.Add(this.maGapDiff2hTxtBox);
+            this.groupBox1.Controls.Add(this.maGapDiff1hTxtBox);
+            this.groupBox1.Controls.Add(this.maGapDiff20mTxtBox);
+            this.groupBox1.Controls.Add(this.label31);
+            this.groupBox1.Controls.Add(this.label57);
+            this.groupBox1.Controls.Add(this.label77);
+            this.groupBox1.Controls.Add(this.maCurDiff2hTxtBox);
+            this.groupBox1.Controls.Add(this.maCurDiff1hTxtBox);
+            this.groupBox1.Controls.Add(this.maCurDiff20mTxtBox);
+            this.groupBox1.Controls.Add(this.label18);
+            this.groupBox1.Controls.Add(this.label24);
+            this.groupBox1.Controls.Add(this.label30);
+            this.groupBox1.Controls.Add(this.maDiff2hTxtBox);
+            this.groupBox1.Controls.Add(this.maDiff1hTxtBox);
+            this.groupBox1.Controls.Add(this.maDiff20mTxtBox);
+            this.groupBox1.Controls.Add(this.label10);
+            this.groupBox1.Controls.Add(this.label12);
+            this.groupBox1.Controls.Add(this.label13);
+            this.groupBox1.Controls.Add(this.label8);
+            this.groupBox1.Controls.Add(this.rankMoveTxtBox);
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.fakeVolatilityMinTxtBox);
             this.groupBox1.Controls.Add(this.label3);
@@ -371,8 +415,6 @@ namespace AtoTrader.View
             this.groupBox1.Controls.Add(this.label21);
             this.groupBox1.Controls.Add(this.label20);
             this.groupBox1.Controls.Add(this.label19);
-            this.groupBox1.Controls.Add(this.totalTrialTxtBox);
-            this.groupBox1.Controls.Add(this.label18);
             this.groupBox1.Controls.Add(this.button3);
             this.groupBox1.Controls.Add(this.ma2hTxtBox);
             this.groupBox1.Controls.Add(this.ma1hTxtBox);
@@ -395,13 +437,45 @@ namespace AtoTrader.View
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Left;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(288, 746);
+            this.groupBox1.Size = new System.Drawing.Size(292, 746);
             this.groupBox1.TabIndex = 19;
             this.groupBox1.TabStop = false;
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(90, 583);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(41, 12);
+            this.label7.TabIndex = 174;
+            this.label7.Text = "변동성";
+            // 
+            // fakeVolatilityMinTxtBox
+            // 
+            this.fakeVolatilityMinTxtBox.Location = new System.Drawing.Point(158, 576);
+            this.fakeVolatilityMinTxtBox.Name = "fakeVolatilityMinTxtBox";
+            this.fakeVolatilityMinTxtBox.Size = new System.Drawing.Size(100, 21);
+            this.fakeVolatilityMinTxtBox.TabIndex = 173;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(90, 192);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(41, 12);
+            this.label3.TabIndex = 171;
+            this.label3.Text = "변동성";
+            // 
+            // fakeVolatilityTxtBox
+            // 
+            this.fakeVolatilityTxtBox.Location = new System.Drawing.Point(158, 189);
+            this.fakeVolatilityTxtBox.Name = "fakeVolatilityTxtBox";
+            this.fakeVolatilityTxtBox.Size = new System.Drawing.Size(100, 21);
+            this.fakeVolatilityTxtBox.TabIndex = 172;
+            // 
             // sellPriceTxtBox
             // 
-            this.sellPriceTxtBox.Location = new System.Drawing.Point(454, 99);
+            this.sellPriceTxtBox.Location = new System.Drawing.Point(790, 99);
             this.sellPriceTxtBox.Name = "sellPriceTxtBox";
             this.sellPriceTxtBox.Size = new System.Drawing.Size(100, 21);
             this.sellPriceTxtBox.TabIndex = 170;
@@ -409,7 +483,7 @@ namespace AtoTrader.View
             // label76
             // 
             this.label76.AutoSize = true;
-            this.label76.Location = new System.Drawing.Point(319, 102);
+            this.label76.Location = new System.Drawing.Point(655, 102);
             this.label76.Name = "label76";
             this.label76.Size = new System.Drawing.Size(75, 12);
             this.label76.TabIndex = 169;
@@ -417,7 +491,7 @@ namespace AtoTrader.View
             // 
             // buyPriceTxtBox
             // 
-            this.buyPriceTxtBox.Location = new System.Drawing.Point(454, 73);
+            this.buyPriceTxtBox.Location = new System.Drawing.Point(790, 73);
             this.buyPriceTxtBox.Name = "buyPriceTxtBox";
             this.buyPriceTxtBox.Size = new System.Drawing.Size(100, 21);
             this.buyPriceTxtBox.TabIndex = 168;
@@ -425,7 +499,7 @@ namespace AtoTrader.View
             // label74
             // 
             this.label74.AutoSize = true;
-            this.label74.Location = new System.Drawing.Point(319, 76);
+            this.label74.Location = new System.Drawing.Point(655, 76);
             this.label74.Name = "label74";
             this.label74.Size = new System.Drawing.Size(75, 12);
             this.label74.TabIndex = 167;
@@ -433,7 +507,7 @@ namespace AtoTrader.View
             // 
             // totalTradePriceTxtBox
             // 
-            this.totalTradePriceTxtBox.Location = new System.Drawing.Point(454, 46);
+            this.totalTradePriceTxtBox.Location = new System.Drawing.Point(790, 46);
             this.totalTradePriceTxtBox.Name = "totalTradePriceTxtBox";
             this.totalTradePriceTxtBox.Size = new System.Drawing.Size(100, 21);
             this.totalTradePriceTxtBox.TabIndex = 166;
@@ -441,7 +515,7 @@ namespace AtoTrader.View
             // label75
             // 
             this.label75.AutoSize = true;
-            this.label75.Location = new System.Drawing.Point(319, 49);
+            this.label75.Location = new System.Drawing.Point(655, 49);
             this.label75.Name = "label75";
             this.label75.Size = new System.Drawing.Size(91, 12);
             this.label75.TabIndex = 165;
@@ -449,7 +523,7 @@ namespace AtoTrader.View
             // 
             // minusCnt09TxtBox
             // 
-            this.minusCnt09TxtBox.Location = new System.Drawing.Point(451, 640);
+            this.minusCnt09TxtBox.Location = new System.Drawing.Point(466, 662);
             this.minusCnt09TxtBox.Name = "minusCnt09TxtBox";
             this.minusCnt09TxtBox.Size = new System.Drawing.Size(100, 21);
             this.minusCnt09TxtBox.TabIndex = 164;
@@ -457,7 +531,7 @@ namespace AtoTrader.View
             // label72
             // 
             this.label72.AutoSize = true;
-            this.label72.Location = new System.Drawing.Point(316, 643);
+            this.label72.Location = new System.Drawing.Point(331, 665);
             this.label72.Name = "label72";
             this.label72.Size = new System.Drawing.Size(41, 12);
             this.label72.TabIndex = 163;
@@ -465,7 +539,7 @@ namespace AtoTrader.View
             // 
             // plusCnt09TxtBox
             // 
-            this.plusCnt09TxtBox.Location = new System.Drawing.Point(451, 612);
+            this.plusCnt09TxtBox.Location = new System.Drawing.Point(466, 634);
             this.plusCnt09TxtBox.Name = "plusCnt09TxtBox";
             this.plusCnt09TxtBox.Size = new System.Drawing.Size(100, 21);
             this.plusCnt09TxtBox.TabIndex = 162;
@@ -473,7 +547,7 @@ namespace AtoTrader.View
             // label73
             // 
             this.label73.AutoSize = true;
-            this.label73.Location = new System.Drawing.Point(316, 615);
+            this.label73.Location = new System.Drawing.Point(331, 637);
             this.label73.Name = "label73";
             this.label73.Size = new System.Drawing.Size(41, 12);
             this.label73.TabIndex = 161;
@@ -481,7 +555,7 @@ namespace AtoTrader.View
             // 
             // minusCnt07TxtBox
             // 
-            this.minusCnt07TxtBox.Location = new System.Drawing.Point(451, 583);
+            this.minusCnt07TxtBox.Location = new System.Drawing.Point(466, 605);
             this.minusCnt07TxtBox.Name = "minusCnt07TxtBox";
             this.minusCnt07TxtBox.Size = new System.Drawing.Size(100, 21);
             this.minusCnt07TxtBox.TabIndex = 160;
@@ -489,7 +563,7 @@ namespace AtoTrader.View
             // label71
             // 
             this.label71.AutoSize = true;
-            this.label71.Location = new System.Drawing.Point(316, 586);
+            this.label71.Location = new System.Drawing.Point(331, 608);
             this.label71.Name = "label71";
             this.label71.Size = new System.Drawing.Size(41, 12);
             this.label71.TabIndex = 159;
@@ -497,7 +571,7 @@ namespace AtoTrader.View
             // 
             // plusCnt07TxtBox
             // 
-            this.plusCnt07TxtBox.Location = new System.Drawing.Point(451, 555);
+            this.plusCnt07TxtBox.Location = new System.Drawing.Point(466, 577);
             this.plusCnt07TxtBox.Name = "plusCnt07TxtBox";
             this.plusCnt07TxtBox.Size = new System.Drawing.Size(100, 21);
             this.plusCnt07TxtBox.TabIndex = 158;
@@ -505,7 +579,7 @@ namespace AtoTrader.View
             // label69
             // 
             this.label69.AutoSize = true;
-            this.label69.Location = new System.Drawing.Point(316, 558);
+            this.label69.Location = new System.Drawing.Point(331, 580);
             this.label69.Name = "label69";
             this.label69.Size = new System.Drawing.Size(41, 12);
             this.label69.TabIndex = 157;
@@ -513,7 +587,7 @@ namespace AtoTrader.View
             // 
             // downPowerJarTxtBox
             // 
-            this.downPowerJarTxtBox.Location = new System.Drawing.Point(451, 530);
+            this.downPowerJarTxtBox.Location = new System.Drawing.Point(466, 552);
             this.downPowerJarTxtBox.Name = "downPowerJarTxtBox";
             this.downPowerJarTxtBox.Size = new System.Drawing.Size(100, 21);
             this.downPowerJarTxtBox.TabIndex = 156;
@@ -521,7 +595,7 @@ namespace AtoTrader.View
             // label70
             // 
             this.label70.AutoSize = true;
-            this.label70.Location = new System.Drawing.Point(316, 533);
+            this.label70.Location = new System.Drawing.Point(331, 555);
             this.label70.Name = "label70";
             this.label70.Size = new System.Drawing.Size(89, 12);
             this.label70.TabIndex = 155;
@@ -529,7 +603,7 @@ namespace AtoTrader.View
             // 
             // upPowerJarTxtBox
             // 
-            this.upPowerJarTxtBox.Location = new System.Drawing.Point(451, 505);
+            this.upPowerJarTxtBox.Location = new System.Drawing.Point(466, 527);
             this.upPowerJarTxtBox.Name = "upPowerJarTxtBox";
             this.upPowerJarTxtBox.Size = new System.Drawing.Size(100, 21);
             this.upPowerJarTxtBox.TabIndex = 154;
@@ -537,7 +611,7 @@ namespace AtoTrader.View
             // label68
             // 
             this.label68.AutoSize = true;
-            this.label68.Location = new System.Drawing.Point(316, 508);
+            this.label68.Location = new System.Drawing.Point(331, 530);
             this.label68.Name = "label68";
             this.label68.Size = new System.Drawing.Size(72, 12);
             this.label68.TabIndex = 153;
@@ -545,7 +619,7 @@ namespace AtoTrader.View
             // 
             // powerJarTxtBox
             // 
-            this.powerJarTxtBox.Location = new System.Drawing.Point(451, 478);
+            this.powerJarTxtBox.Location = new System.Drawing.Point(466, 500);
             this.powerJarTxtBox.Name = "powerJarTxtBox";
             this.powerJarTxtBox.Size = new System.Drawing.Size(100, 21);
             this.powerJarTxtBox.TabIndex = 152;
@@ -553,7 +627,7 @@ namespace AtoTrader.View
             // label67
             // 
             this.label67.AutoSize = true;
-            this.label67.Location = new System.Drawing.Point(316, 481);
+            this.label67.Location = new System.Drawing.Point(331, 503);
             this.label67.Name = "label67";
             this.label67.Size = new System.Drawing.Size(57, 12);
             this.label67.TabIndex = 151;
@@ -562,7 +636,7 @@ namespace AtoTrader.View
             // label66
             // 
             this.label66.AutoSize = true;
-            this.label66.Location = new System.Drawing.Point(1031, 599);
+            this.label66.Location = new System.Drawing.Point(1031, 657);
             this.label66.Name = "label66";
             this.label66.Size = new System.Drawing.Size(29, 12);
             this.label66.TabIndex = 150;
@@ -570,7 +644,7 @@ namespace AtoTrader.View
             // 
             // minTotalRankTxtBox
             // 
-            this.minTotalRankTxtBox.Location = new System.Drawing.Point(1099, 596);
+            this.minTotalRankTxtBox.Location = new System.Drawing.Point(1099, 654);
             this.minTotalRankTxtBox.Name = "minTotalRankTxtBox";
             this.minTotalRankTxtBox.Size = new System.Drawing.Size(100, 21);
             this.minTotalRankTxtBox.TabIndex = 149;
@@ -594,7 +668,7 @@ namespace AtoTrader.View
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(1031, 388);
+            this.label11.Location = new System.Drawing.Point(1031, 446);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(29, 12);
             this.label11.TabIndex = 144;
@@ -603,7 +677,7 @@ namespace AtoTrader.View
             // label59
             // 
             this.label59.AutoSize = true;
-            this.label59.Location = new System.Drawing.Point(1031, 565);
+            this.label59.Location = new System.Drawing.Point(1031, 623);
             this.label59.Name = "label59";
             this.label59.Size = new System.Drawing.Size(53, 12);
             this.label59.TabIndex = 143;
@@ -612,7 +686,7 @@ namespace AtoTrader.View
             // label60
             // 
             this.label60.AutoSize = true;
-            this.label60.Location = new System.Drawing.Point(1031, 536);
+            this.label60.Location = new System.Drawing.Point(1031, 594);
             this.label60.Name = "label60";
             this.label60.Size = new System.Drawing.Size(53, 12);
             this.label60.TabIndex = 142;
@@ -620,14 +694,14 @@ namespace AtoTrader.View
             // 
             // minTradePriceRankTxtBox
             // 
-            this.minTradePriceRankTxtBox.Location = new System.Drawing.Point(1099, 532);
+            this.minTradePriceRankTxtBox.Location = new System.Drawing.Point(1099, 590);
             this.minTradePriceRankTxtBox.Name = "minTradePriceRankTxtBox";
             this.minTradePriceRankTxtBox.Size = new System.Drawing.Size(100, 21);
             this.minTradePriceRankTxtBox.TabIndex = 141;
             // 
             // minTradeVolumeRankTxtBox
             // 
-            this.minTradeVolumeRankTxtBox.Location = new System.Drawing.Point(1099, 562);
+            this.minTradeVolumeRankTxtBox.Location = new System.Drawing.Point(1099, 620);
             this.minTradeVolumeRankTxtBox.Name = "minTradeVolumeRankTxtBox";
             this.minTradeVolumeRankTxtBox.Size = new System.Drawing.Size(100, 21);
             this.minTradeVolumeRankTxtBox.TabIndex = 140;
@@ -635,7 +709,7 @@ namespace AtoTrader.View
             // label61
             // 
             this.label61.AutoSize = true;
-            this.label61.Location = new System.Drawing.Point(1031, 506);
+            this.label61.Location = new System.Drawing.Point(1031, 564);
             this.label61.Name = "label61";
             this.label61.Size = new System.Drawing.Size(53, 12);
             this.label61.TabIndex = 139;
@@ -644,7 +718,7 @@ namespace AtoTrader.View
             // label62
             // 
             this.label62.AutoSize = true;
-            this.label62.Location = new System.Drawing.Point(1031, 477);
+            this.label62.Location = new System.Drawing.Point(1031, 535);
             this.label62.Name = "label62";
             this.label62.Size = new System.Drawing.Size(53, 12);
             this.label62.TabIndex = 138;
@@ -652,14 +726,14 @@ namespace AtoTrader.View
             // 
             // minBuyPriceTxtBox
             // 
-            this.minBuyPriceTxtBox.Location = new System.Drawing.Point(1099, 473);
+            this.minBuyPriceTxtBox.Location = new System.Drawing.Point(1099, 531);
             this.minBuyPriceTxtBox.Name = "minBuyPriceTxtBox";
             this.minBuyPriceTxtBox.Size = new System.Drawing.Size(100, 21);
             this.minBuyPriceTxtBox.TabIndex = 137;
             // 
             // minBuyVolumeTxtBox
             // 
-            this.minBuyVolumeTxtBox.Location = new System.Drawing.Point(1099, 503);
+            this.minBuyVolumeTxtBox.Location = new System.Drawing.Point(1099, 561);
             this.minBuyVolumeTxtBox.Name = "minBuyVolumeTxtBox";
             this.minBuyVolumeTxtBox.Size = new System.Drawing.Size(100, 21);
             this.minBuyVolumeTxtBox.TabIndex = 136;
@@ -667,7 +741,7 @@ namespace AtoTrader.View
             // label63
             // 
             this.label63.AutoSize = true;
-            this.label63.Location = new System.Drawing.Point(1031, 445);
+            this.label63.Location = new System.Drawing.Point(1031, 503);
             this.label63.Name = "label63";
             this.label63.Size = new System.Drawing.Size(29, 12);
             this.label63.TabIndex = 135;
@@ -676,7 +750,7 @@ namespace AtoTrader.View
             // label64
             // 
             this.label64.AutoSize = true;
-            this.label64.Location = new System.Drawing.Point(1031, 416);
+            this.label64.Location = new System.Drawing.Point(1031, 474);
             this.label64.Name = "label64";
             this.label64.Size = new System.Drawing.Size(41, 12);
             this.label64.TabIndex = 134;
@@ -684,21 +758,21 @@ namespace AtoTrader.View
             // 
             // minUpDownRankTxtBox
             // 
-            this.minUpDownRankTxtBox.Location = new System.Drawing.Point(1099, 412);
+            this.minUpDownRankTxtBox.Location = new System.Drawing.Point(1099, 470);
             this.minUpDownRankTxtBox.Name = "minUpDownRankTxtBox";
             this.minUpDownRankTxtBox.Size = new System.Drawing.Size(100, 21);
             this.minUpDownRankTxtBox.TabIndex = 133;
             // 
             // minPowerRankTxtBox
             // 
-            this.minPowerRankTxtBox.Location = new System.Drawing.Point(1099, 442);
+            this.minPowerRankTxtBox.Location = new System.Drawing.Point(1099, 500);
             this.minPowerRankTxtBox.Name = "minPowerRankTxtBox";
             this.minPowerRankTxtBox.Size = new System.Drawing.Size(100, 21);
             this.minPowerRankTxtBox.TabIndex = 132;
             // 
             // minSpeedRankTxtBox
             // 
-            this.minSpeedRankTxtBox.Location = new System.Drawing.Point(1098, 385);
+            this.minSpeedRankTxtBox.Location = new System.Drawing.Point(1098, 443);
             this.minSpeedRankTxtBox.Name = "minSpeedRankTxtBox";
             this.minSpeedRankTxtBox.Size = new System.Drawing.Size(100, 21);
             this.minSpeedRankTxtBox.TabIndex = 131;
@@ -706,7 +780,7 @@ namespace AtoTrader.View
             // label58
             // 
             this.label58.AutoSize = true;
-            this.label58.Location = new System.Drawing.Point(946, 357);
+            this.label58.Location = new System.Drawing.Point(946, 415);
             this.label58.Name = "label58";
             this.label58.Size = new System.Drawing.Size(67, 12);
             this.label58.TabIndex = 130;
@@ -819,28 +893,28 @@ namespace AtoTrader.View
             // 
             // shareHogaTxtBox
             // 
-            this.shareHogaTxtBox.Location = new System.Drawing.Point(822, 590);
+            this.shareHogaTxtBox.Location = new System.Drawing.Point(810, 512);
             this.shareHogaTxtBox.Name = "shareHogaTxtBox";
             this.shareHogaTxtBox.Size = new System.Drawing.Size(100, 21);
             this.shareHogaTxtBox.TabIndex = 114;
             // 
             // shareTradeTxtBox
             // 
-            this.shareTradeTxtBox.Location = new System.Drawing.Point(822, 560);
+            this.shareTradeTxtBox.Location = new System.Drawing.Point(810, 482);
             this.shareTradeTxtBox.Name = "shareTradeTxtBox";
             this.shareTradeTxtBox.Size = new System.Drawing.Size(100, 21);
             this.shareTradeTxtBox.TabIndex = 113;
             // 
             // pureTradeTxtBox
             // 
-            this.pureTradeTxtBox.Location = new System.Drawing.Point(822, 500);
+            this.pureTradeTxtBox.Location = new System.Drawing.Point(810, 422);
             this.pureTradeTxtBox.Name = "pureTradeTxtBox";
             this.pureTradeTxtBox.Size = new System.Drawing.Size(100, 21);
             this.pureTradeTxtBox.TabIndex = 112;
             // 
             // hogaTradeTxtBox
             // 
-            this.hogaTradeTxtBox.Location = new System.Drawing.Point(822, 533);
+            this.hogaTradeTxtBox.Location = new System.Drawing.Point(810, 455);
             this.hogaTradeTxtBox.Name = "hogaTradeTxtBox";
             this.hogaTradeTxtBox.Size = new System.Drawing.Size(100, 21);
             this.hogaTradeTxtBox.TabIndex = 111;
@@ -848,7 +922,7 @@ namespace AtoTrader.View
             // label44
             // 
             this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(722, 593);
+            this.label44.Location = new System.Drawing.Point(710, 515);
             this.label44.Name = "label44";
             this.label44.Size = new System.Drawing.Size(73, 12);
             this.label44.TabIndex = 110;
@@ -857,7 +931,7 @@ namespace AtoTrader.View
             // label45
             // 
             this.label45.AutoSize = true;
-            this.label45.Location = new System.Drawing.Point(722, 564);
+            this.label45.Location = new System.Drawing.Point(710, 486);
             this.label45.Name = "label45";
             this.label45.Size = new System.Drawing.Size(73, 12);
             this.label45.TabIndex = 109;
@@ -866,7 +940,7 @@ namespace AtoTrader.View
             // label46
             // 
             this.label46.AutoSize = true;
-            this.label46.Location = new System.Drawing.Point(722, 534);
+            this.label46.Location = new System.Drawing.Point(710, 456);
             this.label46.Name = "label46";
             this.label46.Size = new System.Drawing.Size(73, 12);
             this.label46.TabIndex = 108;
@@ -875,7 +949,7 @@ namespace AtoTrader.View
             // label47
             // 
             this.label47.AutoSize = true;
-            this.label47.Location = new System.Drawing.Point(722, 505);
+            this.label47.Location = new System.Drawing.Point(710, 427);
             this.label47.Name = "label47";
             this.label47.Size = new System.Drawing.Size(85, 12);
             this.label47.TabIndex = 107;
@@ -884,7 +958,7 @@ namespace AtoTrader.View
             // label48
             // 
             this.label48.AutoSize = true;
-            this.label48.Location = new System.Drawing.Point(722, 473);
+            this.label48.Location = new System.Drawing.Point(710, 395);
             this.label48.Name = "label48";
             this.label48.Size = new System.Drawing.Size(65, 12);
             this.label48.TabIndex = 106;
@@ -893,7 +967,7 @@ namespace AtoTrader.View
             // label49
             // 
             this.label49.AutoSize = true;
-            this.label49.Location = new System.Drawing.Point(722, 444);
+            this.label49.Location = new System.Drawing.Point(710, 366);
             this.label49.Name = "label49";
             this.label49.Size = new System.Drawing.Size(65, 12);
             this.label49.TabIndex = 105;
@@ -901,14 +975,14 @@ namespace AtoTrader.View
             // 
             // hogaCntTxtBox
             // 
-            this.hogaCntTxtBox.Location = new System.Drawing.Point(822, 441);
+            this.hogaCntTxtBox.Location = new System.Drawing.Point(810, 363);
             this.hogaCntTxtBox.Name = "hogaCntTxtBox";
             this.hogaCntTxtBox.Size = new System.Drawing.Size(100, 21);
             this.hogaCntTxtBox.TabIndex = 104;
             // 
             // chegyulCntTxtBox
             // 
-            this.chegyulCntTxtBox.Location = new System.Drawing.Point(822, 468);
+            this.chegyulCntTxtBox.Location = new System.Drawing.Point(810, 390);
             this.chegyulCntTxtBox.Name = "chegyulCntTxtBox";
             this.chegyulCntTxtBox.Size = new System.Drawing.Size(100, 21);
             this.chegyulCntTxtBox.TabIndex = 103;
@@ -916,7 +990,7 @@ namespace AtoTrader.View
             // label43
             // 
             this.label43.AutoSize = true;
-            this.label43.Location = new System.Drawing.Point(643, 444);
+            this.label43.Location = new System.Drawing.Point(631, 366);
             this.label43.Name = "label43";
             this.label43.Size = new System.Drawing.Size(53, 12);
             this.label43.TabIndex = 102;
@@ -925,7 +999,7 @@ namespace AtoTrader.View
             // label41
             // 
             this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(722, 342);
+            this.label41.Location = new System.Drawing.Point(722, 308);
             this.label41.Name = "label41";
             this.label41.Size = new System.Drawing.Size(51, 12);
             this.label41.TabIndex = 100;
@@ -934,7 +1008,7 @@ namespace AtoTrader.View
             // label42
             // 
             this.label42.AutoSize = true;
-            this.label42.Location = new System.Drawing.Point(722, 313);
+            this.label42.Location = new System.Drawing.Point(722, 279);
             this.label42.Name = "label42";
             this.label42.Size = new System.Drawing.Size(43, 12);
             this.label42.TabIndex = 99;
@@ -942,14 +1016,14 @@ namespace AtoTrader.View
             // 
             // iAngleTxtBox
             // 
-            this.iAngleTxtBox.Location = new System.Drawing.Point(790, 309);
+            this.iAngleTxtBox.Location = new System.Drawing.Point(790, 275);
             this.iAngleTxtBox.Name = "iAngleTxtBox";
             this.iAngleTxtBox.Size = new System.Drawing.Size(100, 21);
             this.iAngleTxtBox.TabIndex = 98;
             // 
             // mAngleTxtBox
             // 
-            this.mAngleTxtBox.Location = new System.Drawing.Point(790, 339);
+            this.mAngleTxtBox.Location = new System.Drawing.Point(790, 305);
             this.mAngleTxtBox.Name = "mAngleTxtBox";
             this.mAngleTxtBox.Size = new System.Drawing.Size(100, 21);
             this.mAngleTxtBox.TabIndex = 97;
@@ -957,7 +1031,7 @@ namespace AtoTrader.View
             // label39
             // 
             this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(722, 283);
+            this.label39.Location = new System.Drawing.Point(722, 249);
             this.label39.Name = "label39";
             this.label39.Size = new System.Drawing.Size(47, 12);
             this.label39.TabIndex = 96;
@@ -966,7 +1040,7 @@ namespace AtoTrader.View
             // label40
             // 
             this.label40.AutoSize = true;
-            this.label40.Location = new System.Drawing.Point(722, 254);
+            this.label40.Location = new System.Drawing.Point(722, 220);
             this.label40.Name = "label40";
             this.label40.Size = new System.Drawing.Size(44, 12);
             this.label40.TabIndex = 95;
@@ -974,14 +1048,14 @@ namespace AtoTrader.View
             // 
             // rAngleTxtBox
             // 
-            this.rAngleTxtBox.Location = new System.Drawing.Point(790, 250);
+            this.rAngleTxtBox.Location = new System.Drawing.Point(790, 216);
             this.rAngleTxtBox.Name = "rAngleTxtBox";
             this.rAngleTxtBox.Size = new System.Drawing.Size(100, 21);
             this.rAngleTxtBox.TabIndex = 94;
             // 
             // dAngleTxtBox
             // 
-            this.dAngleTxtBox.Location = new System.Drawing.Point(790, 280);
+            this.dAngleTxtBox.Location = new System.Drawing.Point(790, 246);
             this.dAngleTxtBox.Name = "dAngleTxtBox";
             this.dAngleTxtBox.Size = new System.Drawing.Size(100, 21);
             this.dAngleTxtBox.TabIndex = 93;
@@ -989,7 +1063,7 @@ namespace AtoTrader.View
             // label38
             // 
             this.label38.AutoSize = true;
-            this.label38.Location = new System.Drawing.Point(722, 222);
+            this.label38.Location = new System.Drawing.Point(722, 188);
             this.label38.Name = "label38";
             this.label38.Size = new System.Drawing.Size(47, 12);
             this.label38.TabIndex = 92;
@@ -998,7 +1072,7 @@ namespace AtoTrader.View
             // label36
             // 
             this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(722, 193);
+            this.label36.Location = new System.Drawing.Point(722, 159);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(43, 12);
             this.label36.TabIndex = 91;
@@ -1006,14 +1080,14 @@ namespace AtoTrader.View
             // 
             // tAngleTxtBox
             // 
-            this.tAngleTxtBox.Location = new System.Drawing.Point(790, 189);
+            this.tAngleTxtBox.Location = new System.Drawing.Point(790, 155);
             this.tAngleTxtBox.Name = "tAngleTxtBox";
             this.tAngleTxtBox.Size = new System.Drawing.Size(100, 21);
             this.tAngleTxtBox.TabIndex = 90;
             // 
             // hAngleTxtBox
             // 
-            this.hAngleTxtBox.Location = new System.Drawing.Point(790, 219);
+            this.hAngleTxtBox.Location = new System.Drawing.Point(790, 185);
             this.hAngleTxtBox.Name = "hAngleTxtBox";
             this.hAngleTxtBox.Size = new System.Drawing.Size(100, 21);
             this.hAngleTxtBox.TabIndex = 89;
@@ -1021,7 +1095,7 @@ namespace AtoTrader.View
             // label35
             // 
             this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(655, 192);
+            this.label35.Location = new System.Drawing.Point(655, 158);
             this.label35.Name = "label35";
             this.label35.Size = new System.Drawing.Size(29, 12);
             this.label35.TabIndex = 88;
@@ -1029,7 +1103,7 @@ namespace AtoTrader.View
             // 
             // minDownDepthTxtBox
             // 
-            this.minDownDepthTxtBox.Location = new System.Drawing.Point(158, 571);
+            this.minDownDepthTxtBox.Location = new System.Drawing.Point(158, 432);
             this.minDownDepthTxtBox.Name = "minDownDepthTxtBox";
             this.minDownDepthTxtBox.Size = new System.Drawing.Size(100, 21);
             this.minDownDepthTxtBox.TabIndex = 86;
@@ -1037,7 +1111,7 @@ namespace AtoTrader.View
             // label34
             // 
             this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(23, 574);
+            this.label34.Location = new System.Drawing.Point(23, 435);
             this.label34.Name = "label34";
             this.label34.Size = new System.Drawing.Size(81, 12);
             this.label34.TabIndex = 85;
@@ -1045,7 +1119,7 @@ namespace AtoTrader.View
             // 
             // downDepthTxtBox
             // 
-            this.downDepthTxtBox.Location = new System.Drawing.Point(158, 541);
+            this.downDepthTxtBox.Location = new System.Drawing.Point(158, 402);
             this.downDepthTxtBox.Name = "downDepthTxtBox";
             this.downDepthTxtBox.Size = new System.Drawing.Size(100, 21);
             this.downDepthTxtBox.TabIndex = 84;
@@ -1053,7 +1127,7 @@ namespace AtoTrader.View
             // label33
             // 
             this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(23, 544);
+            this.label33.Location = new System.Drawing.Point(23, 405);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(53, 12);
             this.label33.TabIndex = 83;
@@ -1061,7 +1135,7 @@ namespace AtoTrader.View
             // 
             // powerTxtBox
             // 
-            this.powerTxtBox.Location = new System.Drawing.Point(158, 506);
+            this.powerTxtBox.Location = new System.Drawing.Point(158, 367);
             this.powerTxtBox.Name = "powerTxtBox";
             this.powerTxtBox.Size = new System.Drawing.Size(100, 21);
             this.powerTxtBox.TabIndex = 82;
@@ -1069,7 +1143,7 @@ namespace AtoTrader.View
             // label37
             // 
             this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(23, 509);
+            this.label37.Location = new System.Drawing.Point(23, 370);
             this.label37.Name = "label37";
             this.label37.Size = new System.Drawing.Size(53, 12);
             this.label37.TabIndex = 81;
@@ -1077,7 +1151,7 @@ namespace AtoTrader.View
             // 
             // totalFakePassTxtBox
             // 
-            this.totalFakePassTxtBox.Location = new System.Drawing.Point(158, 379);
+            this.totalFakePassTxtBox.Location = new System.Drawing.Point(158, 248);
             this.totalFakePassTxtBox.Name = "totalFakePassTxtBox";
             this.totalFakePassTxtBox.Size = new System.Drawing.Size(100, 21);
             this.totalFakePassTxtBox.TabIndex = 72;
@@ -1085,7 +1159,7 @@ namespace AtoTrader.View
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(90, 382);
+            this.label32.Location = new System.Drawing.Point(90, 251);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(29, 12);
             this.label32.TabIndex = 71;
@@ -1094,7 +1168,7 @@ namespace AtoTrader.View
             // label26
             // 
             this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(409, 158);
+            this.label26.Location = new System.Drawing.Point(90, 491);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(29, 12);
             this.label26.TabIndex = 64;
@@ -1103,7 +1177,7 @@ namespace AtoTrader.View
             // label27
             // 
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(409, 191);
+            this.label27.Location = new System.Drawing.Point(90, 524);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(29, 12);
             this.label27.TabIndex = 65;
@@ -1112,7 +1186,7 @@ namespace AtoTrader.View
             // label28
             // 
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(409, 220);
+            this.label28.Location = new System.Drawing.Point(90, 553);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(29, 12);
             this.label28.TabIndex = 66;
@@ -1121,7 +1195,7 @@ namespace AtoTrader.View
             // label29
             // 
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(409, 318);
+            this.label29.Location = new System.Drawing.Point(90, 616);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(57, 12);
             this.label29.TabIndex = 69;
@@ -1129,14 +1203,14 @@ namespace AtoTrader.View
             // 
             // totalFakeMinTxtBox
             // 
-            this.totalFakeMinTxtBox.Location = new System.Drawing.Point(477, 311);
+            this.totalFakeMinTxtBox.Location = new System.Drawing.Point(158, 609);
             this.totalFakeMinTxtBox.Name = "totalFakeMinTxtBox";
             this.totalFakeMinTxtBox.Size = new System.Drawing.Size(100, 21);
             this.totalFakeMinTxtBox.TabIndex = 61;
             // 
             // fakeResistMinTxtBox
             // 
-            this.fakeResistMinTxtBox.Location = new System.Drawing.Point(477, 213);
+            this.fakeResistMinTxtBox.Location = new System.Drawing.Point(158, 546);
             this.fakeResistMinTxtBox.Name = "fakeResistMinTxtBox";
             this.fakeResistMinTxtBox.Size = new System.Drawing.Size(100, 21);
             this.fakeResistMinTxtBox.TabIndex = 58;
@@ -1144,22 +1218,22 @@ namespace AtoTrader.View
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(302, 160);
+            this.label25.Location = new System.Drawing.Point(23, 489);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(69, 12);
+            this.label25.Size = new System.Drawing.Size(41, 12);
             this.label25.TabIndex = 50;
-            this.label25.Text = "페이크 분봉";
+            this.label25.Text = "페분봉";
             // 
             // fakeAssistantMinTxtBox
             // 
-            this.fakeAssistantMinTxtBox.Location = new System.Drawing.Point(477, 183);
+            this.fakeAssistantMinTxtBox.Location = new System.Drawing.Point(158, 516);
             this.fakeAssistantMinTxtBox.Name = "fakeAssistantMinTxtBox";
             this.fakeAssistantMinTxtBox.Size = new System.Drawing.Size(100, 21);
             this.fakeAssistantMinTxtBox.TabIndex = 57;
             // 
             // fakeBuyMinTxtBox
             // 
-            this.fakeBuyMinTxtBox.Location = new System.Drawing.Point(477, 151);
+            this.fakeBuyMinTxtBox.Location = new System.Drawing.Point(158, 484);
             this.fakeBuyMinTxtBox.Name = "fakeBuyMinTxtBox";
             this.fakeBuyMinTxtBox.Size = new System.Drawing.Size(100, 21);
             this.fakeBuyMinTxtBox.TabIndex = 56;
@@ -1200,28 +1274,28 @@ namespace AtoTrader.View
             // 
             // hogaGapTxtBox
             // 
-            this.hogaGapTxtBox.Location = new System.Drawing.Point(822, 636);
+            this.hogaGapTxtBox.Location = new System.Drawing.Point(810, 637);
             this.hogaGapTxtBox.Name = "hogaGapTxtBox";
             this.hogaGapTxtBox.Size = new System.Drawing.Size(100, 21);
             this.hogaGapTxtBox.TabIndex = 45;
             // 
             // fsTxtBox
             // 
-            this.fsTxtBox.Location = new System.Drawing.Point(822, 669);
+            this.fsTxtBox.Location = new System.Drawing.Point(810, 670);
             this.fsTxtBox.Name = "fsTxtBox";
             this.fsTxtBox.Size = new System.Drawing.Size(100, 21);
             this.fsTxtBox.TabIndex = 44;
             // 
             // powerWithoutGapTxtBox
             // 
-            this.powerWithoutGapTxtBox.Location = new System.Drawing.Point(158, 472);
+            this.powerWithoutGapTxtBox.Location = new System.Drawing.Point(158, 333);
             this.powerWithoutGapTxtBox.Name = "powerWithoutGapTxtBox";
             this.powerWithoutGapTxtBox.Size = new System.Drawing.Size(100, 21);
             this.powerWithoutGapTxtBox.TabIndex = 43;
             // 
             // startGapTxtBox
             // 
-            this.startGapTxtBox.Location = new System.Drawing.Point(158, 435);
+            this.startGapTxtBox.Location = new System.Drawing.Point(158, 296);
             this.startGapTxtBox.Name = "startGapTxtBox";
             this.startGapTxtBox.Size = new System.Drawing.Size(100, 21);
             this.startGapTxtBox.TabIndex = 42;
@@ -1229,7 +1303,7 @@ namespace AtoTrader.View
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(687, 639);
+            this.label22.Location = new System.Drawing.Point(675, 640);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(41, 12);
             this.label22.TabIndex = 41;
@@ -1238,7 +1312,7 @@ namespace AtoTrader.View
             // label21
             // 
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(687, 672);
+            this.label21.Location = new System.Drawing.Point(675, 673);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(53, 12);
             this.label21.TabIndex = 40;
@@ -1247,7 +1321,7 @@ namespace AtoTrader.View
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(23, 475);
+            this.label20.Location = new System.Drawing.Point(23, 336);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(41, 12);
             this.label20.TabIndex = 39;
@@ -1256,27 +1330,11 @@ namespace AtoTrader.View
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(23, 438);
+            this.label19.Location = new System.Drawing.Point(23, 299);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(41, 12);
             this.label19.TabIndex = 38;
             this.label19.Text = "초기갭";
-            // 
-            // totalTrialTxtBox
-            // 
-            this.totalTrialTxtBox.Location = new System.Drawing.Point(158, 348);
-            this.totalTrialTxtBox.Name = "totalTrialTxtBox";
-            this.totalTrialTxtBox.Size = new System.Drawing.Size(100, 21);
-            this.totalTrialTxtBox.TabIndex = 37;
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(90, 351);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(45, 12);
-            this.label18.TabIndex = 36;
-            this.label18.Text = "총 갯수";
             // 
             // button3
             // 
@@ -1290,21 +1348,21 @@ namespace AtoTrader.View
             // 
             // ma2hTxtBox
             // 
-            this.ma2hTxtBox.Location = new System.Drawing.Point(790, 114);
+            this.ma2hTxtBox.Location = new System.Drawing.Point(466, 99);
             this.ma2hTxtBox.Name = "ma2hTxtBox";
             this.ma2hTxtBox.Size = new System.Drawing.Size(100, 21);
             this.ma2hTxtBox.TabIndex = 31;
             // 
             // ma1hTxtBox
             // 
-            this.ma1hTxtBox.Location = new System.Drawing.Point(790, 86);
+            this.ma1hTxtBox.Location = new System.Drawing.Point(466, 71);
             this.ma1hTxtBox.Name = "ma1hTxtBox";
             this.ma1hTxtBox.Size = new System.Drawing.Size(100, 21);
             this.ma1hTxtBox.TabIndex = 30;
             // 
             // ma20mTxtBox
             // 
-            this.ma20mTxtBox.Location = new System.Drawing.Point(790, 61);
+            this.ma20mTxtBox.Location = new System.Drawing.Point(466, 46);
             this.ma20mTxtBox.Name = "ma20mTxtBox";
             this.ma20mTxtBox.Size = new System.Drawing.Size(100, 21);
             this.ma20mTxtBox.TabIndex = 29;
@@ -1312,7 +1370,7 @@ namespace AtoTrader.View
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(722, 117);
+            this.label17.Location = new System.Drawing.Point(398, 102);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(18, 12);
             this.label17.TabIndex = 28;
@@ -1321,7 +1379,7 @@ namespace AtoTrader.View
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(722, 89);
+            this.label16.Location = new System.Drawing.Point(398, 74);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(18, 12);
             this.label16.TabIndex = 27;
@@ -1330,7 +1388,7 @@ namespace AtoTrader.View
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(722, 64);
+            this.label15.Location = new System.Drawing.Point(398, 49);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(28, 12);
             this.label15.TabIndex = 26;
@@ -1339,7 +1397,7 @@ namespace AtoTrader.View
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(655, 64);
+            this.label14.Location = new System.Drawing.Point(300, 49);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(41, 12);
             this.label14.TabIndex = 25;
@@ -1349,9 +1407,9 @@ namespace AtoTrader.View
             // 
             this.groupBox2.Controls.Add(this.listView1);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(288, 0);
+            this.groupBox2.Location = new System.Drawing.Point(292, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1149, 746);
+            this.groupBox2.Size = new System.Drawing.Size(1145, 746);
             this.groupBox2.TabIndex = 20;
             this.groupBox2.TabStop = false;
             // 
@@ -1362,41 +1420,196 @@ namespace AtoTrader.View
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(3, 17);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(1143, 726);
+            this.listView1.Size = new System.Drawing.Size(1139, 726);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             // 
-            // label3
+            // label8
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(90, 259);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(41, 12);
-            this.label3.TabIndex = 171;
-            this.label3.Text = "변동성";
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(1031, 343);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(53, 12);
+            this.label8.TabIndex = 176;
+            this.label8.Text = "랭크무브";
             // 
-            // fakeVolatilityTxtBox
+            // rankMoveTxtBox
             // 
-            this.fakeVolatilityTxtBox.Location = new System.Drawing.Point(158, 256);
-            this.fakeVolatilityTxtBox.Name = "fakeVolatilityTxtBox";
-            this.fakeVolatilityTxtBox.Size = new System.Drawing.Size(100, 21);
-            this.fakeVolatilityTxtBox.TabIndex = 172;
+            this.rankMoveTxtBox.Location = new System.Drawing.Point(1099, 340);
+            this.rankMoveTxtBox.Name = "rankMoveTxtBox";
+            this.rankMoveTxtBox.Size = new System.Drawing.Size(100, 21);
+            this.rankMoveTxtBox.TabIndex = 175;
             // 
-            // label7
+            // maDiff2hTxtBox
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(409, 250);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(41, 12);
-            this.label7.TabIndex = 174;
-            this.label7.Text = "변동성";
+            this.maDiff2hTxtBox.Location = new System.Drawing.Point(466, 202);
+            this.maDiff2hTxtBox.Name = "maDiff2hTxtBox";
+            this.maDiff2hTxtBox.Size = new System.Drawing.Size(100, 21);
+            this.maDiff2hTxtBox.TabIndex = 182;
             // 
-            // fakeVolatilityMinTxtBox
+            // maDiff1hTxtBox
             // 
-            this.fakeVolatilityMinTxtBox.Location = new System.Drawing.Point(477, 243);
-            this.fakeVolatilityMinTxtBox.Name = "fakeVolatilityMinTxtBox";
-            this.fakeVolatilityMinTxtBox.Size = new System.Drawing.Size(100, 21);
-            this.fakeVolatilityMinTxtBox.TabIndex = 173;
+            this.maDiff1hTxtBox.Location = new System.Drawing.Point(466, 174);
+            this.maDiff1hTxtBox.Name = "maDiff1hTxtBox";
+            this.maDiff1hTxtBox.Size = new System.Drawing.Size(100, 21);
+            this.maDiff1hTxtBox.TabIndex = 181;
+            // 
+            // maDiff20mTxtBox
+            // 
+            this.maDiff20mTxtBox.Location = new System.Drawing.Point(466, 149);
+            this.maDiff20mTxtBox.Name = "maDiff20mTxtBox";
+            this.maDiff20mTxtBox.Size = new System.Drawing.Size(100, 21);
+            this.maDiff20mTxtBox.TabIndex = 180;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(398, 205);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(18, 12);
+            this.label10.TabIndex = 179;
+            this.label10.Text = "2h";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(398, 177);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(18, 12);
+            this.label12.TabIndex = 178;
+            this.label12.Text = "1h";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(398, 152);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(28, 12);
+            this.label13.TabIndex = 177;
+            this.label13.Text = "20m";
+            // 
+            // maCurDiff2hTxtBox
+            // 
+            this.maCurDiff2hTxtBox.Location = new System.Drawing.Point(466, 307);
+            this.maCurDiff2hTxtBox.Name = "maCurDiff2hTxtBox";
+            this.maCurDiff2hTxtBox.Size = new System.Drawing.Size(100, 21);
+            this.maCurDiff2hTxtBox.TabIndex = 188;
+            // 
+            // maCurDiff1hTxtBox
+            // 
+            this.maCurDiff1hTxtBox.Location = new System.Drawing.Point(466, 279);
+            this.maCurDiff1hTxtBox.Name = "maCurDiff1hTxtBox";
+            this.maCurDiff1hTxtBox.Size = new System.Drawing.Size(100, 21);
+            this.maCurDiff1hTxtBox.TabIndex = 187;
+            // 
+            // maCurDiff20mTxtBox
+            // 
+            this.maCurDiff20mTxtBox.Location = new System.Drawing.Point(466, 254);
+            this.maCurDiff20mTxtBox.Name = "maCurDiff20mTxtBox";
+            this.maCurDiff20mTxtBox.Size = new System.Drawing.Size(100, 21);
+            this.maCurDiff20mTxtBox.TabIndex = 186;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(398, 310);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(18, 12);
+            this.label18.TabIndex = 185;
+            this.label18.Text = "2h";
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(398, 282);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(18, 12);
+            this.label24.TabIndex = 184;
+            this.label24.Text = "1h";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(398, 257);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(28, 12);
+            this.label30.TabIndex = 183;
+            this.label30.Text = "20m";
+            // 
+            // maGapDiff2hTxtBox
+            // 
+            this.maGapDiff2hTxtBox.Location = new System.Drawing.Point(466, 413);
+            this.maGapDiff2hTxtBox.Name = "maGapDiff2hTxtBox";
+            this.maGapDiff2hTxtBox.Size = new System.Drawing.Size(100, 21);
+            this.maGapDiff2hTxtBox.TabIndex = 194;
+            // 
+            // maGapDiff1hTxtBox
+            // 
+            this.maGapDiff1hTxtBox.Location = new System.Drawing.Point(466, 385);
+            this.maGapDiff1hTxtBox.Name = "maGapDiff1hTxtBox";
+            this.maGapDiff1hTxtBox.Size = new System.Drawing.Size(100, 21);
+            this.maGapDiff1hTxtBox.TabIndex = 193;
+            // 
+            // maGapDiff20mTxtBox
+            // 
+            this.maGapDiff20mTxtBox.Location = new System.Drawing.Point(466, 360);
+            this.maGapDiff20mTxtBox.Name = "maGapDiff20mTxtBox";
+            this.maGapDiff20mTxtBox.Size = new System.Drawing.Size(100, 21);
+            this.maGapDiff20mTxtBox.TabIndex = 192;
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Location = new System.Drawing.Point(398, 416);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(18, 12);
+            this.label31.TabIndex = 191;
+            this.label31.Text = "2h";
+            // 
+            // label57
+            // 
+            this.label57.AutoSize = true;
+            this.label57.Location = new System.Drawing.Point(398, 388);
+            this.label57.Name = "label57";
+            this.label57.Size = new System.Drawing.Size(18, 12);
+            this.label57.TabIndex = 190;
+            this.label57.Text = "1h";
+            // 
+            // label77
+            // 
+            this.label77.AutoSize = true;
+            this.label77.Location = new System.Drawing.Point(398, 363);
+            this.label77.Name = "label77";
+            this.label77.Size = new System.Drawing.Size(28, 12);
+            this.label77.TabIndex = 189;
+            this.label77.Text = "20m";
+            // 
+            // label78
+            // 
+            this.label78.AutoSize = true;
+            this.label78.Location = new System.Drawing.Point(300, 159);
+            this.label78.Name = "label78";
+            this.label78.Size = new System.Drawing.Size(76, 12);
+            this.label78.TabIndex = 195;
+            this.label78.Text = "이평선 down";
+            // 
+            // label79
+            // 
+            this.label79.AutoSize = true;
+            this.label79.Location = new System.Drawing.Point(300, 263);
+            this.label79.Name = "label79";
+            this.label79.Size = new System.Drawing.Size(63, 12);
+            this.label79.TabIndex = 196;
+            this.label79.Text = "이평선 cur";
+            // 
+            // label80
+            // 
+            this.label80.AutoSize = true;
+            this.label80.Location = new System.Drawing.Point(300, 360);
+            this.label80.Name = "label80";
+            this.label80.Size = new System.Drawing.Size(66, 12);
+            this.label80.TabIndex = 197;
+            this.label80.Text = "이평선 gap";
             // 
             // FastInfo
             // 
@@ -1438,8 +1651,6 @@ namespace AtoTrader.View
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.TextBox totalTrialTxtBox;
-        private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.TextBox hogaGapTxtBox;
         private System.Windows.Forms.TextBox fsTxtBox;
@@ -1551,5 +1762,28 @@ namespace AtoTrader.View
         private System.Windows.Forms.TextBox fakeVolatilityTxtBox;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox fakeVolatilityMinTxtBox;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox rankMoveTxtBox;
+        private System.Windows.Forms.TextBox maGapDiff2hTxtBox;
+        private System.Windows.Forms.TextBox maGapDiff1hTxtBox;
+        private System.Windows.Forms.TextBox maGapDiff20mTxtBox;
+        private System.Windows.Forms.Label label31;
+        private System.Windows.Forms.Label label57;
+        private System.Windows.Forms.Label label77;
+        private System.Windows.Forms.TextBox maCurDiff2hTxtBox;
+        private System.Windows.Forms.TextBox maCurDiff1hTxtBox;
+        private System.Windows.Forms.TextBox maCurDiff20mTxtBox;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.TextBox maDiff2hTxtBox;
+        private System.Windows.Forms.TextBox maDiff1hTxtBox;
+        private System.Windows.Forms.TextBox maDiff20mTxtBox;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label80;
+        private System.Windows.Forms.Label label79;
+        private System.Windows.Forms.Label label78;
     }
 }
