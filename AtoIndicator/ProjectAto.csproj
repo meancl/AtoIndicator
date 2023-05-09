@@ -305,6 +305,14 @@
     <Compile Include="Migrations\20230508120137_mig_add_candle_delete.designer.cs">
       <DependentUpon>20230508120137_mig_add_candle_delete.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20230509121200_mig_add_fake_delete.cs" />
+    <Compile Include="Migrations\20230509121200_mig_add_fake_delete.designer.cs">
+      <DependentUpon>20230509121200_mig_add_fake_delete.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20230509132143_mig_add_renew_fakereports.cs" />
+    <Compile Include="Migrations\20230509132143_mig_add_renew_fakereports.designer.cs">
+      <DependentUpon>20230509132143_mig_add_renew_fakereports.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\myDbContextModelSnapshot.cs" />
     <Compile Include="Models\Constants.cs">
       <SubType>Form</SubType>

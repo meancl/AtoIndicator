@@ -46,8 +46,10 @@ namespace AtoTrader
             public int nAccumUpDownCount;
             public double fAccumUpPower;
             public double fAccumDownPower;
-            
-
+            public int nFirstVolume;
+            public long lFirstPrice;
+            public double fPositiveStickPower;
+            public double fNegativeStickPower;
 
             public MaOverN maOverN;                   // 이동평균선 변수
             public TimeLineManager timeLines1m;       // 차트데이터 변수
@@ -74,12 +76,11 @@ namespace AtoTrader
             // ----------------------------------
             public int nHoldingsCnt; // 보유종목수
             public double fAccumBuyedRatio; // 최대매수기준 현재 비율(추매 시 1을 넘을 수 있음) // 추가??
-            public MyStrategy myStrategy;
+            public FakeVolatilityStrategy fakeVolatilityStrategy;
             public FakeBuyStrategy fakeBuyStrategy;
             public FakeResistStrategy fakeResistStrategy;
             public FakeAssistantStrategy fakeAssistantStrategy;
-            public PriceUpStrategy priceUpStrategy;
-            public PriceDownStrategy priceDownStrategy;
+            public FakeStrategyManager fakeStrategyMgr;
 
             // ----------------------------------
             // 초기 변수
@@ -161,124 +162,150 @@ namespace AtoTrader
                 sequenceStrategy.Init();
                 timeLines1m.Init();
                 reserveMgr.Init();
+                fakeStrategyMgr.Init();
+
 
             }
 
             public void GetFakeFix(FakeReports rep)
             {
-                rep.dTradeTime = DateTime.Today;
-                rep.sCode = sCode;
-                rep.sCodeName = sCodeName;
-                rep.nLocationOfComp = COMPUTER_LOCATION;
+                try
+                {
+                    rep.dTradeTime = DateTime.Today;
+                    rep.sCode = sCode;
+                    rep.sCodeName = sCodeName;
+                    rep.nLocationOfComp = COMPUTER_LOCATION;
 
-                // 개인구조체 정보
-                rep.nFs = nFs;
-                rep.nFb = nFb;
-                rep.fStartGap = fStartGap;
-                rep.sType = sMarketGubunTag;
-                rep.fPowerWithOutGap = fPowerWithoutGap;
-                rep.fPower = fPower;
-                rep.fPlusCnt07 = fPlusCnt07;
-                rep.fMinusCnt07 = fMinusCnt07;
-                rep.fPlusCnt09 = fPlusCnt09;
-                rep.fMinusCnt09 = fMinusCnt09;
-                rep.fPowerJar = fPowerJar;
-                rep.fOnlyDownPowerJar = fOnlyDownPowerJar;
-                rep.fOnlyUpPowerJar = fOnlyUpPowerJar;
-                rep.nChegyulCnt = nChegyulCnt;
-                rep.nNoMoveCnt = nNoMoveCount;
-                rep.nFewSpeedCnt = nFewSpeedCount;
-                rep.nMissCnt = nMissCount;
-                rep.lTotalTradePrice = lTotalTradePrice;
-                rep.lTotalBuyPrice = lOnlyBuyPrice;
-                rep.lTotalSellPrice = lOnlySellPrice;
-                rep.nDownCntMa20m = maOverN.nDownCntMa20m;
-                rep.nDownCntMa1h = maOverN.nDownCntMa1h;
-                rep.nDownCntMa2h = maOverN.nDownCntMa2h;
-                rep.nUpCntMa20m = maOverN.nUpCntMa20m;
-                rep.nUpCntMa1h = maOverN.nUpCntMa1h;
-                rep.nUpCntMa2h = maOverN.nUpCntMa2h;
-                rep.fMaDownFsVal = maOverN.fCurDownFs;
-                rep.fMa20mVal = maOverN.fCurMa20m;
-                rep.fMa1hVal = maOverN.fCurMa1h;
-                rep.fMa2hVal = maOverN.fCurMa2h;
-                rep.fMaxMaDownFsVal = maOverN.fMaxDownFs;
-                rep.fMaxMa20mVal = maOverN.fMaxMa20m;
-                rep.fMaxMa1hVal = maOverN.fMaxMa1h;
-                rep.fMaxMa2hVal = maOverN.fMaxMa2h;
-                rep.nMaxMaDownFsTime = maOverN.nMaxDownFsTime;
-                rep.nMaxMa20mTime = maOverN.nMaxMa20mTime;
-                rep.nMaxMa1hTime = maOverN.nMaxMa1hTime;
-                rep.nMaxMa2hTime = maOverN.nMaxMa2hTime;
-                rep.fIAngle = timeLines1m.fInitAngle;
-                rep.fMAngle = timeLines1m.fMaxAngle;
-                rep.fTAngle = timeLines1m.fTotalMedianAngle;
-                rep.fHAngle = timeLines1m.fHourMedianAngle;
-                rep.fRAngle = timeLines1m.fRecentMedianAngle;
-                rep.fDAngle = timeLines1m.fDAngle;
-                rep.fISlope = timeLines1m.fInitSlope;
-                rep.fMSlope = timeLines1m.fMaxSlope;
-                rep.fTSlope = timeLines1m.fTotalMedian;
-                rep.fHSlope = timeLines1m.fHourMedian;
-                rep.fRSlope = timeLines1m.fRecentMedian;
-                rep.fDSlope = timeLines1m.fMaxSlope - timeLines1m.fInitSlope;
-                rep.fSpeedCur = speedStatus.fCur;
-                rep.fHogaSpeedCur = hogaSpeedStatus.fCur;
-                rep.fTradeCur = tradeStatus.fCur;
-                rep.fPureTradeCur = pureTradeStatus.fCur;
-                rep.fPureBuyCur = pureBuyStatus.fCur;
-                rep.fHogaRatioCur = hogaRatioStatus.fCur;
-                rep.fSharePerHoga = fSharePerHoga;
-                rep.fSharePerTrade = fSharePerTrade;
-                rep.fHogaPerTrade = fHogaPerTrade;
-                rep.fTradePerPure = fTradePerPure;
+                    // 개인구조체 정보
+                    rep.fPositiveStickPower = fPositiveStickPower;
+                    rep.fNegativeStickPower = fNegativeStickPower;
+                    rep.nFirstVolume = nFirstVolume;
+                    rep.lFirstPrice = lFirstPrice;
+                    rep.nFs = nFs;
+                    rep.nFb = nFb;
+                    rep.fStartGap = fStartGap;
+                    rep.sType = sMarketGubunTag;
+                    rep.fPowerWithOutGap = fPowerWithoutGap;
+                    rep.fPower = fPower;
+                    rep.fPlusCnt07 = fPlusCnt07;
+                    rep.fMinusCnt07 = fMinusCnt07;
+                    rep.fPlusCnt09 = fPlusCnt09;
+                    rep.fMinusCnt09 = fMinusCnt09;
+                    rep.fPowerJar = fPowerJar;
+                    rep.fOnlyDownPowerJar = fOnlyDownPowerJar;
+                    rep.fOnlyUpPowerJar = fOnlyUpPowerJar;
+                    rep.nChegyulCnt = nChegyulCnt;
+                    rep.nNoMoveCnt = nNoMoveCount;
+                    rep.nFewSpeedCnt = nFewSpeedCount;
+                    rep.nMissCnt = nMissCount;
+                    rep.lTotalTradePrice = lTotalTradePrice;
+                    rep.lTotalBuyPrice = lOnlyBuyPrice;
+                    rep.lTotalSellPrice = lOnlySellPrice;
+                    rep.nDownCntMa20m = maOverN.nDownCntMa20m;
+                    rep.nDownCntMa1h = maOverN.nDownCntMa1h;
+                    rep.nDownCntMa2h = maOverN.nDownCntMa2h;
+                    rep.nUpCntMa20m = maOverN.nUpCntMa20m;
+                    rep.nUpCntMa1h = maOverN.nUpCntMa1h;
+                    rep.nUpCntMa2h = maOverN.nUpCntMa2h;
+                    rep.fMa20mDiff = (maOverN.fCurDownFs - maOverN.fCurMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+                    rep.fMa1hDiff = (maOverN.fCurDownFs - maOverN.fCurMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+                    rep.fMa2hDiff = (maOverN.fCurDownFs - maOverN.fCurMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+                    rep.fMa20mCurDiff = (nFs - maOverN.fCurMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+                    rep.fMa1hCurDiff = (nFs - maOverN.fCurMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+                    rep.fMa2hCurDiff = (nFs - maOverN.fCurMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+                    rep.fGapMa20mDiff = (maOverN.fCurDownFs - maOverN.fCurGapMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+                    rep.fGapMa1hDiff = (maOverN.fCurDownFs - maOverN.fCurGapMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+                    rep.fGapMa2hDiff = (maOverN.fCurDownFs - maOverN.fCurGapMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+                    rep.fGapMa20mCurDiff = (nFs - maOverN.fCurGapMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+                    rep.fGapMa1hCurDiff = (nFs - maOverN.fCurGapMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+                    rep.fGapMa2hCurDiff = (nFs - maOverN.fCurGapMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+                    rep.fIAngle = timeLines1m.fInitAngle;
+                    rep.fMAngle = timeLines1m.fMaxAngle;
+                    rep.fTAngle = timeLines1m.fTotalMedianAngle;
+                    rep.fHAngle = timeLines1m.fHourMedianAngle;
+                    rep.fRAngle = timeLines1m.fRecentMedianAngle;
+                    rep.fDAngle = timeLines1m.fDAngle;
+                    rep.fISlope = timeLines1m.fInitSlope;
+                    rep.fMSlope = timeLines1m.fMaxSlope;
+                    rep.fTSlope = timeLines1m.fTotalMedian;
+                    rep.fHSlope = timeLines1m.fHourMedian;
+                    rep.fRSlope = timeLines1m.fRecentMedian;
+                    rep.fDSlope = timeLines1m.fMaxSlope - timeLines1m.fInitSlope;
+                    rep.fSpeedCur = speedStatus.fCur;
+                    rep.fHogaSpeedCur = hogaSpeedStatus.fCur;
+                    rep.fTradeCur = tradeStatus.fCur;
+                    rep.fPureTradeCur = pureTradeStatus.fCur;
+                    rep.fPureBuyCur = pureBuyStatus.fCur;
+                    rep.fHogaRatioCur = hogaRatioStatus.fCur;
+                    rep.fSharePerHoga = fSharePerHoga;
+                    rep.fSharePerTrade = fSharePerTrade;
+                    rep.fHogaPerTrade = fHogaPerTrade;
+                    rep.fTradePerPure = fTradePerPure;
 
-                // new
-                rep.nTradeCnt = myStrategy.nApproachNum;
-                rep.nHogaCnt = nHogaCnt;
-                rep.lTotalTradeVolume = lTotalTradeVolume;
-                rep.lTotalBuyVolume = lOnlyBuyVolume;
-                rep.lTotalSellVolume = lOnlySellVolume;
-                rep.nAccumUpDownCount = nAccumUpDownCount;
-                rep.fAccumUpPower = fAccumUpPower;
-                rep.fAccumDownPower = fAccumDownPower;
-                rep.lMarketCap = lFixedMarketCap;
+                    // new
+                    rep.nTradeCnt = fakeVolatilityStrategy.nStrategyNum;
+                    rep.nHogaCnt = nHogaCnt;
+                    rep.lTotalTradeVolume = lTotalTradeVolume;
+                    rep.lTotalBuyVolume = lOnlyBuyVolume;
+                    rep.lTotalSellVolume = lOnlySellVolume;
+                    rep.nAccumUpDownCount = nAccumUpDownCount;
+                    rep.fAccumUpPower = fAccumUpPower;
+                    rep.fAccumDownPower = fAccumDownPower;
+                    rep.lMarketCap = lFixedMarketCap;
 
-                rep.nTotalRank = rankSystem.nSummationRanking;
-                rep.nAccumCountRanking = rankSystem.nAccumCountRanking;
-                rep.nMarketCapRanking = rankSystem.nMarketCapRanking;
-                rep.nPowerRanking = rankSystem.nPowerRanking;
-                rep.nTotalBuyPriceRanking = rankSystem.nTotalBuyPriceRanking;
-                rep.nTotalBuyVolumeRanking = rankSystem.nTotalBuyVolumeRanking;
-                rep.nTotalTradePriceRanking = rankSystem.nTotalTradePriceRanking;
-                rep.nTotalTradeVolumeRanking = rankSystem.nTotalTradeVolumeRanking;
+                    rep.nRankHold10 = rankSystem.nRankHold10;
+                    rep.nRankHold20 = rankSystem.nRankHold20;
+                    rep.nRankHold50 = rankSystem.nRankHold50;
+                    rep.nRankHold100 = rankSystem.nRankHold100;
+                    rep.nRankHold200 = rankSystem.nRankHold200;
+                    rep.nRankHold500 = rankSystem.nRankHold500;
+                    rep.nRankHold1000 = rankSystem.nRankHold1000;
 
-                rep.nMinuteTotalRank = rankSystem.nMinuteSummationRanking;
-                rep.nMinuteBuyPriceRanking = rankSystem.nMinuteBuyPriceRanking;
-                rep.nMinuteBuyVolumeRanking = rankSystem.nMinuteBuyVolumeRanking;
-                rep.nMinuteCountRanking = rankSystem.nMinuteCountRanking;
-                rep.nMinutePowerRanking = rankSystem.nMinutePowerRanking;
-                rep.nMinuteTradePriceRanking = rankSystem.nMinuteTradePriceRanking;
-                rep.nMinuteTradeVolumeRanking = rankSystem.nMinuteTradeVolumeRanking;
-                rep.nMinuteUpDownRanking = rankSystem.nMinuteUpDownRanking;
-                rep.nFakeBuyCnt = fakeBuyStrategy.nStrategyNum;
-                rep.nFakeResistCnt = fakeResistStrategy.nStrategyNum;
-                rep.nFakeAssistantCnt = fakeAssistantStrategy.nStrategyNum;
-                rep.nPriceUpCnt = priceUpStrategy.nStrategyNum;
-                rep.nPriceDownCnt = priceDownStrategy.nStrategyNum;
-                rep.nTotalFakeCnt = rep.nFakeBuyCnt + rep.nFakeAssistantCnt + rep.nFakeResistCnt + rep.nPriceUpCnt + rep.nPriceDownCnt;
-                rep.nTotalFakeMinuteCnt = myStrategy.nTotalFakeMinuteAreaNum;
-                rep.nUpCandleCnt = timeLines1m.upCandleList.Count;
-                rep.nDownCandleCnt = timeLines1m.downCandleList.Count;
-                rep.nUpTailCnt = timeLines1m.upTailList.Count;
-                rep.nDownTailCnt = timeLines1m.downTailList.Count;
-                rep.nShootingCnt = timeLines1m.shootingList.Count;
-                rep.nCrushCnt = crushMinuteManager.nCurCnt;
-                rep.nCrushUpCnt = crushMinuteManager.nUpCnt;
-                rep.nCrushDownCnt = crushMinuteManager.nDownCnt;
-                rep.nCrushSpecialDownCnt = crushMinuteManager.nSpecialDownCnt;
+                    rep.nSummationRankMove = rankSystem.nSummationMove;
+                    rep.nTotalRank = rankSystem.nSummationRanking;
+                    rep.nAccumCountRanking = rankSystem.nAccumCountRanking;
+                    rep.nMarketCapRanking = rankSystem.nMarketCapRanking;
+                    rep.nPowerRanking = rankSystem.nPowerRanking;
+                    rep.nTotalBuyPriceRanking = rankSystem.nTotalBuyPriceRanking;
+                    rep.nTotalBuyVolumeRanking = rankSystem.nTotalBuyVolumeRanking;
+                    rep.nTotalTradePriceRanking = rankSystem.nTotalTradePriceRanking;
+                    rep.nTotalTradeVolumeRanking = rankSystem.nTotalTradeVolumeRanking;
 
-                rep.nYesterdayEndPrice = nYesterdayEndPrice;
+                    rep.nMinuteTotalRank = rankSystem.nMinuteSummationRanking;
+                    rep.nMinuteBuyPriceRanking = rankSystem.nMinuteBuyPriceRanking;
+                    rep.nMinuteBuyVolumeRanking = rankSystem.nMinuteBuyVolumeRanking;
+                    rep.nMinuteCountRanking = rankSystem.nMinuteCountRanking;
+                    rep.nMinutePowerRanking = rankSystem.nMinutePowerRanking;
+                    rep.nMinuteTradePriceRanking = rankSystem.nMinuteTradePriceRanking;
+                    rep.nMinuteTradeVolumeRanking = rankSystem.nMinuteTradeVolumeRanking;
+                    rep.nMinuteUpDownRanking = rankSystem.nMinuteUpDownRanking;
+                    rep.nFakeBuyCnt = fakeBuyStrategy.nStrategyNum;
+                    rep.nFakeResistCnt = fakeResistStrategy.nStrategyNum;
+                    rep.nFakeAssistantCnt = fakeAssistantStrategy.nStrategyNum;
+                    rep.nFakeVolatilityCnt = fakeAssistantStrategy.nStrategyNum;
+                    rep.nFakeBuyMinuteCnt = fakeBuyStrategy.nMinuteLocationCount;
+                    rep.nFakeResistMinuteCnt = fakeResistStrategy.nMinuteLocationCount;
+                    rep.nFakeAssistantMinuteCnt = fakeAssistantStrategy.nMinuteLocationCount;
+                    rep.nFakeVolatilityMinuteCnt = fakeAssistantStrategy.nMinuteLocationCount;
+                    rep.nFakeBuyUpperCnt = fakeBuyStrategy.nUpperCount;
+                    rep.nFakeResistUpperCnt = fakeResistStrategy.nUpperCount;
+                    rep.nFakeAssistantUpperCnt = fakeAssistantStrategy.nUpperCount;
+                    rep.nFakeVolatilityUpperCnt = fakeAssistantStrategy.nUpperCount;
+                    rep.nTotalFakeCnt = fakeStrategyMgr.nTotalFakeCount;
+                    rep.nTotalFakeMinuteCnt = fakeStrategyMgr.nTotalFakeMinuteAreaNum;
+                    rep.nUpCandleCnt = timeLines1m.upCandleList.Count;
+                    rep.nDownCandleCnt = timeLines1m.downCandleList.Count;
+                    rep.nUpTailCnt = timeLines1m.upTailList.Count;
+                    rep.nDownTailCnt = timeLines1m.downTailList.Count;
+                    rep.nShootingCnt = timeLines1m.shootingList.Count;
+                    rep.nCrushCnt = crushMinuteManager.nCurCnt;
+                    rep.nCrushUpCnt = crushMinuteManager.nUpCnt;
+                    rep.nCrushDownCnt = crushMinuteManager.nDownCnt;
+                    rep.nCrushSpecialDownCnt = crushMinuteManager.nSpecialDownCnt;
+
+                    rep.nYesterdayEndPrice = nYesterdayEndPrice;
+                }
+                catch { }
             }
 
             public string GetInfoString()
@@ -294,7 +321,7 @@ namespace AtoTrader
                         $"카운트07  P : {Math.Round(fPlusCnt07, 3)}  M : {Math.Round(fMinusCnt07, 3)}{NEW_LINE}" +
                         $"카운트09  P : {Math.Round(fPlusCnt09, 3)}  M : {Math.Round(fMinusCnt09, 3)}{NEW_LINE}" +
                         $"파워자 : {fPowerJar}{NEW_LINE}" +
-                        $"실매수횟수 : {myStrategy.nStrategyNum}{NEW_LINE}" +
+                        $"실매수횟수 : {fakeVolatilityStrategy.nStrategyNum}{NEW_LINE}" +
                         $"체결카운트 : {nChegyulCnt}{NEW_LINE}" +
                         $"호가카운트 : {nHogaCnt}{NEW_LINE}" +
                         $"노무브 : {nNoMoveCount}{NEW_LINE}" +
@@ -310,10 +337,8 @@ namespace AtoTrader
                         $"페이크매수 : {fakeBuyStrategy.nStrategyNum}{NEW_LINE}" +
                         $"페이크보조 : {fakeAssistantStrategy.nStrategyNum}{NEW_LINE}" +
                         $"페이크저항 : {fakeResistStrategy.nStrategyNum}{NEW_LINE}" +
-                        $"가격업   : {priceUpStrategy.nStrategyNum}{NEW_LINE}" +
-                        $"가격다운 : {priceDownStrategy.nStrategyNum}{NEW_LINE}" +
-                        $"총 Arrow : {fakeBuyStrategy.nStrategyNum + fakeAssistantStrategy.nStrategyNum + fakeResistStrategy.nStrategyNum + priceUpStrategy.nStrategyNum + priceDownStrategy.nStrategyNum}{NEW_LINE}" +
-                        $"총 ArrowMinute : {myStrategy.nTotalFakeMinuteAreaNum}{NEW_LINE}" +
+                        $"총 Arrow : {fakeStrategyMgr.nTotalFakeCount}{NEW_LINE}" +
+                        $"총 ArrowMinute : {fakeStrategyMgr.nTotalFakeMinuteAreaNum}{NEW_LINE}" +
                         $"================= 분 봉 ============={NEW_LINE}" +
                         $"위캔들 : {timeLines1m.upCandleList.Count}{NEW_LINE}" +
                         $"아래캔들 : {timeLines1m.downCandleList.Count}{NEW_LINE}" +
@@ -728,6 +753,8 @@ namespace AtoTrader
             public int nRankHold50; // 총 순위 50위권 이내 유지시간
             public int nRankHold100; // 총 순위 100위권 이내 유지시간
             public int nRankHold200; // 총 순위 200위권 이내 유지시간
+            public int nRankHold500; // 총 순위 500위권 이내 유지시간
+            public int nRankHold1000; // 총 순위 1000위권 이내 유지시간
 
             public Ranking[] arrRanking;
 
@@ -776,6 +803,10 @@ namespace AtoTrader
             public double fCurMa1h;
             public double fCurMa2h;
 
+            public double fCurGapMa20m;
+            public double fCurGapMa1h;
+            public double fCurGapMa2h;
+
             public int nMaxDownFsTime;
             public int nMaxMa20mTime;
             public int nMaxMa1hTime;
@@ -790,16 +821,39 @@ namespace AtoTrader
             public int nDownCntMa2h;
         }
 
+
         /// <summary>
         /// ABOUT 실제전략
         /// </summary>
-        public struct MyStrategy
+        public struct fakeVolatilityStrategy
         {
-            public int[] arrStrategy; // 나의 전략을 담는 배열, 인덱스는 자신만의 전략마다 임의로 설정
-            public int[] arrLastTouch; // 가장최근에 해당전략 요청한 시간
 
+            public int[] arrLastTouch; // 가장최근에 해당전략 요청한 시간
+            public int[] arrStrategy; // 전략당 배열
             public int[] arrMinuteIdx;
             public int[] arrSpecificStrategy; // 배열의 각 슬롯당 전략
+            public int[] arrAssistantTime;
+            public int[] arrAssistantPrice;
+
+            public int nHitNum;
+
+            public int nLastTouchTime;
+            public int nStrategyNum; // 가짜 전략 카운트를 정하는것
+            public double fEverageShoulderPrice; // 사려고 했을때가 고점(어깨에서 머리)이라 가정
+            public int nSumShoulderPrice; // 여러번 사려하면 가격의 합
+            public int nMaxShoulderPrice; // 가장 값이 높았을 경우의 가격
+            public int nUpperCount; // 어깨가 계속해서 올라가는 횟수
+            public bool isSuddenBoom;
+            public int nPrevMaxMinIdx;
+            public int nPrevMaxMinUpperCount;
+            public int nMinuteLocationCount;
+            public int nPrevMinuteIdx;
+
+            public int[] arrPrevMinuteIdx;
+
+
+
+            //
             public int[] arrBuyPrice;
             public int[] arrBuyTime;
 
@@ -815,37 +869,14 @@ namespace AtoTrader
             public bool isManualOrderSignal;
             public int nManualEndurationTime; // 매수버튼을 눌렀는데 한참동안 매수가 안되면 문제가 있는거니 취소
 
-            public int nStrategyNum;
-            public int nLastTouchTime;
-            public double fEverageShoulderPrice; // 사려고 했을때가 고점(어깨에서 머리)이라 가정
-            public int nMaxShoulderPrice; // 가장 값이 높았을 경우의 가격
-            public int nUpperCount; // 어깨가 계속해서 올라가는 횟수
-            public bool isSuddenBoom;
-            public int nPrevMaxMinIdx;
-            public int nPrevMaxMinUpperCount;
-            public int nApproachNum;
             public int nTotalFail;
             // 임시용 
             public bool isOrderCheck;
-            public int[] arrPrevMinuteIdx;
-            public int nPrevMinuteIdx;
+          
             public int nCurBarBuyCount;
-            public int nHitNum;
             public int nFakePrevTimeLineIdx;
-            public int nMinuteLocationCount;
+           
 
-            public List<FakeHistoryPiece> listFakeHistoryPiece;
-            public int nFakeBuyNum;
-            public int nFakeResistNum;
-            public int nFakeAssistantNum;
-            public int nPriceUpNum;
-            public int nPriceDownNum;
-            public int nFakeBuyMinuteAreaNum;
-            public int nFakeResistMinuteAreaNum;
-            public int nFakeAssistantMinuteAreaNum;
-            public int nPriceUpMinuteAreaNum;
-            public int nPriceDownMinuteAreaNum;
-            public int nTotalFakeMinuteAreaNum;
 
             // 페이크 DB 관련 변수
             public int nFakeAccumPassed;
@@ -860,7 +891,7 @@ namespace AtoTrader
 
             public int nTotalBlockCount;
             public int nTotalFakeCount;
-            public List<FakeDBStruct> fd;
+            
             // END-- 페이크 DB 관련 변수
 
 
@@ -882,147 +913,53 @@ namespace AtoTrader
                 nPrevMinuteIdx = -1;
           
               
+            }
+
+        }
+
+
+        public struct FakeStrategyManager
+        {
+            public int nFakePrevTimeLineIdx;
+            public int nSharedPrevMinuteIdx;
+            public int nSharedMinuteLocationCount;
+
+            public List<FakeHistoryPiece> listFakeHistoryPiece;
+            public List<FakeDBRecordInfo> fd;
+
+            public int nFakeBuyNum;
+            public int nFakeResistNum;
+            public int nFakeAssistantNum;
+            public int nFakeVolatilityNum;
+
+            public int nFakeBuyMinuteAreaNum;
+            public int nFakeResistMinuteAreaNum;
+            public int nFakeAssistantMinuteAreaNum;
+            public int nFakeVolatilityMinuteAreaNum;
+
+            public int nTotalFakeMinuteAreaNum;
+            public int nTotalFakeCount;
+
+            public int nFakeAccumPassed;
+            public int nFakeAIJumpDiffMinuteCount;
+            public int nFakeAIPrevTimeLineIdx;
+            public int nFakeAIStepMinuteCount;
+            public int nFakeAccumTried;
+
+
+            public void Init()
+            {
                 listFakeHistoryPiece = new List<FakeHistoryPiece>();
-                fd = new List<FakeDBStruct>();
+                fd = new List<FakeDBRecordInfo>();
             }
 
         }
 
-        /// <summary>
-        /// ABOUT 가격상승
-        /// </summary>
-        public struct PriceUpStrategy
+
+        public class FakeFrame
         {
-            public int[] arrLastTouch; // 가장최근에 해당전략 요청한 시간
-            public int[] arrStrategy; // 전략당 배열
-            public int[] arrMinuteIdx;
-            public int[] arrSpecificStrategy;// 배열의 각 슬롯당 전략
-            public int[] arrUpTime;
-            public int[] arrUpPrice;
+            public int nFakeType;
 
-            public int nHitNum;
-
-            public int nLastTouchTime;
-            public int nStrategyNum; // 가짜 전략 카운트를 정하는것
-            public double fEverageShoulderPrice; // 사려고 했을때가 고점(어깨에서 머리)이라 가정
-            public int nSumShoulderPrice; // 여러번 사려하면 가격의 합
-            public int nMaxShoulderPrice; // 가장 값이 높았을 경우의 가격
-            public int nUpperCount; // 어깨가 계속해서 올라가는 횟수
-            public bool isSuddenBoom;
-            public int nPrevMaxMinIdx;
-            public int nPrevMaxMinUpperCount;
-            public int nPrevMinuteIdx;
-            public int nMinuteLocationCount;
-            // 임시용 
-            public int[] arrPrevMinuteIdx;
-
-            public List<int> listApproachTime1;
-            public List<int> listApproachTime2;
-            public List<int> listApproachTime3;
-            public List<int> listApproachTime4;
-            public List<int> listApproachTime5;
-            public List<int> listApproachTime6;
-            public List<int> listApproachTime8;
-
-            // -------------------------------------------------------------------------------
-            // END ---- 전략별  추가변수들
-            // -------------------------------------------------------------------------------
-            public void Init(int s)
-            {
-                arrLastTouch = new int[s];
-                arrStrategy = new int[s];
-                arrPrevMinuteIdx = new int[s];
-
-                arrMinuteIdx = new int[PRICE_UP_MAX_NUM];
-                arrUpTime = new int[PRICE_UP_MAX_NUM];
-                arrUpPrice = new int[PRICE_UP_MAX_NUM];
-                arrSpecificStrategy = new int[PRICE_UP_MAX_NUM];
-
-       
-            
-
-
-                listApproachTime1 = new List<int>();
-                listApproachTime2 = new List<int>();
-                listApproachTime3 = new List<int>();
-                listApproachTime4 = new List<int>();
-                listApproachTime5 = new List<int>();
-                listApproachTime6 = new List<int>();
-                listApproachTime8 = new List<int>();
-
-            }
-
-        }
-
-        /// <summary>
-        /// ABOUT 가격하락
-        /// </summary>
-        public struct PriceDownStrategy
-        {
-            public int[] arrLastTouch; // 가장최근에 해당전략 요청한 시간
-            public int[] arrStrategy; // 전략당 배열
-            public int[] arrMinuteIdx;
-            public int[] arrSpecificStrategy;// 배열의 각 슬롯당 전략
-            public int[] arrDownTime;
-            public int[] arrDownPrice;
-
-            public int nHitNum; 
-
-            public int nLastTouchTime;
-            public int nStrategyNum; // 가짜 전략 카운트를 정하는것
-            public double fEverageShoulderPrice; // 사려고 했을때가 고점(어깨에서 머리)이라 가정
-            public int nSumShoulderPrice; // 여러번 사려하면 가격의 합
-            public int nMaxShoulderPrice; // 가장 값이 높았을 경우의 가격
-            public int nUpperCount; // 어깨가 계속해서 올라가는 횟수
-            public bool isSuddenBoom;
-            public int nPrevMaxMinIdx;
-            public int nPrevMaxMinUpperCount;
-            public int nPrevMinuteIdx;
-            public int nMinuteLocationCount;
-            // 임시용 
-            public int[] arrPrevMinuteIdx;
-
-            public List<int> listApproachTime1;
-            public List<int> listApproachTime2;
-            public List<int> listApproachTime3;
-            public List<int> listApproachTime4;
-            public List<int> listApproachTime5;
-            public List<int> listApproachTime6;
-            public List<int> listApproachTime8;
-
-            // -------------------------------------------------------------------------------
-            // END ---- 전략별  추가변수들
-            // -------------------------------------------------------------------------------
-            public void Init(int s)
-            {
-                arrLastTouch = new int[s];
-                arrStrategy = new int[s];
-                arrPrevMinuteIdx = new int[s];
-
-                arrMinuteIdx = new int[PRICE_DOWN_MAX_NUM];
-                arrDownTime = new int[PRICE_DOWN_MAX_NUM];
-                arrDownPrice = new int[PRICE_DOWN_MAX_NUM];
-                arrSpecificStrategy = new int[PRICE_DOWN_MAX_NUM];
-
-               
-
-
-                listApproachTime1 = new List<int>();
-                listApproachTime2 = new List<int>();
-                listApproachTime3 = new List<int>();
-                listApproachTime4 = new List<int>();
-                listApproachTime5 = new List<int>();
-                listApproachTime6 = new List<int>();
-                listApproachTime8 = new List<int>();
-            }
-
-        }
-
-        /// <summary>
-        ///  가짜 전략 해당 종목의 과열성을 체크함과 동시에 고점 정도를 파악한다.
-        /// </summary>
-        public struct FakeBuyStrategy
-        {
             public int[] arrLastTouch; // 가장최근에 해당전략 요청한 시간
             public int[] arrStrategy; // 전략당 배열
             public int[] arrMinuteIdx;
@@ -1043,8 +980,36 @@ namespace AtoTrader
             public int nPrevMaxMinUpperCount;
             public int nPrevMinuteIdx;
             public int nMinuteLocationCount;
-            // 임시용 
+            
             public int[] arrPrevMinuteIdx;
+
+        }
+
+
+        public class FakeVolatilityStrategy : FakeFrame
+        {
+            public FakeVolatilityStrategy(int t, int s)
+            {
+                nFakeType = t;
+
+                arrStrategy = new int[s];
+                arrLastTouch = new int[s];
+                arrPrevMinuteIdx = new int[s];
+
+                arrMinuteIdx = new int[REAL_BUY_MAX_NUM];
+                arrBuyTime = new int[REAL_BUY_MAX_NUM];
+                arrBuyPrice = new int[REAL_BUY_MAX_NUM];
+                arrSpecificStrategy = new int[REAL_BUY_MAX_NUM];
+            }
+
+        }
+
+
+        /// <summary>
+        ///  가짜 전략 해당 종목의 과열성을 체크함과 동시에 고점 정도를 파악한다.
+        /// </summary>
+        public class FakeBuyStrategy : FakeFrame
+        {
             // 각 전략용
             public List<int> listApproachTime3;
             public List<int> listApproachTime6;
@@ -1062,8 +1027,10 @@ namespace AtoTrader
 
             ///////////////////////////
 
-            public void Init(int s)
+            public FakeBuyStrategy(int t, int s)
             {
+                nFakeType = t;
+
                 arrLastTouch = new int[s];
                 arrStrategy = new int[s];
                 arrPrevMinuteIdx = new int[s];
@@ -1093,42 +1060,22 @@ namespace AtoTrader
         /// <summary>
         ///  가짜 전략 해당 종목의 떨어질 조건을 등록한다.
         /// </summary>
-        public struct FakeResistStrategy
+        public class FakeResistStrategy : FakeFrame
         {
-            public int[] arrLastTouch; // 가장최근에 해당전략 요청한 시간
-            public int[] arrStrategy; // 전략당 배열
-            public int[] arrMinuteIdx;
-            public int[] arrSpecificStrategy; // 배열의 각 슬롯당 전략
-            public int[] arrResistTime;
-            public int[] arrResistPrice;
-
-            public int nHitNum;
-
-            public int nLastTouchTime;
-            public int nStrategyNum; // 가짜 전략 카운트를 정하는것
-            public double fEverageShoulderPrice; // 사려고 했을때가 고점(어깨에서 머리)이라 가정
-            public int nSumShoulderPrice; // 여러번 사려하면 가격의 합
-            public int nMaxShoulderPrice; // 가장 값이 높았을 경우의 가격
-            public int nUpperCount; // 어깨가 계속해서 올라가는 횟수
-            public bool isSuddenBoom;
-            public int nPrevMaxMinIdx;
-            public int nPrevMaxMinUpperCount;
-            public int nMinuteLocationCount;
-            public int nPrevMinuteIdx;
-            // 임시용
-            public int[] arrPrevMinuteIdx;
             // 각 전략용
 
             ////////////////////////////////////////
-            public void Init(int s)
+            public FakeResistStrategy(int t,int s)
             {
+                nFakeType = t;
+
                 arrLastTouch = new int[s];
                 arrStrategy = new int[s];
                 arrPrevMinuteIdx = new int[s];
 
                 arrMinuteIdx = new int[FAKE_RESIST_MAX_NUM];
-                arrResistTime = new int[FAKE_RESIST_MAX_NUM];
-                arrResistPrice = new int[FAKE_RESIST_MAX_NUM];
+                arrBuyTime = new int[FAKE_RESIST_MAX_NUM];
+                arrBuyPrice = new int[FAKE_RESIST_MAX_NUM];
                 arrSpecificStrategy = new int[FAKE_RESIST_MAX_NUM];
 
             }
@@ -1137,31 +1084,8 @@ namespace AtoTrader
         /// <summary>
         /// 가짜 전략보조용 
         /// </summary>
-        public struct FakeAssistantStrategy
+        public class FakeAssistantStrategy : FakeFrame
         {
-            public int[] arrLastTouch; // 가장최근에 해당전략 요청한 시간
-            public int[] arrStrategy; // 전략당 배열
-            public int[] arrMinuteIdx;
-            public int[] arrSpecificStrategy; // 배열의 각 슬롯당 전략
-            public int[] arrAssistantTime;
-            public int[] arrAssistantPrice;
-
-            public int nHitNum;
-
-            public int nLastTouchTime;
-            public int nStrategyNum; // 가짜 전략 카운트를 정하는것
-            public double fEverageShoulderPrice; // 사려고 했을때가 고점(어깨에서 머리)이라 가정
-            public int nSumShoulderPrice; // 여러번 사려하면 가격의 합
-            public int nMaxShoulderPrice; // 가장 값이 높았을 경우의 가격
-            public int nUpperCount; // 어깨가 계속해서 올라가는 횟수
-            public bool isSuddenBoom;
-            public int nPrevMaxMinIdx;
-            public int nPrevMaxMinUpperCount;
-            public int nMinuteLocationCount;
-            public int nPrevMinuteIdx;
-
-            // 임시용 
-            public int[] arrPrevMinuteIdx;
             // 각 전략용
             public List<int> listApproachAssistantTime2;
             public List<int> listApproachAssistantTime3;
@@ -1175,15 +1099,17 @@ namespace AtoTrader
             public List<int> listApproachAssistantTime13;
             ///////////////////////////
 
-            public void Init(int s)
+            public FakeAssistantStrategy(int t,int s)
             {
+                nFakeType = t;
+
                 arrLastTouch = new int[s];
                 arrStrategy = new int[s];
                 arrPrevMinuteIdx = new int[s];
 
                 arrMinuteIdx = new int[FAKE_ASSISTANT_MAX_NUM];
-                arrAssistantTime = new int[FAKE_ASSISTANT_MAX_NUM];
-                arrAssistantPrice = new int[FAKE_ASSISTANT_MAX_NUM];
+                arrBuyPrice = new int[FAKE_ASSISTANT_MAX_NUM];
+                arrBuyTime = new int[FAKE_ASSISTANT_MAX_NUM];
                 arrSpecificStrategy = new int[FAKE_ASSISTANT_MAX_NUM];
 
                 // 임시용
@@ -1202,7 +1128,7 @@ namespace AtoTrader
 
         }
 
-        public class FakeDBStruct
+        public class FakeDBRecordInfo
         {
             public FakeReports fr;
 
@@ -1216,7 +1142,7 @@ namespace AtoTrader
             public MaxMinRecorder maxMinMinuteTilThreeWhile10;
             public MaxMinRecorder maxMinMinuteTilThreeWhile30;
 
-            public FakeDBStruct()
+            public FakeDBRecordInfo()
             {
                 fr = new FakeReports();
             }
@@ -1443,17 +1369,13 @@ namespace AtoTrader
 
         public class StrategyNames
         {
-            public List<string> arrRealBuyStrategyName;
-            public List<string> arrPriceUpStrategyName;
-            public List<string> arrPriceDownStrategyName;
+            public List<string> arrFakeVolatilityStrategyName;
             public List<string> arrFakeBuyStrategyName;
             public List<string> arrFakeResistStrategyName;
             public List<string> arrFakeAssistantStrategyName;
             public StrategyNames()
             {
-                arrRealBuyStrategyName = new List<string>();
-                arrPriceUpStrategyName = new List<string>();
-                arrPriceDownStrategyName =new List<string>();
+                arrFakeVolatilityStrategyName = new List<string>();
                 arrFakeBuyStrategyName =new List<string>();
                 arrFakeResistStrategyName = new List<string>();
                 arrFakeAssistantStrategyName = new List<string>();
@@ -1534,89 +1456,33 @@ namespace AtoTrader
 
                 try
                 {
-                    arrFakeResistStrategyName.Add("갭3퍼 1번 1반복.. 단한번");
-                    arrFakeResistStrategyName.Add("갭4퍼 1번 1반복.. 단한번");
-                    arrFakeResistStrategyName.Add("갭5퍼 1번 2반복.. 단한번");
-                    arrFakeResistStrategyName.Add("갭6퍼 1번 2반복.. 단한번");
-                    arrFakeResistStrategyName.Add("갭7퍼 1번 2반복.. 단한번");
-                    arrFakeResistStrategyName.Add("갭10퍼 1번 3반복.. 단한번");
-                    arrFakeResistStrategyName.Add("윗꼬리 1퍼 .. 1분제한");
-                    arrFakeResistStrategyName.Add("윗꼬리 2퍼 .. 1분제한");
-                    arrFakeResistStrategyName.Add("실시간 양봉 5퍼 .. 1분제한");
-                    arrFakeResistStrategyName.Add("지나간 양봉 4퍼 .. 1분제한");
-                    arrFakeResistStrategyName.Add("실시간 양봉 4퍼 .. 1분제한");
-                    arrFakeResistStrategyName.Add("지나간 양봉 3퍼 .. 1분제한");
-                    arrFakeResistStrategyName.Add("실시간 양봉 3퍼 .. 1분제한");
-                }
-                catch (Exception indexError)
-                {
-
-                }
-
-                try
-                {
-                    arrPriceUpStrategyName.Add("실시간 양봉2퍼 1번 .. 리사이클");
-                    arrPriceUpStrategyName.Add("양봉1퍼 2번 .. 리사이클");
-                    arrPriceUpStrategyName.Add("양봉1퍼 3번 .. 리사이클");
-                    arrPriceUpStrategyName.Add("양봉1퍼 4번 .. 리사이클");
-                    arrPriceUpStrategyName.Add("양봉1퍼 5번 .. 리사이클");
-                    arrPriceUpStrategyName.Add("양봉1퍼 6번 .. 리사이클");
-                    arrPriceUpStrategyName.Add("양봉1퍼 7번 .. 리사이클");
-                    arrPriceUpStrategyName.Add("양봉2퍼 1번 .. 리사이클");
-                    arrPriceUpStrategyName.Add("양봉2퍼 2번 .. 리사이클");
-                }
-                catch (Exception indexError)
-                {
-
-                }
-
-                try
-                {
-                    arrPriceDownStrategyName.Add("실시간 음봉2퍼 1번 .. 리사이클");
-                    arrPriceDownStrategyName.Add("음봉1퍼 2번 .. 리사이클");
-                    arrPriceDownStrategyName.Add("음봉1퍼 3번 .. 리사이클");
-                    arrPriceDownStrategyName.Add("음봉1퍼 4번 .. 리사이클");
-                    arrPriceDownStrategyName.Add("음봉1퍼 5번 .. 리사이클");
-                    arrPriceDownStrategyName.Add("음봉1퍼 6번 .. 리사이클");
-                    arrPriceDownStrategyName.Add("음봉1퍼 7번 .. 리사이클");
-                    arrPriceDownStrategyName.Add("음봉2퍼 1번 .. 리사이클");
-                    arrPriceDownStrategyName.Add("음봉2퍼 2번 .. 리사이클");
-                }
-                catch (Exception indexError)
-                {
-
-                }
-
-                try
-                {
-                    arrRealBuyStrategyName.Add("추가매수");
-                    arrRealBuyStrategyName.Add("차분 1 0.015 1분주기");
-                    arrRealBuyStrategyName.Add("차분 1 0.025 1분주기");
-                    arrRealBuyStrategyName.Add("차분 3 0.02 3분주기");
-                    arrRealBuyStrategyName.Add("차분 5 0.02 5분주기");
-                    arrRealBuyStrategyName.Add("차분 5 0.03 5분주기");
-                    arrRealBuyStrategyName.Add("차분 5 0.05 5분주기");
-                    arrRealBuyStrategyName.Add("차분 10 0.03 10분주기");
-                    arrRealBuyStrategyName.Add("차분 10 0.04 6분주기");
-                    arrRealBuyStrategyName.Add("차분 20 0.05 10분주기");
-                    arrRealBuyStrategyName.Add("차분 20 0.04 15분주기");
-                    arrRealBuyStrategyName.Add("차분 15 0.04 12분주기");
-                    arrRealBuyStrategyName.Add("차분 5 0.07 10분주기");
-                    arrRealBuyStrategyName.Add("차분 3 0.05 10분주기");
-                    arrRealBuyStrategyName.Add("차분 4 0.04 10분주기");
-                    arrRealBuyStrategyName.Add("차분 20 0.1 15분주기");
-                    arrRealBuyStrategyName.Add("차분 30 0.05 10분주기");
-                    arrRealBuyStrategyName.Add("차분 23 0.12 20분주기");
-                    arrRealBuyStrategyName.Add("차분 37 0.04 20분주기");
-                    arrRealBuyStrategyName.Add("차분 34 0.05 10분주기");
-                    arrRealBuyStrategyName.Add("차분 35 0.07 20분주기");
-                    arrRealBuyStrategyName.Add("차분 30 0.04 30분주기");
-                    arrRealBuyStrategyName.Add("차분 30 0.03 20분주기");
-                    arrRealBuyStrategyName.Add("차분 7 0.04 20분주기");
-                    arrRealBuyStrategyName.Add("차분 8 0.02 10분주기");
-                    arrRealBuyStrategyName.Add("차분 12 0.02 11분주기");
-                    arrRealBuyStrategyName.Add("차분 13 0.03 10분주기");
-                    arrRealBuyStrategyName.Add("차분 16 0.025 6분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 1 0.015 1분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 1 0.025 1분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 3 0.02 3분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 5 0.02 5분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 5 0.03 5분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 5 0.05 5분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 10 0.03 10분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 10 0.04 6분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 20 0.05 10분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 20 0.04 15분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 15 0.04 12분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 5 0.07 10분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 3 0.05 10분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 4 0.04 10분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 20 0.1 15분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 30 0.05 10분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 23 0.12 20분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 37 0.04 20분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 34 0.05 10분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 35 0.07 20분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 30 0.04 30분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 30 0.03 20분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 7 0.04 20분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 8 0.02 10분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 12 0.02 11분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 13 0.03 10분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 16 0.025 6분주기");
 
                 }
                 catch (Exception IdxError)
@@ -1625,15 +1491,6 @@ namespace AtoTrader
                 }
             }
 
-            public int GetStrategySize()
-            {
-                return arrRealBuyStrategyName.Count;
-            }
-
-            public bool GetStrategyExistsByIdx(int i)
-            {
-                return arrRealBuyStrategyName.Count > i;
-            }
         }
 
         public struct StaticMember<T>

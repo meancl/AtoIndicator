@@ -21,118 +21,6 @@ namespace AtoTrader
 
 
 
-        // 매수 1차 신청 메서드
-        #region RequestThisRealBuy
-        private void RequestThisRealBuy(int nRealStrategyNum, double fBuyRatio = NORMAL_TRADE_RATIO, int nExtraChance = 0, TradeMethodCategory eTradeMethod = TradeMethodCategory.RisingMethod, double fCeil = 0, double fFloor = 0, bool isAIUse = true)
-        {
-            try
-            {
-                #region 실매수요청 접근시점 기록 및 처리
-                if (ea[nCurIdx].myStrategy.nStrategyNum >= REAL_BUY_MAX_NUM || ea[nCurIdx].fakeBuyStrategy.arrStrategy[nRealStrategyNum] > (4 + nExtraChance)) // 한 전략당 5번제한
-                    return;
-
-
-                if (ea[nCurIdx].myStrategy.nSharedPrevMinuteIdx != nTimeLineIdx)
-                {
-                    ea[nCurIdx].myStrategy.nSharedPrevMinuteIdx = nTimeLineIdx;
-                    ea[nCurIdx].myStrategy.nSharedMinuteLocationCount++;
-                }
-
-                // 최근 접근시간
-                if (ea[nCurIdx].myStrategy.nLastTouchTime != 0 && SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myStrategy.nLastTouchTime) >= 2400) // 40분 이상 매수가 안됐었으면
-                {
-                    ea[nCurIdx].myStrategy.isSuddenBoom = true;
-                }
-                ea[nCurIdx].myStrategy.nLastTouchTime = nSharedTime;
-
-                // 전략별 접근 기록
-                ea[nCurIdx].myStrategy.arrLastTouch[nRealStrategyNum] = nSharedTime;
-                ea[nCurIdx].myStrategy.arrStrategy[nRealStrategyNum]++;
-                ea[nCurIdx].myStrategy.arrPrevMinuteIdx[nRealStrategyNum] = nTimeLineIdx;
-
-                ea[nCurIdx].myStrategy.arrBuyPrice[ea[nCurIdx].myStrategy.nStrategyNum] = ea[nCurIdx].nFs;
-                ea[nCurIdx].myStrategy.arrBuyTime[ea[nCurIdx].myStrategy.nStrategyNum] = nSharedTime;
-                ea[nCurIdx].myStrategy.arrMinuteIdx[ea[nCurIdx].myStrategy.nStrategyNum] = nTimeLineIdx;
-                ea[nCurIdx].myStrategy.arrSpecificStrategy[ea[nCurIdx].myStrategy.nStrategyNum] = nRealStrategyNum;
-                ea[nCurIdx].myStrategy.nStrategyNum++;
-                ea[nCurIdx].myStrategy.nHitNum++;
-
-             
-                // 실매수 접근 true(실매수에 다시 쓰임)
-                ea[nCurIdx].myStrategy.isOrderCheck = true;
-
-               
-                ea[nCurIdx].myStrategy.fEverageShoulderPrice = ea[nCurIdx].myStrategy.fEverageShoulderPrice == 0 ? ea[nCurIdx].nFs : (ea[nCurIdx].nFs + ea[nCurIdx].myStrategy.fEverageShoulderPrice) / 2;
-
-                if (ea[nCurIdx].myStrategy.nMaxShoulderPrice == 0 || ea[nCurIdx].myStrategy.nMaxShoulderPrice < ea[nCurIdx].nFs)
-                {
-                    ea[nCurIdx].myStrategy.nMaxShoulderPrice = ea[nCurIdx].nFs;
-
-                    if (nTimeLineIdx != ea[nCurIdx].myStrategy.nPrevMaxMinIdx)
-                    {
-                        ea[nCurIdx].myStrategy.nPrevMaxMinIdx = nTimeLineIdx;
-                        ea[nCurIdx].myStrategy.nPrevMaxMinUpperCount++;
-                    }
-                    ea[nCurIdx].myStrategy.nUpperCount++;
-                }
-
-                // 한 분봉에 실매수 횟수제한 
-                // ** 잠시 주석처리
-                if (ea[nCurIdx].myStrategy.nPrevMinuteIdx != nTimeLineIdx)
-                {
-                    ea[nCurIdx].myStrategy.nPrevMinuteIdx = nTimeLineIdx;
-                    ea[nCurIdx].myStrategy.nMinuteLocationCount++;
-                    ea[nCurIdx].myStrategy.nCurBarBuyCount = 1;
-                }
-                //else // (ea[nCurIdx].myStrategy.nPrevMinuteIdx == nTimeLineIdx)
-                //{
-                //    if(ea[nCurIdx].myStrategy.nCurBarBuyCount >= BAR_REAL_BUY_MAX_NUM)
-                //    {
-                //        // return; 
-                //    }
-                //    else
-                //    {
-                //        ea[nCurIdx].myStrategy.nCurBarBuyCount++;
-                //    }
-                //}
-
-
-
-                UpFakeCount(nCurIdx, REAL_BUY_SIGNAL, nRealStrategyNum);
-
-
-
-                #endregion
-
-
-#if AI
-                if (isAIUse)
-                {
-                    double[] features102 = GetParameters(nCurIdx: nCurIdx, 102, eTradeMethod: GET_FEATURE_BUY, nRealStrategyNum: nRealStrategyNum);
-
-                    var nMMFNum = mmf.RequestAIService(sCode: ea[nCurIdx].sCode, nRqTime: nSharedTime, nRqType: BUY_AI_NUM, inputData: features102);
-                    if (nMMFNum == -1)
-                    {
-                        PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
-                        return;
-                    }
-                    aiSlot.nRequestId = REAL_BUY_SIGNAL;
-                    aiSlot.nMMFNumber = nMMFNum;
-                    aiQueue.Enqueue(aiSlot);
-                }
-#endif
-                ea[nCurIdx].myStrategy.nApproachNum++;
-
-
-
-                PrintLog($"시간 : {nSharedTime}, 종목코드 : {ea[nCurIdx].sCode} 종목명 : {ea[nCurIdx].sCodeName}, 현재가 : {ea[nCurIdx].nFs} 전략 : {nRealStrategyNum} {strategyName.arrRealBuyStrategyName[nRealStrategyNum]} 매수신청", nCurIdx);
-            }
-            catch (Exception ex)
-            {
-                PrintLog($"매수 체크 중 오류 발생 {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName} {nRealStrategyNum}", nCurIdx);
-            }
-        }
-        #endregion
 
         public const int GET_FEATURE_BUY = 0;
         public const int GET_FEATURE_SELL = 1;
@@ -154,7 +42,7 @@ namespace AtoTrader
                                 ea[nCurIdx].fPowerJar,
                                 ea[nCurIdx].fOnlyDownPowerJar,
                                 ea[nCurIdx].fOnlyUpPowerJar,
-                                ea[nCurIdx].myStrategy.nApproachNum,
+                                ea[nCurIdx].fakeVolatilityStrategy.nStrategyNum,
                                 ea[nCurIdx].nChegyulCnt,
                                 ea[nCurIdx].nHogaCnt,
                                 ea[nCurIdx].nNoMoveCount,
@@ -189,10 +77,10 @@ namespace AtoTrader
                                 ea[nCurIdx].fakeBuyStrategy.nStrategyNum,
                                 ea[nCurIdx].fakeAssistantStrategy.nStrategyNum,
                                 ea[nCurIdx].fakeResistStrategy.nStrategyNum,
-                                ea[nCurIdx].priceUpStrategy.nStrategyNum,
-                                ea[nCurIdx].priceDownStrategy.nStrategyNum,
-                                ea[nCurIdx].fakeBuyStrategy.nStrategyNum + ea[nCurIdx].fakeAssistantStrategy.nStrategyNum + ea[nCurIdx].fakeResistStrategy.nStrategyNum + ea[nCurIdx].priceUpStrategy.nStrategyNum + ea[nCurIdx].priceDownStrategy.nStrategyNum,
-                                ea[nCurIdx].myStrategy.nTotalFakeMinuteAreaNum,
+                                0,
+                                0,
+                                ea[nCurIdx].fakeStrategyMgr.nTotalFakeMinuteAreaNum,
+                                ea[nCurIdx].fakeStrategyMgr.nTotalFakeMinuteAreaNum,
                                 ea[nCurIdx].timeLines1m.upCandleList.Count,
                                 ea[nCurIdx].timeLines1m.downCandleList.Count,
                                 ea[nCurIdx].timeLines1m.upTailList.Count,

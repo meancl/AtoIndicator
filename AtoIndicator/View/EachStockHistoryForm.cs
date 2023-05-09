@@ -26,12 +26,10 @@ namespace AtoTrader.View.EachStockHistory
 
         public bool isMinuteVisible = false;
 
-        public bool isBuyArrowVisible = true;
+        public bool isFakeVolatilityArrowVisible = true;
         public bool isFakeBuyArrowVisible = true;
         public bool isFakeResistArrowVisible = true;
         public bool isFakeAssistantArrowVisible = true;
-        public bool isPriceUpArrowVisible = true;
-        public bool isPriceDownArrowVisible = true;
         public bool isAllArrowVisible = true;
 
 
@@ -376,22 +374,22 @@ namespace AtoTrader.View.EachStockHistory
                   
                     int nNumInjector = 0;
                     //START ---- REAL BUY ARROW
-                    if (curEa.myStrategy.nStrategyNum > 0 && isBuyArrowVisible)
+                    if (curEa.fakeVolatilityStrategy.nStrategyNum > 0 && isFakeVolatilityArrowVisible)
                     {
                         int nPrevRealBuyMinArrowIdx = -1;
                         int nRealBuyOverlapCount = 0;
                         string sRealBuyArrowToolTip = "";
 
-                        for (int p = 0; p < curEa.myStrategy.nStrategyNum; p++)
+                        for (int p = 0; p < curEa.fakeVolatilityStrategy.nStrategyNum; p++)
                         {
                             nNumInjector++;
-                            if (nPrevRealBuyMinArrowIdx == curEa.myStrategy.arrMinuteIdx[p]) // 같은 minute Idx랑 겹친다면
+                            if (nPrevRealBuyMinArrowIdx == curEa.fakeVolatilityStrategy.arrMinuteIdx[p]) // 같은 minute Idx랑 겹친다면
                             {
                                 nRealBuyOverlapCount++;
                             }
                             else
                             {
-                                nPrevRealBuyMinArrowIdx = curEa.myStrategy.arrMinuteIdx[p];
+                                nPrevRealBuyMinArrowIdx = curEa.fakeVolatilityStrategy.arrMinuteIdx[p];
                                 nRealBuyOverlapCount = 0;
                                 sRealBuyArrowToolTip = "";
                             }
@@ -410,8 +408,8 @@ namespace AtoTrader.View.EachStockHistory
                             arrowRealBuy.Height = -4;// -면 아래쪽방향, + 면 위쪽방향
                             arrowRealBuy.AnchorOffsetY = -1.5;
                             sRealBuyArrowToolTip +=
-                            $"*중첩 : {nRealBuyOverlapCount + 1}( {p} )  실제전략 : {curEa.myStrategy.arrSpecificStrategy[p]}  주문시간 : {curEa.myStrategy.arrBuyTime[p]}  실매수가격 : {curEa.myStrategy.arrBuyPrice[p]}(원){NEW_LINE}" +
-                            $"실매수명 : {strategyNames.arrRealBuyStrategyName[curEa.myStrategy.arrSpecificStrategy[p]]}{NEW_LINE}{NEW_LINE}";
+                            $"*중첩 : {nRealBuyOverlapCount + 1}( {p} )  실제전략 : {curEa.fakeVolatilityStrategy.arrSpecificStrategy[p]}  주문시간 : {curEa.fakeVolatilityStrategy.arrBuyTime[p]}  실매수가격 : {curEa.fakeVolatilityStrategy.arrBuyPrice[p]}(원){NEW_LINE}" +
+                            $"실매수명 : {strategyNames.arrFakeVolatilityStrategyName[curEa.fakeVolatilityStrategy.arrSpecificStrategy[p]]}{NEW_LINE}{NEW_LINE}";
 
                             arrowRealBuy.ToolTip = $"*실매수 총 갯수 : {nRealBuyOverlapCount + 1}개\n" +
                                $"=====================================================\n" + sRealBuyArrowToolTip;
@@ -423,7 +421,7 @@ namespace AtoTrader.View.EachStockHistory
                                 arrowRealBuy.Height = -7;
                             }
                             arrowRealBuy.BackColor = Color.Red;
-                            arrowRealBuy.SetAnchor(historyChart.Series["MinuteStick"].Points[curEa.myStrategy.arrMinuteIdx[p]]);
+                            arrowRealBuy.SetAnchor(historyChart.Series["MinuteStick"].Points[curEa.fakeVolatilityStrategy.arrMinuteIdx[p]]);
                             
                             arrowRealBuy.Name = "M" + nNumInjector;
                             arrowRealBuy.LineColor = Color.Black;
@@ -527,7 +525,7 @@ namespace AtoTrader.View.EachStockHistory
                             arrowFakeAssistant.AnchorOffsetY = -1.5;
 
                             sFakeAssistantArrowToolTip +=
-                          $"*중첩 : {nFakeAssistantOverlapCount + 1}( {p} )  가짜전략 : {curEa.fakeAssistantStrategy.arrSpecificStrategy[p]}  주문시간 : {curEa.fakeAssistantStrategy.arrAssistantTime[p]}  페이크보조가격 : {curEa.fakeAssistantStrategy.arrAssistantPrice[p]}(원){NEW_LINE}" +
+                          $"*중첩 : {nFakeAssistantOverlapCount + 1}( {p} )  가짜전략 : {curEa.fakeAssistantStrategy.arrSpecificStrategy[p]}  주문시간 : {curEa.fakeAssistantStrategy.arrBuyTime[p]}  페이크보조가격 : {curEa.fakeAssistantStrategy.arrBuyPrice[p]}(원){NEW_LINE}" +
                           $"페이크명 : {strategyNames.arrFakeAssistantStrategyName[curEa.fakeAssistantStrategy.arrSpecificStrategy[p]]}{NEW_LINE}{NEW_LINE}";
 
                             arrowFakeAssistant.ToolTip =
@@ -587,7 +585,7 @@ namespace AtoTrader.View.EachStockHistory
                             arrowFakeResist.AnchorOffsetY = -1.5;
 
                             sFakeResistArrowToolTip +=
-                          $"*중첩 : {nFakeResistOverlapCount + 1}( {p} )  가짜전략 : {curEa.fakeResistStrategy.arrSpecificStrategy[p]}  주문시간 : {curEa.fakeResistStrategy.arrResistTime[p]}  페이크저항가격 : {curEa.fakeResistStrategy.arrResistPrice[p]}(원){NEW_LINE}" +
+                          $"*중첩 : {nFakeResistOverlapCount + 1}( {p} )  가짜전략 : {curEa.fakeResistStrategy.arrSpecificStrategy[p]}  주문시간 : {curEa.fakeResistStrategy.arrBuyTime[p]}  페이크저항가격 : {curEa.fakeResistStrategy.arrBuyPrice[p]}(원){NEW_LINE}" +
                           $"페이크명 : {strategyNames.arrFakeResistStrategyName[curEa.fakeResistStrategy.arrSpecificStrategy[p]]}{NEW_LINE}{NEW_LINE}";
 
                             arrowFakeResist.ToolTip = $"주문인덱스 : {curEa.fakeResistStrategy.arrMinuteIdx[p]}\n" +
@@ -611,129 +609,6 @@ namespace AtoTrader.View.EachStockHistory
                     }//END ---- FAKE RESIST ARROW
 
 
-                    //START ---- PRICE UP ARROW
-                    if (curEa.priceUpStrategy.nStrategyNum > 0 && isPriceUpArrowVisible)
-                    {
-                        int nPrevPriceUpMinArrowIdx = -1;
-                        int nPriceUpOverlapCount = 0;
-                        string sPriceUpArrowToolTip = "";
-
-                        for (int p = 0; p < curEa.priceUpStrategy.nStrategyNum; p++)
-                        {
-                            nNumInjector++;
-                            if (nPrevPriceUpMinArrowIdx == curEa.priceUpStrategy.arrMinuteIdx[p]) // 같은 minute Idx랑 겹친다면
-                            {
-                                nPriceUpOverlapCount++;
-                            }
-                            else
-                            {
-                                nPrevPriceUpMinArrowIdx = curEa.priceUpStrategy.arrMinuteIdx[p];
-                                nPriceUpOverlapCount = 0;
-                                sPriceUpArrowToolTip = "";
-                            }
-
-                            ArrowAnnotation arrowPriceUp = new ArrowAnnotation();
-                            if (!isArrowGrouping)
-                            {
-                                arrowPriceUp.Width = 2;
-                            }
-                            else
-                            {
-                                arrowPriceUp.Width = 0.5; // -가 왼쪽으로 기움, + 가 오른쪽으로 기움 , 0이 수직자세
-                            }
-
-
-                            arrowPriceUp.Height = -4;// -면 아래쪽방향, + 면 위쪽방향
-                            arrowPriceUp.AnchorOffsetY = -1.5;
-
-                            sPriceUpArrowToolTip +=
-                          $"*중첩 : {nPriceUpOverlapCount + 1}( {p} )  가격업전략 : {curEa.priceUpStrategy.arrSpecificStrategy[p]}  주문시간 : {curEa.priceUpStrategy.arrUpTime[p]}  가격업가격 : {curEa.priceUpStrategy.arrUpPrice[p]}(원){NEW_LINE}" +
-                          $"페이크명 : {strategyNames.arrPriceUpStrategyName[curEa.priceUpStrategy.arrSpecificStrategy[p]]}{NEW_LINE}{NEW_LINE}";
-
-                            arrowPriceUp.ToolTip =
-                            $"*가격업 총 갯수 : {nPriceUpOverlapCount + 1}개\n" +
-                               $"=====================================================\n" + sPriceUpArrowToolTip;
-                            if (nPriceUpOverlapCount == 0)
-                                arrowPriceUp.Height = -4;
-                            else
-                            {
-                                historyChart.Annotations.RemoveAt(historyChart.Annotations.Count - 1);
-                                arrowPriceUp.Height = -7;
-                            }
-
-                            arrowPriceUp.SetAnchor(historyChart.Series["MinuteStick"].Points[curEa.priceUpStrategy.arrMinuteIdx[p]]);
-                            // arrowPriceUp.AnchorY = historyChart.Series["MinuteStick"].Points[curEa.priceUpStrategy.arrMinuteIdx[p]].YValues[1]; // 고.저.시종
-                            arrowPriceUp.Name = "F" + nNumInjector;
-                            arrowPriceUp.BackColor = Color.Navy;
-                            arrowPriceUp.LineColor = Color.Black;
-
-                            historyChart.Annotations.Add(arrowPriceUp);
-                        }
-                    }//END ---- PRICE UP ARROW
-
-
-                    //START ---- PRICE DOWN ARROW
-                    if (curEa.priceDownStrategy.nStrategyNum > 0 && isPriceDownArrowVisible)
-                    {
-                        int nPrevPriceDownMinArrowIdx = -1;
-                        int nPriceDownOverlapCount = 0;
-                        string sPriceDownArrowToolTip = "";
-
-                        for (int p = 0; p < curEa.priceDownStrategy.nStrategyNum; p++)
-                        {
-                            nNumInjector++;
-                            if (nPrevPriceDownMinArrowIdx == curEa.priceDownStrategy.arrMinuteIdx[p]) // 같은 minute Idx랑 겹친다면
-                            {
-                                nPriceDownOverlapCount++;
-                            }
-                            else
-                            {
-                                nPrevPriceDownMinArrowIdx = curEa.priceDownStrategy.arrMinuteIdx[p];
-                                nPriceDownOverlapCount = 0;
-                                sPriceDownArrowToolTip = "";
-                            }
-
-                            // 매도 어노테이션 삽입
-                            ArrowAnnotation arrowPriceDown = new ArrowAnnotation();
-                            if (!isArrowGrouping)
-                            {
-                                arrowPriceDown.Width = 3;
-                            }
-                            else
-                            {
-                                arrowPriceDown.Width = 0.8; // -가 왼쪽으로 기움, + 가 오른쪽으로 기움 , 0이 수직자세
-
-                            }
-                            arrowPriceDown.Height = -4;// -면 아래쪽방향, + 면 위쪽방향
-                            arrowPriceDown.AnchorOffsetY = -1.5;
-
-                            sPriceDownArrowToolTip +=
-                          $"*중첩 : {nPriceDownOverlapCount + 1}( {p} )  가격다운전략 : {curEa.priceDownStrategy.arrSpecificStrategy[p]}  주문시간 : {curEa.priceDownStrategy.arrDownTime[p]}  가격다운가격 : {curEa.priceDownStrategy.arrDownPrice[p]}(원){NEW_LINE}" +
-                          $"페이크명 : {strategyNames.arrPriceDownStrategyName[curEa.priceDownStrategy.arrSpecificStrategy[p]]}{NEW_LINE}{NEW_LINE}";
-
-                            arrowPriceDown.ToolTip =
-                            $"*가격다운 총 갯수 : {nPriceDownOverlapCount + 1}개\n" +
-                               $"=====================================================\n" + sPriceDownArrowToolTip;
-                            if (nPriceDownOverlapCount == 0)
-                                arrowPriceDown.Height = -4;
-                            else
-                            {
-                                historyChart.Annotations.RemoveAt(historyChart.Annotations.Count - 1);
-                                arrowPriceDown.Height = -7;
-                            }
-                            arrowPriceDown.SetAnchor(historyChart.Series["MinuteStick"].Points[curEa.priceDownStrategy.arrMinuteIdx[p]]);
-                            // arrowPriceDown.AnchorY = historyChart.Series["MinuteStick"].Points[curEa.priceDownStrategy.arrMinuteIdx[p]].YValues[1]; // 고.저.시종
-                            arrowPriceDown.Name = "F" + nNumInjector;
-                            arrowPriceDown.BackColor = Color.Purple;
-                            arrowPriceDown.LineColor = Color.Black;
-
-                            historyChart.Annotations.Add(arrowPriceDown);
-                        }
-                    }//END ---- PRICE DOWN ARROW
-
-
-
-
 
                     SetChartViewRange(0, nLastMinuteIdx + 2, curEa.nFs, curEa.nFs, "TotalArea");
                 } // END ---- if (curEa.timeLines1m.nRealDataIdx > 0)
@@ -752,7 +627,7 @@ namespace AtoTrader.View.EachStockHistory
             curEa = mainForm.ea[nCurIdx];
             string sTitle = $"[전체] {mainForm.nSharedTime} {curEa.sCode} {curEa.sCodeName} {curEa.sMarketGubunTag}";
             string sMessage =
-                $"현재 매매횟수 : {curEa.myStrategy.nStrategyNum}{NEW_LINE}" +
+                $"현재 매매횟수 : {curEa.fakeVolatilityStrategy.nStrategyNum}{NEW_LINE}" +
                 $"=====================  랭킹  ========================={NEW_LINE}" + 
                 $"----------------------- 총 -------------------------------{NEW_LINE}" +
                 $"누적속도 순위 : {curEa.rankSystem.nAccumCountRanking}{NEW_LINE}" + 
@@ -782,10 +657,8 @@ namespace AtoTrader.View.EachStockHistory
                 $"페이크매수 : {curEa.fakeBuyStrategy.nStrategyNum}{NEW_LINE}" +
                 $"페이크보조 : {curEa.fakeAssistantStrategy.nStrategyNum}{NEW_LINE}" +
                 $"페이크저항 : {curEa.fakeResistStrategy.nStrategyNum}{NEW_LINE}" +
-                $"가격업   : {curEa.priceUpStrategy.nStrategyNum}{NEW_LINE}" +
-                $"가격다운 : {curEa.priceDownStrategy.nStrategyNum}{NEW_LINE}" +
-                $"총 Arrow : {curEa.fakeBuyStrategy.nStrategyNum + curEa.fakeAssistantStrategy.nStrategyNum + curEa.fakeResistStrategy.nStrategyNum + curEa.priceUpStrategy.nStrategyNum + curEa.priceDownStrategy.nStrategyNum}{NEW_LINE}" +
-                $"총 ArrowMinute : {curEa.myStrategy.nTotalFakeMinuteAreaNum}{NEW_LINE}{NEW_LINE}" +
+                $"총 Arrow : {curEa.fakeBuyStrategy.nStrategyNum + curEa.fakeAssistantStrategy.nStrategyNum + curEa.fakeResistStrategy.nStrategyNum}{NEW_LINE}" +
+                $"총 ArrowMinute : {curEa.fakeStrategyMgr.nTotalFakeMinuteAreaNum}{NEW_LINE}{NEW_LINE}" +
                 $"================= 분 봉 ============={NEW_LINE}" +
                 $"위캔들 : {curEa.timeLines1m.upCandleList.Count}{NEW_LINE}" +
                 $"아래캔들 : {curEa.timeLines1m.downCandleList.Count}{NEW_LINE}" +
@@ -862,108 +735,34 @@ namespace AtoTrader.View.EachStockHistory
             new ScrollableMessageBox().Show(sMessage, sTitle);
         }
 
-        public void ShowPriceUp()
+     
+        public void ShowFakeVolatility()
         {
             curEa = mainForm.ea[nCurIdx];
-            double fPriceUpFlexEverage = 0;
-            if (curEa.priceUpStrategy.nStrategyNum > 0)
-                fPriceUpFlexEverage = (double)curEa.priceUpStrategy.nSumShoulderPrice / curEa.priceUpStrategy.nStrategyNum;
-            string sTitle = "[가격업 전략] " + mainForm.nSharedTime + " " + curEa.sCode + " " + curEa.sCodeName + " " + curEa.sMarketGubunTag;
-            string sMessage = $"가격업 전략 횟수 : {curEa.priceUpStrategy.nStrategyNum}번{NEW_LINE}" +
-                $"가격업 전략 마지막 접근시각 : {curEa.priceUpStrategy.nLastTouchTime}{NEW_LINE}" +
-                $"가격업 전략 최고 어깨점 : {curEa.priceUpStrategy.nMaxShoulderPrice}(원){NEW_LINE}" +
-                $"가격업 전략 단순평균 어깨점 : {Math.Round(curEa.priceUpStrategy.fEverageShoulderPrice, 2)}(원){NEW_LINE}" +
-                $"가격업 전략 종합평균 어깨점 : {Math.Round(fPriceUpFlexEverage, 2)}(원){NEW_LINE}" +
-                $"가격업 전략 어깨 상승횟수 : {curEa.priceUpStrategy.nUpperCount}번{NEW_LINE}" +
-                $"가격업 전략 분포횟수 : {curEa.priceUpStrategy.nMinuteLocationCount}번{NEW_LINE}" +
-                $"공유 전략 분포횟수 : {curEa.myStrategy.nSharedMinuteLocationCount}번{NEW_LINE}" +
+            string sTitle = "[페이크 변동성 전략] " + mainForm.nSharedTime + " " + curEa.sCode + " " + curEa.sCodeName + " " + curEa.sMarketGubunTag;
+            string sMessage = $"페이크 변동성 전략 횟수 : {curEa.fakeVolatilityStrategy.nStrategyNum}번{NEW_LINE}" +
+                $"페이크 변동성 전략 마지막 접근시각 : {curEa.fakeVolatilityStrategy.nLastTouchTime}{NEW_LINE}" +
+                $"페이크 변동성 전략 최고 어깨점 : {curEa.fakeVolatilityStrategy.nMaxShoulderPrice}(원){NEW_LINE}" +
+                $"페이크 변동성 전략 단순평균 어깨점 : {Math.Round(curEa.fakeVolatilityStrategy.fEverageShoulderPrice, 2)}(원){NEW_LINE}" +
+                $"페이크 변동성 전략 어깨 상승횟수 : {curEa.fakeVolatilityStrategy.nUpperCount}번{NEW_LINE}" +
+                $"페이크 변동성 전략 분포횟수 : {curEa.fakeVolatilityStrategy.nMinuteLocationCount}번{NEW_LINE}" +
+                $"공유 전략 분포횟수 : {curEa.fakeStrategyMgr.nSharedMinuteLocationCount}번{NEW_LINE}" +
                 $"--------------------------------------------------{NEW_LINE}{NEW_LINE}";
 
-            for (int i = 0; i < strategyNames.arrPriceUpStrategyName.Count; i++)
+            for (int i = 0; i < strategyNames.arrFakeVolatilityStrategyName.Count; i++)
             {
-                sMessage += $"==================== {i}번째 가격업 전략 ===================={NEW_LINE}" +
-                    $"##전략명 : {strategyNames.arrPriceUpStrategyName[i]}  !!!!!!!!!!!!{NEW_LINE}";
+                sMessage += $"==================== {i}번째 페이크 변동성 전략 ===================={NEW_LINE}" +
+                    $"##전략명 : {strategyNames.arrFakeVolatilityStrategyName[i]}  !!!!!!!!!!!!{NEW_LINE}";
 
-                if (curEa.priceUpStrategy.arrStrategy[i] == 0)
+                if (curEa.fakeVolatilityStrategy.arrStrategy[i] == 0)
                 {
                     sMessage += $"--> 해당전략은 활성화되지 않았습니다.{NEW_LINE}";
                 }
                 else
                 {
                     sMessage +=
-                        $"--> 마지막 접근시각 : {curEa.priceUpStrategy.arrLastTouch[i]}{NEW_LINE}" +
-                        $"--> 접근 횟수 : {curEa.priceUpStrategy.arrStrategy[i]}번{NEW_LINE}";
-                }
-
-                sMessage += $"{NEW_LINE}";
-            }
-            new ScrollableMessageBox().Show(sMessage, sTitle);
-        }
-
-        public void ShowPriceDown()
-        {
-            curEa = mainForm.ea[nCurIdx];
-            double fPriceDownFlexEverage = 0;
-            if (curEa.priceDownStrategy.nStrategyNum > 0)
-                fPriceDownFlexEverage = (double)curEa.priceDownStrategy.nSumShoulderPrice / curEa.priceDownStrategy.nStrategyNum;
-            string sTitle = "[가격다운 전략] " + mainForm.nSharedTime + " " + curEa.sCode + " " + curEa.sCodeName + " " + curEa.sMarketGubunTag;
-            string sMessage = $"가격다운 전략 횟수 : {curEa.priceDownStrategy.nStrategyNum}번{NEW_LINE}" +
-                $"가격다운 전략 마지막 접근시각 : {curEa.priceDownStrategy.nLastTouchTime}{NEW_LINE}" +
-                $"가격다운 전략 최고 어깨점 : {curEa.priceDownStrategy.nMaxShoulderPrice}(원){NEW_LINE}" +
-                $"가격다운 전략 단순평균 어깨점 : {Math.Round(curEa.priceDownStrategy.fEverageShoulderPrice, 2)}(원){NEW_LINE}" +
-                $"가격다운 전략 종합평균 어깨점 : {Math.Round(fPriceDownFlexEverage, 2)}(원){NEW_LINE}" +
-                $"가격다운 전략 어깨 상승횟수 : {curEa.priceDownStrategy.nUpperCount}번{NEW_LINE}" +
-                $"가격다운 전략 분포횟수 : {curEa.priceDownStrategy.nMinuteLocationCount}번{NEW_LINE}" +
-                $"공유 전략 분포횟수 : {curEa.myStrategy.nSharedMinuteLocationCount}번{NEW_LINE}" +
-                $"--------------------------------------------------{NEW_LINE}{NEW_LINE}";
-
-            for (int i = 0; i < strategyNames.arrPriceDownStrategyName.Count; i++)
-            {
-                sMessage += $"==================== {i}번째 가격다운 전략 ===================={NEW_LINE}" +
-                    $"##전략명 : {strategyNames.arrPriceDownStrategyName[i]}  !!!!!!!!!!!!{NEW_LINE}";
-
-                if (curEa.priceDownStrategy.arrStrategy[i] == 0)
-                {
-                    sMessage += $"--> 해당전략은 활성화되지 않았습니다.{NEW_LINE}";
-                }
-                else
-                {
-                    sMessage +=
-                        $"--> 마지막 접근시각 : {curEa.priceDownStrategy.arrLastTouch[i]}{NEW_LINE}" +
-                        $"--> 접근 횟수 : {curEa.priceDownStrategy.arrStrategy[i]}번{NEW_LINE}";
-                }
-
-                sMessage += $"{NEW_LINE}";
-            }
-            new ScrollableMessageBox().Show(sMessage, sTitle);
-        }
-        public void ShowRealBuy()
-        {
-            curEa = mainForm.ea[nCurIdx];
-            string sTitle = "[실매수 전략] " + mainForm.nSharedTime + " " + curEa.sCode + " " + curEa.sCodeName + " " + curEa.sMarketGubunTag;
-            string sMessage = $"실매수 전략 횟수 : {curEa.myStrategy.nStrategyNum}번{NEW_LINE}" +
-                $"실매수 전략 마지막 접근시각 : {curEa.myStrategy.nLastTouchTime}{NEW_LINE}" +
-                $"실매수 전략 최고 어깨점 : {curEa.myStrategy.nMaxShoulderPrice}(원){NEW_LINE}" +
-                $"실매수 전략 단순평균 어깨점 : {Math.Round(curEa.myStrategy.fEverageShoulderPrice, 2)}(원){NEW_LINE}" +
-                $"실매수 전략 어깨 상승횟수 : {curEa.myStrategy.nUpperCount}번{NEW_LINE}" +
-                $"실매수 전략 분포횟수 : {curEa.myStrategy.nMinuteLocationCount}번{NEW_LINE}" +
-                $"공유 전략 분포횟수 : {curEa.myStrategy.nSharedMinuteLocationCount}번{NEW_LINE}" +
-                $"--------------------------------------------------{NEW_LINE}{NEW_LINE}";
-
-            for (int i = 0; i < strategyNames.arrRealBuyStrategyName.Count; i++)
-            {
-                sMessage += $"==================== {i}번째 실매수 전략 ===================={NEW_LINE}" +
-                    $"##전략명 : {strategyNames.arrRealBuyStrategyName[i]}  !!!!!!!!!!!!{NEW_LINE}";
-
-                if (curEa.myStrategy.arrStrategy[i] == 0)
-                {
-                    sMessage += $"--> 해당전략은 활성화되지 않았습니다.{NEW_LINE}";
-                }
-                else
-                {
-                    sMessage +=
-                        $"--> 마지막 접근시각 : {curEa.myStrategy.arrLastTouch[i]}{NEW_LINE}" +
-                        $"--> 접근 횟수 : {curEa.myStrategy.arrStrategy[i]}번{NEW_LINE}";
+                        $"--> 마지막 접근시각 : {curEa.fakeVolatilityStrategy.arrLastTouch[i]}{NEW_LINE}" +
+                        $"--> 접근 횟수 : {curEa.fakeVolatilityStrategy.arrStrategy[i]}번{NEW_LINE}";
                 }
 
                 sMessage += $"{NEW_LINE}";
@@ -984,7 +783,7 @@ namespace AtoTrader.View.EachStockHistory
                 $"페이크매수 전략 종합평균 어깨점 : {Math.Round(fBuyFlexEverage, 2)}(원){NEW_LINE}" +
                 $"페이크매수 전략 어깨 상승횟수 : {curEa.fakeBuyStrategy.nUpperCount}번{NEW_LINE}" +
                 $"페이크매수 전략 분포횟수 : {curEa.fakeBuyStrategy.nMinuteLocationCount}번{NEW_LINE}" +
-                $"공유 전략 분포횟수 : {curEa.myStrategy.nSharedMinuteLocationCount}번{NEW_LINE}" +
+                $"공유 전략 분포횟수 : {curEa.fakeStrategyMgr.nSharedMinuteLocationCount}번{NEW_LINE}" +
                 $"--------------------------------------------------{NEW_LINE}{NEW_LINE}";
 
             for (int i = 0; i < strategyNames.arrFakeBuyStrategyName.Count; i++)
@@ -1023,7 +822,7 @@ namespace AtoTrader.View.EachStockHistory
                 $"페이크보조 전략 종합평균 어깨점 : {Math.Round(fAssistantFlexEverage, 2)}(원){NEW_LINE}" +
                 $"페이크보조 전략 어깨 상승횟수 : {curEa.fakeAssistantStrategy.nUpperCount}번{NEW_LINE}" +
                 $"페이크보조 전략 분포횟수 : {curEa.fakeAssistantStrategy.nMinuteLocationCount}번{NEW_LINE}" +
-                $"공유 전략 분포횟수 : {curEa.myStrategy.nSharedMinuteLocationCount}번{NEW_LINE}" +
+                $"공유 전략 분포횟수 : {curEa.fakeStrategyMgr.nSharedMinuteLocationCount}번{NEW_LINE}" +
                 $"--------------------------------------------------{NEW_LINE}{NEW_LINE}";
             
             for (int i = 0; i < strategyNames.arrFakeAssistantStrategyName.Count; i++)
@@ -1063,7 +862,7 @@ namespace AtoTrader.View.EachStockHistory
                 $"페이크저항 전략 종합평균 어깨점 : {Math.Round(fResistFlexEverage, 2)}(원){NEW_LINE}" +
                 $"페이크저항 전략 어깨 상승횟수 : {curEa.fakeResistStrategy.nUpperCount}번{NEW_LINE}" +
                 $"페이크저항 전략 분포횟수 : {curEa.fakeResistStrategy.nMinuteLocationCount}번{NEW_LINE}" +
-                $"공유 전략 분포횟수 : {curEa.myStrategy.nSharedMinuteLocationCount}번{NEW_LINE}" +
+                $"공유 전략 분포횟수 : {curEa.fakeStrategyMgr.nSharedMinuteLocationCount}번{NEW_LINE}" +
                 $"--------------------------------------------------{NEW_LINE}{NEW_LINE}";
 
             for (int i = 0; i < strategyNames.arrFakeResistStrategyName.Count; i++)
@@ -1325,13 +1124,13 @@ namespace AtoTrader.View.EachStockHistory
             //if (isRealBuyLinePressed)
             //{
             //    curEa = mainForm.ea[nCurIdx];
-            //    if (curEa.myStrategy.nStrategyNum > 0)
+            //    if (curEa.fakeVolatilityStrategy.nStrategyNum > 0)
             //    {
             //        int x0 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Minimum);
             //        int x1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Maximum);
-            //        int yMax = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.myStrategy.nMaxShoulderPrice);
-            //        int ySimpleEverage = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.myStrategy.fEverageShoulderPrice);
-            //        int yFlexEverage = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition((double)curEa.myStrategy.nSumShoulderPrice / curEa.myStrategy.nStrategyNum);
+            //        int yMax = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.fakeVolatilityStrategy.nMaxShoulderPrice);
+            //        int ySimpleEverage = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.fakeVolatilityStrategy.fEverageShoulderPrice);
+            //        int yFlexEverage = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition((double)curEa.fakeVolatilityStrategy.nSumShoulderPrice / curEa.fakeVolatilityStrategy.nStrategyNum);
 
             //        gpHorizontal.DrawLine(linePenOrange, x0, yMax, x1, yMax);
             //        gpHorizontal.DrawLine(linePenViolet, x0, ySimpleEverage, x1, ySimpleEverage);
@@ -1807,12 +1606,12 @@ namespace AtoTrader.View.EachStockHistory
             {
                 if (isSpacePushed) // 스페이도 눌린상태라면 
                 {
-                    ShowRealBuy(); // 전략현황을 출력해주고
+                    ShowFakeVolatility(); // 전략현황을 출력해주고
                     isSpacePushed = false;
                 }
                 else // 아니라면
                 {
-                    isBuyArrowVisible = !isBuyArrowVisible;
+                    isFakeVolatilityArrowVisible = !isFakeVolatilityArrowVisible;
                     UpdateMinuteHistoryData(); // 단순 Q이기 때문에 updateMinuteHistory만 해주면 된다.
                 }
             }
@@ -1860,33 +1659,6 @@ namespace AtoTrader.View.EachStockHistory
                 }
             }
 
-            if (cUp == 'D') // 가격업
-            {
-                if (isSpacePushed) // 스페이도 눌린상태라면 
-                {
-                    ShowPriceUp(); // 전략현황을 출력해주고
-                    isSpacePushed = false;
-                }
-                else
-                {
-                    isPriceUpArrowVisible = !isPriceUpArrowVisible;
-                    UpdateMinuteHistoryData();
-                }
-            }
-
-            if (cUp == 'F') // 가격다운
-            {
-                if (isSpacePushed) // 스페이도 눌린상태라면 
-                {
-                    ShowPriceDown(); // 전략현황을 출력해주고
-                    isSpacePushed = false;
-                }
-                else
-                {
-                    isPriceDownArrowVisible = !isPriceDownArrowVisible;
-                    UpdateMinuteHistoryData();
-                }
-            }
 
             if (cUp == 'A')
             {
@@ -1983,12 +1755,10 @@ namespace AtoTrader.View.EachStockHistory
         public void ReverseAllArrowVisible()
         {
             isAllArrowVisible = !isAllArrowVisible;
-            isBuyArrowVisible = isAllArrowVisible;
+            isFakeVolatilityArrowVisible = isAllArrowVisible;
             isFakeBuyArrowVisible = isAllArrowVisible;
             isFakeResistArrowVisible = isAllArrowVisible;
             isFakeAssistantArrowVisible = isAllArrowVisible;
-            isPriceUpArrowVisible = isAllArrowVisible;
-            isPriceDownArrowVisible = isAllArrowVisible;
         }
 
 

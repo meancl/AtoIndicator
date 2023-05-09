@@ -28,17 +28,13 @@ namespace AtoTrader.View
 
             listView1.Columns.Add(new ColumnHeader { Name = sString, Text = "종목코드" });
             listView1.Columns.Add(new ColumnHeader { Name = sString, Text = "종목명" });
-            listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "실매수시도" });
-            listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "실매수통과" });
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "총 랭크" });
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "분 랭크" });
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "페매수" });
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "페보조" });
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "페저항" });
-            listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "페가업" });
-            listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "페가단" });
+            listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "페변동" });
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "총 페이크" });
-            listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "총 갯수" });
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "라이트통과" });
             listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "초기갭" });
             listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "갭제외" });
@@ -88,13 +84,9 @@ namespace AtoTrader.View
             if (cUp == 17)
             {
                 passNumTxtBox.Text = "";
-                realTrialTxtBox.Text = "";
-                realAIPassTxtBox.Text = "";
                 fakeBuyTxtBox.Text = "";
                 fakeAssistantTxtBox.Text = "";
                 fakeResistTxtBox.Text = "";
-                priceUpTxtBox.Text = "";
-                priceDownTxtBox.Text = "";
                 totalFakeTxtBox.Text = "";
                 totalTrialTxtBox.Text = "";
                 totalFakePassTxtBox.Text = "";
@@ -109,8 +101,6 @@ namespace AtoTrader.View
                 fakeBuyMinTxtBox.Text = "";
                 fakeAssistantMinTxtBox.Text = "";
                 fakeResistMinTxtBox.Text = "";
-                priceUpMinTxtBox.Text = "";
-                priceDownMinTxtBox.Text = "";
                 totalFakeMinTxtBox.Text = "";
                 powerJarTxtBox.Text = "";
                 upPowerJarTxtBox.Text = "";
@@ -153,8 +143,6 @@ namespace AtoTrader.View
                 minTradeVolumeRankTxtBox.Text = "";
                 minTotalRankTxtBox.Text = "";
                
-                
-                
             }
         }
 
@@ -185,13 +173,10 @@ namespace AtoTrader.View
             try
             {
               
-                string sRealTrial = realTrialTxtBox.Text.Trim();
-                string sRealPass = realAIPassTxtBox.Text.Trim();
                 string sFakeBuy = fakeBuyTxtBox.Text.Trim();
                 string sFakeAssistant = fakeAssistantTxtBox.Text.Trim();
                 string sFakeResist = fakeResistTxtBox.Text.Trim();
-                string sPriceUp = priceUpTxtBox.Text.Trim();
-                string sPriceDown = priceDownTxtBox.Text.Trim();
+                string sFakeVolatility = fakeVolatilityTxtBox.Text.Trim();
                 string sTotalFake = totalFakeTxtBox.Text.Trim();
                 string sTotalTrial = totalTrialTxtBox.Text.Trim();
                 string sTotalFakePass = totalFakePassTxtBox.Text.Trim();
@@ -206,8 +191,7 @@ namespace AtoTrader.View
                 string sMinFakeBuy = fakeBuyMinTxtBox.Text.Trim();
                 string sMinFakeAssistant = fakeAssistantMinTxtBox.Text.Trim();
                 string sMinFakeResist = fakeResistMinTxtBox.Text.Trim();
-                string sMinPriceUp = priceUpMinTxtBox.Text.Trim();
-                string sMinPriceDown = priceDownMinTxtBox.Text.Trim();
+                string sMinFakeVolatility = fakeVolatilityMinTxtBox.Text.Trim();
                 string sMinTotalFake = totalFakeMinTxtBox.Text.Trim();
                 string sPowerJar = powerJarTxtBox.Text.Trim();
                 string sUpPowerJar = upPowerJarTxtBox.Text.Trim();
@@ -252,13 +236,10 @@ namespace AtoTrader.View
 
 
 
-                bool isRealTrial = !sRealTrial.Equals("");
-                bool isRealPass = !sRealPass.Equals("");
                 bool isFakeBuy = !sFakeBuy.Equals("");
                 bool isFakeAssistant = !sFakeAssistant.Equals("");
                 bool isFakeResist = !sFakeResist.Equals("");
-                bool isPriceUp = !sPriceUp.Equals("");
-                bool isPriceDown = !sPriceDown.Equals("");
+                bool isFakeVolatility = !sFakeVolatility.Equals("");
                 bool isTotalFake = !sTotalFake.Equals("");
                 bool isTotalTrial = !sTotalTrial.Equals("");
                 bool isTotalFakePass = !sTotalFakePass.Equals("");
@@ -273,8 +254,7 @@ namespace AtoTrader.View
                 bool isMinFakeBuy = !sMinFakeBuy.Equals("");
                 bool isMinFakeAssistant = !sMinFakeAssistant.Equals("");
                 bool isMinFakeResist = !sMinFakeResist.Equals("");
-                bool isMinPriceUp = !sMinPriceUp.Equals("");
-                bool isMinPriceDown = !sMinPriceDown.Equals("");
+                bool isMinFakeVolatility = !sMinFakeVolatility.Equals("");
                 bool isMinTotalFake = !sMinTotalFake.Equals("");
                 bool isPowerJar = !sPowerJar.Equals("");
                 bool isUpPowerJar = !sUpPowerJar.Equals("");
@@ -320,13 +300,10 @@ namespace AtoTrader.View
                 int nPass; // pass cnt
                 int nPassLen = 0;
                 int nFullMinusNum = GetPassNum(new bool[] {
-                                        isRealTrial,
-                                        isRealPass,
                                         isFakeBuy,
                                         isFakeAssistant,
                                         isFakeResist,
-                                        isPriceUp,
-                                        isPriceDown,
+                                        isFakeVolatility,
                                         isTotalFake,
                                         isTotalTrial,
                                         isTotalFakePass,
@@ -341,8 +318,7 @@ namespace AtoTrader.View
                                         isMinFakeBuy,
                                         isMinFakeAssistant,
                                         isMinFakeResist,
-                                        isMinPriceUp,
-                                        isMinPriceDown,
+                                        isMinFakeVolatility,
                                         isMinTotalFake,
                                         isPowerJar,
                                         isUpPowerJar,
@@ -416,26 +392,20 @@ namespace AtoTrader.View
                 {
                     nPass = 0;
 
-                    if (isRealTrial)
-                        nPass += (int.Parse(sRealTrial) <= mainForm.ea[i].myStrategy.nStrategyNum) ? 1 : 0;
-                    if (isRealPass)
-                        nPass += (int.Parse(sRealPass) <= mainForm.ea[i].myStrategy.nAIPassed) ? 1 : 0;
                     if (isFakeBuy)
                         nPass += (int.Parse(sFakeBuy) <= mainForm.ea[i].fakeBuyStrategy.nStrategyNum) ? 1 : 0;
                     if (isFakeAssistant)
                         nPass += (int.Parse(sFakeAssistant) <= mainForm.ea[i].fakeAssistantStrategy.nStrategyNum) ? 1 : 0;
                     if (isFakeResist)
                         nPass += (int.Parse(sFakeResist) <= mainForm.ea[i].fakeResistStrategy.nStrategyNum) ? 1 : 0;
-                    if (isPriceUp)
-                        nPass += (int.Parse(sPriceUp) <= mainForm.ea[i].priceUpStrategy.nStrategyNum) ? 1 : 0;
-                    if (isPriceDown)
-                        nPass += (int.Parse(sPriceDown) <= mainForm.ea[i].priceDownStrategy.nStrategyNum) ? 1 : 0;
+                    if (isFakeVolatility)
+                        nPass += (int.Parse(sFakeVolatility) <= mainForm.ea[i].fakeVolatilityStrategy.nStrategyNum) ? 1 : 0;
                     if (isTotalFake)
-                        nPass += (int.Parse(sTotalFake) <= mainForm.ea[i].myStrategy.nTotalFakeCount) ? 1 : 0;
+                        nPass += (int.Parse(sTotalFake) <= mainForm.ea[i].fakeStrategyMgr.nTotalFakeCount) ? 1 : 0;
                     if (isTotalTrial)
-                        nPass += (int.Parse(sTotalTrial) <= mainForm.ea[i].myStrategy.nTotalBlockCount) ? 1 : 0;
+                        nPass += (int.Parse(sTotalTrial) <= mainForm.ea[i].fakeStrategyMgr.nTotalFakeCount) ? 1 : 0;
                     if (isTotalFakePass)
-                        nPass += (int.Parse(sTotalFakePass) <= mainForm.ea[i].myStrategy.nFakeAccumPassed) ? 1 : 0;
+                        nPass += (int.Parse(sTotalFakePass) <= mainForm.ea[i].fakeStrategyMgr.nFakeAccumPassed) ? 1 : 0;
                     if (isStartGap)
                         nPass += (double.Parse(sStartGap) <= mainForm.ea[i].fStartGap) ? 1 : 0;
                     if (isWithoutGap)
@@ -458,12 +428,10 @@ namespace AtoTrader.View
                         nPass += (int.Parse(sMinFakeAssistant) <= mainForm.ea[i].fakeAssistantStrategy.nMinuteLocationCount) ? 1 : 0;
                     if (isMinFakeResist)
                         nPass += (int.Parse(sMinFakeResist) <= mainForm.ea[i].fakeResistStrategy.nMinuteLocationCount) ? 1 : 0;
-                    if (isMinPriceUp)
-                        nPass += (int.Parse(sMinPriceUp) <= mainForm.ea[i].priceUpStrategy.nMinuteLocationCount) ? 1 : 0;
-                    if (isMinPriceDown)
-                        nPass += (int.Parse(sMinPriceDown) <= mainForm.ea[i].priceDownStrategy.nMinuteLocationCount) ? 1 : 0;
+                    if (isMinFakeVolatility)
+                        nPass += (int.Parse(sMinFakeVolatility) <= mainForm.ea[i].fakeVolatilityStrategy.nMinuteLocationCount) ? 1 : 0;
                     if (isMinTotalFake)
-                        nPass += (int.Parse(sMinTotalFake) <= mainForm.ea[i].myStrategy.nSharedMinuteLocationCount) ? 1 : 0;
+                        nPass += (int.Parse(sMinTotalFake) <= mainForm.ea[i].fakeStrategyMgr.nSharedMinuteLocationCount) ? 1 : 0;
                     if (isPowerJar)
                         nPass += (double.Parse(sPowerJar) <= mainForm.ea[i].fPowerJar) ? 1 : 0;
                     if (isUpPowerJar)
@@ -553,18 +521,14 @@ namespace AtoTrader.View
                         ListViewItem listViewItem = new ListViewItem(new string[] {
                         mainForm.ea[i].sCode,
                         mainForm.ea[i].sCodeName,
-                        mainForm.ea[i].myStrategy.nStrategyNum.ToString(),
-                        mainForm.ea[i].myStrategy.nAIPassed.ToString(),
                         mainForm.ea[i].rankSystem.nSummationRanking.ToString(),
                         mainForm.ea[i].rankSystem.nMinuteSummationRanking.ToString(),
                         mainForm.ea[i].fakeBuyStrategy.nStrategyNum.ToString(),
                         mainForm.ea[i].fakeAssistantStrategy.nStrategyNum.ToString(),
                         mainForm.ea[i].fakeResistStrategy.nStrategyNum.ToString(),
-                        mainForm.ea[i].priceUpStrategy.nStrategyNum.ToString(),
-                        mainForm.ea[i].priceDownStrategy.nStrategyNum.ToString(),
-                        mainForm.ea[i].myStrategy.nTotalFakeCount.ToString(),
-                        mainForm.ea[i].myStrategy.nTotalBlockCount.ToString(),
-                        mainForm.ea[i].myStrategy.nFakeAccumPassed.ToString(),
+                        mainForm.ea[i].fakeVolatilityStrategy.nStrategyNum.ToString(),
+                        mainForm.ea[i].fakeStrategyMgr.nTotalFakeCount.ToString(),
+                        mainForm.ea[i].fakeStrategyMgr.nFakeAccumPassed.ToString(),
                         Math.Round(mainForm.ea[i].fStartGap, 3).ToString(),
                         Math.Round(mainForm.ea[i].fPowerWithoutGap, 3).ToString(),
                         Math.Round(mainForm.ea[i].fPower, 3).ToString(),
@@ -748,8 +712,8 @@ namespace AtoTrader.View
         }
 
 
+
         #endregion
 
-     
     }
 }

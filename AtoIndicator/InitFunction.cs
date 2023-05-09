@@ -91,65 +91,16 @@ namespace AtoTrader
 
             strategyName = new StrategyNames();
 
-            for (int i = 0;i < nStockLength; i++)
+            for (int i = 0; i < nStockLength; i++)
             {
-                ea[i].myStrategy.Init(strategyName.arrRealBuyStrategyName.Count); // 개인전략 구조체 초기화
-                ea[i].fakeBuyStrategy.Init(strategyName.arrFakeBuyStrategyName.Count);
-                ea[i].fakeResistStrategy.Init(strategyName.arrFakeResistStrategyName.Count);
-                ea[i].fakeAssistantStrategy.Init(strategyName.arrFakeAssistantStrategyName.Count);
-                ea[i].priceUpStrategy.Init(strategyName.arrPriceUpStrategyName.Count);
-                ea[i].priceDownStrategy.Init(strategyName.arrPriceDownStrategyName.Count);
+                ea[i].fakeVolatilityStrategy = new FakeVolatilityStrategy(FAKE_VOLATILE_SIGNAL, strategyName.arrFakeVolatilityStrategyName.Count); // 개인전략 구조체 초기화
+                ea[i].fakeBuyStrategy = new FakeBuyStrategy(FAKE_BUY_SIGNAL, strategyName.arrFakeBuyStrategyName.Count);
+                ea[i].fakeResistStrategy = new FakeResistStrategy(FAKE_RESIST_SIGNAL, strategyName.arrFakeResistStrategyName.Count);
+                ea[i].fakeAssistantStrategy = new FakeAssistantStrategy(FAKE_ASSISTANT_SIGNAL, strategyName.arrFakeAssistantStrategyName.Count);
             }
 
 
 
-            // 전략명을 Key로 DB에서 전략번호를 받아온다.
-            using (var db = new myDbContext())
-            {
-                #region Read Strategy Name
-                // 데이터를 insert할때 데이터를 모두 입력하지 않았으면 나머지는 0 , null 등 초기값으로 myDbContext에서 관리해준다.
-                // 해당 데이터를 myDbContext에서 관리하기 때문에 이미 관리대상인 데이터 값을 요청하면 sql에 새로 요청하지 않고
-                // 관리데이터중에서 찾아 반환한게 되는데 이러면 자동설정된 값들을 제대로 반영하지 못하는 오류가 일어난다.
-                // 추적 vs 비추적 이슈
-                db.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-                StrategyNameDict cls;
-
-                for (int i = 0; i < strategyName.GetStrategySize(); i++)
-                {
-                    if (strategyName.GetStrategyExistsByIdx(i))
-                    {
-                        var data = db.strategyNameDict.FirstOrDefault(x => x.sStrategyName.Equals(strategyName.arrRealBuyStrategyName[i]));
-                        if (data == null)
-                        {
-                            cls = new StrategyNameDict
-                            {
-                                sStrategyName = strategyName.arrRealBuyStrategyName[i]
-                            };
-
-                            try
-                            {
-                                db.strategyNameDict.Add(cls);
-                                db.SaveChanges();
-                                // 데이터가 잘 들어가졌을때
-                                var checkData = db.strategyNameDict.FirstOrDefault(x => x.sStrategyName.Equals(strategyName.arrRealBuyStrategyName[i]));
-                                strategyNameDict[checkData.sStrategyName] = checkData.nStrategyNameIdx;
-                            }
-                            catch (Exception ex) // 오류가 났다면 다시
-                            {
-                                db.strategyNameDict.Remove(cls);
-                                i--;
-                                continue;
-                            }
-
-                        }
-                        else
-                        {
-                            strategyNameDict[data.sStrategyName] = data.nStrategyNameIdx;
-                        }
-                    }
-                }
-                #endregion
-            }
         } // END -- InitAto
 
         // ============================================

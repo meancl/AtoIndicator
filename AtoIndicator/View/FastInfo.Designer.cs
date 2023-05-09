@@ -32,20 +32,14 @@ namespace AtoTrader.View
             this.mySqlConnection1 = new MySql.Data.MySqlClient.MySqlConnection();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.realTrialTxtBox = new System.Windows.Forms.TextBox();
             this.speedRankTxtBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.fakeBuyTxtBox = new System.Windows.Forms.TextBox();
             this.fakeAssistantTxtBox = new System.Windows.Forms.TextBox();
             this.fakeResistTxtBox = new System.Windows.Forms.TextBox();
-            this.priceUpTxtBox = new System.Windows.Forms.TextBox();
-            this.priceDownTxtBox = new System.Windows.Forms.TextBox();
             this.totalFakeTxtBox = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.sellPriceTxtBox = new System.Windows.Forms.TextBox();
@@ -138,11 +132,7 @@ namespace AtoTrader.View
             this.label27 = new System.Windows.Forms.Label();
             this.label28 = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
-            this.label30 = new System.Windows.Forms.Label();
-            this.label31 = new System.Windows.Forms.Label();
             this.totalFakeMinTxtBox = new System.Windows.Forms.TextBox();
-            this.priceDownMinTxtBox = new System.Windows.Forms.TextBox();
-            this.priceUpMinTxtBox = new System.Windows.Forms.TextBox();
             this.fakeResistMinTxtBox = new System.Windows.Forms.TextBox();
             this.label25 = new System.Windows.Forms.Label();
             this.fakeAssistantMinTxtBox = new System.Windows.Forms.TextBox();
@@ -169,11 +159,12 @@ namespace AtoTrader.View
             this.label16 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            this.realAIPassTxtBox = new System.Windows.Forms.TextBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.listView1 = new System.Windows.Forms.ListView();
+            this.label3 = new System.Windows.Forms.Label();
+            this.fakeVolatilityTxtBox = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.fakeVolatilityMinTxtBox = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -195,22 +186,6 @@ namespace AtoTrader.View
             this.label2.Size = new System.Drawing.Size(67, 12);
             this.label2.TabIndex = 2;
             this.label2.Text = "랭크 - 누적";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(23, 64);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(41, 12);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "실매수";
-            // 
-            // realTrialTxtBox
-            // 
-            this.realTrialTxtBox.Location = new System.Drawing.Point(158, 61);
-            this.realTrialTxtBox.Name = "realTrialTxtBox";
-            this.realTrialTxtBox.Size = new System.Drawing.Size(100, 21);
-            this.realTrialTxtBox.TabIndex = 4;
             // 
             // speedRankTxtBox
             // 
@@ -246,24 +221,6 @@ namespace AtoTrader.View
             this.label6.TabIndex = 8;
             this.label6.Text = "저항";
             // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(90, 252);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(41, 12);
-            this.label7.TabIndex = 9;
-            this.label7.Text = "가격업";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(90, 287);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(53, 12);
-            this.label8.TabIndex = 10;
-            this.label8.Text = "가격다운";
-            // 
             // label9
             // 
             this.label9.AutoSize = true;
@@ -294,20 +251,6 @@ namespace AtoTrader.View
             this.fakeResistTxtBox.Size = new System.Drawing.Size(100, 21);
             this.fakeResistTxtBox.TabIndex = 14;
             // 
-            // priceUpTxtBox
-            // 
-            this.priceUpTxtBox.Location = new System.Drawing.Point(158, 252);
-            this.priceUpTxtBox.Name = "priceUpTxtBox";
-            this.priceUpTxtBox.Size = new System.Drawing.Size(100, 21);
-            this.priceUpTxtBox.TabIndex = 15;
-            // 
-            // priceDownTxtBox
-            // 
-            this.priceDownTxtBox.Location = new System.Drawing.Point(158, 284);
-            this.priceDownTxtBox.Name = "priceDownTxtBox";
-            this.priceDownTxtBox.Size = new System.Drawing.Size(100, 21);
-            this.priceDownTxtBox.TabIndex = 16;
-            // 
             // totalFakeTxtBox
             // 
             this.totalFakeTxtBox.Location = new System.Drawing.Point(158, 317);
@@ -317,6 +260,10 @@ namespace AtoTrader.View
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.fakeVolatilityMinTxtBox);
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.fakeVolatilityTxtBox);
             this.groupBox1.Controls.Add(this.sellPriceTxtBox);
             this.groupBox1.Controls.Add(this.label76);
             this.groupBox1.Controls.Add(this.buyPriceTxtBox);
@@ -407,11 +354,7 @@ namespace AtoTrader.View
             this.groupBox1.Controls.Add(this.label27);
             this.groupBox1.Controls.Add(this.label28);
             this.groupBox1.Controls.Add(this.label29);
-            this.groupBox1.Controls.Add(this.label30);
-            this.groupBox1.Controls.Add(this.label31);
             this.groupBox1.Controls.Add(this.totalFakeMinTxtBox);
-            this.groupBox1.Controls.Add(this.priceDownMinTxtBox);
-            this.groupBox1.Controls.Add(this.priceUpMinTxtBox);
             this.groupBox1.Controls.Add(this.fakeResistMinTxtBox);
             this.groupBox1.Controls.Add(this.label25);
             this.groupBox1.Controls.Add(this.fakeAssistantMinTxtBox);
@@ -438,16 +381,9 @@ namespace AtoTrader.View
             this.groupBox1.Controls.Add(this.label16);
             this.groupBox1.Controls.Add(this.label15);
             this.groupBox1.Controls.Add(this.label14);
-            this.groupBox1.Controls.Add(this.realAIPassTxtBox);
-            this.groupBox1.Controls.Add(this.label13);
-            this.groupBox1.Controls.Add(this.label12);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.totalFakeTxtBox);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.priceDownTxtBox);
-            this.groupBox1.Controls.Add(this.realTrialTxtBox);
-            this.groupBox1.Controls.Add(this.priceUpTxtBox);
             this.groupBox1.Controls.Add(this.speedRankTxtBox);
             this.groupBox1.Controls.Add(this.fakeResistTxtBox);
             this.groupBox1.Controls.Add(this.label4);
@@ -456,12 +392,10 @@ namespace AtoTrader.View
             this.groupBox1.Controls.Add(this.fakeBuyTxtBox);
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.label9);
-            this.groupBox1.Controls.Add(this.label7);
-            this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Left;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(293, 746);
+            this.groupBox1.Size = new System.Drawing.Size(288, 746);
             this.groupBox1.TabIndex = 19;
             this.groupBox1.TabStop = false;
             // 
@@ -1193,44 +1127,12 @@ namespace AtoTrader.View
             this.label29.TabIndex = 69;
             this.label29.Text = "총 페이크";
             // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(409, 250);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(41, 12);
-            this.label30.TabIndex = 67;
-            this.label30.Text = "가격업";
-            // 
-            // label31
-            // 
-            this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(409, 285);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(53, 12);
-            this.label31.TabIndex = 68;
-            this.label31.Text = "가격다운";
-            // 
             // totalFakeMinTxtBox
             // 
             this.totalFakeMinTxtBox.Location = new System.Drawing.Point(477, 311);
             this.totalFakeMinTxtBox.Name = "totalFakeMinTxtBox";
             this.totalFakeMinTxtBox.Size = new System.Drawing.Size(100, 21);
             this.totalFakeMinTxtBox.TabIndex = 61;
-            // 
-            // priceDownMinTxtBox
-            // 
-            this.priceDownMinTxtBox.Location = new System.Drawing.Point(477, 278);
-            this.priceDownMinTxtBox.Name = "priceDownMinTxtBox";
-            this.priceDownMinTxtBox.Size = new System.Drawing.Size(100, 21);
-            this.priceDownMinTxtBox.TabIndex = 60;
-            // 
-            // priceUpMinTxtBox
-            // 
-            this.priceUpMinTxtBox.Location = new System.Drawing.Point(477, 246);
-            this.priceUpMinTxtBox.Name = "priceUpMinTxtBox";
-            this.priceUpMinTxtBox.Size = new System.Drawing.Size(100, 21);
-            this.priceUpMinTxtBox.TabIndex = 59;
             // 
             // fakeResistMinTxtBox
             // 
@@ -1443,38 +1345,13 @@ namespace AtoTrader.View
             this.label14.TabIndex = 25;
             this.label14.Text = "이평선";
             // 
-            // realAIPassTxtBox
-            // 
-            this.realAIPassTxtBox.Location = new System.Drawing.Point(158, 90);
-            this.realAIPassTxtBox.Name = "realAIPassTxtBox";
-            this.realAIPassTxtBox.Size = new System.Drawing.Size(100, 21);
-            this.realAIPassTxtBox.TabIndex = 24;
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(90, 93);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(29, 12);
-            this.label13.TabIndex = 23;
-            this.label13.Text = "통과";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(90, 64);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(29, 12);
-            this.label12.TabIndex = 22;
-            this.label12.Text = "시도";
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.listView1);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(293, 0);
+            this.groupBox2.Location = new System.Drawing.Point(288, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1144, 746);
+            this.groupBox2.Size = new System.Drawing.Size(1149, 746);
             this.groupBox2.TabIndex = 20;
             this.groupBox2.TabStop = false;
             // 
@@ -1485,9 +1362,41 @@ namespace AtoTrader.View
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(3, 17);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(1138, 726);
+            this.listView1.Size = new System.Drawing.Size(1143, 726);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(90, 259);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(41, 12);
+            this.label3.TabIndex = 171;
+            this.label3.Text = "변동성";
+            // 
+            // fakeVolatilityTxtBox
+            // 
+            this.fakeVolatilityTxtBox.Location = new System.Drawing.Point(158, 256);
+            this.fakeVolatilityTxtBox.Name = "fakeVolatilityTxtBox";
+            this.fakeVolatilityTxtBox.Size = new System.Drawing.Size(100, 21);
+            this.fakeVolatilityTxtBox.TabIndex = 172;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(409, 250);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(41, 12);
+            this.label7.TabIndex = 174;
+            this.label7.Text = "변동성";
+            // 
+            // fakeVolatilityMinTxtBox
+            // 
+            this.fakeVolatilityMinTxtBox.Location = new System.Drawing.Point(477, 243);
+            this.fakeVolatilityMinTxtBox.Name = "fakeVolatilityMinTxtBox";
+            this.fakeVolatilityMinTxtBox.Size = new System.Drawing.Size(100, 21);
+            this.fakeVolatilityMinTxtBox.TabIndex = 173;
             // 
             // FastInfo
             // 
@@ -1509,20 +1418,14 @@ namespace AtoTrader.View
         private MySql.Data.MySqlClient.MySqlConnection mySqlConnection1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox realTrialTxtBox;
         private System.Windows.Forms.TextBox speedRankTxtBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox fakeBuyTxtBox;
         private System.Windows.Forms.TextBox fakeAssistantTxtBox;
         private System.Windows.Forms.TextBox fakeResistTxtBox;
-        private System.Windows.Forms.TextBox priceUpTxtBox;
-        private System.Windows.Forms.TextBox priceDownTxtBox;
         private System.Windows.Forms.TextBox totalFakeTxtBox;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
@@ -1534,9 +1437,6 @@ namespace AtoTrader.View
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.TextBox realAIPassTxtBox;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.TextBox totalTrialTxtBox;
         private System.Windows.Forms.Label label18;
@@ -1567,11 +1467,7 @@ namespace AtoTrader.View
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.Label label29;
-        private System.Windows.Forms.Label label30;
-        private System.Windows.Forms.Label label31;
         private System.Windows.Forms.TextBox totalFakeMinTxtBox;
-        private System.Windows.Forms.TextBox priceDownMinTxtBox;
-        private System.Windows.Forms.TextBox priceUpMinTxtBox;
         private System.Windows.Forms.TextBox fakeResistMinTxtBox;
         private System.Windows.Forms.Label label25;
         private System.Windows.Forms.TextBox fakeAssistantMinTxtBox;
@@ -1651,5 +1547,9 @@ namespace AtoTrader.View
         private System.Windows.Forms.Label label68;
         private System.Windows.Forms.TextBox powerJarTxtBox;
         private System.Windows.Forms.Label label67;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox fakeVolatilityTxtBox;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox fakeVolatilityMinTxtBox;
     }
 }

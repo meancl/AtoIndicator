@@ -14,6 +14,8 @@ namespace AtoTrader.DB
         public string sCodeName { get; set; }
         public int nBuyStrategyIdx { get; set; }
         public int nBuyStrategySequenceIdx { get; set; }
+
+        public int nBuyStrategyTotalCountIdx { get; set; }
         public int nLocationOfComp { get; set; }
 
         public int nRqTime { get; set; }
@@ -176,6 +178,8 @@ namespace AtoTrader.DB
         #endregion 매매블럭 정보
 
         #region 개인구조체 정보
+        public int nFirstVolume { get; set; }
+        public long lFirstPrice { get; set; }
         public double fStartGap { get; set; }
         public string sType { get; set; }
         public double fPowerWithOutGap { get; set; }
@@ -209,6 +213,10 @@ namespace AtoTrader.DB
         public long lTotalSellPrice { get; set; }
         public long lMarketCap { get; set; }
         #endregion
+
+        public double fPositiveStickPower { get; set; }
+        public double fNegativeStickPower { get; set; }
+
         #region 랭크
         public int nAccumCountRanking { get; set; }
         public int nMarketCapRanking { get; set; }
@@ -218,6 +226,7 @@ namespace AtoTrader.DB
         public int nTotalTradePriceRanking { get; set; }
         public int nTotalTradeVolumeRanking { get; set; }
         public int nTotalRank { get; set; }
+        public int nSummationRankMove { get; set; }
         #region 분당
         public int nMinuteTotalRank { get; set; }
         public int nMinuteTradePriceRanking { get; set; }
@@ -227,6 +236,15 @@ namespace AtoTrader.DB
         public int nMinutePowerRanking { get; set; }
         public int nMinuteCountRanking { get; set; }
         public int nMinuteUpDownRanking { get; set; }
+
+        public int nRankHold10 { get; set; }
+        public int nRankHold20 { get; set; }
+        public int nRankHold50 { get; set; }
+        public int nRankHold100 { get; set; }
+        public int nRankHold200 { get; set; }
+        public int nRankHold500 { get; set; }
+        public int nRankHold1000 { get; set; }
+
         #endregion
         #endregion
 
@@ -234,8 +252,18 @@ namespace AtoTrader.DB
         public int nFakeBuyCnt { get; set; }
         public int nFakeAssistantCnt { get; set; }
         public int nFakeResistCnt { get; set; }
-        public int nPriceUpCnt { get; set; }
-        public int nPriceDownCnt { get; set; }
+        public int nFakeVolatilityCnt { get; set; }
+
+        public int nFakeBuyMinuteCnt { get; set; }
+        public int nFakeAssistantMinuteCnt { get; set; }
+        public int nFakeResistMinuteCnt { get; set; }
+        public int nFakeVolatilityMinuteCnt { get; set; }
+
+        public int nFakeBuyUpperCnt { get; set; }
+        public int nFakeAssistantUpperCnt { get; set; }
+        public int nFakeResistUpperCnt { get; set; }
+        public int nFakeVolatilityUpperCnt { get; set; }
+
         public int nTotalFakeCnt { get; set; }
         public int nTotalFakeMinuteCnt { get; set; }
         #endregion
@@ -262,20 +290,18 @@ namespace AtoTrader.DB
         #endregion
         #region 이동평균선
         #region 이동평균선 값
-        public double fMaDownFsVal { get; set; }
-        public double fMa20mVal { get; set; }
-        public double fMa1hVal { get; set; }
-        public double fMa2hVal { get; set; }
-
-        public double fMaxMaDownFsVal { get; set; }
-        public double fMaxMa20mVal { get; set; }
-        public double fMaxMa1hVal { get; set; }
-        public double fMaxMa2hVal { get; set; }
-
-        public double nMaxMaDownFsTime { get; set; }
-        public double nMaxMa20mTime { get; set; }
-        public double nMaxMa1hTime { get; set; }
-        public double nMaxMa2hTime { get; set; }
+        public double fMa20mDiff { get; set; }
+        public double fMa1hDiff { get; set; }
+        public double fMa2hDiff { get; set; }
+        public double fMa20mCurDiff { get; set; }
+        public double fMa1hCurDiff { get; set; }
+        public double fMa2hCurDiff { get; set; }
+        public double fGapMa20mDiff { get; set; }
+        public double fGapMa1hDiff { get; set; }
+        public double fGapMa2hDiff { get; set; }
+        public double fGapMa20mCurDiff { get; set; }
+        public double fGapMa1hCurDiff { get; set; }
+        public double fGapMa2hCurDiff { get; set; }
         #endregion 
         public int nDownCntMa20m { get; set; }
         public int nDownCntMa1h { get; set; }

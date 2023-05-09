@@ -126,7 +126,7 @@ namespace AtoTrader.View.EachStockHistory
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label1.Location = new System.Drawing.Point(836, 189);
+            this.label1.Location = new System.Drawing.Point(837, 215);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(7, 13);
             this.label1.TabIndex = 8;
@@ -136,7 +136,7 @@ namespace AtoTrader.View.EachStockHistory
             // 
             this.moveLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.moveLabel.AutoSize = true;
-            this.moveLabel.Location = new System.Drawing.Point(837, 224);
+            this.moveLabel.Location = new System.Drawing.Point(838, 251);
             this.moveLabel.Name = "moveLabel";
             this.moveLabel.Size = new System.Drawing.Size(5, 12);
             this.moveLabel.TabIndex = 11;
@@ -173,7 +173,7 @@ namespace AtoTrader.View.EachStockHistory
             this.gapLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.gapLabel.AutoSize = true;
             this.gapLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.gapLabel.Location = new System.Drawing.Point(836, 156);
+            this.gapLabel.Location = new System.Drawing.Point(837, 180);
             this.gapLabel.Name = "gapLabel";
             this.gapLabel.Size = new System.Drawing.Size(7, 13);
             this.gapLabel.TabIndex = 14;
