@@ -12,14 +12,16 @@ namespace AtoTrader.DB
         public DateTime dTradeTime { get; set; }
         public string sCode { get; set; }
         public string sCodeName { get; set; }
-        public int nBuyStrategyIdx { get; set; }
-        public int nBuyStrategySequenceIdx { get; set; }
-
-        public int nBuyStrategyTotalCountIdx { get; set; }
+        public int nAccessFakeStrategyGroupNum { get; set; }  // 어떤 페이크 그룹??
+        public int nAccessFakeStrategyIdx { get; set; } // 그룹 안에서 어떤 전략?
+        public int nAccessFakeStrategySequenceIdx { get; set; } // 그 전략이 몇번째??
         public int nLocationOfComp { get; set; }
+
 
         public int nRqTime { get; set; }
         public int nOverPrice { get; set; }
+        public int nPriceAfter1Sec { get; set; } // 1초 후 가격
+        public int nYesterdayEndPrice { get; set; }
 
         #region 매매블럭 정보
         // 매매슬롯 정보
@@ -192,7 +194,6 @@ namespace AtoTrader.DB
         public double fOnlyDownPowerJar { get; set; }
         public double fOnlyUpPowerJar { get; set; }
         #region 거래정도
-        public int nTradeCnt { get; set; }// 매매횟수
         public int nChegyulCnt { get; set; }// 체결카운트
         public int nHogaCnt { get; set; } // 호가카운트
         public int nNoMoveCnt { get; set; } // 노무브카운트
@@ -334,8 +335,6 @@ namespace AtoTrader.DB
         #endregion
         #endregion 개인구조체 정보
 
-        public int nPriceAfter1Sec { get; set; } // 1초 후 가격
-        public int nYesterdayEndPrice { get; set; }
     }
 }
 

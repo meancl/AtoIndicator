@@ -112,10 +112,13 @@ namespace AtoTrader.Migrations
                     b.Property<string>("sCode")
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
-                    b.Property<int>("nBuyStrategyIdx")
+                    b.Property<int>("nAccessFakeStrategyGroupNum")
                         .HasColumnType("int");
 
-                    b.Property<int>("nBuyStrategySequenceIdx")
+                    b.Property<int>("nAccessFakeStrategyIdx")
+                        .HasColumnType("int");
+
+                    b.Property<int>("nAccessFakeStrategySequenceIdx")
                         .HasColumnType("int");
 
                     b.Property<int>("nLocationOfComp")
@@ -562,9 +565,6 @@ namespace AtoTrader.Migrations
                     b.Property<int>("nBoundTopTimeMinuteAfterBuyWhile30")
                         .HasColumnType("int");
 
-                    b.Property<int>("nBuyStrategyTotalCountIdx")
-                        .HasColumnType("int");
-
                     b.Property<int>("nChegyulCnt")
                         .HasColumnType("int");
 
@@ -880,9 +880,6 @@ namespace AtoTrader.Migrations
                     b.Property<int>("nTotalTradeVolumeRanking")
                         .HasColumnType("int");
 
-                    b.Property<int>("nTradeCnt")
-                        .HasColumnType("int");
-
                     b.Property<int>("nUpCandleCnt")
                         .HasColumnType("int");
 
@@ -911,7 +908,7 @@ namespace AtoTrader.Migrations
                     b.Property<string>("sType")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.HasKey("dTradeTime", "sCode", "nBuyStrategyIdx", "nBuyStrategySequenceIdx", "nLocationOfComp");
+                    b.HasKey("dTradeTime", "sCode", "nAccessFakeStrategyGroupNum", "nAccessFakeStrategyIdx", "nAccessFakeStrategySequenceIdx", "nLocationOfComp");
 
                     b.ToTable("fakeReports");
                 });

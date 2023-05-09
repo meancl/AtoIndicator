@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AtoTrader.Migrations
 {
     [DbContext(typeof(myDbContext))]
-    [Migration("20230509121200_mig_add_fake_delete")]
-    partial class mig_add_fake_delete
+    [Migration("20230509154745_mig_add_del_fakereports")]
+    partial class mig_add_del_fakereports
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

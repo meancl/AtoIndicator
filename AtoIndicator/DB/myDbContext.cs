@@ -67,12 +67,13 @@ namespace AtoTrader.DB
 
             modelBuilder.Entity<FakeReports>(entity =>
             {
-                entity.HasKey(k => new { k.dTradeTime, k.sCode, k.nBuyStrategyIdx, k.nBuyStrategySequenceIdx, k.nLocationOfComp });
+                entity.HasKey(k => new { k.dTradeTime, k.sCode, k.nAccessFakeStrategyGroupNum, k.nAccessFakeStrategyIdx, k.nAccessFakeStrategySequenceIdx, k.nLocationOfComp });
                 entity.Property(k => k.dTradeTime).IsRequired();
                 entity.Property(k => k.sCode).IsRequired();
                 entity.Property(k => k.sCodeName).IsRequired();
-                entity.Property(k => k.nBuyStrategyIdx).IsRequired();
-                entity.Property(k => k.nBuyStrategySequenceIdx).IsRequired();
+                entity.Property(k => k.nAccessFakeStrategyGroupNum).IsRequired();
+                entity.Property(k => k.nAccessFakeStrategyIdx).IsRequired();
+                entity.Property(k => k.nAccessFakeStrategySequenceIdx).IsRequired();
             });
 
             modelBuilder.Entity<LocationUser>(entity =>

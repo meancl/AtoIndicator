@@ -13,13 +13,15 @@ namespace AtoTrader.Migrations
                 {
                     dTradeTime = table.Column<DateTime>(nullable: false),
                     sCode = table.Column<string>(nullable: false),
-                    nBuyStrategyIdx = table.Column<int>(nullable: false),
-                    nBuyStrategySequenceIdx = table.Column<int>(nullable: false),
+                    nAccessFakeStrategyGroupNum = table.Column<int>(nullable: false),
+                    nAccessFakeStrategyIdx = table.Column<int>(nullable: false),
+                    nAccessFakeStrategySequenceIdx = table.Column<int>(nullable: false),
                     nLocationOfComp = table.Column<int>(nullable: false),
                     sCodeName = table.Column<string>(nullable: false),
-                    nBuyStrategyTotalCountIdx = table.Column<int>(nullable: false),
                     nRqTime = table.Column<int>(nullable: false),
                     nOverPrice = table.Column<int>(nullable: false),
+                    nPriceAfter1Sec = table.Column<int>(nullable: false),
+                    nYesterdayEndPrice = table.Column<int>(nullable: false),
                     nHogaCntAfterCheck = table.Column<int>(nullable: false),
                     nChegyulCntAfterCheck = table.Column<int>(nullable: false),
                     nUpDownCntAfterCheck = table.Column<int>(nullable: false),
@@ -170,7 +172,6 @@ namespace AtoTrader.Migrations
                     fPowerJar = table.Column<double>(nullable: false),
                     fOnlyDownPowerJar = table.Column<double>(nullable: false),
                     fOnlyUpPowerJar = table.Column<double>(nullable: false),
-                    nTradeCnt = table.Column<int>(nullable: false),
                     nChegyulCnt = table.Column<int>(nullable: false),
                     nHogaCnt = table.Column<int>(nullable: false),
                     nNoMoveCnt = table.Column<int>(nullable: false),
@@ -276,13 +277,11 @@ namespace AtoTrader.Migrations
                     nCrushCnt = table.Column<int>(nullable: false),
                     nCrushUpCnt = table.Column<int>(nullable: false),
                     nCrushDownCnt = table.Column<int>(nullable: false),
-                    nCrushSpecialDownCnt = table.Column<int>(nullable: false),
-                    nPriceAfter1Sec = table.Column<int>(nullable: false),
-                    nYesterdayEndPrice = table.Column<int>(nullable: false)
+                    nCrushSpecialDownCnt = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fakeReports", x => new { x.dTradeTime, x.sCode, x.nBuyStrategyIdx, x.nBuyStrategySequenceIdx, x.nLocationOfComp });
+                    table.PrimaryKey("PK_fakeReports", x => new { x.dTradeTime, x.sCode, x.nAccessFakeStrategyGroupNum, x.nAccessFakeStrategyIdx, x.nAccessFakeStrategySequenceIdx, x.nLocationOfComp });
                 });
         }
 

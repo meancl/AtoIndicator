@@ -243,7 +243,6 @@ namespace AtoTrader
                     rep.fTradePerPure = fTradePerPure;
 
                     // new
-                    rep.nTradeCnt = fakeVolatilityStrategy.nStrategyNum;
                     rep.nHogaCnt = nHogaCnt;
                     rep.lTotalTradeVolume = lTotalTradeVolume;
                     rep.lTotalBuyVolume = lOnlyBuyVolume;
@@ -282,15 +281,15 @@ namespace AtoTrader
                     rep.nFakeBuyCnt = fakeBuyStrategy.nStrategyNum;
                     rep.nFakeResistCnt = fakeResistStrategy.nStrategyNum;
                     rep.nFakeAssistantCnt = fakeAssistantStrategy.nStrategyNum;
-                    rep.nFakeVolatilityCnt = fakeAssistantStrategy.nStrategyNum;
+                    rep.nFakeVolatilityCnt = fakeVolatilityStrategy.nStrategyNum;
                     rep.nFakeBuyMinuteCnt = fakeBuyStrategy.nMinuteLocationCount;
                     rep.nFakeResistMinuteCnt = fakeResistStrategy.nMinuteLocationCount;
                     rep.nFakeAssistantMinuteCnt = fakeAssistantStrategy.nMinuteLocationCount;
-                    rep.nFakeVolatilityMinuteCnt = fakeAssistantStrategy.nMinuteLocationCount;
+                    rep.nFakeVolatilityMinuteCnt = fakeVolatilityStrategy.nMinuteLocationCount;
                     rep.nFakeBuyUpperCnt = fakeBuyStrategy.nUpperCount;
                     rep.nFakeResistUpperCnt = fakeResistStrategy.nUpperCount;
                     rep.nFakeAssistantUpperCnt = fakeAssistantStrategy.nUpperCount;
-                    rep.nFakeVolatilityUpperCnt = fakeAssistantStrategy.nUpperCount;
+                    rep.nFakeVolatilityUpperCnt = fakeVolatilityStrategy.nUpperCount;
                     rep.nTotalFakeCnt = fakeStrategyMgr.nTotalFakeCount;
                     rep.nTotalFakeMinuteCnt = fakeStrategyMgr.nTotalFakeMinuteAreaNum;
                     rep.nUpCandleCnt = timeLines1m.upCandleList.Count;

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AtoTrader.Migrations
 {
     [DbContext(typeof(myDbContext))]
-    [Migration("20230509132143_mig_add_renew_fakereports")]
+    [Migration("20230509154833_mig_add_renew_fakereports")]
     partial class mig_add_renew_fakereports
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -114,10 +114,13 @@ namespace AtoTrader.Migrations
                     b.Property<string>("sCode")
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
-                    b.Property<int>("nBuyStrategyIdx")
+                    b.Property<int>("nAccessFakeStrategyGroupNum")
                         .HasColumnType("int");
 
-                    b.Property<int>("nBuyStrategySequenceIdx")
+                    b.Property<int>("nAccessFakeStrategyIdx")
+                        .HasColumnType("int");
+
+                    b.Property<int>("nAccessFakeStrategySequenceIdx")
                         .HasColumnType("int");
 
                     b.Property<int>("nLocationOfComp")
@@ -564,9 +567,6 @@ namespace AtoTrader.Migrations
                     b.Property<int>("nBoundTopTimeMinuteAfterBuyWhile30")
                         .HasColumnType("int");
 
-                    b.Property<int>("nBuyStrategyTotalCountIdx")
-                        .HasColumnType("int");
-
                     b.Property<int>("nChegyulCnt")
                         .HasColumnType("int");
 
@@ -882,9 +882,6 @@ namespace AtoTrader.Migrations
                     b.Property<int>("nTotalTradeVolumeRanking")
                         .HasColumnType("int");
 
-                    b.Property<int>("nTradeCnt")
-                        .HasColumnType("int");
-
                     b.Property<int>("nUpCandleCnt")
                         .HasColumnType("int");
 
@@ -913,7 +910,7 @@ namespace AtoTrader.Migrations
                     b.Property<string>("sType")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.HasKey("dTradeTime", "sCode", "nBuyStrategyIdx", "nBuyStrategySequenceIdx", "nLocationOfComp");
+                    b.HasKey("dTradeTime", "sCode", "nAccessFakeStrategyGroupNum", "nAccessFakeStrategyIdx", "nAccessFakeStrategySequenceIdx", "nLocationOfComp");
 
                     b.ToTable("fakeReports");
                 });
