@@ -2757,6 +2757,96 @@ namespace AtoTrader
                             }
                             FakeVolatilityPointerMove();
 
+                            // 실매수 구역# 차분 23 0.045 17분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 23, fDiffPower: 0.045) &&
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 17)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
+                            }
+                            FakeVolatilityPointerMove();
+
+                            // 실매수 구역# 차분 20 0.05 16분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 20, fDiffPower: 0.05) &&
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 16)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
+                            }
+                            FakeVolatilityPointerMove();
+
+                            // 실매수 구역# 차분 16 0.03 7분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 16, fDiffPower: 0.03) &&
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 7)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
+                            }
+                            FakeVolatilityPointerMove();
+
+                            // 실매수 구역# 차분 13 0.033 12분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 13, fDiffPower: 0.033) &&
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 12)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
+                            }
+                            FakeVolatilityPointerMove();
+
+                            // 실매수 구역# 차분 17 0.023 11분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 17, fDiffPower: 0.023) &&
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 11)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
+                            }
+                            FakeVolatilityPointerMove();
+
+                            // 실매수 구역# 차분 40 0.021 15분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 40, fDiffPower: 0.021) &&
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 15)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
+                            }
+                            FakeVolatilityPointerMove();
+
+                            // 실매수 구역# 차분 30 0.02 34분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 30, fDiffPower: 0.02) &&
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 34)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
+                            }
+                            FakeVolatilityPointerMove();
+
+                            // 실매수 구역# 차분 20 0.03 14분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 20, fDiffPower: 0.03) &&
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 14)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
+                            }
+                            FakeVolatilityPointerMove();
+
+                            // 실매수 구역# 차분 36 0.06 22분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 36, fDiffPower: 0.06) &&
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 22)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
+                            }
+                            FakeVolatilityPointerMove();
+
+                            // 실매수 구역# 차분 22 0.06 14분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 22, fDiffPower: 0.06) &&
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 14)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
+                            }
+                            FakeVolatilityPointerMove();
+
                         }
                         catch  // 혹시 내 실수로 STRATEGY_NUM을 초과한 전략을 세울 수 도 있으니까
                         {

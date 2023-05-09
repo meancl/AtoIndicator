@@ -1482,6 +1482,16 @@ namespace AtoTrader
                     arrFakeVolatilityStrategyName.Add("차분 12 0.02 11분주기");
                     arrFakeVolatilityStrategyName.Add("차분 13 0.03 10분주기");
                     arrFakeVolatilityStrategyName.Add("차분 16 0.025 6분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 23 0.045 17분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 20 0.05 16분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 16 0.03 7분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 13 0.033 12분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 17 0.023 11분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 40 0.021 15분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 30 0.02 34분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 20 0.03 14분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 36 0.06 22분주기");
+                    arrFakeVolatilityStrategyName.Add("차분 22 0.06 14분주기");
 
                 }
                 catch (Exception IdxError)
