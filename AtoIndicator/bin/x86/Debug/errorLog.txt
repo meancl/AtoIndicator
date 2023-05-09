@@ -1,0 +1,54 @@
+2023-05-09 오전 9:00:49 ## Msg : 인덱스가 범위를 벗어났습니다. 인덱스는 음수가 아니어야 하며 컬렉션의 크기보다 작아야 합니다.
+매개 변수 이름: index
+======================================================
+   위치: System.ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument argument, ExceptionResource resource)
+   위치: System.Collections.Generic.List`1.get_Item(Int32 index)
+   위치: System.Collections.ObjectModel.Collection`1.get_Item(Int32 index)
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.<UpdateMinuteHistoryData>g__voidDelegate|46_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 519
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.UpdateMinuteHistoryData() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 720
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.<ResetMinuteChart>g__voidDelegate|45_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 239
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.ResetMinuteChart() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 245
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm..ctor(MainForm parentForm, Int32 nCallIdx, Nullable`1 specificStrategy) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 113
+   위치: AtoTrader.View.FastInfo.<>c__DisplayClass16_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\FastInfo.cs:줄 747
+   위치: System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   위치: System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   위치: System.Threading.ThreadHelper.ThreadStart()
+
+2023-05-09 오전 9:08:36 ## Msg : 인덱스가 범위를 벗어났습니다. 인덱스는 음수가 아니어야 하며 컬렉션의 크기보다 작아야 합니다.
+매개 변수 이름: index
+======================================================
+   위치: System.ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument argument, ExceptionResource resource)
+   위치: System.Collections.Generic.List`1.get_Item(Int32 index)
+   위치: System.Collections.ObjectModel.Collection`1.get_Item(Int32 index)
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.<UpdateMinuteHistoryData>g__voidDelegate|46_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 578
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.UpdateMinuteHistoryData() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 720
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.<ResetMinuteChart>g__voidDelegate|45_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 239
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.ResetMinuteChart() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 245
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm..ctor(MainForm parentForm, Int32 nCallIdx, Nullable`1 specificStrategy) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 113
+   위치: AtoTrader.View.FastInfo.<>c__DisplayClass16_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\FastInfo.cs:줄 747
+   위치: System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   위치: System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   위치: System.Threading.ThreadHelper.ThreadStart()
+
+2023-05-09 오전 9:13:56 ## Msg : 인덱스가 범위를 벗어났습니다. 인덱스는 음수가 아니어야 하며 컬렉션의 크기보다 작아야 합니다.
+매개 변수 이름: index
+======================================================
+   위치: System.ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument argument, ExceptionResource resource)
+   위치: System.Collections.Generic.List`1.get_Item(Int32 index)
+   위치: System.Collections.ObjectModel.Collection`1.get_Item(Int32 index)
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.<UpdateMinuteHistoryData>g__voidDelegate|46_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 578
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.UpdateMinuteHistoryData() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 720
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.<ResetMinuteChart>g__voidDelegate|45_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 239
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.ResetMinuteChart() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 245
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm..ctor(MainForm parentForm, Int32 nCallIdx, Nullable`1 specificStrategy) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 113
+   위치: AtoTrader.View.FastInfo.<>c__DisplayClass16_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\FastInfo.cs:줄 747
+   위치: System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   위치: System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   위치: System.Threading.ThreadHelper.ThreadStart()
+

@@ -177,12 +177,36 @@ namespace AtoTrader.View.EachStockHistory
 
                 if (timeLineManager.arrTimeLine[i].nMaxFs > max)
                     max = timeLineManager.arrTimeLine[i].nMaxFs;
-                if (timeLineManager.arrTimeLine[i].nMinFs < min)
+                if (timeLineManager.arrTimeLine[i].nMinFs < min && timeLineManager.arrTimeLine[i].nMinFs != 0)
                     min = timeLineManager.arrTimeLine[i].nMinFs;
+
+                if (isViewGapMa)
+                {
+                    if (i <= timeLineManager.nRealDataIdx)
+                    {
+                        max = (int)Max(max, timeLineManager.arrTimeLine[i].fOverMaGap0);
+                        max = (int)Max(max, timeLineManager.arrTimeLine[i].fOverMaGap1);
+                        max = (int)Max(max, timeLineManager.arrTimeLine[i].fOverMaGap2);
+
+                        if (timeLineManager.arrTimeLine[i].fOverMaGap0 < min && timeLineManager.arrTimeLine[i].fOverMaGap0 != 0)
+                            min = (int)timeLineManager.arrTimeLine[i].fOverMaGap0;
+
+                        if (timeLineManager.arrTimeLine[i].fOverMaGap1 < min && timeLineManager.arrTimeLine[i].fOverMaGap1 != 0)
+                            min = (int)timeLineManager.arrTimeLine[i].fOverMaGap1;
+
+                        if (timeLineManager.arrTimeLine[i].fOverMaGap2 < min && timeLineManager.arrTimeLine[i].fOverMaGap2 != 0)
+                            min = (int)timeLineManager.arrTimeLine[i].fOverMaGap2;
+
+
+                    }
+                }
             }
 
             max += GetAutoGap(curEa.nMarketGubun, curEa.nFs) * 1;
             min -= GetAutoGap(curEa.nMarketGubun, curEa.nFs) * 1;
+
+            
+
 
             historyChart.ChartAreas[chartName].AxisX.MajorGrid.Enabled = false;
             historyChart.ChartAreas[chartName].AxisY.Maximum = max;
@@ -218,6 +242,7 @@ namespace AtoTrader.View.EachStockHistory
 
                 historyChart.Series["MinuteStick"].ChartType = SeriesChartType.Candlestick;
                 historyChart.Series["MinuteStick"].ChartArea = "TotalArea";
+
 
                 historyChart.Series["Ma20m"].ChartType = SeriesChartType.Line;
                 historyChart.Series["Ma1h"].ChartType = SeriesChartType.Line;
@@ -280,9 +305,9 @@ namespace AtoTrader.View.EachStockHistory
                             historyChart.Series["Ma20m"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMa0);
                             historyChart.Series["Ma1h"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMa1);
                             historyChart.Series["Ma2h"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMa2);
-                            historyChart.Series["Ma20m_b"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMaGap0);
-                            historyChart.Series["Ma1h_b"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMaGap1);
-                            historyChart.Series["Ma2h_b"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMaGap2);
+                            historyChart.Series["Ma20mGap"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMaGap0);
+                            historyChart.Series["Ma1hGap"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMaGap1);
+                            historyChart.Series["Ma2hGap"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fOverMaGap2);
                             historyChart.Series["MinuteStick"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nMaxFs);
                             historyChart.Series["MinuteStick"].Points[nLastMinuteIdx].YValues[1] = curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nMinFs;
                             historyChart.Series["MinuteStick"].Points[nLastMinuteIdx].YValues[2] = curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nStartFs;
@@ -1242,6 +1267,7 @@ namespace AtoTrader.View.EachStockHistory
                 yCoord = 0;
             xCoord = Math.Round(xCoord, 3);
             yCoord = Math.Round(yCoord, 3);
+            gapLabel.Text = $"현재갭 : {Math.Round(curEa.fStartGap, 3)}";
             label1.Text = $"현재좌표 : {xCoord} {yCoord}";
 
             if (isRightPressed || isPreciselyCheck)

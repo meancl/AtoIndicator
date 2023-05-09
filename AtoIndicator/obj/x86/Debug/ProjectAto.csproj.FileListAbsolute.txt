@@ -219,7 +219,6 @@ C:\Users\MJ\source\repos\AtoIndicator\AtoTrader\bin\x86\Debug\System.Threading.T
 C:\Users\MJ\source\repos\AtoIndicator\AtoTrader\bin\x86\Debug\Interop.KHOpenAPILib.dll
 C:\Users\MJ\source\repos\AtoIndicator\AtoTrader\bin\x86\Debug\AxInterop.KHOpenAPILib.dll
 C:\Users\MJ\source\repos\AtoIndicator\AtoTrader\obj\x86\Debug\ProjectAto.csproj.CopyComplete
-C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\ProjectAto.csproj.AssemblyReference.cache
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\Interop.KHOpenAPILib.dll
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AxInterop.KHOpenAPILib.dll
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\ProjectAto.csproj.ResolveComReference.cache
@@ -231,9 +230,6 @@ C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AtoTrader.View.
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AtoTrader.View.TextLog.TextLogForm.resources
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\ProjectAto.csproj.GenerateResource.cache
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\ProjectAto.csproj.CoreCompileInputs.cache
-C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\LdaNative.dll
-C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\CpuMathNative.dll
-C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\onnxruntime.dll
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\AtoIndicator.exe.config
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\AtoIndicator.exe
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\AtoIndicator.pdb
@@ -328,3 +324,7 @@ C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\AxInterop.KHOpe
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\ProjectAto.csproj.CopyComplete
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AtoIndicator.exe
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AtoIndicator.pdb
+C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\ProjectAto.csprojAssemblyReference.cache
+C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\LdaNative.dll
+C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\CpuMathNative.dll
+C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\onnxruntime.dll

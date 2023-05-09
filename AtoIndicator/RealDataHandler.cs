@@ -750,7 +750,10 @@ namespace AtoTrader
                                 for (j = nTimeLineIdx; j > nTimeLineIdx - MA20M; j--)
                                 {
                                     nSummation += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
-                                    nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs; 
+                                    if (j < BRUSH)
+                                        nSummationGap += ea[i].nYesterdayEndPrice; 
+                                    else
+                                        nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
                                 }
                             }
                             else // 부족하다는 의미
@@ -758,7 +761,10 @@ namespace AtoTrader
                                 for (j = 0; j <= nTimeLineIdx; j++)
                                 {
                                     nSummation += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
-                                    nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs; 
+                                    if (j < BRUSH)
+                                        nSummationGap += ea[i].nYesterdayEndPrice;
+                                    else
+                                        nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
                                 }
                                 for (j = 0; j < nShareIdx; j++)
                                 {
@@ -808,7 +814,10 @@ namespace AtoTrader
                                 for (j = nTimeLineIdx; j > nTimeLineIdx - MA1H; j--)
                                 {
                                     nSummation += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
-                                    nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
+                                    if (j < BRUSH)
+                                        nSummationGap += ea[i].nYesterdayEndPrice;
+                                    else
+                                        nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
                                 }
                             }
                             else // 부족하다는 의미
@@ -816,7 +825,10 @@ namespace AtoTrader
                                 for (j = 0; j <= nTimeLineIdx; j++)
                                 {
                                     nSummation += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
-                                    nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
+                                    if (j < BRUSH)
+                                        nSummationGap += ea[i].nYesterdayEndPrice;
+                                    else
+                                        nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
                                 }
                                 for (j = 0; j < nShareIdx; j++)
                                 {
@@ -867,7 +879,10 @@ namespace AtoTrader
                                 for (j = nTimeLineIdx; j > nTimeLineIdx - MA2H; j--)
                                 {
                                     nSummation += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
-                                    nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
+                                    if (j < BRUSH)
+                                        nSummationGap += ea[i].nYesterdayEndPrice;
+                                    else
+                                        nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
                                 }
                             }
                             else // 부족하다는 의미
@@ -875,7 +890,10 @@ namespace AtoTrader
                                 for (j = 0; j <= nTimeLineIdx; j++)
                                 {
                                     nSummation += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
-                                    nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
+                                    if (j < BRUSH)
+                                        nSummationGap += ea[i].nYesterdayEndPrice;
+                                    else
+                                        nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
                                 }
                                 for (j = 0; j < nShareIdx; j++)
                                 {

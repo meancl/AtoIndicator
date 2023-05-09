@@ -45,6 +45,7 @@ namespace AtoTrader.View.EachStockHistory
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.메뉴ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showVarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gapLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.historyChart)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -59,8 +60,7 @@ namespace AtoTrader.View.EachStockHistory
             this.historyChart.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             this.historyChart.Legends.Add(legend1);
-            this.historyChart.Location = new System.Drawing.Point(14, 55);
-            this.historyChart.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.historyChart.Location = new System.Drawing.Point(12, 44);
             this.historyChart.Name = "historyChart";
             series1.ChartArea = "TotalArea";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
@@ -107,7 +107,7 @@ namespace AtoTrader.View.EachStockHistory
             this.historyChart.Series.Add(series5);
             this.historyChart.Series.Add(series6);
             this.historyChart.Series.Add(series7);
-            this.historyChart.Size = new System.Drawing.Size(1088, 708);
+            this.historyChart.Size = new System.Drawing.Size(952, 566);
             this.historyChart.TabIndex = 2;
             this.historyChart.Text = "chart1";
             // 
@@ -116,9 +116,9 @@ namespace AtoTrader.View.EachStockHistory
             this.totalClockLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.totalClockLabel.AutoSize = true;
             this.totalClockLabel.Font = new System.Drawing.Font("굴림", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.totalClockLabel.Location = new System.Drawing.Point(1090, 9);
+            this.totalClockLabel.Location = new System.Drawing.Point(954, 7);
             this.totalClockLabel.Name = "totalClockLabel";
-            this.totalClockLabel.Size = new System.Drawing.Size(0, 24);
+            this.totalClockLabel.Size = new System.Drawing.Size(0, 19);
             this.totalClockLabel.TabIndex = 3;
             // 
             // label1
@@ -126,9 +126,9 @@ namespace AtoTrader.View.EachStockHistory
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label1.Location = new System.Drawing.Point(863, 242);
+            this.label1.Location = new System.Drawing.Point(836, 189);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(8, 17);
+            this.label1.Size = new System.Drawing.Size(7, 13);
             this.label1.TabIndex = 8;
             this.label1.Text = "\r\n";
             // 
@@ -136,9 +136,9 @@ namespace AtoTrader.View.EachStockHistory
             // 
             this.moveLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.moveLabel.AutoSize = true;
-            this.moveLabel.Location = new System.Drawing.Point(863, 291);
+            this.moveLabel.Location = new System.Drawing.Point(837, 224);
             this.moveLabel.Name = "moveLabel";
-            this.moveLabel.Size = new System.Drawing.Size(7, 15);
+            this.moveLabel.Size = new System.Drawing.Size(5, 12);
             this.moveLabel.TabIndex = 11;
             this.moveLabel.Text = "\r\n";
             // 
@@ -149,7 +149,8 @@ namespace AtoTrader.View.EachStockHistory
             this.메뉴ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1320, 30);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(1155, 24);
             this.menuStrip1.TabIndex = 13;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -158,20 +159,32 @@ namespace AtoTrader.View.EachStockHistory
             this.메뉴ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.showVarToolStripMenuItem});
             this.메뉴ToolStripMenuItem.Name = "메뉴ToolStripMenuItem";
-            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 26);
+            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.메뉴ToolStripMenuItem.Text = "메뉴";
             // 
             // showVarToolStripMenuItem
             // 
             this.showVarToolStripMenuItem.Name = "showVarToolStripMenuItem";
-            this.showVarToolStripMenuItem.Size = new System.Drawing.Size(182, 26);
+            this.showVarToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.showVarToolStripMenuItem.Text = "변수출력( V )";
+            // 
+            // gapLabel
+            // 
+            this.gapLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.gapLabel.AutoSize = true;
+            this.gapLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.gapLabel.Location = new System.Drawing.Point(836, 156);
+            this.gapLabel.Name = "gapLabel";
+            this.gapLabel.Size = new System.Drawing.Size(7, 13);
+            this.gapLabel.TabIndex = 14;
+            this.gapLabel.Text = "\r\n";
             // 
             // EachStockHistoryForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1320, 792);
+            this.ClientSize = new System.Drawing.Size(1155, 634);
+            this.Controls.Add(this.gapLabel);
             this.Controls.Add(this.moveLabel);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.totalClockLabel);
@@ -179,7 +192,6 @@ namespace AtoTrader.View.EachStockHistory
             this.Controls.Add(this.menuStrip1);
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "EachStockHistoryForm";
             this.Text = "EachStockHistory";
             ((System.ComponentModel.ISupportInitialize)(this.historyChart)).EndInit();
@@ -198,5 +210,6 @@ namespace AtoTrader.View.EachStockHistory
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem 메뉴ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showVarToolStripMenuItem;
+        private System.Windows.Forms.Label gapLabel;
     }
 }

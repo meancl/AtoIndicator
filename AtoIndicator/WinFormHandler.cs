@@ -210,6 +210,12 @@ namespace AtoTrader
         public void ForceMarketOn()
         {
             isMarketStart = true;
+            
+            if(nFirstTime == 0)
+                nFirstTime = nSharedTime - nSharedTime % MINUTE_KIWOOM;
+
+            if (nPrevBoardUpdateTime == 0)
+                nPrevBoardUpdateTime = nFirstTime;
         }
 
         public void ToolTipItemClickHandler(object sender, EventArgs e)
