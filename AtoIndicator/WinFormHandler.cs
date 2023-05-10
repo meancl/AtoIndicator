@@ -34,6 +34,7 @@ namespace AtoTrader
         {
             string sCodeTxt = sCodeToBuyTextBox.Text.Trim();
             bool isCorrect;
+            int nCurIdx;
 
             try
             {
@@ -50,6 +51,7 @@ namespace AtoTrader
                 catch
                 {
                     isCorrect = false;
+                    nCurIdx = -1;
                 }
             }
 

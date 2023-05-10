@@ -53,10 +53,10 @@ namespace AtoTrader
 
             public MaOverN maOverN;                   // 이동평균선 변수
             public TimeLineManager timeLines1m;       // 차트데이터 변수
-            public CrushManager crushMinuteManager;   // 전고점 변수
             public RankSystem rankSystem;             // 랭킹데이터 변수
             public SequenceStrategy sequenceStrategy; // 순차적전략 변
             public ReservationManager reserveMgr;     // 예약매수 관련 변수
+            public CrushMonitor crushMgr;             // 전고점 변수
 
             // ----------------------------------
             // 기본정보 변수
@@ -157,14 +157,12 @@ namespace AtoTrader
 
             public void Init()
             {
-                crushMinuteManager.Init();
                 rankSystem.Init();
                 sequenceStrategy.Init();
                 timeLines1m.Init();
                 reserveMgr.Init();
                 fakeStrategyMgr.Init();
-
-
+                crushMgr.Init();
             }
 
             public void GetFakeFix(FakeReports rep)
@@ -297,10 +295,10 @@ namespace AtoTrader
                     rep.nUpTailCnt = timeLines1m.upTailList.Count;
                     rep.nDownTailCnt = timeLines1m.downTailList.Count;
                     rep.nShootingCnt = timeLines1m.shootingList.Count;
-                    rep.nCrushCnt = crushMinuteManager.nCurCnt;
-                    rep.nCrushUpCnt = crushMinuteManager.nUpCnt;
-                    rep.nCrushDownCnt = crushMinuteManager.nDownCnt;
-                    rep.nCrushSpecialDownCnt = crushMinuteManager.nSpecialDownCnt;
+                    rep.nCrushCnt = 0;
+                    rep.nCrushUpCnt = 0;
+                    rep.nCrushDownCnt = 0;
+                    rep.nCrushSpecialDownCnt = 0;
 
                     rep.nYesterdayEndPrice = nYesterdayEndPrice;
                 }
@@ -344,8 +342,7 @@ namespace AtoTrader
                         $"위꼬리 : {timeLines1m.upTailList.Count}{NEW_LINE}" +
                         $"아래꼬리 : {timeLines1m.downTailList.Count}{NEW_LINE}" +
                         $"슈팅 : {timeLines1m.shootingList.Count}{NEW_LINE}" +
-                        $"전고점 카운트 : {crushMinuteManager.nCurCnt}{NEW_LINE}" +
-                        $"전고점   업 : {crushMinuteManager.nUpCnt}{NEW_LINE}" +
+                        $"전고점 카운트 : {crushMgr.crushBoxes.Count}{NEW_LINE}" +
                         $"=================현상태=============={NEW_LINE}" +
                         $"체결속도 : {speedStatus.fCur}{NEW_LINE}" +
                         $"호가속도 : {hogaSpeedStatus.fCur}{NEW_LINE}" +
@@ -675,55 +672,73 @@ namespace AtoTrader
 
 
         }
-
-        public struct CrushManager
+        public struct CheckPoint
         {
-            public int nCrushMaxPrice;
-            public int nCrushMaxTime;
-            public int nCrushMinPrice;
-            public int nCrushMinTime;
-            public int nCrushOnlyMinPrice;
-            public int nCrushOnlyMinTime;
-            public int nPrevCrushCnt;
-            public int nCurCnt;
-            public int nUpCnt;
-            public int nDownCnt;
-            public int nSpecialDownCnt;
-            public bool isCrushCheck;
+            public int nPrice;
+            public int nTime;
 
-            public int nCrushRealTimePrev; // 이전 실시간 전고점 
-            public int nCrushRealTimeCount; // 실시간 전고점 누적횟수
-            public int nCrushRealTimeLineIdx; // 실시간 전고점의 timeLineIdx
-            public bool isCrushRealTimeCheck; // 실시간 전고점이 달성됐는지
-            public int nCrushRealTimeWidthMaxMin; // 최고점과 최저점과의 거리(시간)
-            public int nCrushRealTimeWidthMaxCur; // 최고점과 현재사이의 거리(시간)
-            public double fCrushRealTimeHeight; // 최고점과 최저점 사이의 가격변화율
-
-            public List<Crush> crushList;
-
-            public void Init()
+            public void Set(int nP=0, int nT=0)
             {
-                crushList = new List<Crush>(); // 개인구조체 전고점 리스트 초기화
+                nPrice = nP;
+                nTime = nT;
             }
         }
-
-        public struct Crush
+        // 전고점 모니터링 
+        public struct CrushMonitor
         {
-            public int nCnt;
-            public double fMaxMinPower;
-            public double fCurMinPower;
-            public int nMaxMinTime;
-            public int nMaxCurTime;
-            public int nMinCurTime;
-            public int nMinPrice;
-            public int nMaxPrice;
-            public double fUpperNow;
+            public List<CrushBox> crushBoxes; // 전고점 갯수를 가지는 리스트
+
+            public CheckPoint prevPoint; // 전고점 모니터하기 이전의 포인트
+            public CheckPoint maxPoint; // 전고점의 고점
+            public CheckPoint minPoint; // 전고점의 저점
+
+            public bool isCrush; 
+                                   
+            public void Init()
+            {
+                isCrush = false;
+                crushBoxes = new List<CrushBox>();
+                prevPoint.Set();
+                maxPoint.Set();
+                minPoint.Set();
+            }
+
+            public void Set(int nP, int nT) // 전고점 발생시 사용
+            {
+                CrushBox newCrushBox;
+                newCrushBox.prevPoint = prevPoint;
+                newCrushBox.maxPoint = maxPoint;
+                newCrushBox.minPoint = minPoint;
+                newCrushBox.crushPoint.nPrice = nP;
+                newCrushBox.crushPoint.nTime = nT;
+
+                crushBoxes.Add(newCrushBox);
+
+                // 기준 새로 설정
+                asf
+                prevPoint.Set(nP, nT); 
+                maxPoint.Set(nP, nT);
+                minPoint.Set();
+
+                isCrush = true;
+            }
+
         }
+
+        // 하나의 전고점 데이터
+        public struct CrushBox
+        {
+            public CheckPoint prevPoint; // 전고점 모니터하기 이전의 포인트
+            public CheckPoint maxPoint; // 전고점의 고점
+            public CheckPoint minPoint; // 전고점의 저점
+            public CheckPoint crushPoint; // 전고점이 발생시점 데이터
+        }
+
 
         public struct RankSystem
         {
             public int nTime;
-            public int nCurIdx; // 누적카운트
+            public int nEaIdx; // 누적카운트
 
             // 전체
             public int nTotalTradePriceRanking; // 거래대금
@@ -818,102 +833,6 @@ namespace AtoTrader
             public int nDownCntMa20m;
             public int nDownCntMa1h;
             public int nDownCntMa2h;
-        }
-
-
-        /// <summary>
-        /// ABOUT 실제전략
-        /// </summary>
-        public struct fakeVolatilityStrategy
-        {
-
-            public int[] arrLastTouch; // 가장최근에 해당전략 요청한 시간
-            public int[] arrStrategy; // 전략당 배열
-            public int[] arrMinuteIdx;
-            public int[] arrSpecificStrategy; // 배열의 각 슬롯당 전략
-            public int[] arrAssistantTime;
-            public int[] arrAssistantPrice;
-
-            public int nHitNum;
-
-            public int nLastTouchTime;
-            public int nStrategyNum; // 가짜 전략 카운트를 정하는것
-            public double fEverageShoulderPrice; // 사려고 했을때가 고점(어깨에서 머리)이라 가정
-            public int nSumShoulderPrice; // 여러번 사려하면 가격의 합
-            public int nMaxShoulderPrice; // 가장 값이 높았을 경우의 가격
-            public int nUpperCount; // 어깨가 계속해서 올라가는 횟수
-            public bool isSuddenBoom;
-            public int nPrevMaxMinIdx;
-            public int nPrevMaxMinUpperCount;
-            public int nMinuteLocationCount;
-            public int nPrevMinuteIdx;
-
-            public int[] arrPrevMinuteIdx;
-
-
-
-            //
-            public int[] arrBuyPrice;
-            public int[] arrBuyTime;
-
-            public int nSharedMinuteLocationCount;
-            public int nSharedPrevMinuteIdx;
-
-            // =========================================================================
-            // 전략별 추가 변수들 
-            // =========================================================================
-            // ***  번호와 변수  ***
-            // 추가매수 전략 0번 
-            // 직접입력 전략 마지막 번
-            public bool isManualOrderSignal;
-            public int nManualEndurationTime; // 매수버튼을 눌렀는데 한참동안 매수가 안되면 문제가 있는거니 취소
-
-            public int nTotalFail;
-            // 임시용 
-            public bool isOrderCheck;
-          
-            public int nCurBarBuyCount;
-            public int nFakePrevTimeLineIdx;
-           
-
-
-            // 페이크 DB 관련 변수
-            public int nFakeAccumPassed;
-            public int nFakeAccumTried;
-            public int nAIPassed;
-            public int nAIPrevTimeLineIdx;
-            public int nAIStepMinuteCount;
-            public int nAIJumpDiffMinuteCount;
-            public int nFakeAIPrevTimeLineIdx;
-            public int nFakeAIStepMinuteCount;
-            public int nFakeAIJumpDiffMinuteCount;
-
-            public int nTotalBlockCount;
-            public int nTotalFakeCount;
-            
-            // END-- 페이크 DB 관련 변수
-
-
-            // -------------------------------------------------------------------------------
-            // END ---- 전략별  추가변수들
-            // -------------------------------------------------------------------------------
-            public void Init(int s)
-            {
-                arrStrategy = new int[s];
-                arrLastTouch = new int[s];
-                arrPrevMinuteIdx = new int[s];
-
-                arrMinuteIdx = new int[REAL_BUY_MAX_NUM];
-                arrBuyTime = new int[REAL_BUY_MAX_NUM];
-                arrBuyPrice = new int[REAL_BUY_MAX_NUM];
-                arrSpecificStrategy = new int[REAL_BUY_MAX_NUM];
-
-                nManualEndurationTime = 200;
-                nPrevMinuteIdx = -1;
-          
-              
-            }
-
         }
 
 
@@ -1232,137 +1151,9 @@ namespace AtoTrader
         // 조건의 순서를 연결해 매수 타이밍을 잡으려함.
         public struct SequenceStrategy
         {
-            #region botUp
-
-            #region Minute botUp
-            public BOTUP botUpMinute421;
-            public BOTUP botUpMinute432;
-            public BOTUP botUpMinute642;
-            public BOTUP botUpMinute643;
-            public BOTUP botUpMinute732;
-            public BOTUP botUpMinute743;
-            public BOTUP botUpMinute953;
-
-            #endregion
-
             public void Init()
             {
-                botUpMinute421.Init(0.04, 0.02, 0.01);
-                botUpMinute432.Init(0.04, 0.03, 0.02);
-                botUpMinute642.Init(0.06, 0.04, 0.02);
-                botUpMinute643.Init(0.06, 0.04, 0.03);
-                botUpMinute732.Init(0.07, 0.03, 0.02);
-                botUpMinute743.Init(0.07, 0.04, 0.03);
-                botUpMinute953.Init(0.09, 0.05, 0.03);
-            }
-            #endregion  
-        }
 
-        // +N1 -> -N2 -> +N3
-        public struct BOTUP
-        {
-            // M은 조건
-            // V는 M(조건)을 달성하고 값을 기록하기 위한 변수 
-            private double fV1;
-            private double fV2;
-            private double fV3;
-            private double fM1;
-            public int nV1Time;
-            public bool isM1Passed;
-            private double fM2;
-            public int nV2Time;
-            public bool isM2Passed;
-            private double fM3;
-            public int nV3Time;
-            public int nV1RecordTime;
-            public int nV2RecordTime;
-            public int nV3RecordTime;
-            public bool isM3Passed; // m3 통과
-            public bool isCrushed; // 전고점 돌파
-            public bool isJumped; // m3 없이 전고점 돌파
-
-            public void Init(double M1, double M2, double M3)
-            {
-                fM1 = M1;
-                fM2 = M2;
-                fM3 = M3;
-            }
-
-            public void Trace(double fV, int nT)
-            {
-                if (fV >= fM1) // M1조건 넘었을 때
-                {
-                    if (!isM1Passed || fV > fV1) // 추가갱신기록 
-                    {
-                        fV1 = fV;
-                        nV1Time = nT;
-                        if (isM2Passed) // m3에서 한순간에 전고점을 돌파했을때
-                        {
-                            if (!isM3Passed) // m3를 안 지나왔나
-                                isJumped = true;
-                            isCrushed = true;
-                        }
-                        isM2Passed = false;
-                        isM3Passed = false;
-                        fV2 = 0;
-                        fV3 = 0;
-                        nV2Time = 0;
-                        nV3Time = 0;
-                    }
-                    isM1Passed = true;
-                }
-
-                if (isM1Passed)
-                {
-                    if (fV1 - fV >= fM2) // M2조건 넘었을떄
-                    {
-                        if (!isM2Passed || fV2 > fV) // 추가기록
-                        {
-                            fV2 = fV;
-                            nV2Time = nT;
-                            isM3Passed = false;
-                            fV3 = 0;
-                            nV3Time = 0;
-                        }
-                        isM2Passed = true;
-                    }
-
-                    if (isM2Passed)
-                    {
-                        if (fV - fV2 >= fM3) // M3조건 넘었을때
-                        {
-                            if (!isM3Passed || fV3 < fV) // 추가기록
-                            {
-                                fV3 = fV;
-                                nV3Time = nT;
-                            }
-                            isM3Passed = true;
-                        }
-                    }
-                }
-            }
-
-            // 실매수에서 커밋할 예정(무조건)
-            public void Commit()
-            {
-                nV1RecordTime = nV1Time;
-                nV2RecordTime = nV2Time;
-                nV3RecordTime = nV3Time;
-            }
-
-            // 커밋하고 다시 중복해서 체크하지 않게
-            public bool CheckIsRedundancy()
-            {
-                return nV1RecordTime == nV1Time && nV2RecordTime == nV2Time;
-            }
-
-            // 전고점돌파와 점프 false, m3돌파라면 커밋
-            public void Confirm()
-            {
-                isCrushed = false;
-                isJumped = false;
-                if (isM3Passed)
-                    Commit();
             }
         }
 
@@ -1423,8 +1214,7 @@ namespace AtoTrader
                     arrFakeAssistantStrategyName.Add("분당순위2위권 시가총액200위이상 3번 .. 리사이클");
                     arrFakeAssistantStrategyName.Add("분당순위5위권 시가총액200위이상 4번 .. 리사이클");
                     arrFakeAssistantStrategyName.Add("분당순위1위 시가총액200위이상 2번 .. 리사이클");
-                    arrFakeAssistantStrategyName.Add("전고점돌파(실시간) .. 리사이클");
-                    arrFakeAssistantStrategyName.Add("전고점돌파(분봉기준) .. 리사이클");
+                    arrFakeAssistantStrategyName.Add("전고점돌파 .. 리사이클");
        
                 }
                 catch (Exception indexError)

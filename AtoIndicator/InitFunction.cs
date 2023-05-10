@@ -24,7 +24,6 @@ namespace AtoTrader
 
         public const int INIT_CODEIDX_NUM = -1; // eachStockIdxArray 초기화 상수
         public EachStock[] ea;  // 각 주식이 가지는 실시간용 구조체(개인구조체)
-        public int nCurIdx; // 현재사용중인 개인구조체의 인덱스
         public int nEachStockIdx; // eachStockIdxArray[개인구조체 종목코드] <= nEachStockIdx++;
         public int nStockLength; // 관리대상종목 수
 
@@ -156,7 +155,7 @@ namespace AtoTrader
             for (int j = startIdx; j < endIdx; j++)
             {
                 ////// eachStockIdx 설정 부분 ///////
-                nCurIdx = eachStockDict[bKeyList[j].Trim()] = nEachStockIdx++;
+                int nCurIdx = eachStockDict[bKeyList[j].Trim()] = nEachStockIdx++;
                 eachStockNameDict[bDict[bKeyList[j]].종목명.Trim()] = nCurIdx;
 
                 ////// eachStock 초기화 부분 ////////// 

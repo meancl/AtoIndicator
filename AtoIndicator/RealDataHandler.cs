@@ -193,6 +193,7 @@ namespace AtoTrader
             bool isHogaJanRyang = false;
             bool isZooSikCheGyul = false;
 
+            int nCurIdx;
 
 
             #region 실시간 장시작시간
@@ -525,7 +526,7 @@ namespace AtoTrader
                             // 전체 누적합
 
                             ea[nRankIdx].rankSystem.arrRanking[nTimeLineIdx] = tmpRank; // arrRanking[0]은 장시작시간 + MINUTE_SEC
-                            ea[nRankIdx].rankSystem.nCurIdx++;
+                            ea[nRankIdx].rankSystem.nEaIdx++;
                         }
 
                     }
@@ -954,107 +955,25 @@ namespace AtoTrader
                         #endregion
 
                         #region 전고점 계산
-                        // ===========================================================================================================
-                        // 전고점 Part
-                        // ===========================================================================================================
                         {
-                            if (ea[i].crushMinuteManager.nCrushMaxPrice < ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs) // 최근기록된 maxPrice보다 현재 종가가 더 높다면
+                            if( ea[i].crushMgr.maxPoint.nPrice  < ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs) // 고점 계산
                             {
-                                // ----------------------------------------
-                                // 전고점 조건 
-                                if ((double)(ea[i].crushMinuteManager.nCrushMaxPrice - ea[i].crushMinuteManager.nCrushMinPrice) / ea[i].nYesterdayEndPrice > 0.01 && // 우선 종가대비 전고점과 전저점의 폭이 1퍼센트가 넘어야하고
-                                    ea[i].crushMinuteManager.nCrushMinTime > ea[i].crushMinuteManager.nCrushMaxTime) // minTime은 maxTime보다 이후여야한다. minTime == maxTime일 가능성이 있기 때문에.
-                                {
-                                    Crush tmpCrush;
-                                    tmpCrush.nCnt = ea[i].crushMinuteManager.nCurCnt++;
-                                    tmpCrush.fMaxMinPower = (double)(ea[i].crushMinuteManager.nCrushMaxPrice - ea[i].crushMinuteManager.nCrushMinPrice) / ea[i].nYesterdayEndPrice;
-                                    tmpCrush.fCurMinPower = (double)(ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs - ea[i].crushMinuteManager.nCrushMinPrice) / ea[i].nYesterdayEndPrice;
-                                    tmpCrush.nMaxMinTime = SubTimeToTime(ea[i].crushMinuteManager.nCrushMinTime, ea[i].crushMinuteManager.nCrushMaxTime);
-                                    tmpCrush.nMaxCurTime = SubTimeToTime(ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime, ea[i].crushMinuteManager.nCrushMaxTime);
-                                    tmpCrush.nMinCurTime = SubTimeToTime(ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime, ea[i].crushMinuteManager.nCrushMinTime);
-                                    tmpCrush.nMinPrice = ea[i].crushMinuteManager.nCrushMinPrice;
-                                    tmpCrush.nMaxPrice = ea[i].crushMinuteManager.nCrushMaxPrice;
-                                    if (tmpCrush.nCnt == 0)
-                                    {
-                                        tmpCrush.fUpperNow = (double)(ea[i].crushMinuteManager.nCrushMinPrice - ea[i].crushMinuteManager.nCrushOnlyMinPrice) / ea[i].nYesterdayEndPrice;
-                                    }
-                                    else
-                                    {
-                                        tmpCrush.fUpperNow = (double)(ea[i].crushMinuteManager.nCrushMinPrice - ea[i].crushMinuteManager.crushList[tmpCrush.nCnt - 1].nMinPrice) / ea[i].nYesterdayEndPrice;
-                                    }
+                                ea[i].crushMgr.maxPoint.nPrice = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs;
+                                ea[i].crushMgr.maxPoint.nTime = nSharedTime;
 
-                                    ea[i].crushMinuteManager.crushList.Add(tmpCrush);
-                                }
-
-                                ea[i].crushMinuteManager.nCrushMaxPrice = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs;
-                                ea[i].crushMinuteManager.nCrushMaxTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
-                                // 전고점에서 minTime은 항상 maxTime보다 높아야하니까 max가 앞서갈때는 minTime을 같이 세팅해준다.
-                                ea[i].crushMinuteManager.nCrushMinPrice = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs;
-                                ea[i].crushMinuteManager.nCrushMinTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                // 고점 이전의 저점은 필요가 없다
+                                ea[i].crushMgr.minPoint.nPrice = 0;
+                                ea[i].crushMgr.minPoint.nTime = 0;
                             }
 
-                            if (ea[i].crushMinuteManager.nCrushMinPrice > ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs)    // 최근 기록된 minPrice보다 현재종가가 낮다면
+                            if(ea[i].crushMgr.minPoint.nPrice == 0 || ea[i].crushMgr.minPoint.nPrice > ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs) // 저점 계산
                             {
-                                ea[i].crushMinuteManager.nCrushMinPrice = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs;
-                                ea[i].crushMinuteManager.nCrushMinTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].crushMgr.minPoint.nPrice = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs;
+                                ea[i].crushMgr.minPoint.nTime = nSharedTime;
                             }
-                            if (ea[i].crushMinuteManager.nCrushOnlyMinPrice > ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs) // 최근 기록된 only minPrice보다 현재종가가 낮다면
-                            {
-                                ea[i].crushMinuteManager.nCrushOnlyMinPrice = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs;
-                                ea[i].crushMinuteManager.nCrushOnlyMinTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
-                            }
-
-                            if (ea[i].crushMinuteManager.nCurCnt != ea[i].crushMinuteManager.nPrevCrushCnt) // 전고점카운트가 오를때마다
-                            {
-                                int nCrushUpperCnt = 0;
-                                int nBadPoint = 0;
-                                ea[i].crushMinuteManager.isCrushCheck = true;
-                                ea[i].crushMinuteManager.nUpCnt = 0;
-                                ea[i].crushMinuteManager.nDownCnt = 0;
-                                ea[i].crushMinuteManager.nSpecialDownCnt = 0;
-
-                                for (j = 0; j < ea[i].crushMinuteManager.crushList.Count; j++)
-                                {
-                                    if (ea[i].crushMinuteManager.crushList[j].fUpperNow > 0) // 올랐다
-                                    {
-                                        nCrushUpperCnt++;
-                                        ea[i].crushMinuteManager.nUpCnt++;
-                                    }
-                                    else
-                                    {
-                                        if (j >= ea[i].crushMinuteManager.crushList.Count - EYES_CLOSE_CRUSH_NUM)
-                                        {
-                                            if (j == ea[i].crushMinuteManager.crushList.Count - 1) // 바로 이전에 전고점에서 하락이었으면 badcount 하나더 플러스
-                                            {
-                                                nBadPoint++;
-                                                ea[i].crushMinuteManager.nSpecialDownCnt++;
-                                            }
-                                            ea[i].crushMinuteManager.nDownCnt++;
-                                            nBadPoint++;
-                                        }
-                                    }
-                                }
-                                ea[i].crushMinuteManager.nPrevCrushCnt = ea[i].crushMinuteManager.nCurCnt;
-                            } // END --- 전고점 카운트가 오를때마다
-                        } // END ---- 전고점 
+                        }
                         #endregion
 
-                        #region Sequence Strategy
-                        { // START ---- 분봉 Sequence Strategy 분기문
-
-                            double fCurPower = (double)(ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs - ea[i].nTodayStartPrice) / ea[i].nYesterdayEndPrice;
-                        
-                            ea[i].sequenceStrategy.botUpMinute421.Trace(fCurPower, nSharedTime);
-                            ea[i].sequenceStrategy.botUpMinute432.Trace(fCurPower, nSharedTime);
-                            ea[i].sequenceStrategy.botUpMinute642.Trace(fCurPower, nSharedTime);
-                            ea[i].sequenceStrategy.botUpMinute643.Trace(fCurPower, nSharedTime);
-                            ea[i].sequenceStrategy.botUpMinute732.Trace(fCurPower, nSharedTime);
-                            ea[i].sequenceStrategy.botUpMinute743.Trace(fCurPower, nSharedTime);
-                            ea[i].sequenceStrategy.botUpMinute953.Trace(fCurPower, nSharedTime);
-
-
-                        } // END ---- 분봉 Sequence Strategy 분기문
-                        #endregion
 
                     }// END ---- 개인구조체 업데이트
                     #endregion
@@ -1344,13 +1263,10 @@ namespace AtoTrader
                                             );
 
                         int nCutSharedT = nSharedTime - nSharedTime % MINUTE_KIWOOM;
-                        ea[nCurIdx].crushMinuteManager.nCrushMaxPrice = ea[nCurIdx].nTodayStartPrice;
-                        ea[nCurIdx].crushMinuteManager.nCrushMaxTime = nCutSharedT;
-                        ea[nCurIdx].crushMinuteManager.nCrushMinPrice = ea[nCurIdx].nTodayStartPrice;
-                        ea[nCurIdx].crushMinuteManager.nCrushMinTime = nCutSharedT;
-                        ea[nCurIdx].crushMinuteManager.nCrushOnlyMinPrice = ea[nCurIdx].nTodayStartPrice;
-                        ea[nCurIdx].crushMinuteManager.nCrushOnlyMinTime = nCutSharedT;
 
+                        // 전고점 초기화
+                        ea[nCurIdx].crushMgr.prevPoint.nTime = nFirstTime;
+                        ea[nCurIdx].crushMgr.prevPoint.nPrice = ea[nCurIdx].nFs;
                     } // END ---- 개인 초기작업
                     #endregion
                     ea[nCurIdx].nChegyulCnt++; // 인덱스를 올린다.
@@ -1405,23 +1321,14 @@ namespace AtoTrader
 
 
                     #region 실시간 전고점
-                    // 실시간 전고점
-                    // #경고 : 분봉에서 전고점 체크할때 때마침 해당되는 종목이 때마침 전고점돌파에 성공했다 그러면 현재 실시간 전고점은 maxTime과 minTime이 업데이트되어 실행되지 않음
-                    // # 가능성이 희박할 뿐더러 만약 그런경우라 하더라도 가격이 순식간에 급변하는 종목일 가능성이 크고 그럴경우 잡주일 확률이 높으니 일단 신경 안쓰기로 함.
-                    if (ea[nCurIdx].crushMinuteManager.nCrushMaxTime < ea[nCurIdx].crushMinuteManager.nCrushMinTime && // 우선 초기1분을 제외할 수 있고 전고점돌파조건인 maxT < minT 
-                        ea[nCurIdx].crushMinuteManager.nCrushMaxPrice < ea[nCurIdx].nFs && // 현재값이 전고점을 넘어섰을때
-                        (double)(ea[nCurIdx].crushMinuteManager.nCrushMaxPrice - ea[nCurIdx].crushMinuteManager.nCrushMinPrice) / ea[nCurIdx].nYesterdayEndPrice > 0.01 &&
-                        ea[nCurIdx].crushMinuteManager.nCrushRealTimePrev != ea[nCurIdx].crushMinuteManager.nCrushMaxTime // 전고점을 했는데 그게 고점이고 종점은 이전고점보다 낮게 됐을때 해당 고점을 두번쨰 돌파했을때 논리적오류가 발생
-                        )
+                   
+                    if ( ea[nCurIdx].crushMgr.maxPoint.nTime < ea[nCurIdx].crushMgr.minPoint.nTime && // 저점 고점이 설정돼있다
+                        ea[nCurIdx].crushMgr.maxPoint.nPrice < ea[nCurIdx].nFs && // 가격이 고점보다 높다
+                        (double)(ea[nCurIdx].crushMgr.maxPoint.nPrice - ea[nCurIdx].crushMgr.minPoint.nPrice) / ea[nCurIdx].nYesterdayEndPrice >= 0.01 // 1퍼센트 정도의 높이가 있는 전고여야한다
+                       ) // 전고점
                     {
-                        ea[nCurIdx].crushMinuteManager.nCrushRealTimeWidthMaxMin = SubTimeToTime(nSharedTime, ea[nCurIdx].crushMinuteManager.nCrushMaxTime);
-                        ea[nCurIdx].crushMinuteManager.nCrushRealTimeWidthMaxCur = SubTimeToTime(ea[nCurIdx].crushMinuteManager.nCrushMinTime, ea[nCurIdx].crushMinuteManager.nCrushMaxTime);
-                        ea[nCurIdx].crushMinuteManager.fCrushRealTimeHeight = (double)(ea[nCurIdx].crushMinuteManager.nCrushMaxPrice - ea[nCurIdx].crushMinuteManager.nCrushMinPrice) / ea[nCurIdx].nYesterdayEndPrice;
-                        ea[nCurIdx].crushMinuteManager.nCrushRealTimePrev = ea[nCurIdx].crushMinuteManager.nCrushMaxTime;
-                        ea[nCurIdx].crushMinuteManager.nCrushRealTimeCount++;
-                        ea[nCurIdx].crushMinuteManager.nCrushRealTimeLineIdx = nTimeLineIdx;
-                        ea[nCurIdx].crushMinuteManager.isCrushRealTimeCheck = true;
-                    } // END ---- 실시간 전고점
+                        ea[nCurIdx].crushMgr.Set(ea[nCurIdx].nFs, nSharedTime);
+                    } 
                     #endregion
 
 
@@ -2297,18 +2204,13 @@ namespace AtoTrader
                             }
                             FakeAssistantPointerMove();
                             { // 가짜보조 구역14
-                                if (ea[nCurIdx].crushMinuteManager.isCrushRealTimeCheck)
+                                if (ea[nCurIdx].crushMgr.isCrush)
                                 {
                                     SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer); 
                                 }
                             }
                             FakeAssistantPointerMove();
-                            { // 가짜보조 구역15
-                                if (ea[nCurIdx].crushMinuteManager.isCrushCheck)
-                                {
-                                    SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer); 
-                                }
-                            }
+                       
                         }
                         catch (Exception fakeAssistantException)
                         {
@@ -2854,7 +2756,7 @@ namespace AtoTrader
                         }
                         finally
                         {
-                           
+                            ea[nCurIdx].fakeVolatilityStrategy.isSuddenBoom = false;
                         }
                     }// END ---- 전략매수
                     #endregion
@@ -2870,25 +2772,15 @@ namespace AtoTrader
                         {
                             if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[0].nSharedTime) > 900)
                             {
-                                UpdateFakeHistory();
-                                CalcFakeHistory();
+                                UpdateFakeHistory(nCurIdx);
+                                CalcFakeHistory(nCurIdx);
                             }
                         }
                     }
                     #endregion
 
-                    ea[nCurIdx].fakeVolatilityStrategy.isSuddenBoom = false;
-                    ea[nCurIdx].crushMinuteManager.isCrushCheck = false;
-                    ea[nCurIdx].crushMinuteManager.isCrushRealTimeCheck = false;
-
-                    ea[nCurIdx].sequenceStrategy.botUpMinute421.Confirm();
-                    ea[nCurIdx].sequenceStrategy.botUpMinute432.Confirm();
-                    ea[nCurIdx].sequenceStrategy.botUpMinute642.Confirm();
-                    ea[nCurIdx].sequenceStrategy.botUpMinute643.Confirm();
-                    ea[nCurIdx].sequenceStrategy.botUpMinute732.Confirm();
-                    ea[nCurIdx].sequenceStrategy.botUpMinute743.Confirm();
-                    ea[nCurIdx].sequenceStrategy.botUpMinute953.Confirm();
-
+                    
+                    ea[nCurIdx].crushMgr.isCrush = false;
 
                 }// End ---- e.sRealType.Equals("주식체결")
                 #endregion

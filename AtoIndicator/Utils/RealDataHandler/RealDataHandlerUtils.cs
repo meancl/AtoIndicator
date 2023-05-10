@@ -61,14 +61,15 @@ namespace AtoTrader
 
 #if AI
                 // AI 서비스 요청
-                double[] features102 = GetParameters(nCurIdx: nCurIdx, 102, eTradeMethod: GET_FEATURE_FAKE, nRealStrategyNum: newF.fr.nAccessFakeStrategyGroupNum);
+                double[] features102 = GetParameters(nCurIdx: nEaIdx, 102, eTradeMethod: GET_FEATURE_FAKE, nRealStrategyNum: newF.fr.nAccessFakeStrategyGroupNum);
 
-                var nMMFNum = mmf.RequestAIService(sCode: ea[nCurIdx].sCode, nRqTime: nSharedTime, nRqType: FAKE_AI_NUM, inputData: features102);
+                var nMMFNum = mmf.RequestAIService(sCode: ea[nEaIdx].sCode, nRqTime: nSharedTime, nRqType: FAKE_AI_NUM, inputData: features102);
                 if (nMMFNum == -1)
                 {
                     PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
                     return;
                 }
+                aiSlot.nEaIdx = nEaIdx;
                 aiSlot.nRequestId = FAKE_REQUEST_SIGNAL;
                 aiSlot.nMMFNumber = nMMFNum;
                 aiQueue.Enqueue(aiSlot);
@@ -84,10 +85,10 @@ namespace AtoTrader
             if (frame.nStrategyNum >= FAKE_BUY_MAX_NUM || frame.arrStrategy[nFakeBuyStrategyNum] > 5) // 한 전략당 6번제한
                 return;
 
-            if (ea[nCurIdx].fakeStrategyMgr.nSharedPrevMinuteIdx != nTimeLineIdx)
+            if (ea[nEaIdx].fakeStrategyMgr.nSharedPrevMinuteIdx != nTimeLineIdx)
             {
-                ea[nCurIdx].fakeStrategyMgr.nSharedPrevMinuteIdx = nTimeLineIdx;
-                ea[nCurIdx].fakeStrategyMgr.nSharedMinuteLocationCount++;
+                ea[nEaIdx].fakeStrategyMgr.nSharedPrevMinuteIdx = nTimeLineIdx;
+                ea[nEaIdx].fakeStrategyMgr.nSharedMinuteLocationCount++;
             }
 
             if (frame.nLastTouchTime != 0 && SubTimeToTimeAndSec(nSharedTime, frame.nLastTouchTime) >= 2400) // 40분 이상 매수가 안됐었으면
@@ -100,18 +101,18 @@ namespace AtoTrader
             frame.arrStrategy[nFakeBuyStrategyNum]++;
             frame.arrPrevMinuteIdx[nFakeBuyStrategyNum] = nTimeLineIdx;
 
-            frame.arrBuyPrice[frame.nStrategyNum] = ea[nCurIdx].nFs;
+            frame.arrBuyPrice[frame.nStrategyNum] = ea[nEaIdx].nFs;
             frame.arrBuyTime[frame.nStrategyNum] = nSharedTime;
             frame.arrMinuteIdx[frame.nStrategyNum] = nTimeLineIdx;
             frame.arrSpecificStrategy[frame.nStrategyNum] = nFakeBuyStrategyNum;
             frame.nStrategyNum++;
             frame.nHitNum++;
 
-            frame.fEverageShoulderPrice = (frame.fEverageShoulderPrice == 0) ? ea[nCurIdx].nFs : (ea[nCurIdx].nFs + frame.fEverageShoulderPrice) / 2;
-            frame.nSumShoulderPrice += ea[nCurIdx].nFs;
-            if (frame.nMaxShoulderPrice == 0 || frame.nMaxShoulderPrice < ea[nCurIdx].nFs)
+            frame.fEverageShoulderPrice = (frame.fEverageShoulderPrice == 0) ? ea[nEaIdx].nFs : (ea[nEaIdx].nFs + frame.fEverageShoulderPrice) / 2;
+            frame.nSumShoulderPrice += ea[nEaIdx].nFs;
+            if (frame.nMaxShoulderPrice == 0 || frame.nMaxShoulderPrice < ea[nEaIdx].nFs)
             {
-                frame.nMaxShoulderPrice = ea[nCurIdx].nFs;
+                frame.nMaxShoulderPrice = ea[nEaIdx].nFs;
 
                 if (nTimeLineIdx != frame.nPrevMaxMinIdx)
                 {
@@ -127,9 +128,9 @@ namespace AtoTrader
                 frame.nMinuteLocationCount++;
             }
 
-            UpdateFakeHistory();
-            AddFakeHistory(frame.nFakeType, nFakeBuyStrategyNum);
-            CalcFakeHistory();
+            UpdateFakeHistory(nEaIdx);
+            AddFakeHistory(nEaIdx, frame.nFakeType, nFakeBuyStrategyNum);
+            CalcFakeHistory(nEaIdx);
 
 
 
@@ -140,7 +141,7 @@ namespace AtoTrader
 
 
         #region UpdateFakeHistory
-        public void UpdateFakeHistory()
+        public void UpdateFakeHistory(int nEaIdx)
         {
             //for (int i = 0; i < ea[nCurIdx].fakeVolatilityStrategy.listFakeHistoryPiece.Count; i++)
             //{
@@ -154,32 +155,32 @@ namespace AtoTrader
         #endregion
 
         #region AddFakeHistory
-        public void AddFakeHistory(int nType, int nStrategyNum)
+        public void AddFakeHistory(int nEaIdx, int nType, int nStrategyNum)
         {
             FakeHistoryPiece tmpFakeHistoryPiece;
             tmpFakeHistoryPiece.nTypeFakeTrading = nType;
             tmpFakeHistoryPiece.nFakeStrategyNum = nStrategyNum;
             tmpFakeHistoryPiece.nSharedTime = nSharedTime;
             tmpFakeHistoryPiece.nTimeLineIdx = nTimeLineIdx;
-            ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece.Add(tmpFakeHistoryPiece); // 신규 데이터를 삽입해라
+            ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece.Add(tmpFakeHistoryPiece); // 신규 데이터를 삽입해라
 
         }
         #endregion
 
         #region CalcFakeHistory 
-        public void CalcFakeHistory()
+        public void CalcFakeHistory(int nEaIdx)
         {
 
-            ea[nCurIdx].fakeStrategyMgr.nFakeBuyNum = 0;
-            ea[nCurIdx].fakeStrategyMgr.nFakeResistNum = 0;
-            ea[nCurIdx].fakeStrategyMgr.nFakeAssistantNum = 0;
-            ea[nCurIdx].fakeStrategyMgr.nFakeVolatilityNum = 0;
-            ea[nCurIdx].fakeStrategyMgr.nFakeBuyMinuteAreaNum = 0;
-            ea[nCurIdx].fakeStrategyMgr.nFakeResistMinuteAreaNum = 0;
-            ea[nCurIdx].fakeStrategyMgr.nFakeAssistantMinuteAreaNum = 0;
-            ea[nCurIdx].fakeStrategyMgr.nTotalFakeMinuteAreaNum = 0;
-            ea[nCurIdx].fakeStrategyMgr.nTotalFakeCount = 0;
-            ea[nCurIdx].fakeStrategyMgr.nFakeVolatilityMinuteAreaNum = 0;
+            ea[nEaIdx].fakeStrategyMgr.nFakeBuyNum = 0;
+            ea[nEaIdx].fakeStrategyMgr.nFakeResistNum = 0;
+            ea[nEaIdx].fakeStrategyMgr.nFakeAssistantNum = 0;
+            ea[nEaIdx].fakeStrategyMgr.nFakeVolatilityNum = 0;
+            ea[nEaIdx].fakeStrategyMgr.nFakeBuyMinuteAreaNum = 0;
+            ea[nEaIdx].fakeStrategyMgr.nFakeResistMinuteAreaNum = 0;
+            ea[nEaIdx].fakeStrategyMgr.nFakeAssistantMinuteAreaNum = 0;
+            ea[nEaIdx].fakeStrategyMgr.nTotalFakeMinuteAreaNum = 0;
+            ea[nEaIdx].fakeStrategyMgr.nTotalFakeCount = 0;
+            ea[nEaIdx].fakeStrategyMgr.nFakeVolatilityMinuteAreaNum = 0;
 
             int nPrevFakeBuyMinuteIdx = -1;
             int nPrevFakeResistMinuteIdx = -1;
@@ -187,54 +188,54 @@ namespace AtoTrader
             int nPrevFakeVolatilityMinuteIdx = -1;
             int nPrevTotalFakeMinuteIdx = -1;
 
-            for (int i = 0; i < ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece.Count; i++)
+            for (int i = 0; i < ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece.Count; i++)
             {
-                if (ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTypeFakeTrading == FAKE_BUY_SIGNAL)
+                if (ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTypeFakeTrading == FAKE_BUY_SIGNAL)
                 {
-                    ea[nCurIdx].fakeStrategyMgr.nFakeBuyNum++;
+                    ea[nEaIdx].fakeStrategyMgr.nFakeBuyNum++;
 
-                    if (nPrevFakeBuyMinuteIdx == -1 || nPrevFakeBuyMinuteIdx != ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx)
+                    if (nPrevFakeBuyMinuteIdx == -1 || nPrevFakeBuyMinuteIdx != ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx)
                     {
-                        nPrevFakeBuyMinuteIdx = ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx;
-                        ea[nCurIdx].fakeStrategyMgr.nFakeBuyMinuteAreaNum++;
+                        nPrevFakeBuyMinuteIdx = ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx;
+                        ea[nEaIdx].fakeStrategyMgr.nFakeBuyMinuteAreaNum++;
                     }
                 }
-                else if (ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTypeFakeTrading == FAKE_RESIST_SIGNAL)
+                else if (ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTypeFakeTrading == FAKE_RESIST_SIGNAL)
                 {
-                    ea[nCurIdx].fakeStrategyMgr.nFakeResistNum++;
+                    ea[nEaIdx].fakeStrategyMgr.nFakeResistNum++;
 
-                    if (nPrevFakeResistMinuteIdx == -1 || nPrevFakeResistMinuteIdx != ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx)
+                    if (nPrevFakeResistMinuteIdx == -1 || nPrevFakeResistMinuteIdx != ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx)
                     {
-                        nPrevFakeResistMinuteIdx = ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx;
-                        ea[nCurIdx].fakeStrategyMgr.nFakeResistMinuteAreaNum++;
+                        nPrevFakeResistMinuteIdx = ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx;
+                        ea[nEaIdx].fakeStrategyMgr.nFakeResistMinuteAreaNum++;
                     }
                 }
-                else if (ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTypeFakeTrading == FAKE_ASSISTANT_SIGNAL)
+                else if (ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTypeFakeTrading == FAKE_ASSISTANT_SIGNAL)
                 {
-                    ea[nCurIdx].fakeStrategyMgr.nFakeAssistantNum++;
+                    ea[nEaIdx].fakeStrategyMgr.nFakeAssistantNum++;
 
-                    if (nPrevFakeAssistantMinuteIdx == -1 || nPrevFakeAssistantMinuteIdx != ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx)
+                    if (nPrevFakeAssistantMinuteIdx == -1 || nPrevFakeAssistantMinuteIdx != ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx)
                     {
-                        nPrevFakeAssistantMinuteIdx = ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx;
-                        ea[nCurIdx].fakeStrategyMgr.nFakeAssistantMinuteAreaNum++;
+                        nPrevFakeAssistantMinuteIdx = ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx;
+                        ea[nEaIdx].fakeStrategyMgr.nFakeAssistantMinuteAreaNum++;
                     }
                 }
-                else if (ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTypeFakeTrading == FAKE_VOLATILE_SIGNAL)
+                else if (ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTypeFakeTrading == FAKE_VOLATILE_SIGNAL)
                 {
-                    ea[nCurIdx].fakeStrategyMgr.nFakeVolatilityNum++;
+                    ea[nEaIdx].fakeStrategyMgr.nFakeVolatilityNum++;
 
-                    if (nPrevFakeVolatilityMinuteIdx == -1 || nPrevFakeVolatilityMinuteIdx != ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx)
+                    if (nPrevFakeVolatilityMinuteIdx == -1 || nPrevFakeVolatilityMinuteIdx != ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx)
                     {
-                        nPrevFakeVolatilityMinuteIdx = ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx;
-                        ea[nCurIdx].fakeStrategyMgr.nFakeAssistantMinuteAreaNum++;
+                        nPrevFakeVolatilityMinuteIdx = ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx;
+                        ea[nEaIdx].fakeStrategyMgr.nFakeAssistantMinuteAreaNum++;
                     }
                 }
 
                 // total min idx 부분
-                if (nPrevTotalFakeMinuteIdx == -1 || nPrevTotalFakeMinuteIdx != ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx)
+                if (nPrevTotalFakeMinuteIdx == -1 || nPrevTotalFakeMinuteIdx != ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx)
                 {
-                    nPrevTotalFakeMinuteIdx = ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx;
-                    ea[nCurIdx].fakeStrategyMgr.nTotalFakeMinuteAreaNum++;
+                    nPrevTotalFakeMinuteIdx = ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx;
+                    ea[nEaIdx].fakeStrategyMgr.nTotalFakeMinuteAreaNum++;
                 }
             }
         }
