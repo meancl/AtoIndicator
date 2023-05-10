@@ -660,11 +660,13 @@ namespace AtoTrader.View.EachStockHistory
                 $"총 Arrow : {curEa.fakeBuyStrategy.nStrategyNum + curEa.fakeAssistantStrategy.nStrategyNum + curEa.fakeResistStrategy.nStrategyNum}{NEW_LINE}" +
                 $"총 ArrowMinute : {curEa.fakeStrategyMgr.nTotalFakeMinuteAreaNum}{NEW_LINE}{NEW_LINE}" +
                 $"================= 분 봉 ============={NEW_LINE}" +
-                $"위캔들 : {curEa.timeLines1m.upCandleList.Count}{NEW_LINE}" +
+                $"1퍼캔들 : {curEa.timeLines1m.onePerCandleList.Count}{NEW_LINE}" +
+                $"2퍼캔들 : {curEa.timeLines1m.twoPerCandleList.Count}{NEW_LINE}" +
+                $"3퍼캔들 : {curEa.timeLines1m.threePerCandleList.Count}{NEW_LINE}" +
+                $"4퍼캔들 : {curEa.timeLines1m.fourPerCandleList.Count}{NEW_LINE}" +
                 $"아래캔들 : {curEa.timeLines1m.downCandleList.Count}{NEW_LINE}" +
                 $"위꼬리 : {curEa.timeLines1m.upTailList.Count}{NEW_LINE}" +
-                $"아래꼬리 : {curEa.timeLines1m.downTailList.Count}{NEW_LINE}" +
-                $"슈팅 : {curEa.timeLines1m.shootingList.Count}{NEW_LINE}{NEW_LINE}" + 
+                $"아래꼬리 : {curEa.timeLines1m.downTailList.Count}{NEW_LINE}{NEW_LINE}" +
                 $"=====================이동평균선========================={NEW_LINE}" +
                 $"---------------------- 이평값 -------------------------{NEW_LINE}" +
                 $"현재최저값 : {curEa.timeLines1m.arrTimeLine[curEa.timeLines1m.nRealDataIdx].nDownFs}{NEW_LINE}" +
@@ -685,10 +687,7 @@ namespace AtoTrader.View.EachStockHistory
                 $"업1h : {curEa.maOverN.nUpCntMa1h}{NEW_LINE}" +
                 $"업2h : {curEa.maOverN.nUpCntMa2h}{NEW_LINE}{NEW_LINE}" +
                 $"=====================  전고점  ========================={NEW_LINE}" +
-                $"전고점 카운트 : {curEa.crushMinuteManager.nCurCnt}{NEW_LINE}" +
-                $"전고점   업 : {curEa.crushMinuteManager.nUpCnt}{NEW_LINE}" +
-                $"전고점 다운 : {curEa.crushMinuteManager.nDownCnt}{NEW_LINE}" +
-                $"전고점 스페셜 다운 : {curEa.crushMinuteManager.nSpecialDownCnt}{NEW_LINE}{NEW_LINE}" +  
+                $"전고점 카운트 : {curEa.crushMgr.crushBoxes.Count}{NEW_LINE}" +
 
                 $"=====================  추세각도  ======================={NEW_LINE}" +
                 $"초기각도 : {curEa.timeLines1m.fInitAngle}( {curEa.timeLines1m.fInitSlope} ){NEW_LINE}" +

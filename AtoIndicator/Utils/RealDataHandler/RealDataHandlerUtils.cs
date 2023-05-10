@@ -16,67 +16,67 @@ namespace AtoTrader
     public partial class MainForm
     {
 
-        void UpFakeCount(int nEaIdx, int nFakeNum, int nBuyStrategyNum)
-        {
-            try
-            {
-                ea[nEaIdx].fakeStrategyMgr.nTotalFakeCount++;
-                FakeDBRecordInfo newF = new FakeDBRecordInfo();
-                ea[nEaIdx].GetFakeFix(newF.fr);
+//        void UpFakeCount(int nEaIdx, int nFakeNum, int nBuyStrategyNum)
+//        {
+//            try
+//            {
+//                ea[nEaIdx].fakeStrategyMgr.nTotalFakeCount++;
+//                FakeDBRecordInfo newF = new FakeDBRecordInfo();
+//                ea[nEaIdx].GetFakeFix(newF.fr);
 
-                newF.fr.nRqTime = nSharedTime;
-                newF.fr.nOverPrice = newF.fr.nFb;
-                for (int i = 0; i < EYES_CLOSE_NUM; i++)
-                    newF.fr.nOverPrice += GetIntegratedMarketGap(newF.fr.nOverPrice);
-                newF.nTimeLineIdx = nTimeLineIdx;
-                newF.fr.nAccessFakeStrategyIdx = nBuyStrategyNum;
+//                newF.fr.nRqTime = nSharedTime;
+//                newF.fr.nOverPrice = newF.fr.nFb;
+//                for (int i = 0; i < EYES_CLOSE_NUM; i++)
+//                    newF.fr.nOverPrice += GetIntegratedMarketGap(newF.fr.nOverPrice);
+//                newF.nTimeLineIdx = nTimeLineIdx;
+//                newF.fr.nAccessFakeStrategyIdx = nBuyStrategyNum;
 
-                switch (nFakeNum)
-                {
-                    case FAKE_BUY_SIGNAL:
-                        newF.fr.nAccessFakeStrategyGroupNum = -10 * (FAKE_BUY_SIGNAL + 1);
-                        newF.fr.nAccessFakeStrategySequenceIdx = ea[nEaIdx].fakeBuyStrategy.arrStrategy[nBuyStrategyNum];
-                        PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 1. 페이크매수 누적 횟수 : {ea[nEaIdx].fakeBuyStrategy.nStrategyNum} 페이크매수 분포 : {ea[nEaIdx].fakeBuyStrategy.nMinuteLocationCount}", nEaIdx);
-                        break;
-                    case FAKE_RESIST_SIGNAL:
-                        newF.fr.nAccessFakeStrategyGroupNum = -10 * (FAKE_RESIST_SIGNAL + 1);
-                        newF.fr.nAccessFakeStrategySequenceIdx = ea[nEaIdx].fakeResistStrategy.arrStrategy[nBuyStrategyNum];
-                        PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 2. 페이크저항 누적 횟수 : {ea[nEaIdx].fakeResistStrategy.nStrategyNum} 페이크저항 분포 : {ea[nEaIdx].fakeResistStrategy.nMinuteLocationCount}", nEaIdx);
-                        break;
-                    case FAKE_ASSISTANT_SIGNAL:
-                        newF.fr.nAccessFakeStrategyGroupNum = -10 * (FAKE_ASSISTANT_SIGNAL + 1);
-                        newF.fr.nAccessFakeStrategySequenceIdx = ea[nEaIdx].fakeAssistantStrategy.arrStrategy[nBuyStrategyNum];
-                        PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 3. 페이크보조 누적 횟수 : {ea[nEaIdx].fakeAssistantStrategy.nStrategyNum} 페이크보조 분포 : {ea[nEaIdx].fakeAssistantStrategy.nMinuteLocationCount}", nEaIdx);
-                        break;
-                    case FAKE_VOLATILE_SIGNAL:
-                        newF.fr.nAccessFakeStrategyGroupNum = -10 * (FAKE_VOLATILE_SIGNAL + 1);
-                        newF.fr.nAccessFakeStrategySequenceIdx = ea[nEaIdx].fakeVolatilityStrategy.arrStrategy[nBuyStrategyNum];
-                        PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 6. 변동성 누적 횟수 : {ea[nEaIdx].fakeVolatilityStrategy.nStrategyNum} 실제 매수 분포 : {ea[nEaIdx].fakeVolatilityStrategy.nMinuteLocationCount}", nEaIdx);
-                        break;
-                    default:
-                        break;
-                }
+//                switch (nFakeNum)
+//                {
+//                    case FAKE_BUY_SIGNAL:
+//                        newF.fr.nAccessFakeStrategyGroupNum = -10 * (FAKE_BUY_SIGNAL + 1);
+//                        newF.fr.nAccessFakeStrategySequenceIdx = ea[nEaIdx].fakeBuyStrategy.arrStrategy[nBuyStrategyNum];
+//                        PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 1. 페이크매수 누적 횟수 : {ea[nEaIdx].fakeBuyStrategy.nStrategyNum} 페이크매수 분포 : {ea[nEaIdx].fakeBuyStrategy.nMinuteLocationCount}", nEaIdx);
+//                        break;
+//                    case FAKE_RESIST_SIGNAL:
+//                        newF.fr.nAccessFakeStrategyGroupNum = -10 * (FAKE_RESIST_SIGNAL + 1);
+//                        newF.fr.nAccessFakeStrategySequenceIdx = ea[nEaIdx].fakeResistStrategy.arrStrategy[nBuyStrategyNum];
+//                        PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 2. 페이크저항 누적 횟수 : {ea[nEaIdx].fakeResistStrategy.nStrategyNum} 페이크저항 분포 : {ea[nEaIdx].fakeResistStrategy.nMinuteLocationCount}", nEaIdx);
+//                        break;
+//                    case FAKE_ASSISTANT_SIGNAL:
+//                        newF.fr.nAccessFakeStrategyGroupNum = -10 * (FAKE_ASSISTANT_SIGNAL + 1);
+//                        newF.fr.nAccessFakeStrategySequenceIdx = ea[nEaIdx].fakeAssistantStrategy.arrStrategy[nBuyStrategyNum];
+//                        PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 3. 페이크보조 누적 횟수 : {ea[nEaIdx].fakeAssistantStrategy.nStrategyNum} 페이크보조 분포 : {ea[nEaIdx].fakeAssistantStrategy.nMinuteLocationCount}", nEaIdx);
+//                        break;
+//                    case FAKE_VOLATILE_SIGNAL:
+//                        newF.fr.nAccessFakeStrategyGroupNum = -10 * (FAKE_VOLATILE_SIGNAL + 1);
+//                        newF.fr.nAccessFakeStrategySequenceIdx = ea[nEaIdx].fakeVolatilityStrategy.arrStrategy[nBuyStrategyNum];
+//                        PrintLog($"{nSharedTime}  {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} fs : {ea[nEaIdx].nFs} 6. 변동성 누적 횟수 : {ea[nEaIdx].fakeVolatilityStrategy.nStrategyNum} 실제 매수 분포 : {ea[nEaIdx].fakeVolatilityStrategy.nMinuteLocationCount}", nEaIdx);
+//                        break;
+//                    default:
+//                        break;
+//                }
 
-                ea[nEaIdx].fakeStrategyMgr.fd.Add(newF);
+//                ea[nEaIdx].fakeStrategyMgr.fd.Add(newF);
 
-#if AI
-                // AI 서비스 요청
-                double[] features102 = GetParameters(nCurIdx: nEaIdx, 102, eTradeMethod: GET_FEATURE_FAKE, nRealStrategyNum: newF.fr.nAccessFakeStrategyGroupNum);
+//#if AI
+//                //// AI 서비스 요청
+//                //double[] features102 = GetParameters(nCurIdx: nEaIdx, 102, eTradeMethod: GET_FEATURE_FAKE, nRealStrategyNum: newF.fr.nAccessFakeStrategyGroupNum);
 
-                var nMMFNum = mmf.RequestAIService(sCode: ea[nEaIdx].sCode, nRqTime: nSharedTime, nRqType: FAKE_AI_NUM, inputData: features102);
-                if (nMMFNum == -1)
-                {
-                    PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
-                    return;
-                }
-                aiSlot.nEaIdx = nEaIdx;
-                aiSlot.nRequestId = FAKE_REQUEST_SIGNAL;
-                aiSlot.nMMFNumber = nMMFNum;
-                aiQueue.Enqueue(aiSlot);
-#endif
-            }
-            catch { }
-        }
+//                //var nMMFNum = mmf.RequestAIService(sCode: ea[nEaIdx].sCode, nRqTime: nSharedTime, nRqType: FAKE_AI_NUM, inputData: features102);
+//                //if (nMMFNum == -1)
+//                //{
+//                //    PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
+//                //    return;
+//                //}
+//                //aiSlot.nEaIdx = nEaIdx;
+//                //aiSlot.nRequestId = FAKE_REQUEST_SIGNAL;
+//                //aiSlot.nMMFNumber = nMMFNum;
+//                //aiQueue.Enqueue(aiSlot);
+//#endif
+//            }
+//            catch { }
+//        }
 
         #region SetThisFake
         void SetThisFake(FakeFrame frame, int nEaIdx, int nFakeBuyStrategyNum)
@@ -135,7 +135,7 @@ namespace AtoTrader
 
 
 
-            UpFakeCount(nEaIdx, frame.nFakeType, nFakeBuyStrategyNum);
+            // UpFakeCount(nEaIdx, frame.nFakeType, nFakeBuyStrategyNum);
         }
         #endregion
 

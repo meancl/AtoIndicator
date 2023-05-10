@@ -43,10 +43,6 @@ namespace AtoTrader
 
         public MLContext mlContext;
 
-#if AI
-        public MMF mmf = new MMF(); // 공유메모리를 위한 인스턴스
-#endif
-
         // ============================================
         // 마지막 편집일 : 2023-04-20
         // 1. 모니터링 DB 종목 로드

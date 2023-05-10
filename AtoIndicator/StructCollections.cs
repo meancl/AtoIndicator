@@ -54,8 +54,7 @@ namespace AtoTrader
             public MaOverN maOverN;                   // 이동평균선 변수
             public TimeLineManager timeLines1m;       // 차트데이터 변수
             public RankSystem rankSystem;             // 랭킹데이터 변수
-            public SequenceStrategy sequenceStrategy; // 순차적전략 변
-            public ReservationManager reserveMgr;     // 예약매수 관련 변수
+            public SequenceStrategy sequenceStrategy; // 순차적전략 변수
             public CrushMonitor crushMgr;             // 전고점 변수
 
             // ----------------------------------
@@ -160,150 +159,149 @@ namespace AtoTrader
                 rankSystem.Init();
                 sequenceStrategy.Init();
                 timeLines1m.Init();
-                reserveMgr.Init();
                 fakeStrategyMgr.Init();
                 crushMgr.Init();
             }
 
-            public void GetFakeFix(FakeReports rep)
-            {
-                try
-                {
-                    rep.dTradeTime = DateTime.Today;
-                    rep.sCode = sCode;
-                    rep.sCodeName = sCodeName;
-                    rep.nLocationOfComp = COMPUTER_LOCATION;
+            //public void GetFakeFix(FakeReports rep)
+            //{
+            //    try
+            //    {
+            //        rep.dTradeTime = DateTime.Today;
+            //        rep.sCode = sCode;
+            //        rep.sCodeName = sCodeName;
+            //        rep.nLocationOfComp = COMPUTER_LOCATION;
 
-                    // 개인구조체 정보
-                    rep.fPositiveStickPower = fPositiveStickPower;
-                    rep.fNegativeStickPower = fNegativeStickPower;
-                    rep.nFirstVolume = nFirstVolume;
-                    rep.lFirstPrice = lFirstPrice;
-                    rep.nFs = nFs;
-                    rep.nFb = nFb;
-                    rep.fStartGap = fStartGap;
-                    rep.sType = sMarketGubunTag;
-                    rep.fPowerWithOutGap = fPowerWithoutGap;
-                    rep.fPower = fPower;
-                    rep.fPlusCnt07 = fPlusCnt07;
-                    rep.fMinusCnt07 = fMinusCnt07;
-                    rep.fPlusCnt09 = fPlusCnt09;
-                    rep.fMinusCnt09 = fMinusCnt09;
-                    rep.fPowerJar = fPowerJar;
-                    rep.fOnlyDownPowerJar = fOnlyDownPowerJar;
-                    rep.fOnlyUpPowerJar = fOnlyUpPowerJar;
-                    rep.nChegyulCnt = nChegyulCnt;
-                    rep.nNoMoveCnt = nNoMoveCount;
-                    rep.nFewSpeedCnt = nFewSpeedCount;
-                    rep.nMissCnt = nMissCount;
-                    rep.lTotalTradePrice = lTotalTradePrice;
-                    rep.lTotalBuyPrice = lOnlyBuyPrice;
-                    rep.lTotalSellPrice = lOnlySellPrice;
-                    rep.nDownCntMa20m = maOverN.nDownCntMa20m;
-                    rep.nDownCntMa1h = maOverN.nDownCntMa1h;
-                    rep.nDownCntMa2h = maOverN.nDownCntMa2h;
-                    rep.nUpCntMa20m = maOverN.nUpCntMa20m;
-                    rep.nUpCntMa1h = maOverN.nUpCntMa1h;
-                    rep.nUpCntMa2h = maOverN.nUpCntMa2h;
-                    rep.fMa20mDiff = (maOverN.fCurDownFs - maOverN.fCurMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                    rep.fMa1hDiff = (maOverN.fCurDownFs - maOverN.fCurMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                    rep.fMa2hDiff = (maOverN.fCurDownFs - maOverN.fCurMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                    rep.fMa20mCurDiff = (nFs - maOverN.fCurMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                    rep.fMa1hCurDiff = (nFs - maOverN.fCurMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                    rep.fMa2hCurDiff = (nFs - maOverN.fCurMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                    rep.fGapMa20mDiff = (maOverN.fCurDownFs - maOverN.fCurGapMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                    rep.fGapMa1hDiff = (maOverN.fCurDownFs - maOverN.fCurGapMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                    rep.fGapMa2hDiff = (maOverN.fCurDownFs - maOverN.fCurGapMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                    rep.fGapMa20mCurDiff = (nFs - maOverN.fCurGapMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                    rep.fGapMa1hCurDiff = (nFs - maOverN.fCurGapMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                    rep.fGapMa2hCurDiff = (nFs - maOverN.fCurGapMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                    rep.fIAngle = timeLines1m.fInitAngle;
-                    rep.fMAngle = timeLines1m.fMaxAngle;
-                    rep.fTAngle = timeLines1m.fTotalMedianAngle;
-                    rep.fHAngle = timeLines1m.fHourMedianAngle;
-                    rep.fRAngle = timeLines1m.fRecentMedianAngle;
-                    rep.fDAngle = timeLines1m.fDAngle;
-                    rep.fISlope = timeLines1m.fInitSlope;
-                    rep.fMSlope = timeLines1m.fMaxSlope;
-                    rep.fTSlope = timeLines1m.fTotalMedian;
-                    rep.fHSlope = timeLines1m.fHourMedian;
-                    rep.fRSlope = timeLines1m.fRecentMedian;
-                    rep.fDSlope = timeLines1m.fMaxSlope - timeLines1m.fInitSlope;
-                    rep.fSpeedCur = speedStatus.fCur;
-                    rep.fHogaSpeedCur = hogaSpeedStatus.fCur;
-                    rep.fTradeCur = tradeStatus.fCur;
-                    rep.fPureTradeCur = pureTradeStatus.fCur;
-                    rep.fPureBuyCur = pureBuyStatus.fCur;
-                    rep.fHogaRatioCur = hogaRatioStatus.fCur;
-                    rep.fSharePerHoga = fSharePerHoga;
-                    rep.fSharePerTrade = fSharePerTrade;
-                    rep.fHogaPerTrade = fHogaPerTrade;
-                    rep.fTradePerPure = fTradePerPure;
+            //        // 개인구조체 정보
+            //        rep.fPositiveStickPower = fPositiveStickPower;
+            //        rep.fNegativeStickPower = fNegativeStickPower;
+            //        rep.nFirstVolume = nFirstVolume;
+            //        rep.lFirstPrice = lFirstPrice;
+            //        rep.nFs = nFs;
+            //        rep.nFb = nFb;
+            //        rep.fStartGap = fStartGap;
+            //        rep.sType = sMarketGubunTag;
+            //        rep.fPowerWithOutGap = fPowerWithoutGap;
+            //        rep.fPower = fPower;
+            //        rep.fPlusCnt07 = fPlusCnt07;
+            //        rep.fMinusCnt07 = fMinusCnt07;
+            //        rep.fPlusCnt09 = fPlusCnt09;
+            //        rep.fMinusCnt09 = fMinusCnt09;
+            //        rep.fPowerJar = fPowerJar;
+            //        rep.fOnlyDownPowerJar = fOnlyDownPowerJar;
+            //        rep.fOnlyUpPowerJar = fOnlyUpPowerJar;
+            //        rep.nChegyulCnt = nChegyulCnt;
+            //        rep.nNoMoveCnt = nNoMoveCount;
+            //        rep.nFewSpeedCnt = nFewSpeedCount;
+            //        rep.nMissCnt = nMissCount;
+            //        rep.lTotalTradePrice = lTotalTradePrice;
+            //        rep.lTotalBuyPrice = lOnlyBuyPrice;
+            //        rep.lTotalSellPrice = lOnlySellPrice;
+            //        rep.nDownCntMa20m = maOverN.nDownCntMa20m;
+            //        rep.nDownCntMa1h = maOverN.nDownCntMa1h;
+            //        rep.nDownCntMa2h = maOverN.nDownCntMa2h;
+            //        rep.nUpCntMa20m = maOverN.nUpCntMa20m;
+            //        rep.nUpCntMa1h = maOverN.nUpCntMa1h;
+            //        rep.nUpCntMa2h = maOverN.nUpCntMa2h;
+            //        rep.fMa20mDiff = (maOverN.fCurDownFs - maOverN.fCurMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+            //        rep.fMa1hDiff = (maOverN.fCurDownFs - maOverN.fCurMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+            //        rep.fMa2hDiff = (maOverN.fCurDownFs - maOverN.fCurMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+            //        rep.fMa20mCurDiff = (nFs - maOverN.fCurMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+            //        rep.fMa1hCurDiff = (nFs - maOverN.fCurMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+            //        rep.fMa2hCurDiff = (nFs - maOverN.fCurMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+            //        rep.fGapMa20mDiff = (maOverN.fCurDownFs - maOverN.fCurGapMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+            //        rep.fGapMa1hDiff = (maOverN.fCurDownFs - maOverN.fCurGapMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+            //        rep.fGapMa2hDiff = (maOverN.fCurDownFs - maOverN.fCurGapMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+            //        rep.fGapMa20mCurDiff = (nFs - maOverN.fCurGapMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+            //        rep.fGapMa1hCurDiff = (nFs - maOverN.fCurGapMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+            //        rep.fGapMa2hCurDiff = (nFs - maOverN.fCurGapMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
+            //        rep.fIAngle = timeLines1m.fInitAngle;
+            //        rep.fMAngle = timeLines1m.fMaxAngle;
+            //        rep.fTAngle = timeLines1m.fTotalMedianAngle;
+            //        rep.fHAngle = timeLines1m.fHourMedianAngle;
+            //        rep.fRAngle = timeLines1m.fRecentMedianAngle;
+            //        rep.fDAngle = timeLines1m.fDAngle;
+            //        rep.fISlope = timeLines1m.fInitSlope;
+            //        rep.fMSlope = timeLines1m.fMaxSlope;
+            //        rep.fTSlope = timeLines1m.fTotalMedian;
+            //        rep.fHSlope = timeLines1m.fHourMedian;
+            //        rep.fRSlope = timeLines1m.fRecentMedian;
+            //        rep.fDSlope = timeLines1m.fMaxSlope - timeLines1m.fInitSlope;
+            //        rep.fSpeedCur = speedStatus.fCur;
+            //        rep.fHogaSpeedCur = hogaSpeedStatus.fCur;
+            //        rep.fTradeCur = tradeStatus.fCur;
+            //        rep.fPureTradeCur = pureTradeStatus.fCur;
+            //        rep.fPureBuyCur = pureBuyStatus.fCur;
+            //        rep.fHogaRatioCur = hogaRatioStatus.fCur;
+            //        rep.fSharePerHoga = fSharePerHoga;
+            //        rep.fSharePerTrade = fSharePerTrade;
+            //        rep.fHogaPerTrade = fHogaPerTrade;
+            //        rep.fTradePerPure = fTradePerPure;
 
-                    // new
-                    rep.nHogaCnt = nHogaCnt;
-                    rep.lTotalTradeVolume = lTotalTradeVolume;
-                    rep.lTotalBuyVolume = lOnlyBuyVolume;
-                    rep.lTotalSellVolume = lOnlySellVolume;
-                    rep.nAccumUpDownCount = nAccumUpDownCount;
-                    rep.fAccumUpPower = fAccumUpPower;
-                    rep.fAccumDownPower = fAccumDownPower;
-                    rep.lMarketCap = lFixedMarketCap;
+            //        // new
+            //        rep.nHogaCnt = nHogaCnt;
+            //        rep.lTotalTradeVolume = lTotalTradeVolume;
+            //        rep.lTotalBuyVolume = lOnlyBuyVolume;
+            //        rep.lTotalSellVolume = lOnlySellVolume;
+            //        rep.nAccumUpDownCount = nAccumUpDownCount;
+            //        rep.fAccumUpPower = fAccumUpPower;
+            //        rep.fAccumDownPower = fAccumDownPower;
+            //        rep.lMarketCap = lFixedMarketCap;
 
-                    rep.nRankHold10 = rankSystem.nRankHold10;
-                    rep.nRankHold20 = rankSystem.nRankHold20;
-                    rep.nRankHold50 = rankSystem.nRankHold50;
-                    rep.nRankHold100 = rankSystem.nRankHold100;
-                    rep.nRankHold200 = rankSystem.nRankHold200;
-                    rep.nRankHold500 = rankSystem.nRankHold500;
-                    rep.nRankHold1000 = rankSystem.nRankHold1000;
+            //        rep.nRankHold10 = rankSystem.nRankHold10;
+            //        rep.nRankHold20 = rankSystem.nRankHold20;
+            //        rep.nRankHold50 = rankSystem.nRankHold50;
+            //        rep.nRankHold100 = rankSystem.nRankHold100;
+            //        rep.nRankHold200 = rankSystem.nRankHold200;
+            //        rep.nRankHold500 = rankSystem.nRankHold500;
+            //        rep.nRankHold1000 = rankSystem.nRankHold1000;
 
-                    rep.nSummationRankMove = rankSystem.nSummationMove;
-                    rep.nTotalRank = rankSystem.nSummationRanking;
-                    rep.nAccumCountRanking = rankSystem.nAccumCountRanking;
-                    rep.nMarketCapRanking = rankSystem.nMarketCapRanking;
-                    rep.nPowerRanking = rankSystem.nPowerRanking;
-                    rep.nTotalBuyPriceRanking = rankSystem.nTotalBuyPriceRanking;
-                    rep.nTotalBuyVolumeRanking = rankSystem.nTotalBuyVolumeRanking;
-                    rep.nTotalTradePriceRanking = rankSystem.nTotalTradePriceRanking;
-                    rep.nTotalTradeVolumeRanking = rankSystem.nTotalTradeVolumeRanking;
+            //        rep.nSummationRankMove = rankSystem.nSummationMove;
+            //        rep.nTotalRank = rankSystem.nSummationRanking;
+            //        rep.nAccumCountRanking = rankSystem.nAccumCountRanking;
+            //        rep.nMarketCapRanking = rankSystem.nMarketCapRanking;
+            //        rep.nPowerRanking = rankSystem.nPowerRanking;
+            //        rep.nTotalBuyPriceRanking = rankSystem.nTotalBuyPriceRanking;
+            //        rep.nTotalBuyVolumeRanking = rankSystem.nTotalBuyVolumeRanking;
+            //        rep.nTotalTradePriceRanking = rankSystem.nTotalTradePriceRanking;
+            //        rep.nTotalTradeVolumeRanking = rankSystem.nTotalTradeVolumeRanking;
 
-                    rep.nMinuteTotalRank = rankSystem.nMinuteSummationRanking;
-                    rep.nMinuteBuyPriceRanking = rankSystem.nMinuteBuyPriceRanking;
-                    rep.nMinuteBuyVolumeRanking = rankSystem.nMinuteBuyVolumeRanking;
-                    rep.nMinuteCountRanking = rankSystem.nMinuteCountRanking;
-                    rep.nMinutePowerRanking = rankSystem.nMinutePowerRanking;
-                    rep.nMinuteTradePriceRanking = rankSystem.nMinuteTradePriceRanking;
-                    rep.nMinuteTradeVolumeRanking = rankSystem.nMinuteTradeVolumeRanking;
-                    rep.nMinuteUpDownRanking = rankSystem.nMinuteUpDownRanking;
-                    rep.nFakeBuyCnt = fakeBuyStrategy.nStrategyNum;
-                    rep.nFakeResistCnt = fakeResistStrategy.nStrategyNum;
-                    rep.nFakeAssistantCnt = fakeAssistantStrategy.nStrategyNum;
-                    rep.nFakeVolatilityCnt = fakeVolatilityStrategy.nStrategyNum;
-                    rep.nFakeBuyMinuteCnt = fakeBuyStrategy.nMinuteLocationCount;
-                    rep.nFakeResistMinuteCnt = fakeResistStrategy.nMinuteLocationCount;
-                    rep.nFakeAssistantMinuteCnt = fakeAssistantStrategy.nMinuteLocationCount;
-                    rep.nFakeVolatilityMinuteCnt = fakeVolatilityStrategy.nMinuteLocationCount;
-                    rep.nFakeBuyUpperCnt = fakeBuyStrategy.nUpperCount;
-                    rep.nFakeResistUpperCnt = fakeResistStrategy.nUpperCount;
-                    rep.nFakeAssistantUpperCnt = fakeAssistantStrategy.nUpperCount;
-                    rep.nFakeVolatilityUpperCnt = fakeVolatilityStrategy.nUpperCount;
-                    rep.nTotalFakeCnt = fakeStrategyMgr.nTotalFakeCount;
-                    rep.nTotalFakeMinuteCnt = fakeStrategyMgr.nTotalFakeMinuteAreaNum;
-                    rep.nUpCandleCnt = timeLines1m.upCandleList.Count;
-                    rep.nDownCandleCnt = timeLines1m.downCandleList.Count;
-                    rep.nUpTailCnt = timeLines1m.upTailList.Count;
-                    rep.nDownTailCnt = timeLines1m.downTailList.Count;
-                    rep.nShootingCnt = timeLines1m.shootingList.Count;
-                    rep.nCrushCnt = 0;
-                    rep.nCrushUpCnt = 0;
-                    rep.nCrushDownCnt = 0;
-                    rep.nCrushSpecialDownCnt = 0;
+            //        rep.nMinuteTotalRank = rankSystem.nMinuteSummationRanking;
+            //        rep.nMinuteBuyPriceRanking = rankSystem.nMinuteBuyPriceRanking;
+            //        rep.nMinuteBuyVolumeRanking = rankSystem.nMinuteBuyVolumeRanking;
+            //        rep.nMinuteCountRanking = rankSystem.nMinuteCountRanking;
+            //        rep.nMinutePowerRanking = rankSystem.nMinutePowerRanking;
+            //        rep.nMinuteTradePriceRanking = rankSystem.nMinuteTradePriceRanking;
+            //        rep.nMinuteTradeVolumeRanking = rankSystem.nMinuteTradeVolumeRanking;
+            //        rep.nMinuteUpDownRanking = rankSystem.nMinuteUpDownRanking;
+            //        rep.nFakeBuyCnt = fakeBuyStrategy.nStrategyNum;
+            //        rep.nFakeResistCnt = fakeResistStrategy.nStrategyNum;
+            //        rep.nFakeAssistantCnt = fakeAssistantStrategy.nStrategyNum;
+            //        rep.nFakeVolatilityCnt = fakeVolatilityStrategy.nStrategyNum;
+            //        rep.nFakeBuyMinuteCnt = fakeBuyStrategy.nMinuteLocationCount;
+            //        rep.nFakeResistMinuteCnt = fakeResistStrategy.nMinuteLocationCount;
+            //        rep.nFakeAssistantMinuteCnt = fakeAssistantStrategy.nMinuteLocationCount;
+            //        rep.nFakeVolatilityMinuteCnt = fakeVolatilityStrategy.nMinuteLocationCount;
+            //        rep.nFakeBuyUpperCnt = fakeBuyStrategy.nUpperCount;
+            //        rep.nFakeResistUpperCnt = fakeResistStrategy.nUpperCount;
+            //        rep.nFakeAssistantUpperCnt = fakeAssistantStrategy.nUpperCount;
+            //        rep.nFakeVolatilityUpperCnt = fakeVolatilityStrategy.nUpperCount;
+            //        rep.nTotalFakeCnt = fakeStrategyMgr.nTotalFakeCount;
+            //        rep.nTotalFakeMinuteCnt = fakeStrategyMgr.nTotalFakeMinuteAreaNum;
+            //        rep.nUpCandleCnt = timeLines1m.upCandleList.Count;
+            //        rep.nDownCandleCnt = timeLines1m.downCandleList.Count;
+            //        rep.nUpTailCnt = timeLines1m.upTailList.Count;
+            //        rep.nDownTailCnt = timeLines1m.downTailList.Count;
+            //        rep.nShootingCnt = timeLines1m.shootingList.Count;
+            //        rep.nCrushCnt = 0;
+            //        rep.nCrushUpCnt = 0;
+            //        rep.nCrushDownCnt = 0;
+            //        rep.nCrushSpecialDownCnt = 0;
 
-                    rep.nYesterdayEndPrice = nYesterdayEndPrice;
-                }
-                catch { }
-            }
+            //        rep.nYesterdayEndPrice = nYesterdayEndPrice;
+            //    }
+            //    catch { }
+            //}
 
             public string GetInfoString()
             {
@@ -337,11 +335,13 @@ namespace AtoTrader
                         $"총 Arrow : {fakeStrategyMgr.nTotalFakeCount}{NEW_LINE}" +
                         $"총 ArrowMinute : {fakeStrategyMgr.nTotalFakeMinuteAreaNum}{NEW_LINE}" +
                         $"================= 분 봉 ============={NEW_LINE}" +
-                        $"위캔들 : {timeLines1m.upCandleList.Count}{NEW_LINE}" +
+                        $"1퍼캔들 : {timeLines1m.onePerCandleList.Count}{NEW_LINE}" +
+                        $"2퍼캔들 : {timeLines1m.twoPerCandleList.Count}{NEW_LINE}" +
+                        $"3퍼캔들 : {timeLines1m.threePerCandleList.Count}{NEW_LINE}" +
+                        $"4퍼캔들 : {timeLines1m.fourPerCandleList.Count}{NEW_LINE}" +
                         $"아래캔들 : {timeLines1m.downCandleList.Count}{NEW_LINE}" +
                         $"위꼬리 : {timeLines1m.upTailList.Count}{NEW_LINE}" +
                         $"아래꼬리 : {timeLines1m.downTailList.Count}{NEW_LINE}" +
-                        $"슈팅 : {timeLines1m.shootingList.Count}{NEW_LINE}" +
                         $"전고점 카운트 : {crushMgr.crushBoxes.Count}{NEW_LINE}" +
                         $"=================현상태=============={NEW_LINE}" +
                         $"체결속도 : {speedStatus.fCur}{NEW_LINE}" +
@@ -411,49 +411,6 @@ namespace AtoTrader
             }
         }
 
-        // 예약 관리용 클래스
-        public struct ReservationManager
-        {
-            public int nFirstTime;  // 이 종목에 처음 전략이 통과된 시점
-            public double fFirstPower; // 그때 파워
-
-            public int nLastTime; // 종목이 가장 최근에 통과된 시점
-            public double fLastPower; // 그때 파워
-            
-
-            public void Approach(int nTime, double fPower)
-            {
-                if(nFirstTime == 0)
-                {
-                    nFirstTime = nTime;
-                    fFirstPower = fPower;
-                }
-                nLastTime = nTime;
-                fLastPower = fPower;
-            }
-
-            public List<ReservedPoint> listReservation;
-            public void Init()
-            {
-                listReservation = new List<ReservedPoint>();
-            }
-        }
-
-        // 하나의 예약 블럭
-        public class ReservedPoint
-        {
-            // condition values.
-            public bool isReserveEnd;  // 예약 종료인지 아닌지
-
-
-            public double fReservePower; // 생성시점 파워
-            public int nReserveTime; // 생성시점 시간
-            public int nReservePrice; // 생성시점 가격
-
-            public double fMaxPower; // 최대 가격
-            public double fMinusPower; // 마이너스 파워
-            public int nTargetLimitTime; // 예약매수 제한시간
-        }
 
         // 매수후 맥스값과 민값을 기록하기위한 구조체
         public struct MaxMinRecorder
@@ -609,9 +566,12 @@ namespace AtoTrader
             public double fRecentMedian;
             public double fRecentMedianAngle;
             public int nMaxPricePrevMinute;
-            public List<(int, double)> upCandleList;
+            public List<(int, double)> onePerCandleList;
+            public List<(int, double)> twoPerCandleList;
+            public List<(int, double)> threePerCandleList;
+            public List<(int, double)> fourPerCandleList;
+
             public List<(int, double)> downCandleList;
-            public List<(int, double)> shootingList;
             public List<(int, double)> upTailList;
             public List<(int, double)> downTailList;
 
@@ -619,11 +579,13 @@ namespace AtoTrader
 
             public void Init()
             {
-                upCandleList = new List<(int, double)>();
+                onePerCandleList = new List<(int, double)>();
+                twoPerCandleList = new List<(int, double)>();
+                threePerCandleList = new List<(int, double)>();
+                fourPerCandleList = new List<(int, double)>();
                 downCandleList = new List<(int, double)>();
                 upTailList = new List<(int, double)>();
                 downTailList = new List<(int, double)>();
-                shootingList = new List<(int, double)>();
                 nTimeDegree = MINUTE_SEC;
                 arrTimeLine = new TimeLine[BRUSH + SubTimeToTimeAndSec(MARKET_END_TIME, MARKET_START_TIME) / nTimeDegree];
             }
@@ -688,7 +650,6 @@ namespace AtoTrader
         {
             public List<CrushBox> crushBoxes; // 전고점 갯수를 가지는 리스트
 
-            public CheckPoint prevPoint; // 전고점 모니터하기 이전의 포인트
             public CheckPoint maxPoint; // 전고점의 고점
             public CheckPoint minPoint; // 전고점의 저점
 
@@ -698,7 +659,6 @@ namespace AtoTrader
             {
                 isCrush = false;
                 crushBoxes = new List<CrushBox>();
-                prevPoint.Set();
                 maxPoint.Set();
                 minPoint.Set();
             }
@@ -706,7 +666,6 @@ namespace AtoTrader
             public void Set(int nP, int nT) // 전고점 발생시 사용
             {
                 CrushBox newCrushBox;
-                newCrushBox.prevPoint = prevPoint;
                 newCrushBox.maxPoint = maxPoint;
                 newCrushBox.minPoint = minPoint;
                 newCrushBox.crushPoint.nPrice = nP;
@@ -715,10 +674,8 @@ namespace AtoTrader
                 crushBoxes.Add(newCrushBox);
 
                 // 기준 새로 설정
-                asf
-                prevPoint.Set(nP, nT); 
                 maxPoint.Set(nP, nT);
-                minPoint.Set();
+                minPoint.Set(nP, nT);
 
                 isCrush = true;
             }
@@ -728,7 +685,6 @@ namespace AtoTrader
         // 하나의 전고점 데이터
         public struct CrushBox
         {
-            public CheckPoint prevPoint; // 전고점 모니터하기 이전의 포인트
             public CheckPoint maxPoint; // 전고점의 고점
             public CheckPoint minPoint; // 전고점의 저점
             public CheckPoint crushPoint; // 전고점이 발생시점 데이터
@@ -843,7 +799,7 @@ namespace AtoTrader
             public int nSharedMinuteLocationCount;
 
             public List<FakeHistoryPiece> listFakeHistoryPiece;
-            public List<FakeDBRecordInfo> fd;
+           //  public List<FakeDBRecordInfo> fd;
 
             public int nFakeBuyNum;
             public int nFakeResistNum;
@@ -858,17 +814,10 @@ namespace AtoTrader
             public int nTotalFakeMinuteAreaNum;
             public int nTotalFakeCount;
 
-            public int nFakeAccumPassed;
-            public int nFakeAIJumpDiffMinuteCount;
-            public int nFakeAIPrevTimeLineIdx;
-            public int nFakeAIStepMinuteCount;
-            public int nFakeAccumTried;
-
-
             public void Init()
             {
                 listFakeHistoryPiece = new List<FakeHistoryPiece>();
-                fd = new List<FakeDBRecordInfo>();
+              //  fd = new List<FakeDBRecordInfo>();
             }
 
         }
@@ -1046,25 +995,25 @@ namespace AtoTrader
 
         }
 
-        public class FakeDBRecordInfo
-        {
-            public FakeReports fr;
+        //public class FakeDBRecordInfo
+        //{
+        //    public FakeReports fr;
 
-            public int nTimeLineIdx;
+        //    public int nTimeLineIdx;
 
-            public MaxMinRecorder maxMinRealTilThree;
-            public MaxMinRecorder maxMinRealWhile10;
-            public MaxMinRecorder maxMinRealWhile30;
-            public MaxMinRecorder maxMinRealWhile60;
-            public MaxMinRecorder maxMinMinuteTilThree;
-            public MaxMinRecorder maxMinMinuteTilThreeWhile10;
-            public MaxMinRecorder maxMinMinuteTilThreeWhile30;
+        //    public MaxMinRecorder maxMinRealTilThree;
+        //    public MaxMinRecorder maxMinRealWhile10;
+        //    public MaxMinRecorder maxMinRealWhile30;
+        //    public MaxMinRecorder maxMinRealWhile60;
+        //    public MaxMinRecorder maxMinMinuteTilThree;
+        //    public MaxMinRecorder maxMinMinuteTilThreeWhile10;
+        //    public MaxMinRecorder maxMinMinuteTilThreeWhile30;
 
-            public FakeDBRecordInfo()
-            {
-                fr = new FakeReports();
-            }
-        }
+        //    public FakeDBRecordInfo()
+        //    {
+        //        fr = new FakeReports();
+        //    }
+        //}
         /// <summary>
         /// P버튼의 결과 구조체
         /// </summary>

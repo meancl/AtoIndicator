@@ -10,12 +10,24 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static AtoTrader.KiwoomLib.TimeLib;
 
 namespace AtoTrader.View
 {
+
     public partial class FastInfo : Form
     {
         public MainForm mainForm;
+
+        public int GetPassNum(bool[] pas)
+        {
+            int retval = 0;
+            for (int i = 0; i < pas.Length; i++)
+                if (pas[i])
+                    retval++;
+            return retval;
+        }
+
 
         public FastInfo(MainForm mainForm)
         {
@@ -35,7 +47,6 @@ namespace AtoTrader.View
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "페저항" });
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "페변동" });
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "총 페이크" });
-            listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "라이트통과" });
             listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "초기갭" });
             listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "갭제외" });
             listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "현재파워" });
@@ -50,7 +61,7 @@ namespace AtoTrader.View
             this.KeyUp += KeyUpHandler;
             this.groupBox1.DoubleClick += DoubleClickHandler;
             this.DoubleBuffered = true;
-            
+
 
         }
 
@@ -66,11 +77,12 @@ namespace AtoTrader.View
                 groupBox1.Dock = DockStyle.Left;
             }
         }
+
         public void KeyUpHandler(object sender, KeyEventArgs k)
         {
             char cUp = (char)k.KeyValue;
-            
-            if (cUp == 27 ) // esc or space
+
+            if (cUp == 27) // esc or space
                 this.Close();
 
             if (cUp == 16)
@@ -84,87 +96,79 @@ namespace AtoTrader.View
             if (cUp == 17)
             {
                 passNumTxtBox.Text = "";
-                fakeBuyTxtBox.Text = "";
-                fakeAssistantTxtBox.Text = "";
-                fakeResistTxtBox.Text = "";
-                fakeVolatilityTxtBox.Text = "";
-                totalFakeTxtBox.Text = "";
-                totalFakePassTxtBox.Text = "";
-                startGapTxtBox.Text = "";
-                powerWithoutGapTxtBox.Text = "";
-                powerTxtBox.Text = "";
-                downDepthTxtBox.Text = "";
-                minDownDepthTxtBox.Text = "";
-                totalTradePriceTxtBox.Text = "";
-                buyPriceTxtBox.Text = "";
-                sellPriceTxtBox.Text = "";
-                fakeBuyMinTxtBox.Text = "";
-                fakeAssistantMinTxtBox.Text = "";
-                fakeResistMinTxtBox.Text = "";
-                fakeVolatilityMinTxtBox.Text = "";
-                totalFakeMinTxtBox.Text = "";
-                powerJarTxtBox.Text = "";
-                upPowerJarTxtBox.Text = "";
-                downPowerJarTxtBox.Text = "";
-                plusCnt07TxtBox.Text = "";
-                minusCnt07TxtBox.Text = "";
-                plusCnt09TxtBox.Text = "";
-                minusCnt09TxtBox.Text = "";
-                ma20mTxtBox.Text = "";
-                ma1hTxtBox.Text = "";
-                ma2hTxtBox.Text = "";
-                tAngleTxtBox.Text = "";
-                hAngleTxtBox.Text = "";
-                rAngleTxtBox.Text = "";
-                dAngleTxtBox.Text = "";
-                iAngleTxtBox.Text = "";
-                mAngleTxtBox.Text = "";
-                hogaCntTxtBox.Text = "";
-                chegyulCntTxtBox.Text = "";
-                pureTradeTxtBox.Text = "";
-                hogaTradeTxtBox.Text = "";
-                shareTradeTxtBox.Text = "";
-                shareHogaTxtBox.Text = "";
-                fsTxtBox.Text = "";
-                hogaGapTxtBox.Text = "";
-                speedRankTxtBox.Text = "";
-                marketCapRankTxtBox.Text = "";
-                powerRankTxtBox.Text = "";
-                buyPriceRankTxtBox.Text = "";
-                buyVolumeRankTxtBox.Text = "";
-                tradePriceRankTxtBox.Text = "";
-                tradeVolumeRankTxtBox.Text = "";
-                totalRankTxtBox.Text = "";
-                minSpeedRankTxtBox.Text = "";
-                minUpDownRankTxtBox.Text = "";
-                minPowerRankTxtBox.Text = "";
-                minBuyPriceTxtBox.Text = "";
-                minBuyVolumeTxtBox.Text = "";
-                minTradePriceRankTxtBox.Text = "";
-                minTradeVolumeRankTxtBox.Text = "";
-                minTotalRankTxtBox.Text = "";
-                rankMoveTxtBox.Text = "";
-                maDiff20mTxtBox.Text = "";
-                maDiff1hTxtBox.Text = "";
-                maDiff2hTxtBox.Text = "";
-                maCurDiff20mTxtBox.Text = "";
-                maCurDiff1hTxtBox.Text = "";
-                maCurDiff2hTxtBox.Text = "";
-                maGapDiff20mTxtBox.Text = "";
-                maGapDiff1hTxtBox.Text = "";
-                maGapDiff2hTxtBox.Text = "";
+
+                tCC1.Text = "";
+                tCC2.Text = "";
+                tFB1.Text = "";
+                tFB2.Text = "";
+                tFA1.Text = "";
+                tFA2.Text = "";
+                tFR1.Text = "";
+                tFR2.Text = "";
+                tFV1.Text = "";
+                tFV2.Text = "";
+                tTF1.Text = "";
+                tTF2.Text = "";
+                tSG1.Text = "";
+                tSG2.Text = "";
+                tWOG1.Text = "";
+                tWOG2.Text = "";
+                tCP1.Text = "";
+                tCP2.Text = "";
+                tPJ1.Text = "";
+                tPJ2.Text = "";
+                tUPJ1.Text = "";
+                tUPJ2.Text = "";
+                tDPJ1.Text = "";
+                tDPJ2.Text = "";
+                tCTC1.Text = "";
+                tCTC2.Text = "";
+                tCPC1.Text = "";
+                tCPC2.Text = "";
+                tCTH1.Text = "";
+                tCTH2.Text = "";
+                tCTBH1.Text = "";
+                tCTBH2.Text = "";
+                tCTBTD1.Text = "";
+                tCTBTD2.Text = "";
+                tCBCTD1.Text = "";
+                tCBCTD2.Text = "";
+                tCTCTD1.Text = "";
+                tCTCTD2.Text = "";
+                tBUT1.Text = "";
+                tBUT2.Text = "";
+                tBUB1.Text = "";
+                tBUB2.Text = "";
+                tBUJ1.Text = "";
+                tBUJ2.Text = "";
+                tTTM1.Text = "";
+                tTTM2.Text = "";
+                tBM1.Text = "";
+                tBM2.Text = "";
+                tSM1.Text = "";
+                tSM2.Text = "";
+                tTA1.Text = "";
+                tTA2.Text = "";
+                tHA1.Text = "";
+                tHA2.Text = "";
+                tRA1.Text = "";
+                tRA2.Text = "";
+                tDA1.Text = "";
+                tDA2.Text = "";
+                t1P1.Text = "";
+                t1P2.Text = "";
+                t2P1.Text = "";
+                t2P2.Text = "";
+                t3P1.Text = "";
+                t3P2.Text = "";
+                t4P1.Text = "";
+                t4P2.Text = "";
+                tPD1.Text = "";
+                tPD2.Text = "";
             }
         }
 
 
-        public int GetPassNum(bool[] pas)
-        {
-            int retval = 0;
-            for (int i = 0; i < pas.Length; i++)
-                if (pas[i])
-                    retval++;
-            return retval;
-        }
         bool isUsing = false;
         public void UpdateTable()
         {
@@ -182,221 +186,173 @@ namespace AtoTrader.View
 
             try
             {
-              
-                string sFakeBuy = fakeBuyTxtBox.Text.Trim();
-                string sFakeAssistant = fakeAssistantTxtBox.Text.Trim();
-                string sFakeResist = fakeResistTxtBox.Text.Trim();
-                string sFakeVolatility = fakeVolatilityTxtBox.Text.Trim();
-                string sTotalFake = totalFakeTxtBox.Text.Trim();
-                string sTotalFakePass = totalFakePassTxtBox.Text.Trim();
-                string sStartGap = startGapTxtBox.Text.Trim();
-                string sWithoutGap = powerWithoutGapTxtBox.Text.Trim();
-                string sPower = powerTxtBox.Text.Trim();
-                string sDownDepth = downDepthTxtBox.Text.Trim();
-                string sMinDownDepth = minDownDepthTxtBox.Text.Trim();
-                string sTotalTradePrice = totalTradePriceTxtBox.Text.Trim();
-                string sBuyPrice = buyPriceTxtBox.Text.Trim();
-                string sSellPrice = sellPriceTxtBox.Text.Trim();
-                string sMinFakeBuy = fakeBuyMinTxtBox.Text.Trim();
-                string sMinFakeAssistant = fakeAssistantMinTxtBox.Text.Trim();
-                string sMinFakeResist = fakeResistMinTxtBox.Text.Trim();
-                string sMinFakeVolatility = fakeVolatilityMinTxtBox.Text.Trim();
-                string sMinTotalFake = totalFakeMinTxtBox.Text.Trim();
-                string sPowerJar = powerJarTxtBox.Text.Trim();
-                string sUpPowerJar = upPowerJarTxtBox.Text.Trim();
-                string sDownPowerJar = downPowerJarTxtBox.Text.Trim();
-                string sPCnt07 = plusCnt07TxtBox.Text.Trim();
-                string sMCnt07 = minusCnt07TxtBox.Text.Trim();
-                string sPCnt09 = plusCnt09TxtBox.Text.Trim();
-                string sMCnt09 = minusCnt09TxtBox.Text.Trim();
-                string sMa20m = ma20mTxtBox.Text.Trim();
-                string sMa1h = ma1hTxtBox.Text.Trim();
-                string sMa2h = ma2hTxtBox.Text.Trim();
-                string sTAngle = tAngleTxtBox.Text.Trim();
-                string sHAngle = hAngleTxtBox.Text.Trim();
-                string sRAngle = rAngleTxtBox.Text.Trim();
-                string sDAngle = dAngleTxtBox.Text.Trim();
-                string sIAngle = iAngleTxtBox.Text.Trim();
-                string sMAngle = mAngleTxtBox.Text.Trim();
-                string sHogaCnt = hogaCntTxtBox.Text.Trim();
-                string sChegyulCnt = chegyulCntTxtBox.Text.Trim();
-                string sPureTrade = pureTradeTxtBox.Text.Trim();
-                string sHogaTrade = hogaTradeTxtBox.Text.Trim();
-                string sShareTrade = shareTradeTxtBox.Text.Trim();
-                string sShareHoga = shareHogaTxtBox.Text.Trim();
-                string sFsPrice = fsTxtBox.Text.Trim();
-                string sHogaGap = hogaGapTxtBox.Text.Trim();
-                string sSpeedRank = speedRankTxtBox.Text.Trim();
-                string sMarketCapRank = marketCapRankTxtBox.Text.Trim();
-                string sPowerRank = powerRankTxtBox.Text.Trim();
-                string sBuyPriceRank = buyPriceRankTxtBox.Text.Trim();
-                string sBuyVolumeRank = buyVolumeRankTxtBox.Text.Trim();
-                string sTradePriceRank = tradePriceRankTxtBox.Text.Trim();
-                string sTradeVolumeRank = tradeVolumeRankTxtBox.Text.Trim();
-                string sTotalRank = totalRankTxtBox.Text.Trim();
-                string sMinSpeedRank = minSpeedRankTxtBox.Text.Trim();
-                string sMinUpDownRank = minUpDownRankTxtBox.Text.Trim();
-                string sMinPowerRank = minPowerRankTxtBox.Text.Trim();
-                string sMinBuyPriceRank = minBuyPriceTxtBox.Text.Trim();
-                string sMinBuyVolumeRank = minBuyVolumeTxtBox.Text.Trim();
-                string sMinTradePriceRank = minTradePriceRankTxtBox.Text.Trim();
-                string sMinTradeVolumeRank = minTradeVolumeRankTxtBox.Text.Trim();
-                string sMinTotalRank = minTotalRankTxtBox.Text.Trim();
-                string sRankMove = rankMoveTxtBox.Text.Trim();
-                string sMaDiff20mTxtBox = maDiff20mTxtBox.Text.Trim();
-                string sMaDiff1hTxtBox = maDiff1hTxtBox.Text.Trim();
-                string sMaDiff2hTxtBox = maDiff2hTxtBox.Text.Trim();
-                string sMaCurDiff20mTxtBox = maCurDiff20mTxtBox.Text.Trim();
-                string sMaCurDiff1hTxtBox = maCurDiff1hTxtBox.Text.Trim();
-                string sMaCurDiff2hTxtBox = maCurDiff2hTxtBox.Text.Trim();
-                string sMaGapDiff20mTxtBox = maGapDiff20mTxtBox.Text.Trim();
-                string sMaGapDiff1hTxtBox = maGapDiff1hTxtBox.Text.Trim();
-                string sMaGapDiff2hTxtBox = maGapDiff2hTxtBox.Text.Trim();
+                string sCC1 = tCC1.Text.Trim();
+                string sCC2 = tCC2.Text.Trim();
+                string sFB1 = tFB1.Text.Trim();
+                string sFB2 = tFB2.Text.Trim();
+                string sFA1 = tFA1.Text.Trim();
+                string sFA2 = tFA2.Text.Trim();
+                string sFR1 = tFR1.Text.Trim();
+                string sFR2 = tFR2.Text.Trim();
+                string sFV1 = tFV1.Text.Trim();
+                string sFV2 = tFV2.Text.Trim();
+                string sTF1 = tTF1.Text.Trim();
+                string sTF2 = tTF2.Text.Trim();
+                string sSG1 = tSG1.Text.Trim();
+                string sSG2 = tSG2.Text.Trim();
+                string sWOG1 = tWOG1.Text.Trim();
+                string sWOG2 = tWOG2.Text.Trim();
+                string sCP1 = tCP1.Text.Trim();
+                string sCP2 = tCP2.Text.Trim();
+                string sPD1 = tPD1.Text.Trim();
+                string sPD2 = tPD2.Text.Trim();
+                string sPJ1 = tPJ1.Text.Trim();
+                string sPJ2 = tPJ2.Text.Trim();
+                string sUPJ1 = tUPJ1.Text.Trim();
+                string sUPJ2 = tUPJ2.Text.Trim();
+                string sDPJ1 = tDPJ1.Text.Trim();
+                string sDPJ2 = tDPJ2.Text.Trim();
+                string sCTC1 = tCTC1.Text.Trim();
+                string sCTC2 = tCTC2.Text.Trim();
+                string sCPC1 = tCPC1.Text.Trim();
+                string sCPC2 = tCPC2.Text.Trim();
+                string sCTH1 = tCTH1.Text.Trim();
+                string sCTH2 = tCTH2.Text.Trim();
+                string sCTBH1 = tCTBH1.Text.Trim();
+                string sCTBH2 = tCTBH2.Text.Trim();
+                string sCTBTD1 = tCTBTD1.Text.Trim();
+                string sCTBTD2 = tCTBTD2.Text.Trim();
+                string sCBCTD1 = tCBCTD1.Text.Trim();
+                string sCBCTD2 = tCBCTD2.Text.Trim();
+                string sCTCTD1 = tCTCTD1.Text.Trim();
+                string sCTCTD2 = tCTCTD2.Text.Trim();
+                string sBUT1 = tBUT1.Text.Trim();
+                string sBUT2 = tBUT2.Text.Trim();
+                string sBUB1 = tBUB1.Text.Trim();
+                string sBUB2 = tBUB2.Text.Trim();
+                string sBUJ1 = tBUJ1.Text.Trim();
+                string sBUJ2 = tBUJ2.Text.Trim();
+                string sTTM1 = tTTM1.Text.Trim();
+                string sTTM2 = tTTM2.Text.Trim();
+                string sBM1 = tBM1.Text.Trim();
+                string sBM2 = tBM2.Text.Trim();
+                string sSM1 = tSM1.Text.Trim();
+                string sSM2 = tSM2.Text.Trim();
+                string sTA1 = tTA1.Text.Trim();
+                string sTA2 = tTA2.Text.Trim();
+                string sHA1 = tHA1.Text.Trim();
+                string sHA2 = tHA2.Text.Trim();
+                string sRA1 = tRA1.Text.Trim();
+                string sRA2 = tRA2.Text.Trim();
+                string sDA1 = tDA1.Text.Trim();
+                string sDA2 = tDA2.Text.Trim();
+                string s1P1 = t1P1.Text.Trim();
+                string s1P2 = t1P2.Text.Trim();
+                string s2P1 = t2P1.Text.Trim();
+                string s2P2 = t2P2.Text.Trim();
+                string s3P1 = t3P1.Text.Trim();
+                string s3P2 = t3P2.Text.Trim();
+                string s4P1 = t4P1.Text.Trim();
+                string s4P2 = t4P2.Text.Trim();
 
-                bool isFakeBuy = !sFakeBuy.Equals("");
-                bool isFakeAssistant = !sFakeAssistant.Equals("");
-                bool isFakeResist = !sFakeResist.Equals("");
-                bool isFakeVolatility = !sFakeVolatility.Equals("");
-                bool isTotalFake = !sTotalFake.Equals("");
-                bool isTotalFakePass = !sTotalFakePass.Equals("");
-                bool isStartGap = !sStartGap.Equals("");
-                bool isWithoutGap = !sWithoutGap.Equals("");
-                bool isPower = !sPower.Equals("");
-                bool isDownDepth = !sDownDepth.Equals("");
-                bool isMinDownDepth = !sMinDownDepth.Equals("");
-                bool isTotalTradePrice = !sTotalTradePrice.Equals("");
-                bool isBuyPrice = !sBuyPrice.Equals("");
-                bool isSellPrice = !sSellPrice.Equals("");
-                bool isMinFakeBuy = !sMinFakeBuy.Equals("");
-                bool isMinFakeAssistant = !sMinFakeAssistant.Equals("");
-                bool isMinFakeResist = !sMinFakeResist.Equals("");
-                bool isMinFakeVolatility = !sMinFakeVolatility.Equals("");
-                bool isMinTotalFake = !sMinTotalFake.Equals("");
-                bool isPowerJar = !sPowerJar.Equals("");
-                bool isUpPowerJar = !sUpPowerJar.Equals("");
-                bool isDownPowerJar = !sDownPowerJar.Equals("");
-                bool isPCnt07 = !sPCnt07.Equals("");
-                bool isMCnt07 = !sMCnt07.Equals("");
-                bool isPCnt09 = !sPCnt09.Equals("");
-                bool isMCnt09 = !sMCnt09.Equals("");
-                bool isMa20m = !sMa20m.Equals("");
-                bool isMa1h = !sMa1h.Equals("");
-                bool isMa2h = !sMa2h.Equals("");
-                bool isTAngle = !sTAngle.Equals("");
-                bool isHAngle = !sHAngle.Equals("");
-                bool isRAngle = !sRAngle.Equals("");
-                bool isDAngle = !sDAngle.Equals("");
-                bool isIAngle = !sIAngle.Equals("");
-                bool isMAngle = !sMAngle.Equals("");
-                bool isHogaCnt = !sHogaCnt.Equals("");
-                bool isChegyulCnt = !sChegyulCnt.Equals("");
-                bool isPureTrade = !sPureTrade.Equals("");
-                bool isHogaTrade = !sHogaTrade.Equals("");
-                bool isShareTrade = !sShareTrade.Equals("");
-                bool isShareHoga = !sShareHoga.Equals("");
-                bool isFsPrice = !sFsPrice.Equals("");
-                bool isHogaGap = !sHogaGap.Equals("");
-                bool isSpeedRank = !sSpeedRank.Equals("");
-                bool isMarketCapRank = !sMarketCapRank.Equals("");
-                bool isPowerRank = !sPowerRank.Equals("");
-                bool isBuyPriceRank = !sBuyPriceRank.Equals("");
-                bool isBuyVolumeRank = !sBuyVolumeRank.Equals("");
-                bool isTradePriceRank = !sTradePriceRank.Equals("");
-                bool isTradeVolumeRank = !sTradeVolumeRank.Equals("");
-                bool isTotalRank = !sTotalRank.Equals("");
-                bool isMinSpeedRank = !sMinSpeedRank.Equals("");
-                bool isMinUpDownRank = !sMinUpDownRank.Equals("");
-                bool isMinPowerRank = !sMinPowerRank.Equals("");
-                bool isMinBuyPriceRank = !sMinBuyPriceRank.Equals("");
-                bool isMinBuyVolumeRank = !sMinBuyVolumeRank.Equals("");
-                bool isMinTradePriceRank = !sMinTradePriceRank.Equals("");
-                bool isMinTradeVolumeRank = !sMinTradeVolumeRank.Equals("");
-                bool isMinTotalRank = !sMinTotalRank.Equals("");
-                bool isRankMove = !sRankMove.Equals("");
-                bool isMaDiff20mTxtBox = !sMaDiff20mTxtBox.Equals("");
-                bool isMaDiff1hTxtBox = !sMaDiff1hTxtBox.Equals("");
-                bool isMaDiff2hTxtBox = !sMaDiff2hTxtBox.Equals("");
-                bool isMaCurDiff20mTxtBox = !sMaCurDiff20mTxtBox.Equals("");
-                bool isMaCurDiff1hTxtBox = !sMaCurDiff1hTxtBox.Equals("");
-                bool isMaCurDiff2hTxtBox = !sMaCurDiff2hTxtBox.Equals("");
-                bool isMaGapDiff20mTxtBox = !sMaGapDiff20mTxtBox.Equals("");
-                bool isMaGapDiff1hTxtBox = !sMaGapDiff1hTxtBox.Equals("");
-                bool isMaGapDiff2hTxtBox = !sMaGapDiff2hTxtBox.Equals("");
 
+                bool isCC1 = !sCC1.Equals("");
+                bool isCC2 = !sCC2.Equals("");
+                bool isFB1 = !sFB1.Equals("");
+                bool isFB2 = !sFB2.Equals("");
+                bool isFA1 = !sFA1.Equals("");
+                bool isFA2 = !sFA2.Equals("");
+                bool isFR1 = !sFR1.Equals("");
+                bool isFR2 = !sFR2.Equals("");
+                bool isFV1 = !sFV1.Equals("");
+                bool isFV2 = !sFV2.Equals("");
+                bool isTF1 = !sTF1.Equals("");
+                bool isTF2 = !sTF2.Equals("");
+                bool isSG1 = !sSG1.Equals("");
+                bool isSG2 = !sSG2.Equals("");
+                bool isWOG1 = !sWOG1.Equals("");
+                bool isWOG2 = !sWOG2.Equals("");
+                bool isCP1 = !sCP1.Equals("");
+                bool isCP2 = !sCP2.Equals("");
+                bool isPD1 = !sPD1.Equals("");
+                bool isPD2 = !sPD2.Equals("");
+                bool isPJ1 = !sPJ1.Equals("");
+                bool isPJ2 = !sPJ2.Equals("");
+                bool isUPJ1 = !sUPJ1.Equals("");
+                bool isUPJ2 = !sUPJ2.Equals("");
+                bool isDPJ1 = !sDPJ1.Equals("");
+                bool isDPJ2 = !sDPJ2.Equals("");
+                bool isCTC1 = !sCTC1.Equals("");
+                bool isCTC2 = !sCTC2.Equals("");
+                bool isCPC1 = !sCPC1.Equals("");
+                bool isCPC2 = !sCPC2.Equals("");
+                bool isCTH1 = !sCTH1.Equals("");
+                bool isCTH2 = !sCTH2.Equals("");
+                bool isCTBH1 = !sCTBH1.Equals("");
+                bool isCTBH2 = !sCTBH2.Equals("");
+                bool isCTBTD1 = !sCTBTD1.Equals("");
+                bool isCTBTD2 = !sCTBTD2.Equals("");
+                bool isCBCTD1 = !sCBCTD1.Equals("");
+                bool isCBCTD2 = !sCBCTD2.Equals("");
+                bool isCTCTD1 = !sCTCTD1.Equals("");
+                bool isCTCTD2 = !sCTCTD2.Equals("");
+                bool isBUT1 = !sBUT1.Equals("");
+                bool isBUT2 = !sBUT2.Equals("");
+                bool isBUB1 = !sBUB1.Equals("");
+                bool isBUB2 = !sBUB2.Equals("");
+                bool isBUJ1 = !sBUJ1.Equals("");
+                bool isBUJ2 = !sBUJ2.Equals("");
+                bool isTTM1 = !sTTM1.Equals("");
+                bool isTTM2 = !sTTM2.Equals("");
+                bool isBM1 = !sBM1.Equals("");
+                bool isBM2 = !sBM2.Equals("");
+                bool isSM1 = !sSM1.Equals("");
+                bool isSM2 = !sSM2.Equals("");
+                bool isTA1 = !sTA1.Equals("");
+                bool isTA2 = !sTA2.Equals("");
+                bool isHA1 = !sHA1.Equals("");
+                bool isHA2 = !sHA2.Equals("");
+                bool isRA1 = !sRA1.Equals("");
+                bool isRA2 = !sRA2.Equals("");
+                bool isDA1 = !sDA1.Equals("");
+                bool isDA2 = !sDA2.Equals("");
+                bool is1P1 = !s1P1.Equals("");
+                bool is1P2 = !s1P2.Equals("");
+                bool is2P1 = !s2P1.Equals("");
+                bool is2P2 = !s2P2.Equals("");
+                bool is3P1 = !s3P1.Equals("");
+                bool is3P2 = !s3P2.Equals("");
+                bool is4P1 = !s4P1.Equals("");
+                bool is4P2 = !s4P2.Equals("");
 
                 int nPass; // pass cnt
                 int nPassLen = 0;
                 int nFullMinusNum = GetPassNum(new bool[] {
-                                        isFakeBuy,
-                                        isFakeAssistant,
-                                        isFakeResist,
-                                        isFakeVolatility,
-                                        isTotalFake,
-                                        isTotalFakePass,
-                                        isStartGap,
-                                        isWithoutGap,
-                                        isPower,
-                                        isDownDepth,
-                                        isMinDownDepth,
-                                        isTotalTradePrice,
-                                        isBuyPrice,
-                                        isSellPrice,
-                                        isMinFakeBuy,
-                                        isMinFakeAssistant,
-                                        isMinFakeResist,
-                                        isMinFakeVolatility,
-                                        isMinTotalFake,
-                                        isPowerJar,
-                                        isUpPowerJar,
-                                        isDownPowerJar,
-                                        isPCnt07,
-                                        isMCnt07,
-                                        isPCnt09,
-                                        isMCnt09,
-                                        isMa20m,
-                                        isMa1h,
-                                        isMa2h,
-                                        isTAngle,
-                                        isHAngle,
-                                        isRAngle,
-                                        isDAngle,
-                                        isIAngle,
-                                        isMAngle,
-                                        isHogaCnt,
-                                        isChegyulCnt,
-                                        isPureTrade,
-                                        isHogaTrade,
-                                        isShareTrade,
-                                        isShareHoga,
-                                        isFsPrice,
-                                        isHogaGap,
-                                        isSpeedRank,
-                                        isMarketCapRank,
-                                        isPowerRank,
-                                        isBuyPriceRank,
-                                        isBuyVolumeRank,
-                                        isTradePriceRank,
-                                        isTradeVolumeRank,
-                                        isTotalRank,
-                                        isMinSpeedRank,
-                                        isMinUpDownRank,
-                                        isMinPowerRank,
-                                        isMinBuyPriceRank,
-                                        isMinBuyVolumeRank,
-                                        isMinTradePriceRank,
-                                        isMinTradeVolumeRank,
-                                        isMinTotalRank,
-                                        isRankMove,
-                                        isMaDiff20mTxtBox ,
-                                        isMaDiff1hTxtBox ,
-                                        isMaDiff2hTxtBox ,
-                                        isMaCurDiff20mTxtBox ,
-                                        isMaCurDiff1hTxtBox ,
-                                        isMaCurDiff2hTxtBox ,
-                                        isMaGapDiff20mTxtBox ,
-                                        isMaGapDiff1hTxtBox,
-                                        isMaGapDiff2hTxtBox
-                                });
+                                        isCC1 || isCC2,
+                                        isFB1 || isFB2,
+                                        isFA1 || isFA2 ,
+                                        isFR1 || isFR2 ,
+                                        isFV1 || isFV2 ,
+                                        isTF1 || isTF2 ,
+                                        isSG1 || isSG2 ,
+                                        isWOG1 || isWOG2 ,
+                                        isCP1 || isCP2 ,
+                                        isPJ1 || isPJ2 ,
+                                        isUPJ1 || isUPJ2 ,
+                                        isDPJ1 || isDPJ2 ,
+                                        isTTM1 || isTTM2 ,
+                                        isBM1 || isBM2 ,
+                                        isPD1 || isPD2 ,
+                                        isSM1 || isSM2 ,
+                                        isTA1 || isTA2 ,
+                                        isHA1 || isHA2 ,
+                                        isRA1 || isRA2 ,
+                                        isDA1 || isDA2 ,
+                                        is1P1 || is1P2 ,
+                                        is2P1 || is2P2 ,
+                                        is3P1 || is3P2 ,
+                                        is4P1 || is4P2
+                                     });
 
                 string sPassNum = passNumTxtBox.Text.Trim();
                 int nPassMinusNum = 0;
@@ -425,153 +381,158 @@ namespace AtoTrader.View
                 else
                     nFinalPassNum = nFullMinusNum;
 
+
+
+
                 for (int i = 0; i < mainForm.nStockLength; i++)
                 {
                     nPass = 0;
 
-                    if (isFakeBuy)
-                        nPass += (int.Parse(sFakeBuy) <= mainForm.ea[i].fakeBuyStrategy.nStrategyNum) ? 1 : 0;
-                    if (isFakeAssistant)
-                        nPass += (int.Parse(sFakeAssistant) <= mainForm.ea[i].fakeAssistantStrategy.nStrategyNum) ? 1 : 0;
-                    if (isFakeResist)
-                        nPass += (int.Parse(sFakeResist) <= mainForm.ea[i].fakeResistStrategy.nStrategyNum) ? 1 : 0;
-                    if (isFakeVolatility)
-                        nPass += (int.Parse(sFakeVolatility) <= mainForm.ea[i].fakeVolatilityStrategy.nStrategyNum) ? 1 : 0;
-                    if (isTotalFake)
-                        nPass += (int.Parse(sTotalFake) <= mainForm.ea[i].fakeStrategyMgr.nTotalFakeCount) ? 1 : 0;
-                    if (isTotalFakePass)
-                        nPass += (int.Parse(sTotalFakePass) <= mainForm.ea[i].fakeStrategyMgr.nFakeAccumPassed) ? 1 : 0;
-                    if (isStartGap)
-                        nPass += (double.Parse(sStartGap) <= mainForm.ea[i].fStartGap) ? 1 : 0;
-                    if (isWithoutGap)
-                        nPass += (double.Parse(sWithoutGap) <= mainForm.ea[i].fPowerWithoutGap) ? 1 : 0;
-                    if (isPower)
-                        nPass += (double.Parse(sPower) <= mainForm.ea[i].fPower) ? 1 : 0;
-                    if (isDownDepth && mainForm.ea[i].nYesterdayEndPrice > 0)
-                        nPass += (double.Parse(sDownDepth) <= (double)(mainForm.ea[i].nRealMaxPrice - mainForm.ea[i].nFs) / mainForm.ea[i].nYesterdayEndPrice ) ? 1 : 0;
-                    if (isMinDownDepth && mainForm.ea[i].nYesterdayEndPrice > 0 )
-                        nPass += (double.Parse(sMinDownDepth) <= (double)(mainForm.ea[i].timeLines1m.nMaxUpFs - mainForm.ea[i].nFs) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
-                    if (isTotalTradePrice)
-                        nPass += (double.Parse(sTotalTradePrice) * 100000000 <= mainForm.ea[i].lTotalTradePrice) ? 1 : 0;
-                    if (isBuyPrice)
-                        nPass += (double.Parse(sBuyPrice) * 100000000 <= mainForm.ea[i].lOnlyBuyPrice) ? 1 : 0;
-                    if (isSellPrice)
-                        nPass += (double.Parse(sSellPrice) * 100000000 <= mainForm.ea[i].lOnlySellPrice) ? 1 : 0;
-                    if (isMinFakeBuy)
-                        nPass += (int.Parse(sMinFakeBuy) <= mainForm.ea[i].fakeBuyStrategy.nMinuteLocationCount) ? 1 : 0;
-                    if (isMinFakeAssistant)
-                        nPass += (int.Parse(sMinFakeAssistant) <= mainForm.ea[i].fakeAssistantStrategy.nMinuteLocationCount) ? 1 : 0;
-                    if (isMinFakeResist)
-                        nPass += (int.Parse(sMinFakeResist) <= mainForm.ea[i].fakeResistStrategy.nMinuteLocationCount) ? 1 : 0;
-                    if (isMinFakeVolatility)
-                        nPass += (int.Parse(sMinFakeVolatility) <= mainForm.ea[i].fakeVolatilityStrategy.nMinuteLocationCount) ? 1 : 0;
-                    if (isMinTotalFake)
-                        nPass += (int.Parse(sMinTotalFake) <= mainForm.ea[i].fakeStrategyMgr.nSharedMinuteLocationCount) ? 1 : 0;
-                    if (isPowerJar)
-                        nPass += (double.Parse(sPowerJar) <= mainForm.ea[i].fPowerJar) ? 1 : 0;
-                    if (isUpPowerJar)
-                        nPass += (double.Parse(sUpPowerJar) <= mainForm.ea[i].fOnlyUpPowerJar) ? 1 : 0;
-                    if (isDownPowerJar)
-                        nPass += (double.Parse(sDownPowerJar) * (-1) >= mainForm.ea[i].fOnlyDownPowerJar) ? 1 : 0;
-                    if (isPCnt07)
-                        nPass += (double.Parse(sPCnt07) <= mainForm.ea[i].fPlusCnt07) ? 1 : 0;
-                    if (isMCnt07)
-                        nPass += (double.Parse(sMCnt07) <= mainForm.ea[i].fMinusCnt07) ? 1 : 0;
-                    if (isPCnt09)
-                        nPass += (double.Parse(sPCnt09) <= mainForm.ea[i].fPlusCnt09) ? 1 : 0;
-                    if (isMCnt09)
-                        nPass += (double.Parse(sMCnt09) <= mainForm.ea[i].fMinusCnt09) ? 1 : 0;
-                    if (isMa20m)
-                        nPass += (int.Parse(sMa20m) <= mainForm.ea[i].maOverN.nDownCntMa20m) ? 1 : 0;
-                    if (isMa1h)
-                        nPass += (int.Parse(sMa1h) <= mainForm.ea[i].maOverN.nDownCntMa1h) ? 1 : 0;
-                    if (isMa2h)
-                        nPass += (int.Parse(sMa2h) <= mainForm.ea[i].maOverN.nDownCntMa2h) ? 1 : 0;
-                    if (isTAngle)
-                        nPass += (double.Parse(sTAngle) <= mainForm.ea[i].timeLines1m.fTotalMedianAngle) ? 1 : 0;
-                    if (isHAngle)
-                        nPass += (double.Parse(sHAngle) <= mainForm.ea[i].timeLines1m.fHourMedianAngle) ? 1 : 0;
-                    if (isRAngle)
-                        nPass += (double.Parse(sRAngle) <= mainForm.ea[i].timeLines1m.fRecentMedianAngle) ? 1 : 0;
-                    if (isDAngle)
-                        nPass += (double.Parse(sDAngle) * (-1) >= mainForm.ea[i].timeLines1m.fDAngle) ? 1 : 0;
-                    if (isIAngle)
-                        nPass += (double.Parse(sIAngle) <= mainForm.ea[i].timeLines1m.fInitAngle) ? 1 : 0;
-                    if (isMAngle)
-                        nPass += (double.Parse(sMAngle) <= mainForm.ea[i].timeLines1m.fMaxAngle) ? 1 : 0;
-                    if (isHogaCnt)
-                        nPass += (int.Parse(sHogaCnt) <= mainForm.ea[i].nHogaCnt) ? 1 : 0;
-                    if (isChegyulCnt)
-                        nPass += (int.Parse(sChegyulCnt) <= mainForm.ea[i].nChegyulCnt) ? 1 : 0;
-                    if (isPureTrade)
-                        nPass += (double.Parse(sPureTrade) <= mainForm.ea[i].fTradePerPure) ? 1 : 0;
-                    if (isHogaTrade)
-                        nPass += (double.Parse(sHogaTrade) >= mainForm.ea[i].fHogaPerTrade) ? 1 : 0;
-                    if (isShareTrade)
-                        nPass += (double.Parse(sShareTrade) >= mainForm.ea[i].fSharePerTrade) ? 1 : 0;
-                    if (isShareHoga)
-                        nPass += (double.Parse(sShareHoga) >= mainForm.ea[i].fSharePerHoga) ? 1 : 0;
-                    if (isFsPrice)
-                        nPass += (int.Parse(sFsPrice) <= mainForm.ea[i].nFs) ? 1 : 0;
-                    if (isHogaGap && mainForm.ea[i].nYesterdayEndPrice > 0)
-                        nPass += (double.Parse(sHogaGap) <= ((double)(mainForm.ea[i].nFs - mainForm.ea[i].nFb) / mainForm.ea[i].nYesterdayEndPrice)) ? 1 : 0;
-                    if (isSpeedRank)
-                        nPass += (int.Parse(sSpeedRank) >= mainForm.ea[i].rankSystem.nAccumCountRanking) ? 1 : 0;
-                    if (isMarketCapRank)
-                        nPass += (int.Parse(sMarketCapRank) >= mainForm.ea[i].rankSystem.nMarketCapRanking) ? 1 : 0;
-                    if (isPowerRank)
-                        nPass += (int.Parse(sPowerRank) >= mainForm.ea[i].rankSystem.nPowerRanking) ? 1 : 0;
-                    if (isBuyPriceRank)
-                        nPass += (int.Parse(sBuyPriceRank) >= mainForm.ea[i].rankSystem.nTotalBuyPriceRanking) ? 1 : 0;
-                    if (isBuyVolumeRank)
-                        nPass += (int.Parse(sBuyVolumeRank) >= mainForm.ea[i].rankSystem.nTotalBuyVolumeRanking) ? 1 : 0;
-                    if (isTradePriceRank)
-                        nPass += (int.Parse(sTradePriceRank) >= mainForm.ea[i].rankSystem.nTotalTradePriceRanking) ? 1 : 0;
-                    if (isTradeVolumeRank)
-                        nPass += (int.Parse(sTradeVolumeRank) >= mainForm.ea[i].rankSystem.nTotalTradeVolumeRanking) ? 1 : 0;
-                    if (isTotalRank)
-                        nPass += (int.Parse(sTotalRank) >= mainForm.ea[i].rankSystem.nSummationRanking) ? 1 : 0;
-                    if (isMinSpeedRank)
-                        nPass += (int.Parse(sMinSpeedRank) >= mainForm.ea[i].rankSystem.nMinuteCountRanking) ? 1 : 0;
-                    if (isMinUpDownRank)
-                        nPass += (int.Parse(sMinUpDownRank) >= mainForm.ea[i].rankSystem.nMinuteUpDownRanking) ? 1 : 0;
-                    if (isMinPowerRank)
-                        nPass += (int.Parse(sMinPowerRank) >= mainForm.ea[i].rankSystem.nMinutePowerRanking) ? 1 : 0;
-                    if (isMinBuyPriceRank)
-                        nPass += (int.Parse(sMinBuyPriceRank) >= mainForm.ea[i].rankSystem.nMinuteBuyPriceRanking) ? 1 : 0;
-                    if (isMinBuyVolumeRank)
-                        nPass += (int.Parse(sMinBuyVolumeRank) >= mainForm.ea[i].rankSystem.nMinuteBuyVolumeRanking) ? 1 : 0;
-                    if (isMinTradePriceRank)
-                        nPass += (int.Parse(sMinTradePriceRank) >= mainForm.ea[i].rankSystem.nMinuteTradePriceRanking) ? 1 : 0;
-                    if (isMinTradeVolumeRank)
-                        nPass += (int.Parse(sMinTradeVolumeRank) >= mainForm.ea[i].rankSystem.nMinuteTradeVolumeRanking) ? 1 : 0;
-                    if (isMinTotalRank)
-                        nPass += (int.Parse(sMinTotalRank) >= mainForm.ea[i].rankSystem.nMinuteSummationRanking) ? 1 : 0;
-                    if(isRankMove)
-                        nPass += (int.Parse(sRankMove) * (-1) >= mainForm.ea[i].rankSystem.nSummationMove) ? 1 : 0;
-                    if (isMaDiff20mTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
-                        nPass += (double.Parse(sMaDiff20mTxtBox) <= (mainForm.ea[i].maOverN.fCurDownFs - mainForm.ea[i].maOverN.fCurMa20m)/ mainForm.ea[i].nYesterdayEndPrice ) ? 1 : 0;
-                    if (isMaDiff1hTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
-                        nPass += (double.Parse(sMaDiff1hTxtBox) <= (mainForm.ea[i].maOverN.fCurDownFs - mainForm.ea[i].maOverN.fCurMa1h) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
-                    if (isMaDiff2hTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
-                        nPass += (double.Parse(sMaDiff2hTxtBox) <= (mainForm.ea[i].maOverN.fCurDownFs - mainForm.ea[i].maOverN.fCurMa2h) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
-                    if (isMaCurDiff20mTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
-                        nPass += (double.Parse(sMaCurDiff20mTxtBox) <= (mainForm.ea[i].nFs - mainForm.ea[i].maOverN.fCurMa20m) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
-                    if (isMaCurDiff1hTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
-                        nPass += (double.Parse(sMaCurDiff1hTxtBox) <= (mainForm.ea[i].nFs - mainForm.ea[i].maOverN.fCurMa1h) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
-                    if (isMaCurDiff2hTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
-                        nPass += (double.Parse(sMaCurDiff2hTxtBox) <= (mainForm.ea[i].nFs - mainForm.ea[i].maOverN.fCurMa2h) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
-                    if (isMaGapDiff20mTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
-                        nPass += (double.Parse(sMaGapDiff20mTxtBox) <= (mainForm.ea[i].nFs - mainForm.ea[i].maOverN.fCurGapMa20m) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
-                    if (isMaGapDiff1hTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
-                        nPass += (double.Parse(sMaGapDiff1hTxtBox) <= (mainForm.ea[i].nFs - mainForm.ea[i].maOverN.fCurGapMa1h) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
-                    if (isMaGapDiff2hTxtBox && mainForm.ea[i].nYesterdayEndPrice > 0)
-                        nPass += (double.Parse(sMaGapDiff2hTxtBox) <= (mainForm.ea[i].nFs - mainForm.ea[i].maOverN.fCurGapMa2h) / mainForm.ea[i].nYesterdayEndPrice) ? 1 : 0;
+                    if (isCC1 || isCC2)
+                        nPass += ((isCC1 ? int.Parse(sCC1) <= mainForm.ea[i].crushMgr.crushBoxes.Count : true) &&
+                            (isCC2 ? mainForm.ea[i].crushMgr.crushBoxes.Count <= int.Parse(sCC2) : true)) ? 1 : 0;
+                    if (isFB1 || isFB2)
+                        nPass += ((isFB1 ? int.Parse(sFB1) <= mainForm.ea[i].fakeBuyStrategy.nStrategyNum : true) &&
+                            (isFB2 ? mainForm.ea[i].fakeBuyStrategy.nStrategyNum <= int.Parse(sFB2) : true)) ? 1 : 0;
+                    if (isFA1 || isFA2)
+                        nPass += ((isFA1 ? int.Parse(sFA1) <= mainForm.ea[i].fakeAssistantStrategy.nStrategyNum : true) &&
+                            (isFA2 ? mainForm.ea[i].fakeAssistantStrategy.nStrategyNum <= int.Parse(sFA2) : true)) ? 1 : 0;
+                    if (isFR1 || isFR2)
+                        nPass += ((isFR1 ? int.Parse(sFR1) <= mainForm.ea[i].fakeResistStrategy.nStrategyNum : true) &&
+                            (isFR2 ? mainForm.ea[i].fakeResistStrategy.nStrategyNum <= int.Parse(sFR2) : true)) ? 1 : 0;
+                    if (isFV1 || isFV2)
+                        nPass += ((isFV1 ? int.Parse(sFV1) <= mainForm.ea[i].fakeVolatilityStrategy.nStrategyNum : true) &&
+                            (isFV2 ? mainForm.ea[i].fakeVolatilityStrategy.nStrategyNum <= int.Parse(sFV2) : true)) ? 1 : 0;
+                    if (isTF1 || isTF2)
+                        nPass += ((isTF1 ? int.Parse(sTF1) <= mainForm.ea[i].fakeBuyStrategy.nStrategyNum : true) &&
+                            (isTF2 ? mainForm.ea[i].fakeBuyStrategy.nStrategyNum <= int.Parse(sTF2) : true)) ? 1 : 0;
+                    if (isSG1 || isSG2)
+                        nPass += ((isSG1 ? double.Parse(sSG1) <= mainForm.ea[i].fStartGap : true) &&
+                            (isSG2 ? mainForm.ea[i].fStartGap <= double.Parse(sSG2) : true)) ? 1 : 0;
+                    if (isWOG1 || isWOG2)
+                        nPass += ((isWOG1 ? double.Parse(sWOG1) <= mainForm.ea[i].fPowerWithoutGap : true) &&
+                            (isWOG2 ? mainForm.ea[i].fPowerWithoutGap <= double.Parse(sWOG2) : true)) ? 1 : 0;
+                    if (isCP1 || isCP2)
+                        nPass += ((isCP1 ? double.Parse(sCP1) <= mainForm.ea[i].fPower : true) &&
+                            (isCP2 ? mainForm.ea[i].fPower <= double.Parse(sCP2) : true)) ? 1 : 0;
+                    if ((isPD1 || isPD2) && mainForm.ea[i].nYesterdayEndPrice > 0)
+                        nPass += ((isPD1 ? double.Parse(sPD1) <= (double)(mainForm.ea[i].nFs - mainForm.ea[i].timeLines1m.nMaxUpFs) / mainForm.ea[i].nYesterdayEndPrice : true) &&
+                            (isPD2 ? (double)(mainForm.ea[i].nFs - mainForm.ea[i].timeLines1m.nMaxUpFs) / mainForm.ea[i].nYesterdayEndPrice <= double.Parse(sPD2) : true)) ? 1 : 0;
+                    if (isPJ1 || isPJ2)
+                        nPass += ((isPJ1 ? double.Parse(sPJ1) <= mainForm.ea[i].fPowerJar : true) &&
+                            (isPJ2 ? mainForm.ea[i].fPowerJar <= double.Parse(sPJ2) : true)) ? 1 : 0;
+                    if (isUPJ1 || isUPJ2)
+                        nPass += ((isUPJ1 ? double.Parse(sUPJ1) <= mainForm.ea[i].fOnlyUpPowerJar : true) &&
+                            (isUPJ2 ? mainForm.ea[i].fOnlyUpPowerJar <= double.Parse(sUPJ2) : true)) ? 1 : 0;
+                    if (isDPJ1 || isDPJ2)
+                        nPass += ((isDPJ1 ? double.Parse(sDPJ1) <= mainForm.ea[i].fOnlyDownPowerJar : true) &&
+                            (isDPJ2 ? mainForm.ea[i].fOnlyDownPowerJar <= double.Parse(sDPJ2) : true)) ? 1 : 0;
+                    if (isTTM1 || isTTM2)
+                        nPass += ((isTTM1 ? long.Parse(sTTM1) * 100000000 <= mainForm.ea[i].lTotalTradePrice : true) &&
+                            (isTTM2 ? mainForm.ea[i].lTotalTradePrice <= long.Parse(sTTM2) * 100000000 : true)) ? 1 : 0;
+                    if (isBM1 || isBM2)
+                        nPass += ((isBM1 ? long.Parse(sBM1) * 100000000 <= mainForm.ea[i].lOnlyBuyPrice : true) &&
+                            (isBM2 ? mainForm.ea[i].lOnlyBuyPrice <= long.Parse(sBM2) * 100000000 : true)) ? 1 : 0;
+                    if (isSM1 || isSM2)
+                        nPass += ((isSM1 ? long.Parse(sSM1) * 100000000 <= mainForm.ea[i].lOnlySellPrice : true) &&
+                            (isSM2 ? mainForm.ea[i].lOnlySellPrice <= long.Parse(sSM2) * 100000000 : true)) ? 1 : 0;
+                    if (isTA1 || isTA2)
+                        nPass += ((isTA1 ? double.Parse(sTA1) <= mainForm.ea[i].timeLines1m.fTotalMedianAngle : true) &&
+                            (isTA2 ? mainForm.ea[i].timeLines1m.fTotalMedianAngle <= double.Parse(sTA2) : true)) ? 1 : 0;
+                    if (isHA1 || isHA2)
+                        nPass += ((isHA1 ? double.Parse(sHA1) <= mainForm.ea[i].timeLines1m.fHourMedianAngle : true) &&
+                            (isHA2 ? mainForm.ea[i].timeLines1m.fHourMedianAngle <= double.Parse(sHA2) : true)) ? 1 : 0;
+                    if (isRA1 || isRA2)
+                        nPass += ((isRA1 ? double.Parse(sRA1) <= mainForm.ea[i].timeLines1m.fRecentMedianAngle : true) &&
+                            (isRA2 ? mainForm.ea[i].timeLines1m.fRecentMedianAngle <= double.Parse(sRA2) : true)) ? 1 : 0;
+                    if (isDA1 || isDA2)
+                        nPass += ((isDA1 ? double.Parse(sDA1) <= mainForm.ea[i].timeLines1m.fDAngle : true) &&
+                            (isDA2 ? mainForm.ea[i].timeLines1m.fDAngle <= double.Parse(sDA2) : true)) ? 1 : 0;
+                    if (is1P1 || is1P2)
+                        nPass += ((is1P1 ? int.Parse(s1P1) <= mainForm.ea[i].timeLines1m.onePerCandleList.Count : true) &&
+                            (is1P2 ? mainForm.ea[i].timeLines1m.onePerCandleList.Count <= int.Parse(s1P2) : true)) ? 1 : 0;
+                    if (is2P1 || is2P2)
+                        nPass += ((is2P1 ? int.Parse(s2P1) <= mainForm.ea[i].timeLines1m.twoPerCandleList.Count : true) &&
+                            (is2P2 ? mainForm.ea[i].timeLines1m.twoPerCandleList.Count <= int.Parse(s2P2) : true)) ? 1 : 0;
+                    if (is3P1 || is3P2)
+                        nPass += ((is3P1 ? int.Parse(s3P1) <= mainForm.ea[i].timeLines1m.threePerCandleList.Count : true) &&
+                            (is3P2 ? mainForm.ea[i].timeLines1m.threePerCandleList.Count <= int.Parse(s3P2) : true)) ? 1 : 0;
+                    if (is4P1 || is4P2)
+                        nPass += ((is4P1 ? int.Parse(s4P1) <= mainForm.ea[i].timeLines1m.fourPerCandleList.Count : true) &&
+                            (is4P2 ? mainForm.ea[i].timeLines1m.fourPerCandleList.Count <= int.Parse(s4P2) : true)) ? 1 : 0;
+
+
+                    // 전고점 
+                    bool isCrushPass = true;
+                    int nTrial = 0;
+                    int nPassed = 0;
+                    for (int nCC = 0; nCC < mainForm.ea[i].crushMgr.crushBoxes.Count; i++)
+                    {
+                        if (isCTC1 || isCTC2)
+                        {
+                            if ((isCTC1 ? int.Parse(sCTC1) <= nCC : true) &&
+                                (isCTC2 ? nCC <= int.Parse(sCTC2) : true)
+                                )
+                            {
+                                nTrial++;
+
+                                if ((isCTH1 || isCTH2) && mainForm.ea[i].nYesterdayEndPrice > 0) // 고점 높이
+                                    if (!(isCTH1 ? double.Parse(sCTH1) <= (double)(mainForm.ea[i].crushMgr.crushBoxes[nCC].maxPoint.nPrice - mainForm.ea[i].nTodayStartPrice) / mainForm.ea[i].nYesterdayEndPrice : true) &&
+                                        (isCTH2 ? (double)(mainForm.ea[i].crushMgr.crushBoxes[nCC].maxPoint.nPrice - mainForm.ea[i].nTodayStartPrice) / mainForm.ea[i].nYesterdayEndPrice <= double.Parse(sCTH2) : true))
+                                        continue;
+                                if ((isCTBH1 || isCTBH2) && mainForm.ea[i].nYesterdayEndPrice > 0) // 전고 높이차
+                                    if (!((isCTBH1 ? double.Parse(sCTBH1) <= (double)(mainForm.ea[i].crushMgr.crushBoxes[nCC].maxPoint.nPrice - mainForm.ea[i].crushMgr.crushBoxes[nCC].minPoint.nPrice) / mainForm.ea[i].nYesterdayEndPrice : true) &&
+                                        (isCTBH2 ? (double)(mainForm.ea[i].crushMgr.crushBoxes[nCC].maxPoint.nPrice - mainForm.ea[i].crushMgr.crushBoxes[nCC].minPoint.nPrice) / mainForm.ea[i].nYesterdayEndPrice <= double.Parse(sCTBH2) : true)))
+                                        continue;
+                                if (isCTBTD1 || isCTBTD2) // 전고 시간차
+                                    if (!(isCTBTD1 ? int.Parse(sCTBTD1) <= SubTimeToTimeAndSec(mainForm.ea[i].crushMgr.crushBoxes[nCC].minPoint.nTime, mainForm.ea[i].crushMgr.crushBoxes[nCC].maxPoint.nTime) : true) &&
+                                        (isCTBTD2 ? SubTimeToTimeAndSec(mainForm.ea[i].crushMgr.crushBoxes[nCC].minPoint.nTime, mainForm.ea[i].crushMgr.crushBoxes[nCC].maxPoint.nTime) <= int.Parse(sCTBTD2) : true))
+                                        continue;
+                                if (isCBCTD1 || isCBCTD2) // 저점 간 시간차
+                                    if (!(isCBCTD1 ? int.Parse(sCBCTD1) <= SubTimeToTimeAndSec(mainForm.ea[i].crushMgr.crushBoxes[nCC].crushPoint.nTime, mainForm.ea[i].crushMgr.crushBoxes[nCC].minPoint.nTime) : true) &&
+                                        (isCBCTD2 ? SubTimeToTimeAndSec(mainForm.ea[i].crushMgr.crushBoxes[nCC].crushPoint.nTime, mainForm.ea[i].crushMgr.crushBoxes[nCC].minPoint.nTime) <= int.Parse(sCBCTD2) : true))
+                                        continue;
+                                if (isCTCTD1 || isCTCTD2) // 고점 간 시간차
+                                    if (!(isCTCTD1 ? int.Parse(sCTCTD1) <= SubTimeToTimeAndSec(mainForm.ea[i].crushMgr.crushBoxes[nCC].crushPoint.nTime, mainForm.ea[i].crushMgr.crushBoxes[nCC].maxPoint.nTime) : true) &&
+                                        (isCTCTD2 ? SubTimeToTimeAndSec(mainForm.ea[i].crushMgr.crushBoxes[nCC].crushPoint.nTime, mainForm.ea[i].crushMgr.crushBoxes[nCC].maxPoint.nTime) <= int.Parse(sCTCTD2) : true))
+                                        continue;
+
+                                nPassed++;
+                            }
+                        }
+                        else // crush count에 속하지 않는다면
+                        {
+                            break;
+                        }
+                    }
+                    if (isCPC1 || isCPC2)
+                        isCrushPass = ((isCPC1 ? int.Parse(sCPC1) <= nPassed : true) &&
+                        (isCPC2 ? nPassed <= int.Parse(sCPC2) : true));
+                    else
+                        isCrushPass = nPassed >= 0;
 
 
 
+                    // 봇업
+                    bool isBotUpPass = true;
+                    {
+                        if ((isBUT1 || isBUT2) && mainForm.ea[i].nYesterdayEndPrice > 0)
+                            isBotUpPass = isBotUpPass &&
+                                ((isBUT1 ? double.Parse(sBUT1) <= (double)(mainForm.ea[i].crushMgr.maxPoint.nPrice - mainForm.ea[i].nTodayStartPrice) / mainForm.ea[i].nYesterdayEndPrice : true) &&
+                                (isBUT2 ? (double)(mainForm.ea[i].crushMgr.maxPoint.nPrice - mainForm.ea[i].nTodayStartPrice) / mainForm.ea[i].nYesterdayEndPrice <= double.Parse(sBUT2) : true));
+                        if ((isBUB1 || isBUB2) && mainForm.ea[i].nYesterdayEndPrice > 0)
+                            isBotUpPass = isBotUpPass &&
+                                ((isBUB1 ? double.Parse(sBUB1) <= (double)(mainForm.ea[i].crushMgr.maxPoint.nPrice - mainForm.ea[i].crushMgr.minPoint.nPrice) / mainForm.ea[i].nYesterdayEndPrice : true) &&
+                                (isBUB2 ? (double)(mainForm.ea[i].crushMgr.maxPoint.nPrice - mainForm.ea[i].crushMgr.minPoint.nPrice) / mainForm.ea[i].nYesterdayEndPrice <= double.Parse(sBUB2) : true));
+                        if ((isBUJ1 || isBUJ2) && mainForm.ea[i].nYesterdayEndPrice > 0)
+                            isBotUpPass = isBotUpPass &&
+                                ((isBUJ1 ? double.Parse(sBUJ1) <= (double)(mainForm.ea[i].nFs - mainForm.ea[i].crushMgr.minPoint.nPrice) / mainForm.ea[i].nYesterdayEndPrice : true) &&
+                                (isBUJ2 ? (double)(mainForm.ea[i].nFs - mainForm.ea[i].crushMgr.minPoint.nPrice) / mainForm.ea[i].nYesterdayEndPrice <= double.Parse(sBUJ2) : true));
+                    }
 
-                    if (nPass >= nFinalPassNum)
+
+
+                    if (nPass >= nFinalPassNum && isBotUpPass && isCrushPass && isCrushPass)
                     {
                         nPassLen++;
                         ListViewItem listViewItem = new ListViewItem(new string[] {
@@ -584,7 +545,6 @@ namespace AtoTrader.View
                         mainForm.ea[i].fakeResistStrategy.nStrategyNum.ToString(),
                         mainForm.ea[i].fakeVolatilityStrategy.nStrategyNum.ToString(),
                         mainForm.ea[i].fakeStrategyMgr.nTotalFakeCount.ToString(),
-                        mainForm.ea[i].fakeStrategyMgr.nFakeAccumPassed.ToString(),
                         Math.Round(mainForm.ea[i].fStartGap, 3).ToString(),
                         Math.Round(mainForm.ea[i].fPowerWithoutGap, 3).ToString(),
                         Math.Round(mainForm.ea[i].fPower, 3).ToString(),
@@ -608,14 +568,14 @@ namespace AtoTrader.View
                         }
 
                         listViewItemList.Add(listViewItem);
-                        
+
                     }
 
                 }
 
                 if (listViewItemList.Count > 0)
                     listView1.Items.AddRange(listViewItemList.ToArray());
-                
+
                 doneLabel.Text = $"done..{++nDoneCnt}";
                 passLenLabel.Text = $"pass {nPassLen}";
             }
@@ -633,7 +593,7 @@ namespace AtoTrader.View
         public int nDoneCnt = 0;
         private void button3_Click(object sender, EventArgs e)
         {
-            if (listView1.InvokeRequired)  
+            if (listView1.InvokeRequired)
             {
                 if (sortColumn != -1)
                     listView1.Columns[sortColumn].Text = listView1.Columns[sortColumn].Text.Substring(0, listView1.Columns[sortColumn].Text.Length - nTipLen);
@@ -648,7 +608,7 @@ namespace AtoTrader.View
                 UpdateTable();
             }
 
-            
+
         }
 
         // =======================================

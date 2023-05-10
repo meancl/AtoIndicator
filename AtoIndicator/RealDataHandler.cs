@@ -230,8 +230,8 @@ namespace AtoTrader
                     {
                         PrintLog("장종료");
                         isMarketStart = false;
-                        PutTradeResultAsync();
-                        PutChartResultAsync();
+                        //PutTradeResultAsync();
+                        //PutChartResultAsync();
                     }
                 }
                 return; // 장시작시간 실시간데이터는  여기서 종료
@@ -612,11 +612,18 @@ namespace AtoTrader
                                 }
 
                                 if (fCurCandlePower >= 0.01)
-                                {
-                                    ea[i].timeLines1m.upCandleList.Add((nSharedTime, fCurCandlePower));
-                                    if (fCurCandlePower >= 0.03)
-                                        ea[i].timeLines1m.shootingList.Add((nSharedTime, fCurCandlePower));
-                                }
+                                    ea[i].timeLines1m.onePerCandleList.Add((nSharedTime, fCurCandlePower));
+
+                                if (fCurCandlePower >= 0.02)
+                                    ea[i].timeLines1m.twoPerCandleList.Add((nSharedTime, fCurCandlePower));
+
+                                if (fCurCandlePower >= 0.03)
+                                    ea[i].timeLines1m.threePerCandleList.Add((nSharedTime, fCurCandlePower));
+
+                                if (fCurCandlePower >= 0.04)
+                                    ea[i].timeLines1m.fourPerCandleList.Add((nSharedTime, fCurCandlePower));
+
+
                                 else if (fCurCandlePower <= -0.01)
                                     ea[i].timeLines1m.downCandleList.Add((nSharedTime, fCurCandlePower));
 
@@ -984,56 +991,6 @@ namespace AtoTrader
                 }
                 #endregion
 
-                #region AI 서비스 창구
-#if AI
-                // AI 서비스를 요청했으면 
-                // 응답 기다리기
-                int nAISlotsNum = Min(aiQueue.Count, AI_ONCE_MAXNUM);
-                mmf.FetchTargets();
-                for (int i = 0; i < nAISlotsNum; i++) // 한바퀴 돈다
-                {
-                    aiSlot = aiQueue.Dequeue();
-
-                    bool isAIComed = mmf.checkingComeArray[aiSlot.nMMFNumber]; // 응답 여부
-
-                    if (!isAIComed) // 응답이 오지 않았다면
-                    {
-                        aiQueue.Enqueue(aiSlot);
-                        continue;
-                    }
-                        
-
-                    bool isAIPassed = mmf.checkingBookArray[aiSlot.nMMFNumber]; // 정답확인
-                    double fRatio = mmf.checkingRatioArray[aiSlot.nMMFNumber]; // 비율확인
-
-                    switch (aiSlot.nRequestId)
-                    {
-                        case FAKE_REQUEST_SIGNAL:
-                            if (fRatio > 0.45)
-                            {
-                                ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAccumPassed++;
-                                if (ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAIPrevTimeLineIdx != nTimeLineIdx)
-                                {
-                                    if (nTimeLineIdx - ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAIPrevTimeLineIdx > 1)
-                                        ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAIJumpDiffMinuteCount++;
-                                    ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAIPrevTimeLineIdx = nTimeLineIdx;
-                                    ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAIStepMinuteCount++;
-                                }
-                            }
-
-                            ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAccumTried++;
-                            
-                            PrintLog($"{nSharedTime}  {ea[aiSlot.nEaIdx].sCode}  {ea[aiSlot.nEaIdx].sCodeName} fs : {ea[aiSlot.nEaIdx].nFs}  #AI 페이크 통과여부 : {isAIPassed} 가능성 : {Math.Round(fRatio,3)}  페이크 시도 : { ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAccumTried}  페이크 누적 : {ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAccumPassed} 페이크 스텝 : {ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAIStepMinuteCount} 페이크 점프 : {ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAIJumpDiffMinuteCount}", aiSlot.nEaIdx);
-                            break;
-                        default:
-                            break;
-                    }
-                    TurnOffMMFSlot(aiSlot.nMMFNumber);
-                }
-#endif
-                #endregion
-
-
                 #region 실시간 호가 
                 // =============================================================
                 // 실시간 호가잔량
@@ -1264,9 +1221,7 @@ namespace AtoTrader
 
                         int nCutSharedT = nSharedTime - nSharedTime % MINUTE_KIWOOM;
 
-                        // 전고점 초기화
-                        ea[nCurIdx].crushMgr.prevPoint.nTime = nFirstTime;
-                        ea[nCurIdx].crushMgr.prevPoint.nPrice = ea[nCurIdx].nFs;
+                     
                     } // END ---- 개인 초기작업
                     #endregion
                     ea[nCurIdx].nChegyulCnt++; // 인덱스를 올린다.
@@ -1282,32 +1237,6 @@ namespace AtoTrader
                         ea[nCurIdx].nRealMaxPrice = ea[nCurIdx].nFs;
 
 
-                    //#region 예약 처리
-                    //// 예약 처리
-                    //if (!ea[nCurIdx].isExcluded)
-                    //{
-                    //    for (int i = 0; i < ea[nCurIdx].reserveMgr.listReservation.Count; i++)
-                    //    {
-                    //        if (!ea[nCurIdx].reserveMgr.listReservation[i].isReserveEnd)
-                    //        {
-                    //            ea[nCurIdx].reserveMgr.listReservation[i].fMaxPower = Max(ea[nCurIdx].reserveMgr.listReservation[i].fMaxPower, ea[nCurIdx].fPower);
-
-                    //            if (ea[nCurIdx].reserveMgr.listReservation[i].nTargetLimitTime < nSharedTime) // 제한시간을 넘겼다면
-                    //            {
-                    //                ea[nCurIdx].reserveMgr.listReservation[i].isReserveEnd = true;
-                    //                continue;
-                    //            }
-
-                    //            if ((ea[nCurIdx].reserveMgr.listReservation[i].fReservePower - ea[nCurIdx].reserveMgr.listReservation[i].fMinusPower) > ea[nCurIdx].fPower) // 원하는 가격으로 내려왔다면
-                    //            {
-                    //                ea[nCurIdx].reserveMgr.listReservation[i].isReserveEnd = true;
-                    //                RequestThisRealBuy(0, isAIUse: false);
-                    //            }
-                    //        }
-                    //    }
-                    //}
-                    //#endregion
-
                     if (ea[nCurIdx].isViMode)
                     {
                         ea[nCurIdx].isViMode = false;
@@ -1322,7 +1251,7 @@ namespace AtoTrader
 
                     #region 실시간 전고점
                    
-                    if ( ea[nCurIdx].crushMgr.maxPoint.nTime < ea[nCurIdx].crushMgr.minPoint.nTime && // 저점 고점이 설정돼있다
+                    if ( SubTimeToTimeAndSec( ea[nCurIdx].crushMgr.minPoint.nTime , ea[nCurIdx].crushMgr.maxPoint.nTime ) >= 60  && // 저점 시간 - 고점 시간 >= 1분 
                         ea[nCurIdx].crushMgr.maxPoint.nPrice < ea[nCurIdx].nFs && // 가격이 고점보다 높다
                         (double)(ea[nCurIdx].crushMgr.maxPoint.nPrice - ea[nCurIdx].crushMgr.minPoint.nPrice) / ea[nCurIdx].nYesterdayEndPrice >= 0.01 // 1퍼센트 정도의 높이가 있는 전고여야한다
                        ) // 전고점
@@ -2794,77 +2723,76 @@ namespace AtoTrader
                     if (ea[nCurIdx].isFirstCheck)
                     {
                         #region 페이크 블록 기록
-                        try
-                        {
-                            if (nSharedTime < SHUTDOWN_TIME)
-                            {
-                                for (int i = 0; i < ea[nCurIdx].fakeStrategyMgr.nTotalFakeCount; i++)
-                                {
-                                    if(ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nPriceAfter1Sec == 0 && ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime < nSharedTime)
-                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nPriceAfter1Sec = ea[nCurIdx].nFs;
+                        //try
+                        //{
+                        //    if (nSharedTime < SHUTDOWN_TIME)
+                        //    {
+                        //        for (int i = 0; i < ea[nCurIdx].fakeStrategyMgr.nTotalFakeCount; i++)
+                        //        {
+                        //            if(ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nPriceAfter1Sec == 0 && ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime < nSharedTime)
+                        //                ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nPriceAfter1Sec = ea[nCurIdx].nFs;
 
-                                    int nOverPrice = ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nOverPrice;
-                                    // 거래하고 3시전까지 실시간으로
-                                    ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinRealTilThree.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+                        //            int nOverPrice = ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nOverPrice;
+                        //            // 거래하고 3시전까지 실시간으로
+                        //            ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinRealTilThree.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
 
 
-                                    // 거래하고 3시전까지 분봉으로(바로 처음 타임라인인덱스는 사기전을 가리키기 때문에 접근못한다)
-                                    if (ea[nCurIdx].fakeStrategyMgr.fd[i].nTimeLineIdx < ea[nCurIdx].timeLines1m.nRealDataIdx) // nBuyMinuteIdx가 N일때 nRealDataIdx는 N -1 , 사고 난 다음분봉 데이터부터 기록
-                                    {
-                                        ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinMinuteTilThree.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+                        //            // 거래하고 3시전까지 분봉으로(바로 처음 타임라인인덱스는 사기전을 가리키기 때문에 접근못한다)
+                        //            if (ea[nCurIdx].fakeStrategyMgr.fd[i].nTimeLineIdx < ea[nCurIdx].timeLines1m.nRealDataIdx) // nBuyMinuteIdx가 N일때 nRealDataIdx는 N -1 , 사고 난 다음분봉 데이터부터 기록
+                        //            {
+                        //                ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinMinuteTilThree.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
 
-                                        if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 600)
-                                            ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinMinuteTilThreeWhile10.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+                        //                if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 600)
+                        //                    ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinMinuteTilThreeWhile10.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
 
-                                        if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 1800)
-                                            ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinMinuteTilThreeWhile30.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
-                                    }
+                        //                if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 1800)
+                        //                    ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinMinuteTilThreeWhile30.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+                        //            }
 
-                                    if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 600) // 거래하고 10분정도만
-                                        ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinRealWhile10.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+                        //            if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 600) // 거래하고 10분정도만
+                        //                ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinRealWhile10.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
 
-                                    if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 1800) // 거래하고 30분정도만
-                                        ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinRealWhile30.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+                        //            if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 1800) // 거래하고 30분정도만
+                        //                ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinRealWhile30.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
 
-                                    if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 3600) // 거래하고 1시간정도만
-                                        ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinRealWhile60.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+                        //            if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 3600) // 거래하고 1시간정도만
+                        //                ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinRealWhile60.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
 
-                                    #region 슬리피지용 변수 기록
-                                    ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nNoMoveCntAfterCheck = ea[nCurIdx].nNoMoveCount - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nNoMoveCnt;
-                                    ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nFewSpeedCntAfterCheck = ea[nCurIdx].nFewSpeedCount - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nFewSpeedCnt;
-                                    ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nMissCntAfterCheck = ea[nCurIdx].nMissCount - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nMissCnt;
-                                    ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalTradePriceAfterCheck = ea[nCurIdx].lTotalTradePrice - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalTradePrice;
-                                    ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalBuyPriceAfterCheck = ea[nCurIdx].lOnlyBuyPrice - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalBuyPrice;
-                                    ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalSellPriceAfterCheck = ea[nCurIdx].lOnlySellPrice - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalSellPrice;
-                                    #endregion
+                        //            #region 슬리피지용 변수 기록
+                        //            ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nNoMoveCntAfterCheck = ea[nCurIdx].nNoMoveCount - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nNoMoveCnt;
+                        //            ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nFewSpeedCntAfterCheck = ea[nCurIdx].nFewSpeedCount - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nFewSpeedCnt;
+                        //            ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nMissCntAfterCheck = ea[nCurIdx].nMissCount - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nMissCnt;
+                        //            ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalTradePriceAfterCheck = ea[nCurIdx].lTotalTradePrice - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalTradePrice;
+                        //            ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalBuyPriceAfterCheck = ea[nCurIdx].lOnlyBuyPrice - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalBuyPrice;
+                        //            ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalSellPriceAfterCheck = ea[nCurIdx].lOnlySellPrice - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalSellPrice;
+                        //            #endregion
 
-                                    if (isHogaJanRyang)
-                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nHogaCntAfterCheck++;
+                        //            if (isHogaJanRyang)
+                        //                ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nHogaCntAfterCheck++;
 
-                                    if (isZooSikCheGyul)
-                                    {
-                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nChegyulCntAfterCheck++;
+                        //            if (isZooSikCheGyul)
+                        //            {
+                        //                ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nChegyulCntAfterCheck++;
 
-                                        if (ea[nCurIdx].fPowerDiff != 0)
-                                        {
-                                            ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nUpDownCntAfterCheck++;
-                                            if (ea[nCurIdx].fPowerDiff > 0)
-                                            {
-                                                ea[nCurIdx].fakeStrategyMgr.fd[i].fr.fUpPowerAfterCheck += ea[nCurIdx].fPowerDiff;
-                                            }
-                                            else
-                                            {
-                                                ea[nCurIdx].fakeStrategyMgr.fd[i].fr.fDownPowerAfterCheck -= ea[nCurIdx].fPowerDiff;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        catch { }
+                        //                if (ea[nCurIdx].fPowerDiff != 0)
+                        //                {
+                        //                    ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nUpDownCntAfterCheck++;
+                        //                    if (ea[nCurIdx].fPowerDiff > 0)
+                        //                    {
+                        //                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.fUpPowerAfterCheck += ea[nCurIdx].fPowerDiff;
+                        //                    }
+                        //                    else
+                        //                    {
+                        //                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.fDownPowerAfterCheck -= ea[nCurIdx].fPowerDiff;
+                        //                    }
+                        //                }
+                        //            }
+                        //        }
+                        //    }
+                        //}
+                        //catch { }
 
                         #endregion
-
                     }
                 }
                 #endregion

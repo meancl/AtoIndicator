@@ -324,7 +324,7 @@ C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\AxInterop.KHOpe
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\ProjectAto.csproj.CopyComplete
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AtoIndicator.exe
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AtoIndicator.pdb
-C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\ProjectAto.csprojAssemblyReference.cache
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\LdaNative.dll
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\CpuMathNative.dll
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\onnxruntime.dll
+C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\ProjectAto.csproj.AssemblyReference.cache
