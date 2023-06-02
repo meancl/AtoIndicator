@@ -1,7 +1,7 @@
 ﻿using System;
-using static AtoTrader.MainForm;
+using static AtoIndicator.MainForm;
 
-namespace AtoTrader.KiwoomLib
+namespace AtoIndicator.KiwoomLib
 {
     internal static class PricingLib
     {

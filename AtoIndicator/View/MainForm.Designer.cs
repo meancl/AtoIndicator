@@ -1,4 +1,4 @@
-﻿namespace AtoTrader
+﻿namespace AtoIndicator
 {
     public partial class MainForm
     {
@@ -30,21 +30,40 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.screenNumLabel = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.marketGubunLabel = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.depositCalcLabel = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.myNameLabel = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.myDepositLabel = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.accountComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.axKHOpenAPI1 = new AxKHOpenAPILib.AxKHOpenAPI();
             this.label3 = new System.Windows.Forms.Label();
             this.sCodeToBuyTextBox = new System.Windows.Forms.TextBox();
+            this.buyButton = new System.Windows.Forms.Button();
             this.totalClockLabel = new System.Windows.Forms.Label();
             this.checkChartButton = new System.Windows.Forms.Button();
             this.manualGroupBox = new System.Windows.Forms.GroupBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.메뉴ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.수동매수ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.onManualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.offManualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.depositToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.holdingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.curRecordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.강제장시작ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.onMarketToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.onMarketWithBuyAccToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.offMarketToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.todayResultStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.realTimeLogStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.configStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logTxtBx = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox1.SuspendLayout();
@@ -56,10 +75,16 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.screenNumLabel);
+            this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.marketGubunLabel);
             this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Controls.Add(this.depositCalcLabel);
+            this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.myNameLabel);
             this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.myDepositLabel);
+            this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.accountComboBox);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(7, 58);
@@ -67,10 +92,28 @@
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.groupBox1.Size = new System.Drawing.Size(362, 167);
+            this.groupBox1.Size = new System.Drawing.Size(362, 270);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "내 정보";
+            // 
+            // screenNumLabel
+            // 
+            this.screenNumLabel.AutoSize = true;
+            this.screenNumLabel.Location = new System.Drawing.Point(139, 226);
+            this.screenNumLabel.Name = "screenNumLabel";
+            this.screenNumLabel.Size = new System.Drawing.Size(15, 15);
+            this.screenNumLabel.TabIndex = 18;
+            this.screenNumLabel.Text = "0";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(26, 226);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(102, 15);
+            this.label7.TabIndex = 17;
+            this.label7.Text = "화면번호 갯수";
             // 
             // marketGubunLabel
             // 
@@ -89,6 +132,24 @@
             this.label6.TabIndex = 15;
             this.label6.Text = "투자구분";
             // 
+            // depositCalcLabel
+            // 
+            this.depositCalcLabel.AutoSize = true;
+            this.depositCalcLabel.Location = new System.Drawing.Point(139, 194);
+            this.depositCalcLabel.Name = "depositCalcLabel";
+            this.depositCalcLabel.Size = new System.Drawing.Size(42, 15);
+            this.depositCalcLabel.TabIndex = 14;
+            this.depositCalcLabel.Text = "0(원)";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(26, 194);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(97, 15);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "계산용예수금";
+            // 
             // myNameLabel
             // 
             this.myNameLabel.AutoSize = true;
@@ -106,6 +167,24 @@
             this.label4.Size = new System.Drawing.Size(52, 15);
             this.label4.TabIndex = 9;
             this.label4.Text = "예금주";
+            // 
+            // myDepositLabel
+            // 
+            this.myDepositLabel.AutoSize = true;
+            this.myDepositLabel.Location = new System.Drawing.Point(139, 158);
+            this.myDepositLabel.Name = "myDepositLabel";
+            this.myDepositLabel.Size = new System.Drawing.Size(42, 15);
+            this.myDepositLabel.TabIndex = 8;
+            this.myDepositLabel.Text = "0(원)";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(26, 158);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(52, 15);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "예수금";
             // 
             // accountComboBox
             // 
@@ -128,7 +207,7 @@
             // axKHOpenAPI1
             // 
             this.axKHOpenAPI1.Enabled = true;
-            this.axKHOpenAPI1.Location = new System.Drawing.Point(92, 279);
+            this.axKHOpenAPI1.Location = new System.Drawing.Point(378, 359);
             this.axKHOpenAPI1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.axKHOpenAPI1.Name = "axKHOpenAPI1";
             this.axKHOpenAPI1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axKHOpenAPI1.OcxState")));
@@ -140,9 +219,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(19, 34);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(55, 15);
+            this.label3.Size = new System.Drawing.Size(90, 15);
             this.label3.TabIndex = 16;
-            this.label3.Text = "종목 ID";
+            this.label3.Text = "코드 or 이름";
             // 
             // sCodeToBuyTextBox
             // 
@@ -151,6 +230,16 @@
             this.sCodeToBuyTextBox.Name = "sCodeToBuyTextBox";
             this.sCodeToBuyTextBox.Size = new System.Drawing.Size(114, 25);
             this.sCodeToBuyTextBox.TabIndex = 18;
+            // 
+            // buyButton
+            // 
+            this.buyButton.Location = new System.Drawing.Point(218, 78);
+            this.buyButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.buyButton.Name = "buyButton";
+            this.buyButton.Size = new System.Drawing.Size(122, 42);
+            this.buyButton.TabIndex = 15;
+            this.buyButton.Text = "주문신청";
+            this.buyButton.UseVisualStyleBackColor = true;
             // 
             // totalClockLabel
             // 
@@ -163,7 +252,7 @@
             // 
             // checkChartButton
             // 
-            this.checkChartButton.Location = new System.Drawing.Point(206, 81);
+            this.checkChartButton.Location = new System.Drawing.Point(22, 78);
             this.checkChartButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.checkChartButton.Name = "checkChartButton";
             this.checkChartButton.Size = new System.Drawing.Size(122, 42);
@@ -176,7 +265,8 @@
             this.manualGroupBox.Controls.Add(this.label3);
             this.manualGroupBox.Controls.Add(this.checkChartButton);
             this.manualGroupBox.Controls.Add(this.sCodeToBuyTextBox);
-            this.manualGroupBox.Location = new System.Drawing.Point(7, 254);
+            this.manualGroupBox.Controls.Add(this.buyButton);
+            this.manualGroupBox.Location = new System.Drawing.Point(14, 508);
             this.manualGroupBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.manualGroupBox.Name = "manualGroupBox";
             this.manualGroupBox.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -201,16 +291,102 @@
             // 메뉴ToolStripMenuItem
             // 
             this.메뉴ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.realTimeLogStripMenuItem});
+            this.수동매수ToolStripMenuItem,
+            this.depositToolStripMenuItem,
+            this.holdingsToolStripMenuItem,
+            this.curRecordToolStripMenuItem,
+            this.강제장시작ToolStripMenuItem1,
+            this.todayResultStripMenuItem,
+            this.realTimeLogStripMenuItem,
+            this.configStripMenuItem});
             this.메뉴ToolStripMenuItem.Name = "메뉴ToolStripMenuItem";
             this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
             this.메뉴ToolStripMenuItem.Text = "메뉴";
             // 
+            // 수동매수ToolStripMenuItem
+            // 
+            this.수동매수ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.onManualToolStripMenuItem,
+            this.offManualToolStripMenuItem});
+            this.수동매수ToolStripMenuItem.Name = "수동매수ToolStripMenuItem";
+            this.수동매수ToolStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.수동매수ToolStripMenuItem.Text = "수동작업( M )";
+            // 
+            // onManualToolStripMenuItem
+            // 
+            this.onManualToolStripMenuItem.Name = "onManualToolStripMenuItem";
+            this.onManualToolStripMenuItem.Size = new System.Drawing.Size(111, 26);
+            this.onManualToolStripMenuItem.Text = "on";
+            // 
+            // offManualToolStripMenuItem
+            // 
+            this.offManualToolStripMenuItem.Name = "offManualToolStripMenuItem";
+            this.offManualToolStripMenuItem.Size = new System.Drawing.Size(111, 26);
+            this.offManualToolStripMenuItem.Text = "off";
+            // 
+            // depositToolStripMenuItem
+            // 
+            this.depositToolStripMenuItem.Name = "depositToolStripMenuItem";
+            this.depositToolStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.depositToolStripMenuItem.Text = "예수금확인( D )";
+            // 
+            // holdingsToolStripMenuItem
+            // 
+            this.holdingsToolStripMenuItem.Name = "holdingsToolStripMenuItem";
+            this.holdingsToolStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.holdingsToolStripMenuItem.Text = "보유종목확인( H )";
+            // 
+            // curRecordToolStripMenuItem
+            // 
+            this.curRecordToolStripMenuItem.Name = "curRecordToolStripMenuItem";
+            this.curRecordToolStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.curRecordToolStripMenuItem.Text = "현황기록( R )";
+            // 
+            // 강제장시작ToolStripMenuItem1
+            // 
+            this.강제장시작ToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.onMarketToolStripMenuItem,
+            this.onMarketWithBuyAccToolStripMenuItem,
+            this.offMarketToolStripMenuItem});
+            this.강제장시작ToolStripMenuItem1.Name = "강제장시작ToolStripMenuItem1";
+            this.강제장시작ToolStripMenuItem1.Size = new System.Drawing.Size(213, 26);
+            this.강제장시작ToolStripMenuItem1.Text = "강제장시작 여부";
+            // 
+            // onMarketToolStripMenuItem
+            // 
+            this.onMarketToolStripMenuItem.Name = "onMarketToolStripMenuItem";
+            this.onMarketToolStripMenuItem.Size = new System.Drawing.Size(242, 26);
+            this.onMarketToolStripMenuItem.Text = "매수 금지 장시작";
+            // 
+            // onMarketWithBuyAccToolStripMenuItem
+            // 
+            this.onMarketWithBuyAccToolStripMenuItem.Name = "onMarketWithBuyAccToolStripMenuItem";
+            this.onMarketWithBuyAccToolStripMenuItem.Size = new System.Drawing.Size(242, 26);
+            this.onMarketWithBuyAccToolStripMenuItem.Text = "매수 허용 장시작";
+            // 
+            // offMarketToolStripMenuItem
+            // 
+            this.offMarketToolStripMenuItem.Name = "offMarketToolStripMenuItem";
+            this.offMarketToolStripMenuItem.Size = new System.Drawing.Size(242, 26);
+            this.offMarketToolStripMenuItem.Text = "매수 금지 임시 장마감";
+            // 
+            // todayResultStripMenuItem
+            // 
+            this.todayResultStripMenuItem.Name = "todayResultStripMenuItem";
+            this.todayResultStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.todayResultStripMenuItem.Text = "당일실현손익( T )";
+            // 
             // realTimeLogStripMenuItem
             // 
             this.realTimeLogStripMenuItem.Name = "realTimeLogStripMenuItem";
-            this.realTimeLogStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.realTimeLogStripMenuItem.Size = new System.Drawing.Size(213, 26);
             this.realTimeLogStripMenuItem.Text = "실시간 로그( L )";
+            // 
+            // configStripMenuItem
+            // 
+            this.configStripMenuItem.Name = "configStripMenuItem";
+            this.configStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.configStripMenuItem.Text = "설정( C )";
             // 
             // logTxtBx
             // 
@@ -230,7 +406,6 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.Controls.Add(this.logTxtBx);
-            this.panel1.Controls.Add(this.axKHOpenAPI1);
             this.panel1.Location = new System.Drawing.Point(390, 56);
             this.panel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panel1.Name = "panel1";
@@ -245,6 +420,7 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.manualGroupBox);
             this.Controls.Add(this.totalClockLabel);
+            this.Controls.Add(this.axKHOpenAPI1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.menuStrip1);
             this.DoubleBuffered = true;
@@ -272,18 +448,37 @@
         private System.Windows.Forms.ComboBox accountComboBox;
         private System.Windows.Forms.Label label1;
         private AxKHOpenAPILib.AxKHOpenAPI axKHOpenAPI1;
+        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label myNameLabel;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label myDepositLabel;
+        private System.Windows.Forms.Label depositCalcLabel;
+        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox sCodeToBuyTextBox;
+        private System.Windows.Forms.Button buyButton;
         private System.Windows.Forms.Label totalClockLabel;
         private System.Windows.Forms.Button checkChartButton;
         private System.Windows.Forms.GroupBox manualGroupBox;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem 메뉴ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 수동매수ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem onManualToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem offManualToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem curRecordToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem depositToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem holdingsToolStripMenuItem;
         private System.Windows.Forms.Label marketGubunLabel;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ToolStripMenuItem 강제장시작ToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem onMarketToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem onMarketWithBuyAccToolStripMenuItem;
+        private System.Windows.Forms.Label screenNumLabel;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ToolStripMenuItem todayResultStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem realTimeLogStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem configStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem offMarketToolStripMenuItem;
         private System.Windows.Forms.TextBox logTxtBx;
         private System.Windows.Forms.Panel panel1;
     }

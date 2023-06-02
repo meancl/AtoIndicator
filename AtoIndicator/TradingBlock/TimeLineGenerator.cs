@@ -1,7 +1,7 @@
-﻿using static  AtoTrader.KiwoomLib.TimeLib;
-using static AtoTrader.MainForm;
+﻿using static  AtoIndicator.KiwoomLib.TimeLib;
+using static AtoIndicator.MainForm;
 
-namespace AtoTrader.TradingBlock
+namespace AtoIndicator.TradingBlock
 {
     internal static class TimeLineGenerator
     {

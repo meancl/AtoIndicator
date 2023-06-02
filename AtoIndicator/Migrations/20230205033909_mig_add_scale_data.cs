@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 
-namespace AtoTrader.Migrations
+namespace AtoIndicator.Migrations
 {
     public partial class mig_add_scale_data : Migration
     {

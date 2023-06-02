@@ -1,4 +1,4 @@
-﻿namespace AtoTrader
+﻿namespace AtoIndicator
 {
     public partial class MainForm
     {

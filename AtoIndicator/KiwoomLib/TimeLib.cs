@@ -1,4 +1,4 @@
-﻿namespace AtoTrader.KiwoomLib
+﻿namespace AtoIndicator.KiwoomLib
 {
     internal static class TimeLib
     {

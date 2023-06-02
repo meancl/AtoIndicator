@@ -10,7 +10,7 @@ using System.Diagnostics;
 // ========================================================================
 // 철학 : Being simple is the best.
 // ========================================================================
-namespace AtoTrader
+namespace AtoIndicator
 {
     public partial class MainForm : Form
     {
@@ -32,14 +32,28 @@ namespace AtoTrader
             this.KeyUp += KeyUpHandler;
 
             this.DoubleBuffered = true;
+            this.FormClosed += FormClosedHandler;
 
-            
+            onMarketToolStripMenuItem.Click += ToolTipItemClickHandler;
+            onMarketWithBuyAccToolStripMenuItem.Click += ToolTipItemClickHandler;
+            onManualToolStripMenuItem.Click += ToolTipItemClickHandler;
+            offManualToolStripMenuItem.Click += ToolTipItemClickHandler;
+            curRecordToolStripMenuItem.Click += ToolTipItemClickHandler;
+            depositToolStripMenuItem.Click += ToolTipItemClickHandler;
+            holdingsToolStripMenuItem.Click += ToolTipItemClickHandler;
+            todayResultStripMenuItem.Click += ToolTipItemClickHandler;
             realTimeLogStripMenuItem.Click += ToolTipItemClickHandler;
+            configStripMenuItem.Click += ToolTipItemClickHandler;
+            offMarketToolStripMenuItem.Click += ToolTipItemClickHandler;
 
-            checkChartButton.Click += CheckChartByButtonHandler;
+            buyButton.Click += Button_Click;
+            checkChartButton.Click += Button_Click;
 
             axKHOpenAPI1.OnEventConnect += OnEventConnectHandler; // 로그인 event slot connect
+            axKHOpenAPI1.OnReceiveTrData += OnReceiveTrDataHandler; // TR event slot connect
             axKHOpenAPI1.OnReceiveRealData += OnReceiveRealDataHandler; // 실시간 event slot connect
+            axKHOpenAPI1.OnReceiveChejanData += OnReceiveChejanDataHandler; // 체결,접수,잔고 event slot connect
+            axKHOpenAPI1.OnReceiveMsg += OnReceiveMsgHandler;
             // END -- Windows Settings
             // ------------------------------------------------------
 
@@ -49,6 +63,10 @@ namespace AtoTrader
             axKHOpenAPI1.CommConnect(); 
             
         }
-     
+        public void FormClosedHandler(Object sender, FormClosedEventArgs e)
+        {
+            this.Dispose();
+        }
+
     }
 }

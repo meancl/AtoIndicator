@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AtoTrader
+namespace AtoIndicator
 {
     public partial class MainForm
     {
@@ -32,6 +32,12 @@ namespace AtoTrader
                     sbLogTxtBx.Append(sMsg);
                 }
 
+                if (nEaIdx != null)
+                {
+                    ea[(int)nEaIdx].myTradeManager.sTotalLog.Append(sMsg);
+                    if (nSlotIdx != null)
+                        ea[(int)nEaIdx].myTradeManager.arrBuyedSlots[(int)nSlotIdx].sEachLog.Append(sMsg);
+                }
             }
             catch
             {

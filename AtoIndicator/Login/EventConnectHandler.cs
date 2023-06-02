@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using AtoTrader.DB;
+using AtoIndicator.DB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AtoTrader
+namespace AtoIndicator
 {
     public partial class MainForm
     {
@@ -51,8 +51,10 @@ namespace AtoTrader
                 sAccountNum = accountArray[0]; // 처음계좌가 main계좌
                 accountComboBox.Text = sAccountNum;
                 this.ActiveControl = logTxtBx;
-                SubscribeRealData(); // 실시간 구독  
-                
+                RequestHoldings(0);
+                SubscribeRealData(); // 실시간 구독 
+                RequestDeposit(); // 예수금상세현황요청 
+
 
                 foreach (string sAccount in accountArray)
                 {
@@ -61,7 +63,6 @@ namespace AtoTrader
                 }
                 myNameLabel.Text = sMyName;
                 isLoginSucced = true;
-                this.Enabled = true;
             }
             else
             {

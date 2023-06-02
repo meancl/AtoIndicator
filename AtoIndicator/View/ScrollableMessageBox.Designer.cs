@@ -1,5 +1,5 @@
 ﻿
-namespace AtoTrader.View.ScrollableMsgBox
+namespace AtoIndicator.View.ScrollableMsgBox
 {
     partial class ScrollableMessageBox
     {

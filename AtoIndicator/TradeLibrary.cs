@@ -1,4 +1,4 @@
-﻿namespace AtoTrader
+﻿namespace AtoIndicator
 {
     public partial class MainForm
     {
@@ -185,6 +185,56 @@
         }
 
 
-        
+        // =========================================
+        // 마지막 편집일 : 2023-04-20
+        // 1. 매매에 맞게 처리 후 매매 컨트롤러에 전해준다.
+        // =========================================
+        public TradeRequestSlot SetAndServeCurSlot(string sRQName, int nOrderType, string sCode, int nBuyedSlotIdx, string sOrgOrderId, int nEaIdx, int nSequence, int nOrderPrice, double fRequestRatio, string sHogaGb, TradeMethodCategory eTradeMethod, int nStrategyIdx, int nQty, string sDescription, double fCeil = 0.0, double fFloor = 0.0, bool isAIUse=false)
+        {
+            // 공용
+            curSlot.nOrderType = nOrderType;
+            curSlot.nRqTime = nSharedTime;
+            curSlot.nEaIdx = nEaIdx;
+            curSlot.sHogaGb = sHogaGb;
+            curSlot.sRQName = sRQName;
+            curSlot.sCode = sCode;
+            curSlot.sOrgOrderId = sOrgOrderId;
+            curSlot.nBuyedSlotIdx = nBuyedSlotIdx;
+            curSlot.eTradeMethod = eTradeMethod;
+            curSlot.sDescription = sDescription;
+
+
+            switch(nOrderType)
+            {
+                case NEW_BUY:
+                    curSlot.nStrategyIdx = nStrategyIdx;
+                    curSlot.nOrderPrice = nOrderPrice;
+                    curSlot.nSequence = nSequence;
+                    curSlot.fRequestRatio = fRequestRatio;
+                    curSlot.fTargetPercent = fCeil;
+                    curSlot.fBottomPercent = fFloor;
+                    curSlot.tFixedResPassanger = ea[nEaIdx].GetBuyFix();
+                    curSlot.sFixedInfoPassanger = ea[nEaIdx].GetInfoString();
+                    break;
+                case NEW_SELL:
+                    curSlot.nQty = nQty;
+                    ea[nEaIdx].myTradeManager.arrBuyedSlots[nBuyedSlotIdx].isSelling = true;
+                    if (ea[nEaIdx].myTradeManager.arrBuyedSlots[nBuyedSlotIdx].recGroup.nLen == ea[nEaIdx].myTradeManager.arrBuyedSlots[nBuyedSlotIdx].recGroup.recList.Count)
+                        ea[nEaIdx].myTradeManager.arrBuyedSlots[nBuyedSlotIdx].recGroup.recList.Add(new RecordStruct());
+
+                    ea[nEaIdx].SetSellFix(nBuyedSlotIdx);
+                    break;
+                case BUY_CANCEL:
+                    ea[nEaIdx].myTradeManager.arrBuyedSlots[nBuyedSlotIdx].isCanceling = true; // 현재 매수취소 불가능상태로 만든다
+                    break;
+                default:
+                    break;
+            }
+
+            if(!isAIUse)
+                tradeQueue.Enqueue(curSlot);
+
+            return curSlot;
+        }
     }
 }

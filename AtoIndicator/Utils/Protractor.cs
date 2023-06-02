@@ -1,6 +1,6 @@
-﻿using static AtoTrader.Utils.Comparer;
+﻿using static AtoIndicator.Utils.Comparer;
 
-namespace AtoTrader.Utils
+namespace AtoIndicator.Utils
 {
     internal static class Protractor
     {

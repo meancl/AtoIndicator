@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace AtoTrader.Migrations
+namespace AtoIndicator.Migrations
 {
     public partial class mig_add_sellreport : Migration
     {

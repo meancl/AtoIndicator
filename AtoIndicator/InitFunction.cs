@@ -1,15 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.ML;
-using AtoTrader.DB;
+using AtoIndicator.DB;
 using AutoServer.Shared_Memory;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using static AtoTrader.KiwoomLib.TimeLib;
+using static AtoIndicator.KiwoomLib.TimeLib;
 
 
-namespace AtoTrader
+namespace AtoIndicator
 {
     public partial class MainForm
     {
@@ -39,9 +39,12 @@ namespace AtoTrader
 
         
         public StrategyNames strategyName;
-        public Dictionary<string, int> strategyNameDict = new Dictionary<string, int>(); // {"전략명" : DB내 전략번호}
+        public Dictionary<(int, string), int> strategyNameDict = new Dictionary<(int, string), int>(); // {(시그널타입, "전략명") : DB내 전략번호}
 
-        public MLContext mlContext;
+
+#if AI
+        public MMF mmf = new MMF(); // 공유메모리를 위한 인스턴스
+#endif
 
         // ============================================
         // 마지막 편집일 : 2023-04-20
@@ -82,20 +85,118 @@ namespace AtoTrader
 
 
             ea = new EachStock[nStockLength]; // 개인 구조체 생성
+            holdingsArray = new Holdings[MAX_STOCK_HOLDINGS_NUM]; // 보유잔고 구조체 배열 생성
             stockDashBoard.stockPanel = new StockPiece[nStockLength]; // 순위 결정을 위한 구조체 배열 생성
 
             strategyName = new StrategyNames();
+            strategyHistoryList = new List<StrategyHistory>[strategyName.arrRealBuyStrategyName.Count]; // 전략매매후 정보를 담는 list
+         
 
             for (int i = 0; i < nStockLength; i++)
             {
-                ea[i].fakeVolatilityStrategy = new FakeVolatilityStrategy(FAKE_VOLATILE_SIGNAL, strategyName.arrFakeVolatilityStrategyName.Count); // 개인전략 구조체 초기화
+                ea[i].realBuyStrategy = new RealBuyStrategy(REAL_BUY_SIGNAL, strategyName.arrRealBuyStrategyName.Count); // 개인전략 구조체 초기화
+                ea[i].fakeDownStrategy = new FakeDownStrategy(FAKE_DOWN_SIGNAL, strategyName.arrFakeDownStrategyName.Count); 
+                ea[i].fakeVolatilityStrategy = new FakeVolatilityStrategy(FAKE_VOLATILE_SIGNAL, strategyName.arrFakeVolatilityStrategyName.Count);
                 ea[i].fakeBuyStrategy = new FakeBuyStrategy(FAKE_BUY_SIGNAL, strategyName.arrFakeBuyStrategyName.Count);
                 ea[i].fakeResistStrategy = new FakeResistStrategy(FAKE_RESIST_SIGNAL, strategyName.arrFakeResistStrategyName.Count);
                 ea[i].fakeAssistantStrategy = new FakeAssistantStrategy(FAKE_ASSISTANT_SIGNAL, strategyName.arrFakeAssistantStrategyName.Count);
             }
+            // 각 전략마다 기록용 리스트 생성
+            for (int i = 0; i < strategyName.arrRealBuyStrategyName.Count; i++)
+                strategyHistoryList[i] = new List<StrategyHistory>();
 
+            
+            // 전략명을 Key로 DB에서 전략번호를 받아온다.
+            using (var db = new myDbContext())
+            {
+                #region Read Strategy Name
+                // 데이터를 insert할때 데이터를 모두 입력하지 않았으면 나머지는 0 , null 등 초기값으로 myDbContext에서 관리해준다.
+                // 해당 데이터를 myDbContext에서 관리하기 때문에 이미 관리대상인 데이터 값을 요청하면 sql에 새로 요청하지 않고
+                // 관리데이터중에서 찾아 반환한게 되는데 이러면 자동설정된 값들을 제대로 반영하지 못하는 오류가 일어난다.
+                // 추적 vs 비추적 이슈
+                db.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+                StrategyNameDict cls;
 
+                Dictionary<int, int> nStrategyGroupLastIdx = new Dictionary<int, int>();
+                var signalList = new []
+                {
+                    REAL_BUY_SIGNAL,
+                    FAKE_BUY_SIGNAL,
+                    FAKE_ASSISTANT_SIGNAL,
+                    FAKE_RESIST_SIGNAL,
+                    FAKE_VOLATILE_SIGNAL,
+                    FAKE_DOWN_SIGNAL
+                };
+                for(int i = 0; i< signalList.Length; i++)
+                {
+                    nStrategyGroupLastIdx[signalList[i]] = -1;
+                }
 
+                for (int sigIdx = 0; sigIdx < signalList.Length; sigIdx++)
+                {
+                    int signal = signalList[sigIdx];
+
+                    int nStrategyLen = strategyName.GetStrategySize(signal);
+                    if (nStrategyLen == -1)
+                        continue;
+
+                    string sCurStrategy;
+                    for (int i = 0; i < nStrategyLen; i++)
+                    {
+                        if (strategyName.GetStrategyExistsByIdx(signal, i))
+                        {
+                            sCurStrategy = strategyName.GetStrategyNameByIdx(signal, i);
+                            
+                            if (sCurStrategy == null)
+                                continue;
+
+                            var dataExist = db.strategyNameDict.FirstOrDefault(x => x.nStrategyGroupNum == signal && x.sStrategyName.Equals(sCurStrategy));
+                            
+                            if (dataExist == null)
+                            {
+                                var dataNumDuplicated = db.strategyNameDict.FirstOrDefault(x => x.nStrategyGroupNum == signal && x.nStrategyNameIdx == nStrategyGroupLastIdx[signal] + 1);
+                                if (dataNumDuplicated == null)
+                                {
+                                    cls = new StrategyNameDict
+                                    {
+                                        nStrategyGroupNum = signal,
+                                        nStrategyNameIdx = nStrategyGroupLastIdx[signal] + 1,
+                                        sStrategyName = sCurStrategy
+                                    };
+
+                                    try
+                                    {
+                                        db.strategyNameDict.Add(cls);
+                                        db.SaveChanges();
+                                        // 데이터가 잘 들어가졌을때
+                                        var checkData = db.strategyNameDict.FirstOrDefault(x => x.nStrategyGroupNum == signal && x.sStrategyName.Equals(sCurStrategy));
+                                        strategyNameDict[(checkData.nStrategyGroupNum, checkData.sStrategyName)] = checkData.nStrategyNameIdx;
+                                        nStrategyGroupLastIdx[signal]++;
+                                    }
+                                    catch (Exception ex) // 오류가 났다면 다시
+                                    {
+                                        db.strategyNameDict.Remove(cls);
+                                        i--;
+                                        continue;
+                                    }
+                                }
+                                else
+                                {
+                                    nStrategyGroupLastIdx[signal]++;
+                                    i--;
+                                    continue;
+                                }
+                            }
+                            else // 데이터가 있다면
+                            {
+                                strategyNameDict[(dataExist.nStrategyGroupNum, dataExist.sStrategyName)] = dataExist.nStrategyNameIdx;
+                                nStrategyGroupLastIdx[dataExist.nStrategyGroupNum] = dataExist.nStrategyNameIdx;
+                            }
+                        }
+                    }
+                }
+                #endregion
+            }
         } // END -- InitAto
 
         // ============================================

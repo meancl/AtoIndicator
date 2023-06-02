@@ -19,7 +19,7 @@ namespace AutoServer.Shared_Memory
         public const int USER_POINTER_LOC = 4;    // 우리쪽 포인터 위치
 
         public const int nStepPtrSize = 8;         // 포인터 이후 OffSet
-        public const int nStructStepNum = 4096;    // 실제 데이터 OffSet
+        public const int nStructStepNum = 8192;    // 실제 데이터 OffSet
 
         public bool[] checkingRequestArray;   // 데이터 요청 유무
         public bool[] checkingComeArray;      // 서비스 도착 유무

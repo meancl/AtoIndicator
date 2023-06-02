@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AtoTrader.Utils
+namespace AtoIndicator.Utils
 {
     internal static class Timer
     {

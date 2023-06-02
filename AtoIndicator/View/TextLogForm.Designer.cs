@@ -1,5 +1,5 @@
 ﻿
-namespace AtoTrader.View.TextLog
+namespace AtoIndicator.View.TextLog
 {
     partial class TextLogForm
     {

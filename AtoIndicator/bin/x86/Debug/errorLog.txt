@@ -1,54 +1,103 @@
-2023-05-09 오전 9:00:49 ## Msg : 인덱스가 범위를 벗어났습니다. 인덱스는 음수가 아니어야 하며 컬렉션의 크기보다 작아야 합니다.
-매개 변수 이름: index
+2023-05-11 오전 11:54:56 ## Msg : 이름이 'Ma1hGap'인 차트 요소를 'SeriesCollection'에서 찾을 수 없습니다.
 ======================================================
-   위치: System.ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument argument, ExceptionResource resource)
-   위치: System.Collections.Generic.List`1.get_Item(Int32 index)
-   위치: System.Collections.ObjectModel.Collection`1.get_Item(Int32 index)
-   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.<UpdateMinuteHistoryData>g__voidDelegate|46_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 519
-   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.UpdateMinuteHistoryData() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 720
-   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.<ResetMinuteChart>g__voidDelegate|45_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 239
-   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.ResetMinuteChart() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 245
-   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm..ctor(MainForm parentForm, Int32 nCallIdx, Nullable`1 specificStrategy) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 113
-   위치: AtoTrader.View.FastInfo.<>c__DisplayClass16_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\FastInfo.cs:줄 747
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartNamedElementCollection`1.get_Item(String name)
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.<ResetMinuteChart>g__voidDelegate|49_0() 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\View\EachStockHistoryForm.cs:줄 296
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.ResetMinuteChart() 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\View\EachStockHistoryForm.cs:줄 314
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm..ctor(MainForm parentForm, Int32 nCallIdx, Nullable`1 specificStrategy) 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\View\EachStockHistoryForm.cs:줄 138
+   위치: AtoTrader.View.TradeRecod.TradeRecodForm.<>c__DisplayClass21_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\View\TradeRecodForm.cs:줄 397
    위치: System.Threading.ThreadHelper.ThreadStart_Context(Object state)
    위치: System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
    위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
    위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
    위치: System.Threading.ThreadHelper.ThreadStart()
 
-2023-05-09 오전 9:08:36 ## Msg : 인덱스가 범위를 벗어났습니다. 인덱스는 음수가 아니어야 하며 컬렉션의 크기보다 작아야 합니다.
-매개 변수 이름: index
+2023-05-11 오전 11:55:48 ## Msg : 이름이 'Ma1hGap'인 차트 요소를 'SeriesCollection'에서 찾을 수 없습니다.
 ======================================================
-   위치: System.ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument argument, ExceptionResource resource)
-   위치: System.Collections.Generic.List`1.get_Item(Int32 index)
-   위치: System.Collections.ObjectModel.Collection`1.get_Item(Int32 index)
-   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.<UpdateMinuteHistoryData>g__voidDelegate|46_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 578
-   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.UpdateMinuteHistoryData() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 720
-   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.<ResetMinuteChart>g__voidDelegate|45_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 239
-   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.ResetMinuteChart() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 245
-   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm..ctor(MainForm parentForm, Int32 nCallIdx, Nullable`1 specificStrategy) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 113
-   위치: AtoTrader.View.FastInfo.<>c__DisplayClass16_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\FastInfo.cs:줄 747
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartNamedElementCollection`1.get_Item(String name)
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.<ResetMinuteChart>g__voidDelegate|49_0() 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\View\EachStockHistoryForm.cs:줄 296
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.ResetMinuteChart() 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\View\EachStockHistoryForm.cs:줄 314
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm..ctor(MainForm parentForm, Int32 nCallIdx, Nullable`1 specificStrategy) 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\View\EachStockHistoryForm.cs:줄 138
+   위치: AtoTrader.View.TradeRecod.TradeRecodForm.<>c__DisplayClass21_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\View\TradeRecodForm.cs:줄 397
    위치: System.Threading.ThreadHelper.ThreadStart_Context(Object state)
    위치: System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
    위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
    위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
    위치: System.Threading.ThreadHelper.ThreadStart()
 
-2023-05-09 오전 9:13:56 ## Msg : 인덱스가 범위를 벗어났습니다. 인덱스는 음수가 아니어야 하며 컬렉션의 크기보다 작아야 합니다.
-매개 변수 이름: index
+2023-05-11 오전 11:57:24 ## Msg : 이름이 'EachArea'인 차트 요소를 'ChartAreaCollection'에서 찾을 수 없습니다.
 ======================================================
-   위치: System.ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument argument, ExceptionResource resource)
-   위치: System.Collections.Generic.List`1.get_Item(Int32 index)
-   위치: System.Collections.ObjectModel.Collection`1.get_Item(Int32 index)
-   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.<UpdateMinuteHistoryData>g__voidDelegate|46_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 578
-   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.UpdateMinuteHistoryData() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 720
-   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.<ResetMinuteChart>g__voidDelegate|45_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 239
-   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.ResetMinuteChart() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 245
-   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm..ctor(MainForm parentForm, Int32 nCallIdx, Nullable`1 specificStrategy) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 113
-   위치: AtoTrader.View.FastInfo.<>c__DisplayClass16_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\FastInfo.cs:줄 747
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartNamedElementCollection`1.get_Item(String name)
+   위치: AtoTrader.View.EachStockHistory.EachStockHistoryForm.ChartMouseMoveHandler(Object o, MouseEventArgs e) 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\View\EachStockHistoryForm.cs:줄 1408
+   위치: System.Windows.Forms.Control.OnMouseMove(MouseEventArgs e)
+   위치: System.Windows.Forms.DataVisualization.Charting.Chart.OnChartMouseMove(MouseEventArgs e)
+   위치: System.Windows.Forms.DataVisualization.Charting.Chart.OnMouseMove(MouseEventArgs e)
+   위치: System.Windows.Forms.Control.WmMouseMove(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+   위치: System.Windows.Forms.UnsafeNativeMethods.DispatchMessageW(MSG& msg)
+   위치: System.Windows.Forms.Application.ComponentManager.System.Windows.Forms.UnsafeNativeMethods.IMsoComponentManager.FPushMessageLoop(IntPtr dwComponentID, Int32 reason, Int32 pvLoopData)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoopInner(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoop(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.RunDialog(Form form)
+   위치: System.Windows.Forms.Form.ShowDialog(IWin32Window owner)
+   위치: System.Windows.Forms.Form.ShowDialog()
+   위치: AtoTrader.View.TradeRecod.TradeRecodForm.<>c__DisplayClass21_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\View\TradeRecodForm.cs:줄 397
    위치: System.Threading.ThreadHelper.ThreadStart_Context(Object state)
    위치: System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
    위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
    위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
    위치: System.Threading.ThreadHelper.ThreadStart()
+
+2023-05-11 오후 3:25:25 ## Msg : '13'의 InvalidArgument=Value는 'index'에 사용할 수 없습니다.
+매개 변수 이름: index
+======================================================
+   위치: System.Windows.Forms.ListViewItem.ListViewSubItemCollection.get_Item(Int32 index)
+   위치: AtoTrader.View.FastInfo.MyListViewComparer.Compare(Object x, Object y) 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\View\FastInfo.cs:줄 710
+   위치: System.Windows.Forms.ListView.CompareFunc(IntPtr lparam1, IntPtr lparam2, IntPtr lparamSort)
+   위치: System.Windows.Forms.UnsafeNativeMethods.CallWindowProc(IntPtr wndProc, IntPtr hWnd, Int32 msg, IntPtr wParam, IntPtr lParam)
+   위치: System.Windows.Forms.NativeWindow.DefWndProc(Message& m)
+   위치: System.Windows.Forms.Control.DefWndProc(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.ListView.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+   위치: System.Windows.Forms.UnsafeNativeMethods.SendMessage(HandleRef hWnd, Int32 Msg, IntPtr wParam, ListViewCompareCallback pfnCompare)
+   위치: System.Windows.Forms.ListView.Sort()
+   위치: System.Windows.Forms.ListView.set_ListViewItemSorter(IComparer value)
+   위치: AtoTrader.View.FastInfo.ColumnClickHandler(Object sender, ColumnClickEventArgs e) 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\View\FastInfo.cs:줄 662
+   위치: System.Windows.Forms.ListView.OnColumnClick(ColumnClickEventArgs e)
+   위치: System.Windows.Forms.ListView.WmNotify(Message& m)
+   위치: System.Windows.Forms.ListView.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+   위치: System.Windows.Forms.UnsafeNativeMethods.DispatchMessageW(MSG& msg)
+   위치: System.Windows.Forms.Application.ComponentManager.System.Windows.Forms.UnsafeNativeMethods.IMsoComponentManager.FPushMessageLoop(IntPtr dwComponentID, Int32 reason, Int32 pvLoopData)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoopInner(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoop(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.RunDialog(Form form)
+   위치: System.Windows.Forms.Form.ShowDialog(IWin32Window owner)
+   위치: System.Windows.Forms.Form.ShowDialog()
+   위치: AtoTrader.MainForm.<CallThreadFastInfo>b__350_0() 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\WinFormHandler.cs:줄 388
+   위치: System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   위치: System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   위치: System.Threading.ThreadHelper.ThreadStart()
+
+2023-05-17 오전 12:46:35 ## Msg : An exception has been raised that is likely due to a transient failure. Consider enabling transient error resiliency by adding 'EnableRetryOnFailure()' to the 'UseMySql' call.
+======================================================
+   위치: Pomelo.EntityFrameworkCore.MySql.Storage.Internal.MySqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   위치: Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable`1.Enumerator.MoveNext()
+   위치: System.Linq.Enumerable.SingleOrDefault[TSource](IEnumerable`1 source)
+   위치: lambda_method(Closure , QueryContext )
+   위치: Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.Execute[TResult](Expression query)
+   위치: Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryProvider.Execute[TResult](Expression expression)
+   위치: System.Linq.Queryable.FirstOrDefault[TSource](IQueryable`1 source, Expression`1 predicate)
+   위치: AtoTrader.MainForm.InitAto() 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\InitFunction.cs:줄 123
+   위치: AtoTrader.MainForm..ctor() 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\View\MainForm.cs:줄 59
+   위치: AtoTrader.Program.Main() 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\Program.cs:줄 62
 

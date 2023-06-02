@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AtoTrader.View.TextLog
+namespace AtoIndicator.View.TextLog
 {
     public partial class TextLogForm : Form
     {
@@ -25,12 +25,16 @@ namespace AtoTrader.View.TextLog
             this.KeyUp += KeyUpHandler;
             this.Text = "텍스트 로그 기록";
             this.DoubleBuffered = true;
+            this.FormClosed += FormClosedHandler;
         }
         public void Print()
         {
             textBox1.Text = mainForm.sbLogTxtBx.ToString();
         }
-
+        public void FormClosedHandler(Object sender, FormClosedEventArgs e)
+        {
+            this.Dispose();
+        }
         public void KeyUpHandler(object sender, KeyEventArgs e)
         {
             char cUp = (char)e.KeyValue;

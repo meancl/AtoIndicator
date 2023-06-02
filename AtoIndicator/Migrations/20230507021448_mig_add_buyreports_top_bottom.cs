@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace AtoTrader.Migrations
+namespace AtoIndicator.Migrations
 {
     public partial class mig_add_buyreports_top_bottom : Migration
     {

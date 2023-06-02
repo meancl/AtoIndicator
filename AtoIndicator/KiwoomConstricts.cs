@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AtoTrader
+namespace AtoIndicator
 {
     public partial class MainForm
     {
@@ -51,7 +51,7 @@ namespace AtoTrader
                     arrScreen[nRand].sPurposeToUse = sPurpose;
 
                     nUsingScreenNum++;
-                    
+                    screenNumLabel.Text = nUsingScreenNum.ToString();
                     sRet = (nRand + SCREEN_NUM_START).ToString();
                 }
                 else
@@ -66,7 +66,7 @@ namespace AtoTrader
                             arrScreen[curScreen].sPurposeToUse = sPurpose;
 
                             nUsingScreenNum++;
-                            
+                            screenNumLabel.Text = nUsingScreenNum.ToString();
                             sRet = (curScreen + SCREEN_NUM_START).ToString();
                             break;
                         }
@@ -94,6 +94,10 @@ namespace AtoTrader
                     arrScreen[nScrNoIdx].nSlotIdx = null;
                     arrScreen[nScrNoIdx].sPurposeToUse = null;
 
+                    if(screenNumLabel.InvokeRequired)
+                        screenNumLabel.Invoke(new MethodInvoker(delegate { screenNumLabel.Text = nUsingScreenNum.ToString(); }));
+                    else
+                        screenNumLabel.Text = nUsingScreenNum.ToString();
                 }
             }
             catch

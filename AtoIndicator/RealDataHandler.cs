@@ -1,18 +1,18 @@
 ﻿using System;
-using AtoTrader.DB;
+using AtoIndicator.DB;
 using System.Collections.Generic;
-using static AtoTrader.KiwoomLib.TimeLib;
-using static AtoTrader.KiwoomLib.PricingLib;
-using static AtoTrader.KiwoomLib.Errors;
-using static AtoTrader.TradingBlock.TimeLineGenerator;
+using static AtoIndicator.KiwoomLib.TimeLib;
+using static AtoIndicator.KiwoomLib.PricingLib;
+using static AtoIndicator.KiwoomLib.Errors;
+using static AtoIndicator.TradingBlock.TimeLineGenerator;
 using System.Linq;
-using static AtoTrader.Utils.Protractor;
-using static AtoTrader.Utils.Comparer;
+using static AtoIndicator.Utils.Protractor;
+using static AtoIndicator.Utils.Comparer;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Text;
 
-namespace AtoTrader
+namespace AtoIndicator
 {
     public partial class MainForm
     {
@@ -22,7 +22,12 @@ namespace AtoTrader
 
         public const int AI_ONCE_MAXNUM = 5;
         public Queue<AIResponseSlot> aiQueue = new Queue<AIResponseSlot>(); // 매매신청을 담는 큐, 매매컨트롤러가 사용할 큐 // real
-      
+        public Queue<TradeRequestSlot> tradeQueue = new Queue<TradeRequestSlot>(); // 매매신청을 담는 큐, 매매컨트롤러가 사용할 큐 // real
+
+        public List<StrategyHistory>[] strategyHistoryList;
+        public List<StrategyHistory> totalTradeHistoryList = new List<StrategyHistory>();
+
+        public TradeRequestSlot curSlot; // 임시로 사용하능한 매매요청, 매매컨트롤러 변수 // real
         public AIResponseSlot aiSlot;
 
 
@@ -64,17 +69,6 @@ namespace AtoTrader
         #endregion
 
         #region 상수
-        public const double STOCK_TAX = 0.0023; // 거래세 
-        public const double STOCK_FEE = 0.00015; // 증권 매매수수료
-        public const double VIRTUAL_STOCK_FEE = 0.0035; // 가상증권 매매수수료
-        public const double VIRTUAL_STOCK_COMMISSION = STOCK_TAX + VIRTUAL_STOCK_FEE * 2; // 최종 거래수수료 *현재 : 거래세 + 가상증권 매매수수료 *  2( 가상증권 매수수수료 + 가상증권매매수수료 )
-        public const double REAL_STOCK_COMMISSION = STOCK_TAX + STOCK_FEE * 2;
-
-        public const double REAL_STOCK_BUY_COMMISION = STOCK_FEE;
-        public const double REAL_STOCK_SELL_COMMISION = STOCK_FEE + STOCK_TAX;
-
-        public const double VIRTUAL_STOCK_BUY_COMMISION = VIRTUAL_STOCK_FEE;
-        public const double VIRTUAL_STOCK_SELL_COMMISION = VIRTUAL_STOCK_FEE + STOCK_TAX;
         // ------------------------------------------------------
         // 추세 상수
         // ------------------------------------------------------
@@ -138,8 +132,16 @@ namespace AtoTrader
         public const int FAKE_BUY_SIGNAL = 0;
         public const int FAKE_RESIST_SIGNAL = 1;
         public const int FAKE_ASSISTANT_SIGNAL = 2;
-        public const int FAKE_VOLATILE_SIGNAL = 5;
+        public const int REAL_BUY_SIGNAL = 5;
+        public const int REAL_SELL_SIGNAL = 6;
+        public const int FAKE_VOLATILE_SIGNAL = 7;
+        public const int EVERY_SIGNAL = 8;
+        public const int FAKE_DOWN_SIGNAL = 9;
 
+        public const int NONE_RESERVE = 0;
+        public const int UP_RESERVE = 1;
+        public const int DOWN_RESERVE = 2;
+        public const int BOX_RESERVE = 3;
 
         public const string SEND_ORDER_ERROR_CHECK_PREFIX = "둥둥둥";
 
@@ -152,14 +154,16 @@ namespace AtoTrader
         public const int MAX_REQ_SEC = 150; // 최대매수요청시간
         public const int BUY_CANCEL_ACCESS_SEC = 15;  // 매수취소 가능할때까지 시간
 
-        public const int REAL_BUY_MAX_NUM = 200; // 최대 매매블록 갯수
-        public const int BAR_REAL_BUY_MAX_NUM = 3; // 한 봉에
+        public const int REAL_BUY_MAX_NUM = 50; // 최대 매매블록 갯수
+        public const int BAR_FAKE_MAX_NUM = 5; // 한 봉에
 
         public const int PRICE_UP_MAX_NUM = 200; // 최대 가격up 갯수
         public const int PRICE_DOWN_MAX_NUM = 200; // 최대 가격down 갯수
         public const int FAKE_BUY_MAX_NUM = 200;
         public const int FAKE_RESIST_MAX_NUM = 200;
         public const int FAKE_ASSISTANT_MAX_NUM = 200;
+        public const int FAKE_VOLATILITY_MAX_NUM = 200;
+        public const int FAKE_DOWN_MAX_NUM = 200;
 
         //public const int REAL_BUY_STRATEGY_NUM = 84; // 전략 갯수
         //public const int PRICE_UP_STRATEGY_NUM = 20; // 전략 갯수
@@ -172,6 +176,7 @@ namespace AtoTrader
 
         public static int COMPUTER_LOCATION = -1;
         public static int SELL_VERSION = 0;
+        public static int AI_VERSION = 0; 
         public const int TRADE_CONTROLLER_ACCESS_BUY_LIMIT = 10;
         public const int SYSTEMETIC_SELL_FAIL = 10;
         public const int SYSTEMETIC_BUY_CANCEL_FAIL = 6;
@@ -186,17 +191,15 @@ namespace AtoTrader
         #region  실시간이벤트핸들러
         private void OnReceiveRealDataHandler(object sender, AxKHOpenAPILib._DKHOpenAPIEvents_OnReceiveRealDataEvent e)
         {
-
+            int nCurIdx;
 
             string sCode = e.sRealKey.Trim(); // 종목코드
 
             bool isHogaJanRyang = false;
             bool isZooSikCheGyul = false;
 
-            int nCurIdx;
 
 
-            #region 실시간 장시작시간
             if (e.sRealType.Equals("장시작시간"))
             {
                 string sGubun = axKHOpenAPI1.GetCommRealData(e.sRealKey, 215); // 장운영구분 0 :장시작전, 3 : 장중, 4 : 장종료
@@ -218,25 +221,28 @@ namespace AtoTrader
                     nSharedTime = nFirstTime;
                     nPrevBoardUpdateTime = nFirstTime;
 
+                    BlockizeUndisposal();
+
                 }
                 else
                 {
                     if (sGubun.Equals("2")) // 장 종료 10분전 동시호가
                     {
                         PrintLog($"{sTimeRest} : 장종료전");
-                        
+                        RequestHoldings(0); // 장 끝나기 전 잔여종목 전량매도
                     }
                     else if (sGubun.Equals("4")) // 장 종료
                     {
                         PrintLog("장종료");
                         isMarketStart = false;
-                        //PutTradeResultAsync();
-                        //PutChartResultAsync();
+                        RequestHoldings(0);
+                        RequestTradeResult(0);
+                        PutTradeResultAsync();
+                        PutChartResultAsync();
                     }
                 }
                 return; // 장시작시간 실시간데이터는  여기서 종료
             }
-            #endregion
             else if (e.sRealType.Equals("주식호가잔량"))
             {
                 isHogaJanRyang = true;
@@ -252,6 +258,7 @@ namespace AtoTrader
                 {
                     nPrevTotalClock = nSharedTime;
                     totalClockLabel.Text = "현재시간 : " + nPrevTotalClock;
+                    depositCalcLabel.Text = nCurDepositCalc + "(원)";
                 }
                 #endregion
 
@@ -267,6 +274,7 @@ namespace AtoTrader
                 {
                     isOnlyLogTime = true;
                     PrintLog("3시가 지났다");
+                    SellALL("3시매도");
                 }
                 #endregion
 
@@ -290,6 +298,7 @@ namespace AtoTrader
                 // nPrevBoardUpdateTime은 장시작시간 + MINUTE_SEC 에 처음 접근이 가능해야함.
                 if (SubTimeToTimeAndSec(nSharedTime, nPrevBoardUpdateTime) >= MINUTE_SEC && nSharedTime <= MARKET_END_TIME) // 매 분마다 업데이트 진행 
                 {
+                    PrintLog($"{nSharedTime} 누적 화면번호 수 {nUsingScreenNum}");
                     PrintMemoryUsage();
                     #region 순위 지정
                     // ===========================================================================================================
@@ -520,13 +529,12 @@ namespace AtoTrader
                                 ea[nRankIdx].rankSystem.nRankHold1000++;
                             else
                                 ea[nRankIdx].rankSystem.nRankHold1000 = 0;
-                            
                             // 별도로 ea[stockDashBoard.stockPanel[i].nEaIdx].rankSystem.nCurIdx를 작업 안해줘도 된다, 0이었다가 1이 됐으니 이상태에서
                             // 누적순위 / nCurIdx하면 된다.
                             // 전체 누적합
 
                             ea[nRankIdx].rankSystem.arrRanking[nTimeLineIdx] = tmpRank; // arrRanking[0]은 장시작시간 + MINUTE_SEC
-                            ea[nRankIdx].rankSystem.nEaIdx++;
+                            ea[nRankIdx].rankSystem.nCurIdx++;
                         }
 
                     }
@@ -602,7 +610,7 @@ namespace AtoTrader
                                 double fCurUpTailPower = (double)(ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nMaxFs - ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nUpFs) / ea[i].nYesterdayEndPrice;
                                 double fCurDownTailPower = (double)(ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nDownFs - ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nMinFs) / ea[i].nYesterdayEndPrice;
 
-                                if(ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs > ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nStartFs)
+                                if (ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs > ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nStartFs)
                                 {
                                     ea[i].fPositiveStickPower += fCurCandlePower;
                                 }
@@ -632,6 +640,7 @@ namespace AtoTrader
 
                                 if (fCurDownTailPower >= 0.01)
                                     ea[i].timeLines1m.downTailList.Add((nSharedTime, fCurCandlePower));
+
                             }
 
                             // -----------------------------------------------------------------
@@ -776,7 +785,7 @@ namespace AtoTrader
                                 {
                                     nSummation += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
                                     if (j < BRUSH)
-                                        nSummationGap += ea[i].nYesterdayEndPrice; 
+                                        nSummationGap += ea[i].nYesterdayEndPrice;
                                     else
                                         nSummationGap += ea[i].timeLines1m.arrTimeLine[j].nLastFs;
                                 }
@@ -820,11 +829,40 @@ namespace AtoTrader
                                 ea[i].maOverN.nDownCntMa20m = 0;
                             }
 
-                            if (ea[i].maOverN.fMaxMa20m < fMaVal)
+                            if (ea[i].maOverN.fMaxMa20m < fMaVal) // max ma 20m
                             {
                                 ea[i].maOverN.fMaxMa20m = fMaVal;
                                 ea[i].maOverN.nMaxMa20mTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fMaxMa20mPower = (fMaVal - ea[i].nTodayStartPrice) / ea[i].nYesterdayEndPrice;
+
+                                ea[i].maOverN.fBottomMa20m = fMaVal;
+                                ea[i].maOverN.nBottomMa20mTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fBottomMa20mPower = (fMaVal - ea[i].nTodayStartPrice) / ea[i].nYesterdayEndPrice;
                             }
+                            else if(ea[i].maOverN.fBottomMa20m > fMaVal) // bottom ma 20m 
+                            {
+                                ea[i].maOverN.fBottomMa20m = fMaVal;
+                                ea[i].maOverN.nBottomMa20mTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fBottomMa20mPower = (fMaVal - ea[i].nTodayStartPrice) / ea[i].nYesterdayEndPrice;
+                            }
+
+                            if (ea[i].maOverN.fMaxGapMa20m < fMaGapVal) // max gap ma 20m 
+                            {
+                                ea[i].maOverN.fMaxGapMa20m = fMaGapVal;
+                                ea[i].maOverN.nMaxGapMa20mTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fMaxGapMa20mPower = (fMaGapVal - ea[i].nYesterdayEndPrice) / ea[i].nYesterdayEndPrice;
+
+                                ea[i].maOverN.fBottomGapMa20m = fMaGapVal;
+                                ea[i].maOverN.nBottomGapMa20mTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fBottomGapMa20mPower = (fMaGapVal - ea[i].nYesterdayEndPrice) / ea[i].nYesterdayEndPrice;
+                            }
+                            else if(ea[i].maOverN.fBottomGapMa20m >fMaGapVal) // bottom gap ma 20m
+                            {
+                                ea[i].maOverN.fBottomGapMa20m = fMaGapVal;
+                                ea[i].maOverN.nBottomGapMa20mTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fBottomGapMa20mPower = (fMaGapVal - ea[i].nYesterdayEndPrice) / ea[i].nYesterdayEndPrice;
+                            }
+
                             ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nDownTimeOverMa0 = ea[i].maOverN.nDownCntMa20m;
                             ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nUpTimeOverMa0 = ea[i].maOverN.nUpCntMa20m;
 
@@ -864,7 +902,7 @@ namespace AtoTrader
                             fMaVal = (double)nSummation / MA1H; // 현재의 N이동평균선 값
                             fMaGapVal = (double)nSummationGap / MA1H; // 현재의 N이동평균선 값
                             ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMa1 = ea[i].maOverN.fCurMa1h = fMaVal;
-                            ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMaGap1 = ea[i].maOverN.fCurGapMa1h =  fMaGapVal;
+                            ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMaGap1 = ea[i].maOverN.fCurGapMa1h = fMaGapVal;
                             if (ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nDownFs > fMaVal) // 현재의 저가보다 이평선이 아래에 있다면
                             {
                                 ea[i].maOverN.nDownCntMa1h++; // 아래가 좋은거임
@@ -884,10 +922,39 @@ namespace AtoTrader
                                 ea[i].maOverN.nDownCntMa1h = 0;
                             }
 
-                            if (ea[i].maOverN.fMaxMa1h < fMaVal)
+                        
+                            if (ea[i].maOverN.fMaxMa1h < fMaVal) // max ma 1h
                             {
                                 ea[i].maOverN.fMaxMa1h = fMaVal;
                                 ea[i].maOverN.nMaxMa1hTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fMaxMa1hPower = (fMaVal - ea[i].nTodayStartPrice) / ea[i].nYesterdayEndPrice;
+
+                                ea[i].maOverN.fBottomMa1h = fMaVal;
+                                ea[i].maOverN.nBottomMa1hTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fBottomMa1hPower = (fMaVal - ea[i].nTodayStartPrice) / ea[i].nYesterdayEndPrice;
+                            }
+                            else if (ea[i].maOverN.fBottomMa1h > fMaVal) // bottom ma 1h 
+                            {
+                                ea[i].maOverN.fBottomMa1h = fMaVal;
+                                ea[i].maOverN.nBottomMa1hTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fBottomMa1hPower = (fMaVal - ea[i].nTodayStartPrice) / ea[i].nYesterdayEndPrice;
+                            }
+
+                            if (ea[i].maOverN.fMaxGapMa1h < fMaGapVal) // max gap ma 1h 
+                            {
+                                ea[i].maOverN.fMaxGapMa1h = fMaGapVal;
+                                ea[i].maOverN.nMaxGapMa1hTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fMaxGapMa1hPower = (fMaGapVal - ea[i].nYesterdayEndPrice) / ea[i].nYesterdayEndPrice;
+
+                                ea[i].maOverN.fBottomGapMa1h = fMaGapVal;
+                                ea[i].maOverN.nBottomGapMa1hTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fBottomGapMa1hPower = (fMaGapVal - ea[i].nYesterdayEndPrice) / ea[i].nYesterdayEndPrice;
+                            }
+                            else if (ea[i].maOverN.fBottomGapMa1h > fMaGapVal) // bottom gap ma 1h
+                            {
+                                ea[i].maOverN.fBottomGapMa1h = fMaGapVal;
+                                ea[i].maOverN.nBottomGapMa1hTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fBottomGapMa1hPower = (fMaGapVal - ea[i].nYesterdayEndPrice) / ea[i].nYesterdayEndPrice;
                             }
                             ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nDownTimeOverMa1 = ea[i].maOverN.nDownCntMa1h;
                             ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nUpTimeOverMa1 = ea[i].maOverN.nUpCntMa1h;
@@ -949,10 +1016,38 @@ namespace AtoTrader
                                 ea[i].maOverN.nDownCntMa2h = 0;
                             }
 
-                            if (ea[i].maOverN.fMaxMa2h < fMaVal)
+                            if (ea[i].maOverN.fMaxMa2h < fMaVal) // max ma 2h
                             {
                                 ea[i].maOverN.fMaxMa2h = fMaVal;
                                 ea[i].maOverN.nMaxMa2hTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fMaxMa2hPower = (fMaVal - ea[i].nTodayStartPrice) / ea[i].nYesterdayEndPrice;
+
+                                ea[i].maOverN.fBottomMa2h = fMaVal;
+                                ea[i].maOverN.nBottomMa2hTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fBottomMa2hPower = (fMaVal - ea[i].nTodayStartPrice) / ea[i].nYesterdayEndPrice;
+                            }
+                            else if (ea[i].maOverN.fBottomMa2h > fMaVal) // bottom ma 2h 
+                            {
+                                ea[i].maOverN.fBottomMa2h = fMaVal;
+                                ea[i].maOverN.nBottomMa2hTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fBottomMa2hPower = (fMaVal - ea[i].nTodayStartPrice) / ea[i].nYesterdayEndPrice;
+                            }
+
+                            if (ea[i].maOverN.fMaxGapMa2h < fMaGapVal) // max gap ma 2h 
+                            {
+                                ea[i].maOverN.fMaxGapMa2h = fMaGapVal;
+                                ea[i].maOverN.nMaxGapMa2hTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fMaxGapMa2hPower = (fMaGapVal - ea[i].nYesterdayEndPrice) / ea[i].nYesterdayEndPrice;
+
+                                ea[i].maOverN.fBottomGapMa2h = fMaGapVal;
+                                ea[i].maOverN.nBottomGapMa2hTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fBottomGapMa2hPower = (fMaGapVal - ea[i].nYesterdayEndPrice) / ea[i].nYesterdayEndPrice;
+                            }
+                            else if (ea[i].maOverN.fBottomGapMa2h > fMaGapVal) // bottom gap ma 2h
+                            {
+                                ea[i].maOverN.fBottomGapMa2h = fMaGapVal;
+                                ea[i].maOverN.nBottomGapMa2hTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                ea[i].maOverN.fBottomGapMa2hPower = (fMaGapVal - ea[i].nYesterdayEndPrice) / ea[i].nYesterdayEndPrice;
                             }
                             ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nDownTimeOverMa2 = ea[i].maOverN.nDownCntMa2h;
                             ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nUpTimeOverMa2 = ea[i].maOverN.nUpCntMa2h;
@@ -962,25 +1057,116 @@ namespace AtoTrader
                         #endregion
 
                         #region 전고점 계산
+                        // ===========================================================================================================
+                        // 전고점 Part
+                        // ===========================================================================================================
                         {
-                            if( ea[i].crushMgr.maxPoint.nPrice  < ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs) // 고점 계산
+                            if (ea[i].crushMinuteManager.nCrushMaxPrice < ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs) // 최근기록된 maxPrice보다 현재 종가가 더 높다면
                             {
-                                ea[i].crushMgr.maxPoint.nPrice = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs;
-                                ea[i].crushMgr.maxPoint.nTime = nSharedTime;
+                                // ----------------------------------------
+                                // 전고점 조건 
+                                if ((double)(ea[i].crushMinuteManager.nCrushMaxPrice - ea[i].crushMinuteManager.nCrushMinPrice) / ea[i].nYesterdayEndPrice > 0.01 && // 우선 종가대비 전고점과 전저점의 폭이 1퍼센트가 넘어야하고
+                                    ea[i].crushMinuteManager.nCrushMinTime > ea[i].crushMinuteManager.nCrushMaxTime) // minTime은 maxTime보다 이후여야한다. minTime == maxTime일 가능성이 있기 때문에.
+                                {
+                                    Crush tmpCrush;
+                                    tmpCrush.nCnt = ea[i].crushMinuteManager.nCurCnt++;
+                                    tmpCrush.fMaxMinPower = (double)(ea[i].crushMinuteManager.nCrushMaxPrice - ea[i].crushMinuteManager.nCrushMinPrice) / ea[i].nYesterdayEndPrice;
+                                    tmpCrush.fCurMinPower = (double)(ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs - ea[i].crushMinuteManager.nCrushMinPrice) / ea[i].nYesterdayEndPrice;
+                                    tmpCrush.nMaxMinTime = SubTimeToTime(ea[i].crushMinuteManager.nCrushMinTime, ea[i].crushMinuteManager.nCrushMaxTime);
+                                    tmpCrush.nMaxCurTime = SubTimeToTime(ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime, ea[i].crushMinuteManager.nCrushMaxTime);
+                                    tmpCrush.nMinCurTime = SubTimeToTime(ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime, ea[i].crushMinuteManager.nCrushMinTime);
+                                    tmpCrush.nMinPrice = ea[i].crushMinuteManager.nCrushMinPrice;
+                                    tmpCrush.nMaxPrice = ea[i].crushMinuteManager.nCrushMaxPrice;
+                                    if (tmpCrush.nCnt == 0)
+                                    {
+                                        tmpCrush.fUpperNow = (double)(ea[i].crushMinuteManager.nCrushMinPrice - ea[i].crushMinuteManager.nCrushOnlyMinPrice) / ea[i].nYesterdayEndPrice;
+                                    }
+                                    else
+                                    {
+                                        tmpCrush.fUpperNow = (double)(ea[i].crushMinuteManager.nCrushMinPrice - ea[i].crushMinuteManager.crushList[tmpCrush.nCnt - 1].nMinPrice) / ea[i].nYesterdayEndPrice;
+                                    }
 
-                                // 고점 이전의 저점은 필요가 없다
-                                ea[i].crushMgr.minPoint.nPrice = 0;
-                                ea[i].crushMgr.minPoint.nTime = 0;
+                                    ea[i].crushMinuteManager.crushList.Add(tmpCrush);
+                                }
+
+                                ea[i].crushMinuteManager.nCrushMaxPrice = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs;
+                                ea[i].crushMinuteManager.nCrushMaxTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                                // 전고점에서 minTime은 항상 maxTime보다 높아야하니까 max가 앞서갈때는 minTime을 같이 세팅해준다.
+                                ea[i].crushMinuteManager.nCrushMinPrice = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs;
+                                ea[i].crushMinuteManager.nCrushMinTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
                             }
 
-                            if(ea[i].crushMgr.minPoint.nPrice == 0 || ea[i].crushMgr.minPoint.nPrice > ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs) // 저점 계산
+                            if (ea[i].crushMinuteManager.nCrushMinPrice > ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs)    // 최근 기록된 minPrice보다 현재종가가 낮다면
                             {
-                                ea[i].crushMgr.minPoint.nPrice = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs;
-                                ea[i].crushMgr.minPoint.nTime = nSharedTime;
+                                ea[i].crushMinuteManager.nCrushMinPrice = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs;
+                                ea[i].crushMinuteManager.nCrushMinTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
                             }
-                        }
+                            if (ea[i].crushMinuteManager.nCrushOnlyMinPrice > ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs) // 최근 기록된 only minPrice보다 현재종가가 낮다면
+                            {
+                                ea[i].crushMinuteManager.nCrushOnlyMinPrice = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs;
+                                ea[i].crushMinuteManager.nCrushOnlyMinTime = ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nTime;
+                            }
+
+                            if (ea[i].crushMinuteManager.nCurCnt != ea[i].crushMinuteManager.nPrevCrushCnt) // 전고점카운트가 오를때마다
+                            {
+                                int nCrushUpperCnt = 0;
+                                int nBadPoint = 0;
+                                ea[i].crushMinuteManager.isCrushCheck = true;
+                                ea[i].crushMinuteManager.nUpCnt = 0;
+                                ea[i].crushMinuteManager.nDownCnt = 0;
+                                ea[i].crushMinuteManager.nSpecialDownCnt = 0;
+
+                                for (j = 0; j < ea[i].crushMinuteManager.crushList.Count; j++)
+                                {
+                                    if (ea[i].crushMinuteManager.crushList[j].fUpperNow > 0) // 올랐다
+                                    {
+                                        nCrushUpperCnt++;
+                                        ea[i].crushMinuteManager.nUpCnt++;
+                                    }
+                                    else
+                                    {
+                                        if (j >= ea[i].crushMinuteManager.crushList.Count - EYES_CLOSE_CRUSH_NUM)
+                                        {
+                                            if (j == ea[i].crushMinuteManager.crushList.Count - 1) // 바로 이전에 전고점에서 하락이었으면 badcount 하나더 플러스
+                                            {
+                                                nBadPoint++;
+                                                ea[i].crushMinuteManager.nSpecialDownCnt++;
+                                            }
+                                            ea[i].crushMinuteManager.nDownCnt++;
+                                            nBadPoint++;
+                                        }
+                                    }
+                                }
+                                ea[i].crushMinuteManager.nPrevCrushCnt = ea[i].crushMinuteManager.nCurCnt;
+                            } // END --- 전고점 카운트가 오를때마다
+                        } // END ---- 전고점 
                         #endregion
 
+                        #region Sequence Strategy
+                        { // START ---- 분봉 Sequence Strategy 분기문
+
+                            double fCurPower = (double)(ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].nLastFs - ea[i].nTodayStartPrice) / ea[i].nYesterdayEndPrice;
+                            if (fCurPower >= 0.05)
+                                ea[i].sequenceStrategy.isFiveReachedMinute = true; // 분봉상으로 갭제외 5퍼를 도달했나
+
+                            ea[i].sequenceStrategy.botUpMinute421.Trace(fCurPower, nSharedTime);
+                            ea[i].sequenceStrategy.botUpMinute432.Trace(fCurPower, nSharedTime);
+                            ea[i].sequenceStrategy.botUpMinute642.Trace(fCurPower, nSharedTime);
+                            ea[i].sequenceStrategy.botUpMinute643.Trace(fCurPower, nSharedTime);
+                            ea[i].sequenceStrategy.botUpMinute732.Trace(fCurPower, nSharedTime);
+                            ea[i].sequenceStrategy.botUpMinute743.Trace(fCurPower, nSharedTime);
+                            ea[i].sequenceStrategy.botUpMinute953.Trace(fCurPower, nSharedTime);
+
+
+                            #region RealTime Sequence Strategy 초기화
+                            {
+                                ea[i].sequenceStrategy.isCandleTwoOverReal = false;
+                                ea[i].sequenceStrategy.isCandleTwoOverRealNoLeaf = false;
+                                ea[i].sequenceStrategy.nResistUpCount = 0;
+                            }
+                            #endregion
+                        } // END ---- 분봉 Sequence Strategy 분기문
+                        #endregion
 
                     }// END ---- 개인구조체 업데이트
                     #endregion
@@ -990,6 +1176,564 @@ namespace AtoTrader
                     nTimeLineIdx++;
                 }
                 #endregion
+
+                #region AI 서비스 창구
+#if AI
+                // AI 서비스를 요청했으면 
+                // 응답 기다리기
+                int nAISlotsNum = Min(aiQueue.Count, AI_ONCE_MAXNUM);
+                mmf.FetchTargets();
+                for (int i = 0; i < nAISlotsNum; i++) // 한바퀴 돈다
+                {
+                    aiSlot = aiQueue.Dequeue();
+
+                    bool isAIComed = mmf.checkingComeArray[aiSlot.nMMFNumber]; // 응답 여부
+
+                    if (!isAIComed) // 응답이 오지 않았다면
+                    {
+                        aiQueue.Enqueue(aiSlot);
+                        continue;
+                    }
+
+
+                    bool isAIPassed = mmf.checkingBookArray[aiSlot.nMMFNumber]; // 정답확인
+                    double fRatio = mmf.checkingRatioArray[aiSlot.nMMFNumber]; // 비율확인
+
+                    ea[aiSlot.nEaIdx].fakeStrategyMgr.fAIScore += fRatio;
+                    ea[aiSlot.nEaIdx].fakeStrategyMgr.fAIScoreJar += fRatio;
+                    ea[aiSlot.nEaIdx].fakeStrategyMgr.fAIScoreJarDegree += fRatio;
+
+                    ea[aiSlot.nEaIdx].fakeStrategyMgr.fAIScoreJar -= 0.1; // 줄인다.
+                    ea[aiSlot.nEaIdx].fakeStrategyMgr.fAIScoreJarDegree -= 0.1; // 줄인다.
+
+                    if (ea[aiSlot.nEaIdx].fakeStrategyMgr.fAIScoreJar < 0)
+                        ea[aiSlot.nEaIdx].fakeStrategyMgr.fAIScoreJar = 0;
+
+
+                    if (ea[aiSlot.nEaIdx].fakeStrategyMgr.fAIScore >= 5)
+                    {
+                        if (ea[aiSlot.nEaIdx].fakeStrategyMgr.nAI5Time == 0)
+                        {
+                            ea[aiSlot.nEaIdx].fakeStrategyMgr.nAI5Time = nSharedTime;
+                            PrintLog($"{nSharedTime} {ea[aiSlot.nEaIdx].sCode} {ea[aiSlot.nEaIdx].sCodeName} AI 5점 달성.", aiSlot.nEaIdx);
+                        }
+                        if (ea[aiSlot.nEaIdx].fakeStrategyMgr.fAIScore >= 10)
+                        {
+                            if (ea[aiSlot.nEaIdx].fakeStrategyMgr.nAI10Time == 0)
+                            {
+                                ea[aiSlot.nEaIdx].fakeStrategyMgr.nAI10Time = nSharedTime;
+                                PrintLog($"{nSharedTime} {ea[aiSlot.nEaIdx].sCode} {ea[aiSlot.nEaIdx].sCodeName} AI 10점 달성.", aiSlot.nEaIdx);
+                            }
+                            if (ea[aiSlot.nEaIdx].fakeStrategyMgr.fAIScore >= 15)
+                            {
+                                if (ea[aiSlot.nEaIdx].fakeStrategyMgr.nAI15Time == 0)
+                                {
+                                    ea[aiSlot.nEaIdx].fakeStrategyMgr.nAI15Time = nSharedTime;
+                                    PrintLog($"{nSharedTime} {ea[aiSlot.nEaIdx].sCode} {ea[aiSlot.nEaIdx].sCodeName} AI 15점 달성.", aiSlot.nEaIdx);
+                                }
+                                if (ea[aiSlot.nEaIdx].fakeStrategyMgr.fAIScore >= 20)
+                                {
+                                    if (ea[aiSlot.nEaIdx].fakeStrategyMgr.nAI20Time == 0)
+                                    {
+                                        ea[aiSlot.nEaIdx].fakeStrategyMgr.nAI20Time = nSharedTime;
+                                        PrintLog($"{nSharedTime} {ea[aiSlot.nEaIdx].sCode} {ea[aiSlot.nEaIdx].sCodeName} AI 20점 달성.", aiSlot.nEaIdx);
+                                    }
+                                    if (ea[aiSlot.nEaIdx].fakeStrategyMgr.fAIScore >= 30)
+                                    {
+                                        if (ea[aiSlot.nEaIdx].fakeStrategyMgr.nAI30Time == 0)
+                                        {
+                                            ea[aiSlot.nEaIdx].fakeStrategyMgr.nAI30Time = nSharedTime;
+                                            PrintLog($"{nSharedTime} {ea[aiSlot.nEaIdx].sCode} {ea[aiSlot.nEaIdx].sCodeName} AI 30점 달성.", aiSlot.nEaIdx);
+                                        }
+                                        if (ea[aiSlot.nEaIdx].fakeStrategyMgr.fAIScore >= 50)
+                                        {
+                                            if (ea[aiSlot.nEaIdx].fakeStrategyMgr.nAI50Time == 0)
+                                            {
+                                                ea[aiSlot.nEaIdx].fakeStrategyMgr.nAI50Time = nSharedTime;
+                                                PrintLog($"{nSharedTime} {ea[aiSlot.nEaIdx].sCode} {ea[aiSlot.nEaIdx].sCodeName} AI 50점 달성.", aiSlot.nEaIdx);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    switch (aiSlot.nRequestId)
+                    {
+                        case REAL_BUY_SIGNAL: // 매수 여부 체크
+
+                            if (fRatio >= 0.65)
+                            {
+                                ea[aiSlot.nEaIdx].fakeStrategyMgr.nAIPassed++;
+
+                                PrintLog($"{nSharedTime} {ea[aiSlot.nEaIdx].sCode} {ea[aiSlot.nEaIdx].sCodeName} 실매수 AI 패스 {ea[aiSlot.nEaIdx].fakeStrategyMgr.nAIPassed}번째, 점수 : {fRatio}", aiSlot.nEaIdx);
+
+                                if (ea[aiSlot.nEaIdx].fakeStrategyMgr.nAIPrevTimeLineIdx != nTimeLineIdx)
+                                {
+                                    if (nTimeLineIdx - ea[aiSlot.nEaIdx].fakeStrategyMgr.nAIPrevTimeLineIdx > 1) //  2칸 이상 떨어져있을때 
+                                        ea[aiSlot.nEaIdx].fakeStrategyMgr.nAIJumpDiffMinuteCount++;
+                                    ea[aiSlot.nEaIdx].fakeStrategyMgr.nAIPrevTimeLineIdx = nTimeLineIdx;
+                                    ea[aiSlot.nEaIdx].fakeStrategyMgr.nAIStepMinuteCount++;
+                                }
+
+                                // 예약 생성
+                                //ea[aiSlot.nEaIdx].reserveMgr.Approach(nSharedTime, ea[aiSlot.nEaIdx].fPower);
+                                //ea[aiSlot.nEaIdx].reserveMgr.listReservation.Add(new ReservedPoint
+                                //{
+                                //    isReserveEnd = false,
+                                //    fReservePower = ea[aiSlot.nEaIdx].fPower,
+                                //    nReserveTime = nSharedTime,
+                                //    fMaxPower = ea[aiSlot.nEaIdx].fPower,
+                                //    fMinusPower = 0.025,
+                                //    nTargetLimitTime = AddTimeBySec(nSharedTime, 600)
+                                //});
+                                //PrintLog($"{nSharedTime}  {ea[aiSlot.nEaIdx].sCode}  {ea[aiSlot.nEaIdx].sCodeName} fs : {ea[aiSlot.nEaIdx].nFs} power : {ea[aiSlot.nEaIdx].fPower} {AddTimeBySec(nSharedTime, 600)}시간 까지 대략 {ea[aiSlot.nEaIdx].nYesterdayEndPrice * (1 + ea[aiSlot.nEaIdx].fPower - 0.025)}원, {ea[aiSlot.nEaIdx].fPower - 0.025}(%) 예약매수", aiSlot.nEaIdx);
+
+                                //ea[aiSlot.nEaIdx].reserveMgr.listReservation.Add(new ReservedPoint
+                                //{
+                                //    isReserveEnd = false,
+                                //    fReservePower = ea[aiSlot.nEaIdx].fPower,
+                                //    nReserveTime = nSharedTime,
+                                //    fMaxPower = ea[aiSlot.nEaIdx].fPower,
+                                //    fMinusPower =  0.05,
+                                //    nTargetLimitTime = AddTimeBySec(nSharedTime, 5400)
+                                //});
+                                //PrintLog($"{nSharedTime}  {ea[aiSlot.nEaIdx].sCode}  {ea[aiSlot.nEaIdx].sCodeName} fs : {ea[aiSlot.nEaIdx].nFs} power : {ea[aiSlot.nEaIdx].fPower} {AddTimeBySec(nSharedTime, 5400)}시간 까지 대략 {ea[aiSlot.nEaIdx].nYesterdayEndPrice * (1 + ea[aiSlot.nEaIdx].fPower - 0.05)}원, {ea[aiSlot.nEaIdx].fPower - 0.05}(%) 예약매수", aiSlot.nEaIdx);
+
+                                //ea[aiSlot.nEaIdx].reserveMgr.listReservation.Add(new ReservedPoint
+                                //{
+                                //    isReserveEnd = false,
+                                //    fReservePower = ea[aiSlot.nEaIdx].fPower,
+                                //    nReserveTime = nSharedTime,
+                                //    fMaxPower = ea[aiSlot.nEaIdx].fPower,
+                                //    fMinusPower = 0.1,
+                                //    nTargetLimitTime = AddTimeBySec(nSharedTime, 5400)
+                                //});
+                                //PrintLog($"{nSharedTime}  {ea[aiSlot.nEaIdx].sCode}  {ea[aiSlot.nEaIdx].sCodeName} fs : {ea[aiSlot.nEaIdx].nFs} power : {ea[aiSlot.nEaIdx].fPower} {AddTimeBySec(nSharedTime, 5400)}시간 까지 대략 {ea[aiSlot.nEaIdx].nYesterdayEndPrice * (1 + ea[aiSlot.nEaIdx].fPower - 0.1)}원, {ea[aiSlot.nEaIdx].fPower - 0.1}(%) 예약매수", aiSlot.nEaIdx);
+
+                                //tradeQueue.Enqueue(aiSlot.slot);
+                            }
+                            break;
+
+                        case REAL_SELL_SIGNAL: // 분할매도 여부 체크(분할매도를 위해 AI 서비스를 이용한다)
+                            if (isAIPassed)
+                            {
+                                aiSlot.slot.nQty = (int)((1 - fRatio) * ea[aiSlot.nEaIdx].myTradeManager.arrBuyedSlots[aiSlot.slot.nBuyedSlotIdx].nBuyVolume);
+                                aiSlot.slot.nQty = GetBetweenMinAndMax(aiSlot.slot.nQty, 1, ea[aiSlot.nEaIdx].myTradeManager.arrBuyedSlots[aiSlot.slot.nBuyedSlotIdx].nCurVolume);
+                                tradeQueue.Enqueue(aiSlot.slot);
+                            }
+                            break;
+
+                        case FAKE_REQUEST_SIGNAL:
+                            if (fRatio > 0.45)
+                            {
+                                ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAccumPassed++;
+                                PrintLog($"{nSharedTime} {ea[aiSlot.nEaIdx].sCode} {ea[aiSlot.nEaIdx].sCodeName} 페이크 AI 패스 {ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAccumPassed}번째, 점수 : {fRatio}", aiSlot.nEaIdx);
+                                if (ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAIPrevTimeLineIdx != nTimeLineIdx)
+                                {
+                                    if (nTimeLineIdx - ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAIPrevTimeLineIdx > 1)
+                                        ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAIJumpDiffMinuteCount++;
+                                    ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAIPrevTimeLineIdx = nTimeLineIdx;
+                                    ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAIStepMinuteCount++;
+                                }
+                            }
+                            ea[aiSlot.nEaIdx].fakeStrategyMgr.nFakeAccumTried++;
+                            break;
+
+                        case EVERY_SIGNAL:
+                            if (fRatio > 0.35)
+                            {
+                                ea[aiSlot.nEaIdx].fakeStrategyMgr.nEveryAIPassNum++;
+                                PrintLog($"{nSharedTime} {ea[aiSlot.nEaIdx].sCode} {ea[aiSlot.nEaIdx].sCodeName} 에브리 AI 패스 {ea[aiSlot.nEaIdx].fakeStrategyMgr.nEveryAIPassNum}번째, 점수 : {fRatio}", aiSlot.nEaIdx);
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+                    TurnOffMMFSlot(aiSlot.nMMFNumber);
+                }
+#endif
+                #endregion
+
+                #region 매매 컨트롤러
+                // =============================================================
+                // 매매 컨트롤러
+                // =============================================================
+
+#if DEBUG
+                if ((DateTime.UtcNow - dFirstForPaper).TotalSeconds < 3600) //
+                {
+                    if (nSendNum >= PAPER_HOUR_LIMIT - PAPER_HOUR_PAD)
+                    {
+                        if (MEME_Controler)
+                            PrintLog($"{nSharedTime} 매매불가 판정");
+                        MEME_Controler = false;
+                    }
+
+                    if (nSendNum >= PAPER_HOUR_LIMIT - (PAPER_HOUR_BUY_LIMIT_DIFF + PAPER_HOUR_PAD))
+                    {
+                        if (MEME_BUYController)
+                            PrintLog($"{nSharedTime} 매수불가 판정");
+                        MEME_BUYController = false;
+                    }
+                }
+                else
+                {
+                    nHourPtr++;
+                    nSendNum = 0;
+                    dFirstForPaper = DateTime.UtcNow;
+                    MEME_Controler = true;
+                    MEME_BUYController = true;
+                }
+#endif
+                if (MEME_Controler)
+                {
+                    if (tradeQueue.Count > 0) // START ---- 매매 컨트롤러
+                    {
+                        #region 주문제한 걸림
+#if DEBUG
+                        if (isForbidTrade) // 거래정지상태 (주문이 단위시간 한계수량에 도달해서)
+                        {
+                            dtCurOrderTime = DateTime.UtcNow;
+                            if ((dtCurOrderTime - dtBeforeOrderTime).TotalMilliseconds > OVER_FLOW_MIL_SEC_CHECK) // 1초가 지나면 거래 풀어줌.
+                            {
+                                isForbidTrade = false;
+                                dtBeforeOrderTime = dtCurOrderTime;
+                                nReqestCount = 0;
+                                PrintLog("거래정지상태 풀림");
+                            }
+                        }
+#endif
+                        #endregion
+
+                        #region 주문제한 풀림
+                        if ((!isForbidTrade) && (nUsingScreenNum < (SCREEN_NUM_LIMIT - SCREEN_NUM_PADDING)))  // 거래정지가 아니라면
+                        {
+                            curSlot = tradeQueue.Dequeue(); // 우선 디큐한다
+
+
+                            #region NEW_BUY
+                            if (curSlot.nOrderType == NEW_BUY)
+                            {
+                                if (MEME_BUYController)
+                                {
+                                    if (SubTimeToTimeAndSec(nSharedTime, curSlot.nRqTime) <= TRADE_CONTROLLER_ACCESS_BUY_LIMIT) // 매수요청 사용가능 조건
+                                    {
+                                        int nEstimatedPrice = curSlot.nOrderPrice; // 종목의 요청했던 최우선매도호가를 받아온다.
+
+                                        for (int eyeCloseIdx = 0; eyeCloseIdx < EYES_CLOSE_NUM; eyeCloseIdx++)
+                                            nEstimatedPrice += GetIntegratedMarketGap(nEstimatedPrice); // 반복해서 가격을 n칸 올린다.
+
+
+                                        int nNumToBuy = (int)(nCurDepositCalc / (nEstimatedPrice * (1 + STOCK_FEE))); // 현재 예수금으로 살 수 있을 만큼
+                                        int nMaxNumToBuy = (int)(STANDARD_BUY_PRICE * curSlot.fRequestRatio) / nEstimatedPrice; // 최대매수가능금액으로 살 수 있을 만큼 
+
+                                        ////////////////////////// 테스트용 ///////////////////////////////////
+
+                                        if (nNumToBuy > nMaxNumToBuy) // 최대매수가능수를 넘는다면
+                                            nNumToBuy = nMaxNumToBuy; // 최대매수가능수로 세팅
+
+                                        // 구매수량이 있고 현재종목의 최우선매도호가가 요청하려는 지정가보다 낮을 경우 구매요청을 걸 수 있다.
+                                        if ((nNumToBuy > 0) && ea[curSlot.nEaIdx].nFs > 1000) // && (ea[curSlot.nEaIdx].nFs < nEstimatedPrice)) // 어차피 매수취소에서 걸린다.
+                                        {
+                                            if (nSharedTime >= BAN_BUY_TIME) // 매수금지 시간을 지났다면
+                                            {
+                                                ea[curSlot.nEaIdx].realBuyStrategy.BuyCancelMethod(curSlot.nStrategyIdx);
+                                                PrintLog($"{nSharedTime} {curSlot.sCode}  {ea[curSlot.nEaIdx].sCodeName} 매수금지시간입니다", curSlot.nEaIdx);
+                                            }
+                                            else // START ---- 매수금지시간을 지나지 않았다면
+                                            {
+                                                if (curSlot.sHogaGb.Equals(MARKET_ORDER)) // 시장가모드 : 시장가로 하면 키움에서 상한가값으로 계산해서 예수금만큼 살 수 가 없다
+                                                {
+                                                    if (ea[curSlot.nEaIdx].myTradeManager.nIdx < REAL_BUY_MAX_NUM) // 개인 구매횟수를 넘기지 않았다면
+                                                    {
+                                                        PrintLog($"{nSharedTime} : {curSlot.sCode}  {ea[curSlot.nEaIdx].sCodeName} 매수신청 전송", curSlot.nEaIdx);
+
+                                                        if (ea[curSlot.nEaIdx].myTradeManager.nIdx == ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots.Count)
+                                                            ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots.Add(new BuyedSlot());
+
+                                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[ea[curSlot.nEaIdx].myTradeManager.nIdx].sBuyScrNo = GetScreenNum(ORDER_NEW_BUY, curSlot.nEaIdx, ea[curSlot.nEaIdx].myTradeManager.nIdx);
+                                                        if (ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[ea[curSlot.nEaIdx].myTradeManager.nIdx].sBuyScrNo != null) // 사용가능 화면번호가 있다면
+                                                        {
+                                                            int nBuyReqResult = axKHOpenAPI1.SendOrder($"{SEND_ORDER_ERROR_CHECK_PREFIX}{ORDER_NEW_BUY} {curSlot.nEaIdx} {ea[curSlot.nEaIdx].myTradeManager.nIdx}", ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[ea[curSlot.nEaIdx].myTradeManager.nIdx].sBuyScrNo, sAccountNum,
+                                                                curSlot.nOrderType, curSlot.sCode, nNumToBuy, nEstimatedPrice,
+                                                                PENDING_ORDER, curSlot.sOrgOrderId); // 높은 매도호가에 지정가로 걸어 시장가처럼 사게 한다
+                                                                                                     // 최우선매도호가보다 높은 가격에 지정가를 걸면 현재매도호가에 구매하게 된다.
+
+                                                            if (nBuyReqResult == OP_ERR_NONE) // 요청이 성공하면
+                                                            {
+                                                                #region 매매블록 준비
+                                                                int nNewSlotIdx = ea[curSlot.nEaIdx].myTradeManager.nIdx++;
+                                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].nBuyedSlotId = nNewSlotIdx;
+                                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].nRequestTime = curSlot.nRqTime;
+                                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].nOriginOrderPrice = curSlot.nOrderPrice; // 주문요청금액 설정
+                                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].nOrderPrice = nEstimatedPrice; // 지정상한가 설정
+                                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].eTradeMethod = curSlot.eTradeMethod; // 매매방법 설정
+                                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].nStrategyIdx = curSlot.nStrategyIdx; // 전략인덱스
+                                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].nSequence = curSlot.nSequence; // 순번인덱스
+                                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].nOrderVolume = nNumToBuy;
+                                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].fTradeRatio = curSlot.fRequestRatio;
+                                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].sBuyDescription = curSlot.sDescription;
+                                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].sSellScrNo = null;
+                                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].fTradeRatio = curSlot.fRequestRatio;
+                                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].isBuying = true;
+
+                                                                switch (ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].eTradeMethod)
+                                                                {
+                                                                    case TradeMethodCategory.RisingMethod:
+                                                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].fTargetPer = GetNextCeiling(ref ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].nCurLineIdx);
+                                                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].fBottomPer = GetNextFloor(ref ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].nCurLineIdx, TradeMethodCategory.RisingMethod);
+                                                                        break;
+                                                                    case TradeMethodCategory.ScalpingMethod:
+                                                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].fTargetPer = GetNextCeiling(ref ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].nCurLineIdx);
+                                                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].fBottomPer = GetNextFloor(ref ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].nCurLineIdx, TradeMethodCategory.ScalpingMethod);
+                                                                        break;
+                                                                    case TradeMethodCategory.BottomUpMethod:
+                                                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].fTargetPer = GetNextCeiling(ref ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].nCurLineIdx);
+                                                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].fBottomPer = GetNextFloor(ref ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].nCurLineIdx, TradeMethodCategory.BottomUpMethod);
+                                                                        break;
+                                                                    case TradeMethodCategory.OnlyAIUsedMethod:
+                                                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].fTargetPer = GetNextCeiling(ref ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].nCurLineIdx);
+                                                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].fBottomPer = GetNextFloor(ref ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].nCurLineIdx, TradeMethodCategory.OnlyAIUsedMethod);
+                                                                        break;
+                                                                    case TradeMethodCategory.FixedMethod:
+                                                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].fTargetPer = curSlot.fTargetPercent;
+                                                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].fBottomPer = curSlot.fBottomPercent;
+                                                                        break;
+                                                                    default:
+                                                                        break;
+                                                                }
+
+
+                                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].sFixedMsg = curSlot.sFixedInfoPassanger; // 참조형식
+                                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].fixedBuyingInfo = curSlot.tFixedResPassanger; // 참조형식
+
+                                                                #endregion
+
+                                                                isSendOrder = true;
+                                                                ea[curSlot.nEaIdx].myTradeManager.nBuyReqCnt++; // 구매횟수 증가
+                                                                nCurDepositCalc -= nNumToBuy * nEstimatedPrice + ea[curSlot.nEaIdx].feeMgr.GetRoughFee(nNumToBuy * nEstimatedPrice);
+                                                                PrintLog($"{nSharedTime}, {curSlot.sCode}  {ea[curSlot.nEaIdx].sCodeName} 화면번호 : {ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[nNewSlotIdx].sBuyScrNo} 매매블록 : {nNewSlotIdx} {curSlot.nOrderPrice}, {nNumToBuy} 매수신청 전송 성공", curSlot.nEaIdx, nNewSlotIdx);
+                                                            }
+                                                            else // 요청이 실패했다는것
+                                                            {
+                                                                ShutOffScreen(ref ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[ea[curSlot.nEaIdx].myTradeManager.nIdx].sBuyScrNo);
+
+
+                                                                if (nBuyReqResult == OP_ERR_ORD_OVERFLOW) // 주문전송과부하
+                                                                {
+#if DEBUG
+                                                                    dtCurOrderTime = DateTime.UtcNow;
+                                                                    if ((dtCurOrderTime - dOverFlowToUp).TotalMilliseconds > ONE_SEC_MIL_SEC)
+                                                                    {
+                                                                        dtBeforeOrderTime = dtCurOrderTime;
+                                                                        isForbidTrade = true;
+                                                                        nOverFlowCnt++;
+                                                                        dOverFlowToUp = dtCurOrderTime;
+                                                                        PrintLog($"{nSharedTime} 주문전송과부하 카운트 : {nOverFlowCnt}회");
+                                                                    }
+#endif
+                                                                    tradeQueue.Enqueue(curSlot);
+
+                                                                }
+                                                                else // 요청 실패
+                                                                {
+                                                                    ea[curSlot.nEaIdx].realBuyStrategy.BuyCancelMethod(curSlot.nStrategyIdx);
+                                                                    PrintLog($"{nSharedTime}, {curSlot.sCode}  {ea[curSlot.nEaIdx].sCodeName},  오류번호 : {nBuyReqResult}  {curSlot.nOrderPrice}(원), {nNumToBuy}(주) 매수신청 전송 실패!!", curSlot.nEaIdx);
+                                                                }
+                                                            }
+                                                        } // END ---- 사용가능 화면번호가 있다면
+                                                        else // 사용가능 화면번호가 없다면
+                                                        {
+                                                            PrintLog($"{nSharedTime} {curSlot.sCode}  {ea[curSlot.nEaIdx].sCodeName} : 할당가능한 화면번호가 없어 매수신청 불가");
+                                                            ea[curSlot.nEaIdx].realBuyStrategy.BuyCancelMethod(curSlot.nStrategyIdx);
+                                                        }// END ---- 사용가능 화면번호가 없다면
+
+
+                                                    }
+                                                    else  // 개인 구매횟수를 넘겼다면
+                                                    {
+                                                        PrintLog($"{nSharedTime} {curSlot.sCode}  {ea[curSlot.nEaIdx].sCodeName} 종목의 구매횟수를 초과했습니다", curSlot.nEaIdx);
+                                                    }
+                                                }
+                                                else if (curSlot.sHogaGb.Equals(PENDING_ORDER)) // 지정가 매수
+                                                {
+                                                    // 아직 기능확장하지 않았습니다.
+                                                }
+                                            } // END ---- 매수금지시간을 지나지 않았다면
+                                        }
+                                        else // 보유금액이 없거나 가격이 너무 올라버린 경우
+                                        {
+                                            ea[curSlot.nEaIdx].realBuyStrategy.BuyCancelMethod(curSlot.nStrategyIdx);
+                                            PrintLog($"{nSharedTime} 전략 : {curSlot.nStrategyIdx} {curSlot.sCode}  {ea[curSlot.nEaIdx].sCodeName} 보유금액이 없거나 가격이 너무 올라서 매수가 불가합니다.", curSlot.nEaIdx);
+                                        }
+                                    }
+                                    else // 요청이 10초나 지연된 경우
+                                    {
+                                        ea[curSlot.nEaIdx].realBuyStrategy.BuyCancelMethod(curSlot.nStrategyIdx);
+                                    }
+                                }
+                                else
+                                {
+                                    tradeQueue.Enqueue(curSlot);
+                                }
+                            }
+                            #endregion
+                            #region NEW_SELL
+                            else if (curSlot.nOrderType == NEW_SELL)
+                            {
+                                if (ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].nSystemeticSellFail <= SYSTEMETIC_SELL_FAIL) // 시스템 상 오류
+                                {
+                                    if (curSlot.sHogaGb.Equals(MARKET_ORDER)) // 시장가매도
+                                    {
+                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].nSellRequestTime = curSlot.nRqTime;
+                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].sSellDescription = curSlot.sDescription;
+
+                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].recGroup.recList[ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].recGroup.nLen].sSellDescription = curSlot.sDescription;
+                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].recGroup.recList[ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].recGroup.nLen].nSellRequestTime = curSlot.nRqTime;
+
+                                        PrintLog($"{nSharedTime} : {curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName} 매도신청 전송", curSlot.nEaIdx);
+                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].sSellScrNo = GetScreenNum(ORDER_NEW_SELL, curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
+
+                                        if (ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].sSellScrNo != null) // 사용가능한 화면번호가 있다면
+                                        {
+                                            int nSellReqResult = axKHOpenAPI1.SendOrder($"{SEND_ORDER_ERROR_CHECK_PREFIX}{ORDER_NEW_SELL} {curSlot.nEaIdx} {curSlot.nBuyedSlotIdx}", ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].sSellScrNo, sAccountNum,
+                                                    curSlot.nOrderType, curSlot.sCode, curSlot.nQty, 0,
+                                                    curSlot.sHogaGb, curSlot.sOrgOrderId);
+
+                                            if (nSellReqResult == OP_ERR_NONE) // 요청이 성공하면
+                                            {
+
+                                                isSendOrder = true;
+                                                ea[curSlot.nEaIdx].myTradeManager.nSellReqCnt++; // 매도요청전송이 성공하면 매도횟수를 증가한다.
+                                                PrintLog($"{curSlot.sCode} {ea[curSlot.nEaIdx].sCodeName}  화면번호 : {ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].sSellScrNo}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName} 매도신청 전송 성공", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
+                                            }
+                                            else // 요청이 실패했다는 것
+                                            {
+                                                ShutOffScreen(ref ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].sSellScrNo);
+
+
+                                                if (nSellReqResult == OP_ERR_ORD_OVERFLOW) // 주문전송과부화
+                                                {
+#if DEBUG
+                                                    dtCurOrderTime = DateTime.UtcNow;
+                                                    if ((dtCurOrderTime - dOverFlowToUp).TotalMilliseconds > ONE_SEC_MIL_SEC)
+                                                    {
+                                                        dtBeforeOrderTime = dtCurOrderTime;
+                                                        isForbidTrade = true;
+                                                        nOverFlowCnt++;
+                                                        dOverFlowToUp = dtCurOrderTime;
+                                                        PrintLog($"{nSharedTime} 주문전송과부하 카운트 : {nOverFlowCnt}회");
+                                                    }
+#endif
+                                                    tradeQueue.Enqueue(curSlot);
+                                                }
+                                                else // 그냥 실패
+                                                {
+                                                    PrintLog($"{curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName}  오류번호 : {nSellReqResult} 매도신청 전송 실패", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
+                                                    ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].isSelling = false;
+                                                }
+                                            }
+                                        } // END ---- 사용가능한 화면번호가 있다면 
+                                        else // 사용가능한 화면번호가 없다면
+                                        {
+                                            PrintLog($"{curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName} 화면번호 할당불가로 매도신청 전송 실패", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
+                                            ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].isSelling = false;
+
+                                        }// END ---- 사용가능한 화면번호가 없다면 
+
+                                    } // END ---- 시장가매도
+                                    else if (curSlot.sHogaGb.Equals(PENDING_ORDER)) // 지정가매도
+                                    {
+
+                                    }
+                                }
+                            }
+                            #endregion
+                            #region BUY_CANCEL
+                            else if (curSlot.nOrderType == BUY_CANCEL)
+                            {
+                                if (ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].nSystemeticBuyCancelFail <= SYSTEMETIC_BUY_CANCEL_FAIL)
+                                {
+                                    if (!ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].isAllBuyed) // 그와중에 매수가 완료되면 매수취소는 삭제된다.
+                                    {
+                                        PrintLog($"{nSharedTime} : {curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName}  {curSlot.sDescription} 매수취소신청 전송", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
+
+                                        int nCancelReqResult = axKHOpenAPI1.SendOrder($"{SEND_ORDER_ERROR_CHECK_PREFIX}{ORDER_BUY_CANCEL} {curSlot.nEaIdx} {curSlot.nBuyedSlotIdx}", ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].sBuyScrNo, sAccountNum,
+                                            curSlot.nOrderType, curSlot.sCode, 0, 0,
+                                            "", curSlot.sOrgOrderId); // 취소주문수량을 0으로 입력하면 미체결 전량이 취소됩니다.
+                                                                      // 취소주문시 주문가격은 필요없으며 취소하려는 주문 그러니까 미체결 주문의 주문번호가 취소주문시 필요한 원주문번호가 됩니다.
+                                                                      //마지막으로 취소주문시에는 거래구분(시장가, 지정가 등)값이 사용되지 않습니다.
+
+                                        if (nCancelReqResult == OP_ERR_NONE) // 매수취소 전송이 성공하면
+                                        {
+                                            isSendOrder = true;
+                                            PrintLog($"{nSharedTime} : {curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName} 매수취소신청 전송 성공", curSlot.nEaIdx);
+                                        }
+                                        else // 전송이 실패했다는것
+                                        {
+                                            if (nCancelReqResult == OP_ERR_ORD_OVERFLOW) // 주문전송과부화
+                                            {
+#if DEBUG
+                                                dtCurOrderTime = DateTime.UtcNow;
+                                                if ((dtCurOrderTime - dOverFlowToUp).TotalMilliseconds > ONE_SEC_MIL_SEC)
+                                                {
+                                                    dtBeforeOrderTime = dtCurOrderTime;
+                                                    isForbidTrade = true;
+                                                    nOverFlowCnt++;
+                                                    dOverFlowToUp = dtCurOrderTime;
+                                                    PrintLog($"{nSharedTime} 주문전송과부하 카운트 : {nOverFlowCnt}회");
+                                                }
+#endif
+                                                tradeQueue.Enqueue(curSlot);
+                                            }
+                                            else // 전송이 실패하면
+                                            {
+                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].isCanceling = false; // 이래야지 매수취소를 다시 신청할 수 있다.
+                                                PrintLog($"{nSharedTime} : {curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName}  오류번호 : {nCancelReqResult} 매수취소신청 전송 실패!!", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
+                                            }
+                                        }
+                                    } // END ---- !ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].isAllBuyed
+                                }
+                            }
+                            #endregion
+
+                            #region 주문요청 완료
+#if DEBUG
+                            if (isSendOrder) // 주문을 요청했을때만
+                            {
+                                isSendOrder = false;
+                                if (nSendNum == 0)
+                                    dFirstForPaper = DateTime.UtcNow;
+                                nSendNum++;
+                                PrintLog($"{nSharedTime} 주문성공횟수 : {nSendNum}");
+
+                                dtCurOrderTime = DateTime.UtcNow;
+                                if ((nReqestCount == 0) || ((dtCurOrderTime - dtBeforeOrderTime).TotalMilliseconds > OVER_FLOW_MIL_SEC_CHECK)) // 주문시간이 이전주문시간과 다르다 == 1초 제한이 아니다
+                                {
+                                    dtBeforeOrderTime = dtCurOrderTime;
+                                    nReqestCount = 1;
+                                }
+                                else  // 주문시간이 이전시간과 같다 == 1초 제한 카운트 증가
+                                {
+                                    nReqestCount++;
+                                    if (nReqestCount >= (LIMIT_SENDORDER_NUM - LIMIT_SENDORDER_PAD)) // 5번제한이지만 혹시 모르니 4번제한으로
+                                    {
+                                        isForbidTrade = true; // 제한에 걸리면 1초가 지날때까지는 매매 금지
+                                    }
+                                }
+                            } // END ---- 주문을 요청했을때만
+#endif
+                            #endregion
+
+                        } // END ---- 거래정지가 아니라면
+                        #endregion
+                    }
+                }
+                #endregion
+
 
                 #region 실시간 호가 
                 // =============================================================
@@ -1006,10 +1750,22 @@ namespace AtoTrader
                     bool isSubHogaError = false;
 
                     ea[nCurIdx].nHogaCnt++; // 호가의 카운트
+#if AI
+                    if (nSharedTime < BAN_BUY_TIME)
+                    {
+                        // EVERY AI 요청
+                        if (ea[nCurIdx].nHogaCnt % 1000 == 0)
+                        {
+                            UpFakeCount(nCurIdx, EVERY_SIGNAL, 0);
+                        }
+                    }
+#endif
                     ea[nCurIdx].hogaSpeedStatus.fPush++;
 
                     try
                     {
+                        ea[nCurIdx].nCurHogaPrice = Math.Abs(int.Parse(axKHOpenAPI1.GetCommRealData(sCode, 41))); // 매도호가1
+
                         s1 = Math.Abs(int.Parse(axKHOpenAPI1.GetCommRealData(sCode, 61))); // 매도1호가잔량
                         s2 = Math.Abs(int.Parse(axKHOpenAPI1.GetCommRealData(sCode, 62))); // 매도2호가잔량
                         s3 = Math.Abs(int.Parse(axKHOpenAPI1.GetCommRealData(sCode, 63))); // 매도3호가잔량
@@ -1017,19 +1773,22 @@ namespace AtoTrader
                         s4 = Math.Abs(int.Parse(axKHOpenAPI1.GetCommRealData(sCode, 64))); // 매도4호가잔량
                         b4 = Math.Abs(int.Parse(axKHOpenAPI1.GetCommRealData(sCode, 74))); // 매수4호가잔량
 
-                        if (s4 == 0 && b4 == 0 && ea[nCurIdx].isFirstCheck)
+                        if (s4 == 0 && b4 == 0)
                         {
-                            if (!ea[nCurIdx].isViMode)
+                            if (Math.Abs(ea[nCurIdx].fPower) > 0.05 || (Math.Abs(ea[nCurIdx].fPowerJar) > 0.01 && (ea[nCurIdx].nChegyulCnt > 1000 || ea[nCurIdx].nStopHogaCnt > 1000)))  // 정확한 vi 기준을 몰라 안좋은 종목들은 걸러내면 진짜 vi만 남을듯
                             {
-                                ea[nCurIdx].nViStartTime = nSharedTime;
-                                ea[nCurIdx].nViTimeLineIdx = nTimeLineIdx;
-                                ea[nCurIdx].nViFs = ea[nCurIdx].nFs;
+                                if (!ea[nCurIdx].isViMode)
+                                {
+                                    ea[nCurIdx].nViStartTime = nSharedTime;
+                                    ea[nCurIdx].nViTimeLineIdx = nTimeLineIdx;
+                                    ea[nCurIdx].nViFs = ea[nCurIdx].nFs;
+                                    ea[nCurIdx].nViCnt++;
+                                }
+
+                                ea[nCurIdx].nPrevSpeedUpdateTime = nSharedTime;
+                                ea[nCurIdx].nPrevPowerUpdateTime = nSharedTime;
+                                ea[nCurIdx].isViMode = true;
                             }
-
-                            ea[nCurIdx].nPrevSpeedUpdateTime = nSharedTime;
-                            ea[nCurIdx].nPrevPowerUpdateTime = nSharedTime;
-                            ea[nCurIdx].isViMode = true;
-
                         }
                         else
                         {
@@ -1139,12 +1898,14 @@ namespace AtoTrader
                         int nTv = int.Parse(axKHOpenAPI1.GetCommRealData(sCode, 15)); // 거래량
                         double fTs = double.Parse(axKHOpenAPI1.GetCommRealData(sCode, 228)); // 체결강도
                         double fPower = double.Parse(axKHOpenAPI1.GetCommRealData(sCode, 12)) / 100; // 등락율
+                        double fTradeRatioCompared = double.Parse(axKHOpenAPI1.GetCommRealData(sCode, 30));
 
                         ea[nCurIdx].nFs = nFs;
                         ea[nCurIdx].nFb = nFb;
                         ea[nCurIdx].nTv = nTv;
                         ea[nCurIdx].fTs = fTs;
                         ea[nCurIdx].fPower = fPower;
+                        ea[nCurIdx].fTradeRatioCompared = fTradeRatioCompared;
                     }
                     catch
                     {
@@ -1220,8 +1981,13 @@ namespace AtoTrader
                                             );
 
                         int nCutSharedT = nSharedTime - nSharedTime % MINUTE_KIWOOM;
+                        ea[nCurIdx].crushMinuteManager.nCrushMaxPrice = ea[nCurIdx].nTodayStartPrice;
+                        ea[nCurIdx].crushMinuteManager.nCrushMaxTime = nCutSharedT;
+                        ea[nCurIdx].crushMinuteManager.nCrushMinPrice = ea[nCurIdx].nTodayStartPrice;
+                        ea[nCurIdx].crushMinuteManager.nCrushMinTime = nCutSharedT;
+                        ea[nCurIdx].crushMinuteManager.nCrushOnlyMinPrice = ea[nCurIdx].nTodayStartPrice;
+                        ea[nCurIdx].crushMinuteManager.nCrushOnlyMinTime = nCutSharedT;
 
-                     
                     } // END ---- 개인 초기작업
                     #endregion
                     ea[nCurIdx].nChegyulCnt++; // 인덱스를 올린다.
@@ -1232,10 +1998,37 @@ namespace AtoTrader
                         return;
                     }
 
+
                     // 맥스값
                     if (ea[nCurIdx].nRealMaxPrice < ea[nCurIdx].nFs)
                         ea[nCurIdx].nRealMaxPrice = ea[nCurIdx].nFs;
 
+
+                    #region 예약 처리
+                    // 예약 처리
+                    if (!ea[nCurIdx].isExcluded)
+                    {
+                        for (int i = 0; i < ea[nCurIdx].reserveMgr.listReservation.Count; i++)
+                        {
+                            if (!ea[nCurIdx].reserveMgr.listReservation[i].isReserveEnd)
+                            {
+                                ea[nCurIdx].reserveMgr.listReservation[i].fMaxPower = Max(ea[nCurIdx].reserveMgr.listReservation[i].fMaxPower, ea[nCurIdx].fPower);
+
+                                if (ea[nCurIdx].reserveMgr.listReservation[i].nTargetLimitTime < nSharedTime) // 제한시간을 넘겼다면
+                                {
+                                    ea[nCurIdx].reserveMgr.listReservation[i].isReserveEnd = true;
+                                    continue;
+                                }
+
+                                if ((ea[nCurIdx].reserveMgr.listReservation[i].fReservePower - ea[nCurIdx].reserveMgr.listReservation[i].fMinusPower) > ea[nCurIdx].fPower) // 원하는 가격으로 내려왔다면
+                                {
+                                    ea[nCurIdx].reserveMgr.listReservation[i].isReserveEnd = true;
+                                    RequestThisRealBuy(nCurIdx, 0, isAIUse: false);
+                                }
+                            }
+                        }
+                    }
+                    #endregion
 
                     if (ea[nCurIdx].isViMode)
                     {
@@ -1250,21 +2043,41 @@ namespace AtoTrader
 
 
                     #region 실시간 전고점
-                   
-                    if ( SubTimeToTimeAndSec( ea[nCurIdx].crushMgr.minPoint.nTime , ea[nCurIdx].crushMgr.maxPoint.nTime ) >= 60  && // 저점 시간 - 고점 시간 >= 1분 
-                        ea[nCurIdx].crushMgr.maxPoint.nPrice < ea[nCurIdx].nFs && // 가격이 고점보다 높다
-                        (double)(ea[nCurIdx].crushMgr.maxPoint.nPrice - ea[nCurIdx].crushMgr.minPoint.nPrice) / ea[nCurIdx].nYesterdayEndPrice >= 0.01 // 1퍼센트 정도의 높이가 있는 전고여야한다
-                       ) // 전고점
+                    // 실시간 전고점
+                    // #경고 : 분봉에서 전고점 체크할때 때마침 해당되는 종목이 때마침 전고점돌파에 성공했다 그러면 현재 실시간 전고점은 maxTime과 minTime이 업데이트되어 실행되지 않음
+                    // # 가능성이 희박할 뿐더러 만약 그런경우라 하더라도 가격이 순식간에 급변하는 종목일 가능성이 크고 그럴경우 잡주일 확률이 높으니 일단 신경 안쓰기로 함.
+                    if (ea[nCurIdx].crushMinuteManager.nCrushMaxTime < ea[nCurIdx].crushMinuteManager.nCrushMinTime && // 우선 초기1분을 제외할 수 있고 전고점돌파조건인 maxT < minT 
+                        ea[nCurIdx].crushMinuteManager.nCrushMaxPrice < ea[nCurIdx].nFs && // 현재값이 전고점을 넘어섰을때
+                        (double)(ea[nCurIdx].crushMinuteManager.nCrushMaxPrice - ea[nCurIdx].crushMinuteManager.nCrushMinPrice) / ea[nCurIdx].nYesterdayEndPrice > 0.01 &&
+                        ea[nCurIdx].crushMinuteManager.nCrushRealTimePrev != ea[nCurIdx].crushMinuteManager.nCrushMaxTime // 전고점을 했는데 그게 고점이고 종점은 이전고점보다 낮게 됐을때 해당 고점을 두번쨰 돌파했을때 논리적오류가 발생
+                        )
                     {
-                        ea[nCurIdx].crushMgr.Set(ea[nCurIdx].nFs, nSharedTime);
-                    } 
+                        ea[nCurIdx].crushMinuteManager.nCrushRealTimeWidthMaxMin = SubTimeToTime(nSharedTime, ea[nCurIdx].crushMinuteManager.nCrushMaxTime);
+                        ea[nCurIdx].crushMinuteManager.nCrushRealTimeWidthMaxCur = SubTimeToTime(ea[nCurIdx].crushMinuteManager.nCrushMinTime, ea[nCurIdx].crushMinuteManager.nCrushMaxTime);
+                        ea[nCurIdx].crushMinuteManager.fCrushRealTimeHeight = (double)(ea[nCurIdx].crushMinuteManager.nCrushMaxPrice - ea[nCurIdx].crushMinuteManager.nCrushMinPrice) / ea[nCurIdx].nYesterdayEndPrice;
+                        ea[nCurIdx].crushMinuteManager.nCrushRealTimePrev = ea[nCurIdx].crushMinuteManager.nCrushMaxTime;
+                        ea[nCurIdx].crushMinuteManager.nCrushRealTimeCount++;
+                        ea[nCurIdx].crushMinuteManager.nCrushRealTimeLineIdx = nTimeLineIdx;
+                        ea[nCurIdx].crushMinuteManager.isCrushRealTimeCheck = true;
+                    } // END ---- 실시간 전고점
                     #endregion
 
 
-                    
+                    // 오늘 저점
+                    if (ea[nCurIdx].nTodayMinPrice == 0 || ea[nCurIdx].nTodayMinPrice > ea[nCurIdx].nFs)
+                    {
+                        ea[nCurIdx].nTodayMinPrice = ea[nCurIdx].nFs;
+                        ea[nCurIdx].nTodayMinTime = nSharedTime;
+                        ea[nCurIdx].fTodayMinPower = ea[nCurIdx].fPower;
+                    }
 
-                        
-                    
+                    // 오늘 고점
+                    if (ea[nCurIdx].nTodayMaxPrice < ea[nCurIdx].nFs)
+                    {
+                        ea[nCurIdx].nTodayMaxPrice = ea[nCurIdx].nFs;
+                        ea[nCurIdx].nTodayMaxTime = nSharedTime;
+                        ea[nCurIdx].fTodayMaxPower = ea[nCurIdx].fPower;
+                    }
 
                     #region 순위 선정용 변수 세팅
                     // ==================================================
@@ -1290,9 +2103,15 @@ namespace AtoTrader
                         ea[nCurIdx].nMinuteUpDown++;
                         ea[nCurIdx].nAccumUpDownCount++;
                         if (ea[nCurIdx].fPowerDiff > 0)
+                        {
                             ea[nCurIdx].fAccumUpPower += ea[nCurIdx].fPowerDiff;
+                            ea[nCurIdx].nAccumUpCnt++;
+                        }
                         else
+                        {
                             ea[nCurIdx].fAccumDownPower -= ea[nCurIdx].fPowerDiff;
+                            ea[nCurIdx].nAccumDownCnt++;
+                        }
                     }
                     if (ea[nCurIdx].nTv > 0)
                     {
@@ -1390,6 +2209,8 @@ namespace AtoTrader
                         ea[nCurIdx].tradeStatus.Commit(fPushWeight);
                         ea[nCurIdx].pureTradeStatus.Commit(fPushWeight);
                         ea[nCurIdx].pureBuyStatus.Commit(fPushWeight);
+                        ea[nCurIdx].priceMoveStatus.Commit(fPushWeight);
+                        ea[nCurIdx].priceUpMoveStatus.Commit(fPushWeight);
 
                         ea[nCurIdx].nPrevSpeedUpdateTime = nSharedTime; // 업데이트시간 초기화 
 
@@ -1405,16 +2226,65 @@ namespace AtoTrader
                     double fTimePassedPushWeight = fTimePassedWeight * fPushWeight; // fPushWeight에서 지난시간의 크기만큼만 곱해 현재정보(nSpeedPush) 적용
 
                     ea[nCurIdx].speedStatus.fPush++;
-                    ea[nCurIdx].tradeStatus.fPush += Math.Abs(ea[nCurIdx].nTv);
-                    ea[nCurIdx].pureTradeStatus.fPush += ea[nCurIdx].nTv;
+                    ea[nCurIdx].tradeStatus.fPush += Math.Abs((double)ea[nCurIdx].nTv * ea[nCurIdx].nFs) / HUNDRED_MILLION;
+                    ea[nCurIdx].pureTradeStatus.fPush += ((double)ea[nCurIdx].nTv * ea[nCurIdx].nFs) / HUNDRED_MILLION;
                     if (ea[nCurIdx].nTv > 0)
-                        ea[nCurIdx].pureBuyStatus.fPush += ea[nCurIdx].nTv;
+                        ea[nCurIdx].pureBuyStatus.fPush += ((double)ea[nCurIdx].nTv * ea[nCurIdx].nFs) / HUNDRED_MILLION;
+                    if (ea[nCurIdx].fPowerDiff != 0)
+                    {
+                        ea[nCurIdx].priceMoveStatus.fPush++;
+                        if (ea[nCurIdx].fPowerDiff > 0)
+                            ea[nCurIdx].priceUpMoveStatus.fPush++;
+                    }
+
 
                     ea[nCurIdx].speedStatus.Update(fTimePassedPushWeight);
                     ea[nCurIdx].tradeStatus.Update(fTimePassedPushWeight);
                     ea[nCurIdx].pureTradeStatus.Update(fTimePassedPushWeight);
                     ea[nCurIdx].pureBuyStatus.Update(fTimePassedPushWeight);
+                    ea[nCurIdx].priceMoveStatus.Update(fTimePassedPushWeight);
+                    ea[nCurIdx].priceUpMoveStatus.Update(fTimePassedPushWeight);
 
+
+                    if(ea[nCurIdx].speedStatus.fCur >= 150)
+                    {
+                        if(ea[nCurIdx].sequenceStrategy.nSpeed150TotalPrevTime != nSharedTime)
+                        {
+                            ea[nCurIdx].sequenceStrategy.nSpeed150TotalPrevTime = nSharedTime;
+                            ea[nCurIdx].sequenceStrategy.nSpeed150TotalSec++;
+                        }
+
+                        if (ea[nCurIdx].sequenceStrategy.nSpeed150CurPrevTime != nSharedTime)
+                        {
+                            ea[nCurIdx].sequenceStrategy.nSpeed150CurPrevTime = nSharedTime;
+                            ea[nCurIdx].sequenceStrategy.nSpeed150CurSec++;
+                        }
+                    }
+                    else
+                    {
+                        ea[nCurIdx].sequenceStrategy.nSpeed150CurSec = 0;
+                        ea[nCurIdx].sequenceStrategy.nSpeed150CurPrevTime = 0;
+                    }
+                    
+                    if(ea[nCurIdx].hogaRatioStatus.fCur > 0.2)
+                    {
+                        if (ea[nCurIdx].sequenceStrategy.nHogaGoodTotalPrevTime != nSharedTime)
+                        {
+                            ea[nCurIdx].sequenceStrategy.nHogaGoodTotalPrevTime = nSharedTime;
+                            ea[nCurIdx].sequenceStrategy.nHogaGoodTotalSec++;
+                        }
+
+                        if (ea[nCurIdx].sequenceStrategy.nHogaGoodCurPrevTime != nSharedTime)
+                        {
+                            ea[nCurIdx].sequenceStrategy.nHogaGoodCurPrevTime = nSharedTime;
+                            ea[nCurIdx].sequenceStrategy.nHogaGoodCurSec++;
+                        }
+                    }
+                    else
+                    {
+                        ea[nCurIdx].sequenceStrategy.nHogaGoodCurPrevTime = 0;
+                        ea[nCurIdx].sequenceStrategy.nHogaGoodCurSec = 0;
+                    }
 
 
                     if (isEqualBetweenDouble(ea[nCurIdx].totalHogaVolumeStatus.fCur, 0))
@@ -1496,11 +2366,53 @@ namespace AtoTrader
                     // 페이크매수/매도 히트횟수 초기화(*동일분봉동안 가지는 히트횟수)
                     if (nTimeLineIdx != ea[nCurIdx].fakeStrategyMgr.nFakePrevTimeLineIdx)
                     {
+                        int nTotalHitNum = ea[nCurIdx].realBuyStrategy.nHitNum 
+                                            + ea[nCurIdx].fakeBuyStrategy.nHitNum
+                                            + ea[nCurIdx].fakeResistStrategy.nHitNum
+                                            + ea[nCurIdx].fakeAssistantStrategy.nHitNum
+                                            + ea[nCurIdx].fakeVolatilityStrategy.nHitNum 
+                                            + ea[nCurIdx].fakeDownStrategy.nHitNum;
+                        // 초기화 전 데이터 관리
+                        ea[nCurIdx].fakeStrategyMgr.nCurHitNum = nTotalHitNum;
+                        ea[nCurIdx].fakeStrategyMgr.nCurHitType = 0;
+
+                        if (ea[nCurIdx].realBuyStrategy.nHitNum > 0) // 실매수
+                            ea[nCurIdx].fakeStrategyMgr.nCurHitType++;
+                        if (ea[nCurIdx].fakeBuyStrategy.nHitNum > 0) // 페이크 매수
+                            ea[nCurIdx].fakeStrategyMgr.nCurHitType++;
+                        if (ea[nCurIdx].fakeResistStrategy.nHitNum > 0) // 페이크 저항
+                            ea[nCurIdx].fakeStrategyMgr.nCurHitType++;
+                        if (ea[nCurIdx].fakeAssistantStrategy.nHitNum > 0) // 페이크 보조
+                            ea[nCurIdx].fakeStrategyMgr.nCurHitType++;
+                        if (ea[nCurIdx].fakeVolatilityStrategy.nHitNum > 0) // 페이크 업
+                            ea[nCurIdx].fakeStrategyMgr.nCurHitType++;
+                        if (ea[nCurIdx].fakeDownStrategy.nHitNum > 0) // 페이크 다운
+                            ea[nCurIdx].fakeStrategyMgr.nCurHitType++;
+
+                        if (ea[nCurIdx].fakeStrategyMgr.nCurHitType >= 3)
+                        {
+                            if (nTotalHitNum >= 5)
+                            {
+                                ea[nCurIdx].fakeStrategyMgr.nHit5Num++;
+                                if (nTotalHitNum >= 8)
+                                {
+                                    ea[nCurIdx].fakeStrategyMgr.nHit8Num++;
+                                    if (nTotalHitNum >= 10)
+                                    {
+                                        ea[nCurIdx].fakeStrategyMgr.nHit10Num++;
+                                    }
+                                }
+                            }
+                        }
+
+                        // 초기화
                         ea[nCurIdx].fakeStrategyMgr.nFakePrevTimeLineIdx = nTimeLineIdx;
-                        ea[nCurIdx].fakeVolatilityStrategy.nHitNum = 0;
+                        ea[nCurIdx].realBuyStrategy.nHitNum = 0;
                         ea[nCurIdx].fakeBuyStrategy.nHitNum = 0;
                         ea[nCurIdx].fakeResistStrategy.nHitNum = 0;
                         ea[nCurIdx].fakeAssistantStrategy.nHitNum = 0;
+                        ea[nCurIdx].fakeVolatilityStrategy.nHitNum = 0;
+                        ea[nCurIdx].fakeDownStrategy.nHitNum = 0;
                     }
                     #endregion
 
@@ -1513,11 +2425,148 @@ namespace AtoTrader
                     else
                         ea[nCurIdx].nRealDataIdxVi = ea[nCurIdx].timeLines1m.nRealDataIdx;
 
+
+                    #region 실시간 manual crush 테스트
+                    {
+                        if(ea[nCurIdx].manualReserve.nReserveCheckVersion != NONE_RESERVE) // 예약이 있다는소리
+                        {
+                            if(ea[nCurIdx].manualReserve.nReserveCheckVersion == UP_RESERVE) // 이상
+                            {
+                                if( ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.fReserveCheckPrice)
+                                {
+                                    ea[nCurIdx].manualReserve.isChosen3 = true;
+                                    ea[nCurIdx].manualCrushList.Add((nSharedTime, ea[nCurIdx].manualReserve.fReserveCheckPrice));
+                                    ClearReservation(nCurIdx);
+                                }
+                            }
+                            else if(ea[nCurIdx].manualReserve.nReserveCheckVersion == DOWN_RESERVE) // 이하
+                            {
+                                if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.fReserveCheckPrice)
+                                {
+                                    ea[nCurIdx].manualReserve.isChosen4 = true;
+                                    ea[nCurIdx].manualBottomList.Add((nSharedTime, ea[nCurIdx].manualReserve.fReserveCheckPrice));
+                                    ClearReservation(nCurIdx);
+                                }
+                            }
+                            else if(ea[nCurIdx].manualReserve.nReserveCheckVersion == BOX_RESERVE)
+                            {
+                                if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.fReserveCheckPrice) // 지지선으로 올라가는 중
+                                {
+                                    ea[nCurIdx].manualReserve.isChosen5 = true;
+                                    ea[nCurIdx].manualBoxUpList.Add((nSharedTime, ea[nCurIdx].manualReserve.fReserveCheckPrice));
+                                    ClearReservation(nCurIdx);
+                                }
+                                else if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.fReserveCheckPrice2) // 저항선보다 더 내려감
+                                {
+                                    ea[nCurIdx].manualReserve.isChosen6 = true;
+                                    ea[nCurIdx].manualBoxDownList.Add((nSharedTime, ea[nCurIdx].manualReserve.fReserveCheckPrice2));
+                                    ClearReservation(nCurIdx);
+                                }
+                            }
+                        }
+                    }
+                    #endregion
+
                     #region 실시간 Sequence Strategy
                     { // START ---- 실시간 Sequence Strategy 분기문
 
                         double fCurPower = (double)(ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].nLastFs - ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].nStartFs) / ea[nCurIdx].nYesterdayEndPrice;
-                       
+                        #region 5퍼 달성
+                        if (ea[nCurIdx].fPowerWithoutGap >= 0.05)
+                        {
+                            if (!ea[nCurIdx].sequenceStrategy.isFiveReachedReal && nSharedTime <= AddTimeBySec(nFirstTime, 600))
+                            {
+                                ea[nCurIdx].sequenceStrategy.nFiveReachedRealTimeLineIdx = nTimeLineIdx;
+                                ea[nCurIdx].sequenceStrategy.isFiveKeepingForTwoTimeLine = true;
+                            }
+                            ea[nCurIdx].sequenceStrategy.isFiveReachedReal = true; // 실시간으로 갭제외 5퍼 도달했나
+
+                            if (!ea[nCurIdx].sequenceStrategy.isFiveReachedRealLeafEntranceBlocked)
+                            {
+                                ea[nCurIdx].sequenceStrategy.isFiveReachedRealLeafEntranceBlocked = true;
+                                if (ea[nCurIdx].lTotalTradePrice > 2 * BILLION) // 20억 이상 
+                                    ea[nCurIdx].sequenceStrategy.isFiveReachedRealBillionUp = true;
+                                else if (ea[nCurIdx].lTotalTradePrice > 5 * HUNDRED_MILLION) // 5억 이상  20억 이하
+                                    ea[nCurIdx].sequenceStrategy.isFiveReachedRealHundredMillion = true;
+                                else // 5억이하 
+                                    ea[nCurIdx].sequenceStrategy.isFiveReachedRealLeafBan = true;
+                            }
+                        }
+
+                        if (ea[nCurIdx].sequenceStrategy.nFiveReachedRealTimeLineIdx != 0)
+                        {
+                            if (ea[nCurIdx].sequenceStrategy.nFiveReachedRealTimeLineIdx + 2 >= nTimeLineIdx)
+                            {
+                                if (ea[nCurIdx].sequenceStrategy.isFiveKeepingForTwoTimeLine)
+                                    ea[nCurIdx].sequenceStrategy.isFiveKeepingForTwoTimeLine = (ea[nCurIdx].sequenceStrategy.nFiveReachedRealTimeLineIdx == nTimeLineIdx && ea[nCurIdx].fPowerWithoutGap >= 0.04) || ea[nCurIdx].fPowerWithoutGap >= 0.05;
+                            }
+                            else
+                            {
+                                if (ea[nCurIdx].sequenceStrategy.isFiveKeepingForTwoTimeLine) // 2분동안 계속 5퍼를 지속했었다면
+                                {
+                                    ea[nCurIdx].sequenceStrategy.isFiveKeepingSuccessForTwoTimeLine = true;
+                                }
+                            }
+                        }
+
+                        #endregion
+
+                        #region 캔들 2퍼
+                        if (fCurPower >= 0.02)
+                        {
+                            if (!ea[nCurIdx].sequenceStrategy.isCandleTwoOverReal)
+                            {
+                                ea[nCurIdx].sequenceStrategy.nCandleTwoOverRealCount++;
+                                ea[nCurIdx].sequenceStrategy.isCandleTwoOverReal = true;
+                                ea[nCurIdx].sequenceStrategy.nCandleTwoOverRealTimeLineIdx = nTimeLineIdx;
+                            }
+
+                            if (ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].lTotalPrice > 1.5 * HUNDRED_MILLION)
+                            {
+                                if (!ea[nCurIdx].sequenceStrategy.isCandleTwoOverRealNoLeaf)
+                                {
+                                    ea[nCurIdx].sequenceStrategy.nCandleTwoOverRealNoLeafCount++;
+                                    ea[nCurIdx].sequenceStrategy.isCandleTwoOverRealNoLeaf = true;
+                                    ea[nCurIdx].sequenceStrategy.nCandleTwoOverRealNoLeafTimeLineIdx = nTimeLineIdx;
+                                }
+                            }
+                        }
+                        #endregion
+
+                        #region 저항라인 만들기
+                        if (ea[nCurIdx].lFixedMarketCap <= TRILLION) // 시가총액 1조 안넘는 항목들만
+                        {
+                            if (ea[nCurIdx].sequenceStrategy.nResistFs != 0 && ea[nCurIdx].sequenceStrategy.nResistFs < ea[nCurIdx].nFs)
+                            {
+                                // 다른 timeLineIdx이다
+                                if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].sequenceStrategy.nResistTime) > 60)
+                                {
+                                    // 저항선 뚫은거야 
+                                    if (!ea[nCurIdx].sequenceStrategy.isResistPeircing)
+                                        ea[nCurIdx].sequenceStrategy.nResistPiercingTime = nSharedTime;
+                                    ea[nCurIdx].sequenceStrategy.isResistPeircing = true;
+                                }
+                            }
+
+                            // 현재 거래대금 10억 넘으면
+                            if ((ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].lTotalPrice >= TEN_BILLION &&
+                                ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].lBuyPrice > ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].lSellPrice
+                                ) || (nTimeLineIdx <= ea[nCurIdx].sequenceStrategy.nResistTimeLineIdx + 1))
+                            {
+                                if (ea[nCurIdx].sequenceStrategy.nResistFs < ea[nCurIdx].nFs)
+                                {
+                                    ea[nCurIdx].sequenceStrategy.nResistFs = ea[nCurIdx].nFs;
+                                    ea[nCurIdx].sequenceStrategy.nResistTime = nSharedTime;
+                                    ea[nCurIdx].sequenceStrategy.nResistTimeLineIdx = nTimeLineIdx;
+                                    ea[nCurIdx].sequenceStrategy.nResistUpCount++;
+                                }
+
+                            }
+
+
+                        }
+
+                        #endregion
 
                         #region BotUp Trace
                         //ea[nCurIdx].sequenceStrategy.botUpReal532_51.Trace(ea[nCurIdx].fPowerWithoutGap, nSharedTime);
@@ -1542,9 +2591,8 @@ namespace AtoTrader
 
 
                             { // 가짜매수 구역0
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lTotalPrice > BILLION && //분당 10억이상
+                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lTotalPrice > BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && //분당 10억이상
                                     ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lSellPrice &&
-                                    ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
                                     ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                     )
                                 {
@@ -1554,9 +2602,8 @@ namespace AtoTrader
                             FakeBuyPointerMove();
 
                             { // 가짜매수 구역1 
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lTotalPrice > 3 * BILLION && //분당 30억이상
+                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lTotalPrice > 3 * BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && //분당 30억이상
                                      ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lSellPrice &&
-                                     ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
                                      ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                      )
                                 {
@@ -1566,9 +2613,8 @@ namespace AtoTrader
                             FakeBuyPointerMove();
 
                             { // 가짜매수 구역2
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lTotalPrice > 2 * BILLION && //분당 20억이상
+                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lTotalPrice > 2 * BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && //분당 20억이상
                                     ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lSellPrice &&
-                                    ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
                                     ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                     )
                                 {
@@ -1579,8 +2625,7 @@ namespace AtoTrader
 
                             { // 가짜매수 구역3
                                 if (
-                                 ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 5 * HUNDRED_MILLION && // 분당 매수대금 5억이상
-                                 ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
+                                 ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 5 * HUNDRED_MILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && // 분당 매수대금 5억이상
                                  ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                  )
                                 {
@@ -1605,8 +2650,7 @@ namespace AtoTrader
                             FakeBuyPointerMove();
 
                             { // 가짜매수 구역4
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > BILLION && // 분당 매수대금 10억이상
-                                    ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
+                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && // 분당 매수대금 10억이상
                                     ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                    )
                                 {
@@ -1616,8 +2660,7 @@ namespace AtoTrader
                             FakeBuyPointerMove();
 
                             { // 가짜매수 구역5
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 2 * BILLION && // 분당 매수대금 20억이상
-                                    ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
+                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 2 * BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && // 분당 매수대금 20억이상
                                     ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                  )
                                 {
@@ -1628,8 +2671,7 @@ namespace AtoTrader
 
                             { // 가짜매수 구역6
                                 if (
-                                ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > BILLION && // 분당 매수대금 10억이상
-                                ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
+                                ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && // 분당 매수대금 10억이상
                                 ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                 )
                                 {
@@ -1648,8 +2690,7 @@ namespace AtoTrader
 
                             { // 가짜매수 구역7
                                 if (
-                               ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 3 * BILLION && // 분당 매수대금 30억이상
-                               ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
+                               ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 3 * BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && // 분당 매수대금 30억이상
                                ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                )
                                 {
@@ -1667,8 +2708,7 @@ namespace AtoTrader
 
                             { // 가짜매수 구역8
                                 if (
-                                   ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 1.5 * BILLION && // 분당 매수대금 15억이상
-                                   ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
+                                   ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 1.5 * BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && // 분당 매수대금 15억이상
                                    ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                    )
                                 {
@@ -1686,8 +2726,7 @@ namespace AtoTrader
                             FakeBuyPointerMove();
                             { // 가짜매수 구역9
                                 if (
-                                 ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 2 * BILLION && // 분당 매수대금 20억이상
-                                 ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
+                                 ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 2 * BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && // 분당 매수대금 20억이상
                                  ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                  )
                                 {
@@ -1705,8 +2744,7 @@ namespace AtoTrader
                             FakeBuyPointerMove();
                             { // 가짜매수 구역10
                                 if (
-                                 ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > BILLION && // 분당 매수대금 10억이상
-                                 ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
+                                 ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && // 분당 매수대금 10억이상
                                  ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                  )
                                 {
@@ -1714,19 +2752,18 @@ namespace AtoTrader
                                     ea[nCurIdx].fakeBuyStrategy.listApproachTime10.Add(nSharedTime);
 
 
-                                    if (ea[nCurIdx].fakeBuyStrategy.listApproachTime10.Count >= 4)
+                                    if (ea[nCurIdx].fakeBuyStrategy.listApproachTime10.Count >= 5)
                                     {
                                         ea[nCurIdx].fakeBuyStrategy.listApproachTime10.Clear();
-                                        SetThisFake(ea[nCurIdx].fakeBuyStrategy, nCurIdx, nFakeBuyStrategyPointer); // 15분내 분당 매수대금 10억이상 매수 > 매도 시가총액100위이상 4번 이상..리사이클
+                                        SetThisFake(ea[nCurIdx].fakeBuyStrategy, nCurIdx, nFakeBuyStrategyPointer); // 15분내 분당 매수대금 10억이상 매수 > 매도 시가총액100위이상 5번 이상..리사이클
                                     }
                                 }
                             }
                             FakeBuyPointerMove();
                             { // 가짜매수 구역11
                                 if (
-                                 ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lTotalPrice > 2 * BILLION && // 분당 거래대금 20억이상
+                                 ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lTotalPrice > 2 * BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && // 분당 거래대금 20억이상
                                     ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lSellPrice &&
-                                 ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
                                  ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                  )
                                 {
@@ -1744,9 +2781,8 @@ namespace AtoTrader
                             FakeBuyPointerMove();
                             { // 가짜매수 구역12
                                 if (
-                                 ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lTotalPrice > 3 * BILLION && // 분당 거래대금 30억이상
+                                 ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lTotalPrice > 3 * BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && // 분당 거래대금 30억이상
                                     ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lSellPrice &&
-                                 ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
                                  ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                  )
                                 {
@@ -1764,9 +2800,8 @@ namespace AtoTrader
                             FakeBuyPointerMove();
                             { // 가짜매수 구역13
                                 if (
-                                 ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lTotalPrice > 4 * BILLION && // 분당 거래대금 40억이상
+                                 ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lTotalPrice > 4 * BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && // 분당 거래대금 40억이상
                                     ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lSellPrice &&
-                                 ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
                                  ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                  )
                                 {
@@ -1783,9 +2818,8 @@ namespace AtoTrader
                             }
                             FakeBuyPointerMove();
                             { // 가짜매수 구역14
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lTotalPrice > BILLION * 1.5 && //분당 15억이상
+                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lTotalPrice > BILLION * 1.5 + GetHeavyPrice(ea[nCurIdx].lMarketCap) && //분당 15억이상
                                     ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lSellPrice &&
-                                    ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
                                     ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                    )
                                 {
@@ -1795,8 +2829,7 @@ namespace AtoTrader
                             FakeBuyPointerMove();
                             { // 가짜매수 구역15
                                 if (
-                               ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 1.5 * BILLION && // 분당 매수대금 15억이상
-                               ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖nFakeBuyStrategyPointer
+                               ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 1.5 * BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && // 분당 매수대금 15억이상
                                ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                )
                                 {
@@ -1815,8 +2848,7 @@ namespace AtoTrader
                             { // 가짜매수 구역16
                                 if (
                                    //  분당 매수대금 15억이상 매수 > 매도 시가총액100위이상..1분제한
-                                   ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 1.5 * BILLION && // 분당 매수대금 15억이상
-                                   ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
+                                   ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 1.5 * BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && // 분당 매수대금 15억이상
                                    ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                     )
                                 {
@@ -1826,8 +2858,7 @@ namespace AtoTrader
                             FakeBuyPointerMove();
                             { // 가짜매수 구역17
                                 if (
-                                ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 2 * BILLION && // 분당 매수대금 20억이상
-                                ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
+                                ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 2 * BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && // 분당 매수대금 20억이상
                                 ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                 )
                                 {
@@ -1845,8 +2876,7 @@ namespace AtoTrader
                             FakeBuyPointerMove();
                             { // 가짜매수 구역18
                                 if (
-                                 ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 1.5 * BILLION && // 분당 매수대금 15억이상
-                                 ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
+                                 ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 1.5 * BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && // 분당 매수대금 15억이상
                                  ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                  )
                                 {
@@ -1856,15 +2886,14 @@ namespace AtoTrader
                                     if (ea[nCurIdx].fakeBuyStrategy.listApproachTime18.Count >= 4)
                                     {
                                         ea[nCurIdx].fakeBuyStrategy.listApproachTime18.Clear();
-                                        SetThisFake(ea[nCurIdx].fakeBuyStrategy, nCurIdx, nFakeBuyStrategyPointer);// 10분내 분당 매수대금 15억이상 매수 > 매도 시가총액100위이상 3번 이상..리사이클
+                                        SetThisFake(ea[nCurIdx].fakeBuyStrategy, nCurIdx, nFakeBuyStrategyPointer); // 10분내 분당 매수대금 15억이상 매수 > 매도 시가총액100위이상 3번 이상..리사이클
                                     }
                                 }
                             }
                             FakeBuyPointerMove();
                             { // 가짜매수 구역19
                                 if (
-                                ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > BILLION && // 분당 매수대금 10억이상
-                                ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
+                                ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > BILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) && // 분당 매수대금 10억이상
                                 ((ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] == 0) || (ea[nCurIdx].fakeBuyStrategy.arrPrevMinuteIdx[nFakeBuyStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                 )
                                 {
@@ -1911,7 +2940,7 @@ namespace AtoTrader
                                     ((ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] == 0) || (ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                     )
                                 {
-                                    SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer); 
+                                    SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer);
                                 }
                             }
                             FakeAssistantPointerMove();
@@ -1937,7 +2966,7 @@ namespace AtoTrader
                                     if (ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime2.Count >= 3)
                                     {
                                         ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime2.Clear();
-                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer); 
+                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer);
                                     }
                                 }
                             }
@@ -1954,24 +2983,22 @@ namespace AtoTrader
                                     if (ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime3.Count >= 4)
                                     {
                                         ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime3.Clear();
-                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer); 
+                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer);
                                     }
                                 }
                             }
                             FakeAssistantPointerMove();
                             { // 가짜보조 구역4
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].nCount >= 1000 &&
-                                    ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
+                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].nCount >= 1000 + GetHeavyCount(ea[nCurIdx].lMarketCap) &&
                                     ((ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] == 0) || (ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                     )
                                 {
-                                    SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer); 
+                                    SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer);
                                 }
                             }
                             FakeAssistantPointerMove();
                             { // 가짜보조 구역5
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].nCount >= 600 &&
-                                  ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
+                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].nCount >= 600 + GetHeavyCount(ea[nCurIdx].lMarketCap) &&
                                   ((ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] == 0) || (ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                   )
                                 {
@@ -1989,14 +3016,13 @@ namespace AtoTrader
                                     if (ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime5.Count >= 7)
                                     {
                                         ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime5.Clear();
-                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer); 
+                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer);
                                     }
                                 }
                             }
                             FakeAssistantPointerMove();
                             { // 가짜보조 구역6
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].nCount >= 600 &&
-                                  ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
+                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].nCount >= 600 + GetHeavyCount(ea[nCurIdx].lMarketCap) &&
                                   ((ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] == 0) || (ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                   )
                                 {
@@ -2007,26 +3033,24 @@ namespace AtoTrader
                                     if (ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime6.Count >= 5)
                                     {
                                         ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime6.Clear();
-                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer); 
+                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer);
                                     }
                                 }
                             }
                             FakeAssistantPointerMove();
                             { // 가짜보조 구역7
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 5 * HUNDRED_MILLION &&
+                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 5 * HUNDRED_MILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) &&
                                     ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lSellPrice &&
-                                  ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
                                   ((ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] == 0) || (ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                   )
                                 {
-                                    SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer); 
+                                    SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer);
                                 }
                             }
                             FakeAssistantPointerMove();
                             { // 가짜보조 구역8
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 5 * HUNDRED_MILLION &&
+                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 5 * HUNDRED_MILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) &&
                                     ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lSellPrice &&
-                                  ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
                                   ((ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] == 0) || (ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                   )
                                 {
@@ -2036,15 +3060,14 @@ namespace AtoTrader
                                     if (ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime8.Count >= 3)
                                     {
                                         ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime8.Clear();
-                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer); 
+                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer);
                                     }
                                 }
                             }
                             FakeAssistantPointerMove();
                             { // 가짜보조 구역9
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 2 * HUNDRED_MILLION &&
+                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 2 * HUNDRED_MILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) &&
                                     ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lSellPrice &&
-                                 ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
                                  ((ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] == 0) || (ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                  )
                                 {
@@ -2054,15 +3077,14 @@ namespace AtoTrader
                                     if (ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime9.Count >= 4)
                                     {
                                         ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime9.Clear();
-                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer); 
+                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer);
                                     }
                                 }
                             }
                             FakeAssistantPointerMove();
                             { // 가짜보조 구역10
-                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 2 * HUNDRED_MILLION &&
+                                if (ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > 2 * HUNDRED_MILLION + GetHeavyPrice(ea[nCurIdx].lMarketCap) &&
                                     ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lBuyPrice > ea[nCurIdx].timeLines1m.arrTimeLine[nTimeLineIdx].lSellPrice &&
-                                 ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
                                  ((ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] == 0) || (ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                  )
                                 {
@@ -2072,7 +3094,7 @@ namespace AtoTrader
                                     if (ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime10.Count >= 3)
                                     {
                                         ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime10.Clear();
-                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer); 
+                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer);
                                     }
                                 }
                             }
@@ -2080,7 +3102,6 @@ namespace AtoTrader
                             { // 가짜보조 구역11
                                 if (ea[nCurIdx].rankSystem.arrRanking[ea[nCurIdx].nRealDataIdxVi].nMinuteRanking > 0 &&
                                     ea[nCurIdx].rankSystem.arrRanking[ea[nCurIdx].nRealDataIdxVi].nMinuteRanking <= 2 &&
-                                  ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
                                   ((ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] == 0) || (ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                   )
                                 {
@@ -2091,7 +3112,7 @@ namespace AtoTrader
                                     if (ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime11.Count >= 3)
                                     {
                                         ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime11.Clear();
-                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer); 
+                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer);
                                     }
                                 }
                             }
@@ -2099,7 +3120,6 @@ namespace AtoTrader
                             { // 가짜보조 구역12
                                 if (ea[nCurIdx].rankSystem.arrRanking[ea[nCurIdx].nRealDataIdxVi].nMinuteRanking > 0 &&
                                     ea[nCurIdx].rankSystem.arrRanking[ea[nCurIdx].nRealDataIdxVi].nMinuteRanking <= 5 &&
-                                  ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
                                   ((ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] == 0) || (ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                   )
                                 {
@@ -2110,14 +3130,13 @@ namespace AtoTrader
                                     if (ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime12.Count >= 4)
                                     {
                                         ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime12.Clear();
-                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer); 
+                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer);
                                     }
                                 }
                             }
                             FakeAssistantPointerMove();
                             { // 가짜보조 구역13
                                 if (ea[nCurIdx].rankSystem.arrRanking[ea[nCurIdx].nRealDataIdxVi].nMinuteRanking == 1 &&
-                                  ea[nCurIdx].rankSystem.nMarketCapRanking > 200 && // 시가총액 100위 밖
                                   ((ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] == 0) || (ea[nCurIdx].fakeAssistantStrategy.arrPrevMinuteIdx[nFakeAssistantStrategyPointer] + 0 < nTimeLineIdx))  // 1분 제한 
                                   )
                                 {
@@ -2127,19 +3146,24 @@ namespace AtoTrader
                                     if (ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime13.Count >= 2)
                                     {
                                         ea[nCurIdx].fakeAssistantStrategy.listApproachAssistantTime13.Clear();
-                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer); 
+                                        SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer);
                                     }
                                 }
                             }
                             FakeAssistantPointerMove();
                             { // 가짜보조 구역14
-                                if (ea[nCurIdx].crushMgr.isCrush)
+                                if (ea[nCurIdx].crushMinuteManager.isCrushRealTimeCheck)
                                 {
-                                    SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer); 
+                                    SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer);
                                 }
                             }
                             FakeAssistantPointerMove();
-                       
+                            { // 가짜보조 구역15
+                                if (ea[nCurIdx].crushMinuteManager.isCrushCheck)
+                                {
+                                    SetThisFake(ea[nCurIdx].fakeAssistantStrategy, nCurIdx, nFakeAssistantStrategyPointer);
+                                }
+                            }
                         }
                         catch (Exception fakeAssistantException)
                         {
@@ -2319,7 +3343,7 @@ namespace AtoTrader
                         {
                             ea[nCurIdx].fakeResistStrategy.isSuddenBoom = false;
                         }
-                    }// END ---- 페이크저항
+                    }// END ---- 가짜저항
                     #endregion
 
                     #region 페이크 변동성
@@ -2339,44 +3363,9 @@ namespace AtoTrader
                                 return ea[nCurIdx].timeLines1m.nRealDataIdx >= BRUSH + nDiffMinuteNum - 1 && (double)(ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nLastFs - ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx - nDiffMinuteNum].nLastFs) / ea[nCurIdx].nYesterdayEndPrice > fDiffPower;
                             }
 
+                        
 
-                            // 실매수 구역# 차분 1 0.015 1분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 1, fDiffPower: 0.015) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 1)
-                               )
-                            {
-                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
-                            }
-                            FakeVolatilityPointerMove();
-
-                            // 실매수 구역# 차분 1 0.025 1분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 1, fDiffPower: 0.025) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 1)
-                               )
-                            {
-                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
-                            }
-                            FakeVolatilityPointerMove();
-
-                            // 실매수 구역# 차분 3 0.02 3분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 3, fDiffPower: 0.02) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 3)
-                               )
-                            {
-                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
-                            }
-                            FakeVolatilityPointerMove();
-
-                            // 실매수 구역# 차분 5 0.02 5분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 5, fDiffPower: 0.02) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 5)
-                               )
-                            {
-                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
-                            }
-                            FakeVolatilityPointerMove();
-
-                            // 실매수 구역# 차분 5 0.03 5분주기
+                            // 변동성 구역# 차분 5 0.03 5분주기
                             if (TestPriceDiff(nDiffMinuteNum: 5, fDiffPower: 0.03) &&
                                  GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 5)
                                )
@@ -2385,7 +3374,7 @@ namespace AtoTrader
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 5 0.05 5분주기
+                            // 변동성 구역# 차분 5 0.05 5분주기
                             if (TestPriceDiff(nDiffMinuteNum: 5, fDiffPower: 0.05) &&
                                  GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 5)
                                )
@@ -2394,16 +3383,16 @@ namespace AtoTrader
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 10 0.03 10분주기
+                            // 변동성 구역# 차분 10 0.03 11분주기
                             if (TestPriceDiff(nDiffMinuteNum: 10, fDiffPower: 0.03) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 10)
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 11)
                                )
                             {
                                 SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 10 0.04 6분주기
+                            // 변동성 구역# 차분 10 0.04 6분주기
                             if (TestPriceDiff(nDiffMinuteNum: 10, fDiffPower: 0.04) &&
                                  GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 6)
                                )
@@ -2412,16 +3401,16 @@ namespace AtoTrader
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 20 0.05 10분주기
+                            // 변동성 구역# 차분 20 0.05 13분주기
                             if (TestPriceDiff(nDiffMinuteNum: 20, fDiffPower: 0.05) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 10)
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 13)
                                )
                             {
                                 SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 20 0.04 15분주기
+                            // 변동성 구역# 차분 20 0.04 15분주기
                             if (TestPriceDiff(nDiffMinuteNum: 20, fDiffPower: 0.04) &&
                                  GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 15)
                                )
@@ -2430,7 +3419,7 @@ namespace AtoTrader
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 15 0.04 12분주기
+                            // 변동성 구역# 차분 15 0.04 12분주기
                             if (TestPriceDiff(nDiffMinuteNum: 15, fDiffPower: 0.04) &&
                                  GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 12)
                                )
@@ -2440,18 +3429,18 @@ namespace AtoTrader
                             FakeVolatilityPointerMove();
 
 
-                            // 실매수 구역# 차분 5 0.07 10분주기
+                            // 변동성 구역# 차분 5 0.07 8분주기
                             if (TestPriceDiff(nDiffMinuteNum: 5, fDiffPower: 0.07) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 10)
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 8)
                                )
                             {
                                 SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 3 0.05 10분주기
+                            // 변동성 구역# 차분 3 0.05 9분주기
                             if (TestPriceDiff(nDiffMinuteNum: 3, fDiffPower: 0.05) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 10)
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 9)
                                )
                             {
                                 SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
@@ -2459,7 +3448,7 @@ namespace AtoTrader
                             FakeVolatilityPointerMove();
 
 
-                            // 실매수 구역# 차분 4 0.04 10분주기
+                            // 변동성 구역# 차분 4 0.04 10분주기
                             if (TestPriceDiff(nDiffMinuteNum: 4, fDiffPower: 0.04) &&
                                  GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 10)
                                )
@@ -2468,64 +3457,27 @@ namespace AtoTrader
                             }
                             FakeVolatilityPointerMove();
 
-
-                            // 실매수 구역# 차분 20 0.1 15분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 20, fDiffPower: 0.1) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 15)
-                               )
-                            {
-                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
-                            }
-                            FakeVolatilityPointerMove();
-
-
-                            // 실매수 구역# 차분 30 0.05 10분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 30, fDiffPower: 0.05) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 10)
-                               )
-                            {
-                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
-                            }
-                            FakeVolatilityPointerMove();
-
-
-                            // 실매수 구역# 차분 23 0.12 20분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 23, fDiffPower: 0.12) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 20)
-                               )
-                            {
-                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
-                            }
-                            FakeVolatilityPointerMove();
-
-                            // 실매수 구역# 차분 37 0.04 20분주기
+                 
+                            // 변동성 구역# 차분 37 0.04 21분주기
                             if (TestPriceDiff(nDiffMinuteNum: 37, fDiffPower: 0.04) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 20)
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 21)
                                )
                             {
                                 SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 34 0.05 10분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 34, fDiffPower: 0.05) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 10)
+
+                            // 변동성 구역# 차분 35 0.06 23분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 35, fDiffPower: 0.06) &&
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 23)
                                )
                             {
                                 SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 35 0.07 20분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 35, fDiffPower: 0.07) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 20)
-                               )
-                            {
-                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
-                            }
-                            FakeVolatilityPointerMove();
-
-                            // 실매수 구역# 차분 30 0.04 30분주기
+                            // 변동성 구역# 차분 30 0.04 30분주기
                             if (TestPriceDiff(nDiffMinuteNum: 30, fDiffPower: 0.04) &&
                                  GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 30)
                                )
@@ -2534,16 +3486,16 @@ namespace AtoTrader
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 30 0.03 20분주기
+                            // 변동성 구역# 차분 30 0.03 26분주기
                             if (TestPriceDiff(nDiffMinuteNum: 30, fDiffPower: 0.03) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 20)
+                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 26)
                                )
                             {
                                 SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 7 0.04 20분주기
+                            // 변동성 구역# 차분 7 0.04 20분주기
                             if (TestPriceDiff(nDiffMinuteNum: 7, fDiffPower: 0.04) &&
                                  GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 20)
                                )
@@ -2552,43 +3504,8 @@ namespace AtoTrader
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 8 0.02 10분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 8, fDiffPower: 0.02) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 10)
-                               )
-                            {
-                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
-                            }
-                            FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 12 0.02 11분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 12, fDiffPower: 0.02) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 11)
-                               )
-                            {
-                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
-                            }
-                            FakeVolatilityPointerMove();
-
-                            // 실매수 구역# 차분 13 0.03 10분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 13, fDiffPower: 0.03) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 10)
-                               )
-                            {
-                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
-                            }
-                            FakeVolatilityPointerMove();
-
-                            // 실매수 구역# 차분 16 0.025 6분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 16, fDiffPower: 0.025) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 6)
-                               )
-                            {
-                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
-                            }
-                            FakeVolatilityPointerMove();
-
-                            // 실매수 구역# 차분 23 0.045 17분주기
+                            // 변동성 구역# 차분 23 0.045 17분주기
                             if (TestPriceDiff(nDiffMinuteNum: 23, fDiffPower: 0.045) &&
                                  GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 17)
                                )
@@ -2597,7 +3514,7 @@ namespace AtoTrader
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 20 0.05 16분주기
+                            // 변동성 구역# 차분 20 0.05 16분주기
                             if (TestPriceDiff(nDiffMinuteNum: 20, fDiffPower: 0.05) &&
                                  GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 16)
                                )
@@ -2606,16 +3523,8 @@ namespace AtoTrader
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 16 0.03 7분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 16, fDiffPower: 0.03) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 7)
-                               )
-                            {
-                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
-                            }
-                            FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 13 0.033 12분주기
+                            // 변동성 구역# 차분 13 0.033 12분주기
                             if (TestPriceDiff(nDiffMinuteNum: 13, fDiffPower: 0.033) &&
                                  GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 12)
                                )
@@ -2624,34 +3533,9 @@ namespace AtoTrader
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 17 0.023 11분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 17, fDiffPower: 0.023) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 11)
-                               )
-                            {
-                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
-                            }
-                            FakeVolatilityPointerMove();
+                
 
-                            // 실매수 구역# 차분 40 0.021 15분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 40, fDiffPower: 0.021) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 15)
-                               )
-                            {
-                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
-                            }
-                            FakeVolatilityPointerMove();
-
-                            // 실매수 구역# 차분 30 0.02 34분주기
-                            if (TestPriceDiff(nDiffMinuteNum: 30, fDiffPower: 0.02) &&
-                                 GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 34)
-                               )
-                            {
-                                SetThisFake(ea[nCurIdx].fakeVolatilityStrategy, nCurIdx, nFakeVolatilityStrategyPointer);
-                            }
-                            FakeVolatilityPointerMove();
-
-                            // 실매수 구역# 차분 20 0.03 14분주기
+                            // 변동성 구역# 차분 20 0.03 14분주기
                             if (TestPriceDiff(nDiffMinuteNum: 20, fDiffPower: 0.03) &&
                                  GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 14)
                                )
@@ -2660,7 +3544,7 @@ namespace AtoTrader
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 36 0.06 22분주기
+                            // 변동성 구역# 차분 36 0.06 22분주기
                             if (TestPriceDiff(nDiffMinuteNum: 36, fDiffPower: 0.06) &&
                                  GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 22)
                                )
@@ -2669,7 +3553,7 @@ namespace AtoTrader
                             }
                             FakeVolatilityPointerMove();
 
-                            // 실매수 구역# 차분 22 0.06 14분주기
+                            // 변동성 구역# 차분 22 0.06 14분주기
                             if (TestPriceDiff(nDiffMinuteNum: 22, fDiffPower: 0.06) &&
                                  GetAccess(ea[nCurIdx].fakeVolatilityStrategy, nFakeVolatilityStrategyPointer, nCycle: 14)
                                )
@@ -2690,7 +3574,144 @@ namespace AtoTrader
                     }// END ---- 전략매수
                     #endregion
 
+                    #region 페이크 다운
+                    if (nSharedTime < BAN_BUY_TIME)
+                    {
+                        try
+                        {
+                            int nFakeDownStrategyPointer = 0;
 
+                            void FakeDownPointerMove()
+                            {
+                                nFakeDownStrategyPointer++;
+                            }
+
+                            bool TestPriceDiff(int nDiffMinuteNum, double fDiffPower)
+                            {
+                                return ea[nCurIdx].timeLines1m.nRealDataIdx >= BRUSH + nDiffMinuteNum - 1 && (double)(ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nLastFs - ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx - nDiffMinuteNum].nLastFs) / ea[nCurIdx].nYesterdayEndPrice < (-1) * fDiffPower;
+                            }
+
+                            // 페이크 다운# 차분 1 -0.025 1분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 1, fDiffPower: 0.025) &&
+                                 GetAccess(ea[nCurIdx].fakeDownStrategy, nFakeDownStrategyPointer, nCycle: 1)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeDownStrategy, nCurIdx, nFakeDownStrategyPointer);
+                            }
+                            FakeDownPointerMove();
+
+                            // 페이크 다운# 차분 5 -0.03 5분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 5, fDiffPower: 0.03) &&
+                                 GetAccess(ea[nCurIdx].fakeDownStrategy, nFakeDownStrategyPointer, nCycle: 5)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeDownStrategy, nCurIdx, nFakeDownStrategyPointer);
+                            }
+                            FakeDownPointerMove();
+
+                            // 페이크 다운# 차분 8 -0.04 8분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 8, fDiffPower: 0.04) &&
+                                 GetAccess(ea[nCurIdx].fakeDownStrategy, nFakeDownStrategyPointer, nCycle: 8)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeDownStrategy, nCurIdx, nFakeDownStrategyPointer);
+                            }
+                            FakeDownPointerMove();
+
+                            // 페이크 다운# 차분 12 -0.05 10분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 12, fDiffPower: 0.05) &&
+                                 GetAccess(ea[nCurIdx].fakeDownStrategy, nFakeDownStrategyPointer, nCycle: 10)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeDownStrategy, nCurIdx, nFakeDownStrategyPointer);
+                            }
+                            FakeDownPointerMove();
+
+                            // 페이크 다운# 차분 14 -0.035 12분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 14, fDiffPower: 0.035) &&
+                                 GetAccess(ea[nCurIdx].fakeDownStrategy, nFakeDownStrategyPointer, nCycle: 12)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeDownStrategy, nCurIdx, nFakeDownStrategyPointer);
+                            }
+                            FakeDownPointerMove();
+
+                            // 페이크 다운# 차분 15 -0.025 14분주기 
+                            if (TestPriceDiff(nDiffMinuteNum: 15, fDiffPower: 0.025) &&
+                                 GetAccess(ea[nCurIdx].fakeDownStrategy, nFakeDownStrategyPointer, nCycle: 14)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeDownStrategy, nCurIdx, nFakeDownStrategyPointer);
+                            }
+                            FakeDownPointerMove();
+
+                            // 페이크 다운# 차분 20 -0.04 15분주기
+                            if (TestPriceDiff(nDiffMinuteNum: 20, fDiffPower: 0.04) &&
+                                 GetAccess(ea[nCurIdx].fakeDownStrategy, nFakeDownStrategyPointer, nCycle: 15)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeDownStrategy, nCurIdx, nFakeDownStrategyPointer);
+                            }
+                            FakeDownPointerMove();
+
+                            // 페이크 다운# 차분 22 -0.045 20분주기 
+                            if (TestPriceDiff(nDiffMinuteNum: 22, fDiffPower: 0.045) &&
+                                 GetAccess(ea[nCurIdx].fakeDownStrategy, nFakeDownStrategyPointer, nCycle: 20)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeDownStrategy, nCurIdx, nFakeDownStrategyPointer);
+                            }
+                            FakeDownPointerMove();
+
+
+                            // 페이크 다운# 차분 17 -0.025 15분주기 
+                            if (TestPriceDiff(nDiffMinuteNum: 17, fDiffPower: 0.025) &&
+                                 GetAccess(ea[nCurIdx].fakeDownStrategy, nFakeDownStrategyPointer, nCycle: 15)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeDownStrategy, nCurIdx, nFakeDownStrategyPointer);
+                            }
+                            FakeDownPointerMove();
+
+                            // 페이크 다운# 차분 15 -0.03 9분주기 
+                            if (TestPriceDiff(nDiffMinuteNum: 15, fDiffPower: 0.03) &&
+                                 GetAccess(ea[nCurIdx].fakeDownStrategy, nFakeDownStrategyPointer, nCycle: 9)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeDownStrategy, nCurIdx, nFakeDownStrategyPointer);
+                            }
+                            FakeDownPointerMove();
+
+
+                            // 페이크 다운# 차분 3 -0.033 7분주기 
+                            if (TestPriceDiff(nDiffMinuteNum: 3, fDiffPower: 0.033) &&
+                                 GetAccess(ea[nCurIdx].fakeDownStrategy, nFakeDownStrategyPointer, nCycle: 7)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeDownStrategy, nCurIdx, nFakeDownStrategyPointer);
+                            }
+                            FakeDownPointerMove();
+
+                            // 페이크 다운# 차분 13 -0.036 20분주기 
+                            if (TestPriceDiff(nDiffMinuteNum: 13, fDiffPower: 0.036) &&
+                                 GetAccess(ea[nCurIdx].fakeDownStrategy, nFakeDownStrategyPointer, nCycle: 20)
+                               )
+                            {
+                                SetThisFake(ea[nCurIdx].fakeDownStrategy, nCurIdx, nFakeDownStrategyPointer);
+                            }
+                            FakeDownPointerMove();
+
+                        }
+                        catch  // 혹시 내 실수로 STRATEGY_NUM을 초과한 전략을 세울 수 도 있으니까
+                        {
+
+                        }
+                        finally
+                        {
+                            ea[nCurIdx].fakeDownStrategy.isSuddenBoom = false;
+                        }
+                    }// END ---- 페이크다운
+                    #endregion
 
                     #region 페이크정보 취합
                     //=====================================================
@@ -2708,8 +3729,652 @@ namespace AtoTrader
                     }
                     #endregion
 
-                    
-                    ea[nCurIdx].crushMgr.isCrush = false;
+                    #region 실매수
+                    //=====================================================
+                    // 전략매수, 실매수 Part
+                    //=====================================================
+                    if (!ea[nCurIdx].isExcluded) //&& nSharedTime < BAN_BUY_TIME) // START ---- 제외되지 않았다면 매수 가능, 뒤 조건은 잠시 빼놓은 상태(일단은 매매컨트롤러- 매수에서 매수금지 시간을 정해줬다)
+                    {
+                        try
+                        {
+                            // 전략 0번째는 추가매수의 슬롯이다
+                            int nRealBuyStrategyPointer = 1;
+                            void RealBuyPointerMove()
+                            {
+                                nRealBuyStrategyPointer++;
+                            }
+
+                            { // 실매수 구역 5분전 갭포함 6퍼 .. 단한번
+                                if (nSharedTime < AddTimeBySec(nFirstTime, 300) &&
+                                    ea[nCurIdx].fPower >= 0.06 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer)
+                                  )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 10분전 갭포함 8.5퍼 .. 단한번
+                                if (nSharedTime < AddTimeBySec(nFirstTime, 600) &&
+                                    ea[nCurIdx].fPower >= 0.085 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer)
+                                  )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 5퍼돌파후 전고점(매매:전고점) .. 11분 주기
+                                if (ea[nCurIdx].crushMinuteManager.isCrushCheck &&
+                                    ea[nCurIdx].sequenceStrategy.isFiveReachedReal &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 p7-m7>=15 .. 11분 주기
+                                if (ea[nCurIdx].fPlusCnt07 - ea[nCurIdx].fMinusCnt07 >= 15 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                               )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 p7-m7>=25 .. 11분 주기
+                                if (ea[nCurIdx].fPlusCnt07 - ea[nCurIdx].fMinusCnt07 >= 25 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 p7+m7>=30 and p7-m7>=15 .. 11분 주기
+                                if (ea[nCurIdx].fPlusCnt07 + ea[nCurIdx].fMinusCnt07 >= 30 &&
+                                    ea[nCurIdx].fPlusCnt07 - ea[nCurIdx].fMinusCnt07 >= 15 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 p7+m7>=50 and p7-m7>=15 .. 11분 주기
+                                if (ea[nCurIdx].fPlusCnt07 + ea[nCurIdx].fMinusCnt07 >= 50 &&
+                                   ea[nCurIdx].fPlusCnt07 - ea[nCurIdx].fMinusCnt07 >= 15 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                               )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 p9+m9>=50 and p9-m9>=15 .. 11분 주기
+                                if (ea[nCurIdx].fPlusCnt09 + ea[nCurIdx].fMinusCnt09 >= 50 &&
+                                    ea[nCurIdx].fPlusCnt09 - ea[nCurIdx].fMinusCnt09 >= 15 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                  )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 p9+m9>=70 and p9-m9>=15 .. 11분 주기
+                                if (ea[nCurIdx].fPlusCnt09 + ea[nCurIdx].fMinusCnt09 >= 70 &&
+                                    ea[nCurIdx].fPlusCnt09 - ea[nCurIdx].fMinusCnt09 >= 15 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                  )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 p9+m9>=90 and p9-m9>=10 .. 11분 주기
+                                if (ea[nCurIdx].fPlusCnt09 + ea[nCurIdx].fMinusCnt09 >= 90 &&
+                                    ea[nCurIdx].fPlusCnt09 - ea[nCurIdx].fMinusCnt09 >= 10 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                  )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 p9+m9>=90 and p9-m9>=20 .. 11분 주기
+                                if (ea[nCurIdx].fPlusCnt09 + ea[nCurIdx].fMinusCnt09 >= 90 &&
+                                    ea[nCurIdx].fPlusCnt09 - ea[nCurIdx].fMinusCnt09 >= 20 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                  )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 p9-m9>=30 .. 11분 주기
+                                if (ea[nCurIdx].fPlusCnt09 - ea[nCurIdx].fMinusCnt09 >= 30 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                  )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 파워자 2퍼 .. 11분 주기
+                                if (ea[nCurIdx].fPowerJar >= 0.02 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 파워자 3퍼 .. 11분 주기
+                                if (ea[nCurIdx].fPowerJar >= 0.03 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                     )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 파워자 4퍼 .. 11분 주기
+                                if (ea[nCurIdx].fPowerJar >= 0.04 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 총 순위 1위 .. 11분 주기
+                                if (ea[nCurIdx].rankSystem.nSummationRanking == 1 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                     )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 현재 분당 파워 순위 1위 .. 11분 주기
+                                if (ea[nCurIdx].rankSystem.nMinutePowerRanking == 1 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                     )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 총 순위 2위 .. 11분 주기
+                                if (ea[nCurIdx].rankSystem.nSummationRanking == 2 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                     )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 현재 분당 파워 순위 2위 .. 11분 주기
+                                if (ea[nCurIdx].rankSystem.nMinutePowerRanking == 2 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                     )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 분당 속도 1000이상 p7-m7>= 15 .. 11분 주기
+                                if (ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nPrevTimeLineIdx].nCount >= 1000 &&
+                                     ea[nCurIdx].fPlusCnt07 - ea[nCurIdx].fMinusCnt07 >= 15 &&
+                                     GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                      )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 전고점 총순위 30위 이전(매매:전고점) .. 11분 주기
+                                if (ea[nCurIdx].crushMinuteManager.isCrushCheck &&
+                                    ea[nCurIdx].rankSystem.nSummationRanking > 0 &&
+                                    ea[nCurIdx].rankSystem.nSummationRanking <= 30 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                     )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 전고점 총순위 10위 이전(매매:전고점) .. 11분 주기
+                                if (ea[nCurIdx].crushMinuteManager.isCrushCheck &&
+                                    ea[nCurIdx].rankSystem.nSummationRanking > 0 &&
+                                    ea[nCurIdx].rankSystem.nSummationRanking <= 10 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                     )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 분당 순위 1위 .. 11분 주기
+                                if (ea[nCurIdx].rankSystem.nMinuteSummationRanking == 1 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 R각도 50도 이상 .. 11분 주기
+                                if (ea[nCurIdx].timeLines1m.fRecentMedianAngle >= 50 &&
+                                    GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+
+                            { // 실매수 구역 직접입력매수
+                                if (ea[nCurIdx].realBuyStrategy.isManualOrderSignal)
+                                {
+                                    ea[nCurIdx].realBuyStrategy.isManualOrderSignal = false;
+                                    if (nTimeBetweenPrev >= ea[nCurIdx].realBuyStrategy.nManualEndurationTime)
+                                    {
+                                        PrintLog("시간 : " + nSharedTime.ToString() + ", 종목코드 : " + ea[nCurIdx].sCode + ", 종목명 : " + ea[nCurIdx].sCodeName + " 전략 : " + nRealBuyStrategyPointer.ToString() + " " + nTimeBetweenPrev.ToString() + "초동안 체결전적이 없어" + " 직접입력매수신청 기각 ", nCurIdx);
+                                    }
+                                    else
+                                    {
+                                        RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, nExtraChance: 3);
+                                    }
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 421 .. 반복
+                                if (
+                                    ea[nCurIdx].sequenceStrategy.botUpMinute421.isM3Passed &&
+                                    !ea[nCurIdx].sequenceStrategy.botUpMinute421.CheckIsRedundancy()
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 432 .. 반복
+                                if (
+                                    ea[nCurIdx].sequenceStrategy.botUpMinute432.isM3Passed &&
+                                    !ea[nCurIdx].sequenceStrategy.botUpMinute432.CheckIsRedundancy()
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 642 .. 반복
+                                if (
+                                    ea[nCurIdx].sequenceStrategy.botUpMinute642.isM3Passed &&
+                                    !ea[nCurIdx].sequenceStrategy.botUpMinute642.CheckIsRedundancy()
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 643 .. 반복
+                                if (
+                                    ea[nCurIdx].sequenceStrategy.botUpMinute643.isM3Passed &&
+                                    !ea[nCurIdx].sequenceStrategy.botUpMinute643.CheckIsRedundancy()
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 732 .. 반복
+                                if (
+                                    ea[nCurIdx].sequenceStrategy.botUpMinute732.isM3Passed &&
+                                    !ea[nCurIdx].sequenceStrategy.botUpMinute732.CheckIsRedundancy()
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 743 .. 반복
+                                if (
+                                    ea[nCurIdx].sequenceStrategy.botUpMinute743.isM3Passed &&
+                                    !ea[nCurIdx].sequenceStrategy.botUpMinute743.CheckIsRedundancy()
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 953 .. 반복
+                                if (
+                                    ea[nCurIdx].sequenceStrategy.botUpMinute953.isM3Passed &&
+                                    !ea[nCurIdx].sequenceStrategy.botUpMinute953.CheckIsRedundancy()
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 421 전고점 일점돌파 .. 반복
+                                if (
+                                        ea[nCurIdx].sequenceStrategy.botUpMinute421.isJumped
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 432 전고점 일점돌파 .. 반복
+                                if (
+                                        ea[nCurIdx].sequenceStrategy.botUpMinute432.isJumped
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 642 전고점 일점돌파 .. 반복
+                                if (
+                                        ea[nCurIdx].sequenceStrategy.botUpMinute642.isJumped
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 643 전고점 일점돌파 .. 반복
+                                if (
+                                        ea[nCurIdx].sequenceStrategy.botUpMinute643.isJumped
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 732 전고점 일점돌파 .. 반복
+                                if (
+                                        ea[nCurIdx].sequenceStrategy.botUpMinute732.isJumped
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 743 전고점 일점돌파 .. 반복
+                                if (
+                                        ea[nCurIdx].sequenceStrategy.botUpMinute743.isJumped
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 953 전고점 일점돌파 .. 반복
+                                if (
+                                        ea[nCurIdx].sequenceStrategy.botUpMinute953.isJumped
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 421 전고점 돌파 .. 반복
+                                if (
+                                        ea[nCurIdx].sequenceStrategy.botUpMinute421.isCrushed
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 432 전고점 돌파 .. 반복
+                                if (
+                                        ea[nCurIdx].sequenceStrategy.botUpMinute432.isCrushed
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 642 전고점 돌파 .. 반복
+                                if (
+                                        ea[nCurIdx].sequenceStrategy.botUpMinute642.isCrushed
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 643 전고점 돌파 .. 반복
+                                if (
+                                        ea[nCurIdx].sequenceStrategy.botUpMinute643.isCrushed
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 732 전고점 돌파 .. 반복
+                                if (
+                                        ea[nCurIdx].sequenceStrategy.botUpMinute732.isCrushed
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 743 전고점 돌파 .. 반복
+                                if (
+                                        ea[nCurIdx].sequenceStrategy.botUpMinute743.isCrushed
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 botUp 953 전고점 돌파 .. 반복
+                                if (
+                                        ea[nCurIdx].sequenceStrategy.botUpMinute953.isCrushed
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO, eTradeMethod: TradeMethodCategory.BottomUpMethod);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 갭제외 +6.5퍼 .. 단한번
+                                if (ea[nCurIdx].fPowerWithoutGap >= 0.065 &&
+                                        GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer)
+                                     )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 갭제외 +8퍼 .. 단한번
+                                if (ea[nCurIdx].fPowerWithoutGap >= 0.08 &&
+                                        GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer)
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 갭제외 +11퍼 .. 단한번
+                                if (ea[nCurIdx].fPowerWithoutGap >= 0.11 &&
+                                        GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer)
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 onlyUpPowerJar 4퍼 .. 11분주기
+                                if (ea[nCurIdx].fOnlyUpPowerJar >= 0.04 &&
+                                     GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer, nCycle: 11)
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 9시 30분 전 7퍼 상승 .. 단한번
+                                if (nSharedTime <= AddTimeBySec(nFirstTime, 1800) &&
+                                    ea[nCurIdx].fPowerWithoutGap >= 0.07 &&
+                                     GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer)
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 9시 30분 전 10퍼 상승 .. 단한번
+                                if (nSharedTime <= AddTimeBySec(nFirstTime, 1800) &&
+                                    ea[nCurIdx].fPowerWithoutGap >= 0.1 &&
+                                     GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer)
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 9시 30분 전 12퍼 상승 .. 단한번
+                                if (nSharedTime <= AddTimeBySec(nFirstTime, 1800) &&
+                                    ea[nCurIdx].fPowerWithoutGap >= 0.12 &&
+                                     GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer)
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 10시 전 8퍼 상승 .. 단한번
+                                if (nSharedTime <= AddTimeBySec(nFirstTime, 3600) &&
+                                    ea[nCurIdx].fPowerWithoutGap >= 0.08 &&
+                                     GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer)
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 10시 전 12퍼 상승 .. 단한번
+                                if (nSharedTime <= AddTimeBySec(nFirstTime, 3600) &&
+                                    ea[nCurIdx].fPowerWithoutGap >= 0.12 &&
+                                     GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer)
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                            { // 실매수 구역 10시 전 15퍼 상승 .. 단한번
+                                if (nSharedTime <= AddTimeBySec(nFirstTime, 3600) &&
+                                    ea[nCurIdx].fPowerWithoutGap >= 0.15 &&
+                                     GetAccess(ea[nCurIdx].realBuyStrategy, nRealBuyStrategyPointer)
+                                    )
+                                {
+                                    RequestThisRealBuy(nCurIdx, nRealBuyStrategyPointer, NORMAL_TRADE_RATIO);
+                                }
+                            }
+                            RealBuyPointerMove();
+
+                        }
+                        catch  // 혹시 내 실수로 STRATEGY_NUM을 초과한 전략을 세울 수 도 있으니까
+                        {
+
+                        }
+                        finally
+                        {
+                            ea[nCurIdx].realBuyStrategy.isSuddenBoom = false;
+                            ea[nCurIdx].realBuyStrategy.isOrderCheck = false;
+                        }
+                    }// END ---- 전략매수
+                    #endregion
+
+                    ea[nCurIdx].crushMinuteManager.isCrushCheck = false;
+                    ea[nCurIdx].crushMinuteManager.isCrushRealTimeCheck = false;
+
+                    ea[nCurIdx].sequenceStrategy.botUpMinute421.Confirm();
+                    ea[nCurIdx].sequenceStrategy.botUpMinute432.Confirm();
+                    ea[nCurIdx].sequenceStrategy.botUpMinute642.Confirm();
+                    ea[nCurIdx].sequenceStrategy.botUpMinute643.Confirm();
+                    ea[nCurIdx].sequenceStrategy.botUpMinute732.Confirm();
+                    ea[nCurIdx].sequenceStrategy.botUpMinute743.Confirm();
+                    ea[nCurIdx].sequenceStrategy.botUpMinute953.Confirm();
+
+#if AI
+                    if (nSharedTime < BAN_BUY_TIME)
+                    {
+                        // EVERY AI 요청
+                        if (ea[nCurIdx].nChegyulCnt % 1000 == 0 || (ea[nCurIdx].fPowerDiff > 0 && ea[nCurIdx].nAccumUpCnt % 250 == 0))
+                        {
+                            if (ea[nCurIdx].nChegyulCnt % 1000 == 0)
+                                UpFakeCount(nCurIdx, EVERY_SIGNAL, 1);
+                            else
+                                UpFakeCount(nCurIdx, EVERY_SIGNAL, 2);
+                        }
+                    }
+#endif
 
                 }// End ---- e.sRealType.Equals("주식체결")
                 #endregion
@@ -2723,83 +4388,423 @@ namespace AtoTrader
                     if (ea[nCurIdx].isFirstCheck)
                     {
                         #region 페이크 블록 기록
-                        //try
-                        //{
-                        //    if (nSharedTime < SHUTDOWN_TIME)
-                        //    {
-                        //        for (int i = 0; i < ea[nCurIdx].fakeStrategyMgr.nTotalFakeCount; i++)
-                        //        {
-                        //            if(ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nPriceAfter1Sec == 0 && ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime < nSharedTime)
-                        //                ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nPriceAfter1Sec = ea[nCurIdx].nFs;
+                        try
+                        {
 
-                        //            int nOverPrice = ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nOverPrice;
-                        //            // 거래하고 3시전까지 실시간으로
-                        //            ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinRealTilThree.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+                            for (int i = 0; i < ea[nCurIdx].fakeStrategyMgr.fd.Count; i++)
+                            {
+                                if (nSharedTime < SHUTDOWN_TIME || ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nFinalPrice == 0)
+                                {
+                                    if(ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nPriceAfter1Sec == 0 || AddTimeBySec(ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime, 2) >= nSharedTime)
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nPriceAfter1Sec = ea[nCurIdx].nFb;
+
+                                    #region 시간 내 가격 추격
+                                    // 2분 내
+                                    if (ea[nCurIdx].fakeStrategyMgr.fd[i].fr.n2MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 120)
+                                    {
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.n2MinPrice = ea[nCurIdx].nFb;
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.f2MinPower = ea[nCurIdx].fPower;
+                                    }
+
+                                    // 3분 내
+                                    if (ea[nCurIdx].fakeStrategyMgr.fd[i].fr.n3MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 180)
+                                    {
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.n3MinPrice = ea[nCurIdx].nFb;
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.f3MinPower = ea[nCurIdx].fPower;
+                                    }
+
+                                    // 5분 내
+                                    if (ea[nCurIdx].fakeStrategyMgr.fd[i].fr.n5MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 300)
+                                    {
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.n5MinPrice = ea[nCurIdx].nFb;
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.f5MinPower = ea[nCurIdx].fPower;
+                                    }
+
+                                    // 10분 내
+                                    if (ea[nCurIdx].fakeStrategyMgr.fd[i].fr.n10MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 600)
+                                    {
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.n10MinPrice = ea[nCurIdx].nFb;
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.f10MinPower = ea[nCurIdx].fPower;
+                                    }
+
+                                    // 15분 내
+                                    if (ea[nCurIdx].fakeStrategyMgr.fd[i].fr.n15MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 900)
+                                    {
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.n15MinPrice = ea[nCurIdx].nFb;
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.f15MinPower = ea[nCurIdx].fPower;
+                                    }
+
+                                    // 20분 내
+                                    if (ea[nCurIdx].fakeStrategyMgr.fd[i].fr.n20MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 1200)
+                                    {
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.n20MinPrice = ea[nCurIdx].nFb;
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.f20MinPower = ea[nCurIdx].fPower;
+                                    }
+
+                                    // 30분 내
+                                    if (ea[nCurIdx].fakeStrategyMgr.fd[i].fr.n30MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 1800)
+                                    {
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.n30MinPrice = ea[nCurIdx].nFb;
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.f30MinPower = ea[nCurIdx].fPower;
+                                    }
+
+                                    // 50분 내
+                                    if (ea[nCurIdx].fakeStrategyMgr.fd[i].fr.n50MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 3000)
+                                    {
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.n50MinPrice = ea[nCurIdx].nFb;
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.f50MinPower = ea[nCurIdx].fPower;
+                                    }
+                                    #endregion
+
+                                    ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nFinalPrice = ea[nCurIdx].nFb;
+
+                                    int nOverPrice = ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nOverPrice;
+                                    // 거래하고 3시전까지 실시간으로
+                                    ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinRealTilThree.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+
+                                    // 거래하고 3시전까지 분봉으로(바로 처음 타임라인인덱스는 사기전을 가리키기 때문에 접근못한다)
+                                    if (ea[nCurIdx].fakeStrategyMgr.fd[i].nTimeLineIdx < ea[nCurIdx].timeLines1m.nRealDataIdx) // nBuyMinuteIdx가 N일때 nRealDataIdx는 N -1 , 사고 난 다음분봉 데이터부터 기록
+                                    {
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinMinuteTilThree.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+
+                                        if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 600)
+                                            ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinMinuteTilThreeWhile10.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+
+                                        if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 1800)
+                                            ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinMinuteTilThreeWhile30.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+                                    }
+
+                                    if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 600) // 거래하고 10분정도만
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinRealWhile10.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+
+                                    if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 1800) // 거래하고 30분정도만
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinRealWhile30.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+
+                                    if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 3600) // 거래하고 1시간정도만
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinRealWhile60.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
 
 
-                        //            // 거래하고 3시전까지 분봉으로(바로 처음 타임라인인덱스는 사기전을 가리키기 때문에 접근못한다)
-                        //            if (ea[nCurIdx].fakeStrategyMgr.fd[i].nTimeLineIdx < ea[nCurIdx].timeLines1m.nRealDataIdx) // nBuyMinuteIdx가 N일때 nRealDataIdx는 N -1 , 사고 난 다음분봉 데이터부터 기록
-                        //            {
-                        //                ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinMinuteTilThree.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+                                    #region 슬리피지용 변수 기록
+                                    ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nNoMoveCntAfterCheck = ea[nCurIdx].nNoMoveCount - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nNoMoveCnt;
+                                    ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nFewSpeedCntAfterCheck = ea[nCurIdx].nFewSpeedCount - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nFewSpeedCnt;
+                                    ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nMissCntAfterCheck = ea[nCurIdx].nMissCount - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nMissCnt;
+                                    ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalTradePriceAfterCheck = ea[nCurIdx].lTotalTradePrice - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalTradePrice;
+                                    ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalBuyPriceAfterCheck = ea[nCurIdx].lOnlyBuyPrice - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalBuyPrice;
+                                    ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalSellPriceAfterCheck = ea[nCurIdx].lOnlySellPrice - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalSellPrice;
+                                    #endregion
 
-                        //                if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 600)
-                        //                    ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinMinuteTilThreeWhile10.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+                                    if (isHogaJanRyang)
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nHogaCntAfterCheck++;
 
-                        //                if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 1800)
-                        //                    ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinMinuteTilThreeWhile30.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
-                        //            }
+                                    if (isZooSikCheGyul)
+                                    {
+                                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nChegyulCntAfterCheck++;
 
-                        //            if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 600) // 거래하고 10분정도만
-                        //                ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinRealWhile10.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+                                        if (ea[nCurIdx].fPowerDiff != 0)
+                                        {
+                                            ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nUpDownCntAfterCheck++;
+                                            if (ea[nCurIdx].fPowerDiff > 0)
+                                            {
+                                                ea[nCurIdx].fakeStrategyMgr.fd[i].fr.fUpPowerAfterCheck += ea[nCurIdx].fPowerDiff;
+                                            }
+                                            else
+                                            {
+                                                ea[nCurIdx].fakeStrategyMgr.fd[i].fr.fDownPowerAfterCheck -= ea[nCurIdx].fPowerDiff;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        catch { }
 
-                        //            if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 1800) // 거래하고 30분정도만
-                        //                ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinRealWhile30.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
 
-                        //            if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nRqTime) <= 3600) // 거래하고 1시간정도만
-                        //                ea[nCurIdx].fakeStrategyMgr.fd[i].maxMinRealWhile60.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nOverPrice, nOverPrice);
+                        #endregion
 
-                        //            #region 슬리피지용 변수 기록
-                        //            ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nNoMoveCntAfterCheck = ea[nCurIdx].nNoMoveCount - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nNoMoveCnt;
-                        //            ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nFewSpeedCntAfterCheck = ea[nCurIdx].nFewSpeedCount - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nFewSpeedCnt;
-                        //            ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nMissCntAfterCheck = ea[nCurIdx].nMissCount - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nMissCnt;
-                        //            ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalTradePriceAfterCheck = ea[nCurIdx].lTotalTradePrice - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalTradePrice;
-                        //            ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalBuyPriceAfterCheck = ea[nCurIdx].lOnlyBuyPrice - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalBuyPrice;
-                        //            ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalSellPriceAfterCheck = ea[nCurIdx].lOnlySellPrice - ea[nCurIdx].fakeStrategyMgr.fd[i].fr.lTotalSellPrice;
-                        //            #endregion
+                        #region 매매 블록 기록
+                        int nBuySlotIdx = ea[nCurIdx].myTradeManager.nIdx; // 매수블록갯수
+                        if (nBuySlotIdx > 0) // 보유종목이 있다면 추가매수를 할것인지 분할매도를 할것인지 전량매도를 할것인 지 등등을 결정해야함.
+                        {
+                            for (int checkSellIterIdx = 0; checkSellIterIdx < nBuySlotIdx; checkSellIterIdx++) // 매매블록갯수만큼 반복함
+                            {
+                                if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].isAllBuyed && ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fixedBuyingInfo != null) // 구매가 완료됐다면( 매수취소로 전량 매수취소인경우 또한 기록함)
+                                {
+                                    // START ---- 기록영역
+                                    // 매매가 종료됐어도 기록은 함
 
-                        //            if (isHogaJanRyang)
-                        //                ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nHogaCntAfterCheck++;
 
-                        //            if (isZooSikCheGyul)
-                        //            {
-                        //                ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nChegyulCntAfterCheck++;
+                                    int nRecordBuyPrice;
 
-                        //                if (ea[nCurIdx].fPowerDiff != 0)
-                        //                {
-                        //                    ea[nCurIdx].fakeStrategyMgr.fd[i].fr.nUpDownCntAfterCheck++;
-                        //                    if (ea[nCurIdx].fPowerDiff > 0)
-                        //                    {
-                        //                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.fUpPowerAfterCheck += ea[nCurIdx].fPowerDiff;
-                        //                    }
-                        //                    else
-                        //                    {
-                        //                        ea[nCurIdx].fakeStrategyMgr.fd[i].fr.fDownPowerAfterCheck -= ea[nCurIdx].fPowerDiff;
-                        //                    }
-                        //                }
-                        //            }
-                        //        }
-                        //    }
-                        //}
-                        //catch { }
+                                    if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyVolume > 0) // 매매된 정보만
+                                        nRecordBuyPrice = ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyPrice;
+                                    else
+                                        nRecordBuyPrice = ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nOrderPrice; // 전량매수취소됐다면 상향주문가로 측정한다.
 
+                                    #region 매도블록 기록 
+                                    for (int nRecordNum = 0; nRecordNum < ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.nLen; nRecordNum++)
+                                    {
+                                        if (nSharedTime < SHUTDOWN_TIME || ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nFinalPrice == 0)
+                                        {
+                                            ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nFinalPrice = ea[nCurIdx].nFb;
+                                            // 거래하고 3시전까지 실시간으로
+                                            ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].maxMinRealTilThree.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nRecordBuyPrice, nRecordBuyPrice);
+
+
+                                            // 거래하고 3시전까지 분봉으로(바로 처음 타임라인인덱스는 사기전을 가리키기 때문에 접근못한다)
+                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyMinuteIdx < ea[nCurIdx].timeLines1m.nRealDataIdx) // nBuyMinuteIdx가 N일때 nRealDataIdx는 N -1 , 사고 난 다음분봉 데이터부터 기록
+                                            {
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].maxMinMinuteTilThree.CheckMaxMin(ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nTime, ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nDownFs, ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nUpFs, nRecordBuyPrice, nRecordBuyPrice);
+
+                                                if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 600)
+                                                    ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].maxMinMinuteTilThreeWhile10.CheckMaxMin(ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nTime, ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nDownFs, ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nUpFs, nRecordBuyPrice, nRecordBuyPrice);
+
+                                                if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 1800)
+                                                    ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].maxMinMinuteTilThreeWhile30.CheckMaxMin(ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nTime, ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nDownFs, ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nUpFs, nRecordBuyPrice, nRecordBuyPrice);
+                                            }
+
+                                            if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 600) // 거래하고 10분정도만
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].maxMinRealWhile10.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nRecordBuyPrice, nRecordBuyPrice);
+
+                                            if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 1800) // 거래하고 30분정도만
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].maxMinRealWhile30.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nRecordBuyPrice, nRecordBuyPrice);
+
+                                            if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 3600) // 거래하고 1시간정도만
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].maxMinRealWhile60.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nRecordBuyPrice, nRecordBuyPrice);
+
+                                            #region 슬리피지용 변수 기록
+                                            if (nRecordNum == 0)
+                                            {
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nNoMoveCount = ea[nCurIdx].nNoMoveCount - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fixedBuyingInfo.nNoMoveCnt;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nFewSpeedCount = ea[nCurIdx].nFewSpeedCount - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fixedBuyingInfo.nFewSpeedCnt;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nMissCount = ea[nCurIdx].nMissCount - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fixedBuyingInfo.nMissCnt;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].lTotalTradePrice = ea[nCurIdx].lTotalTradePrice - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fixedBuyingInfo.lTotalTradePrice;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].lOnlyBuyPrice = ea[nCurIdx].lOnlyBuyPrice - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fixedBuyingInfo.lTotalBuyPrice;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].lOnlySellPrice = ea[nCurIdx].lOnlySellPrice - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fixedBuyingInfo.lTotalSellPrice;
+                                            }
+                                            else
+                                            {
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nNoMoveCount = ea[nCurIdx].nNoMoveCount - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].fixedSellingInfo.nNoMoveCnt;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nFewSpeedCount = ea[nCurIdx].nFewSpeedCount - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].fixedSellingInfo.nFewSpeedCnt;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nMissCount = ea[nCurIdx].nMissCount - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].fixedSellingInfo.nMissCnt;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].lTotalTradePrice = ea[nCurIdx].lTotalTradePrice - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].fixedSellingInfo.lTotalTradePrice;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].lOnlyBuyPrice = ea[nCurIdx].lOnlyBuyPrice - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].fixedSellingInfo.lTotalBuyPrice;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].lOnlySellPrice = ea[nCurIdx].lOnlySellPrice - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].fixedSellingInfo.lTotalSellPrice;
+                                            }
+                                            #endregion
+
+                                            #region 시간 내 트랙킹
+                                            // 2분 내
+                                            if(ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n2MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 120)
+                                            {
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n2MinPrice = ea[nCurIdx].nFb;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].f2MinPower = ea[nCurIdx].fPower;
+                                            }
+
+                                            // 3분 내
+                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n3MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 180)
+                                            {
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n3MinPrice = ea[nCurIdx].nFb;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].f3MinPower = ea[nCurIdx].fPower;
+                                            }
+
+                                            // 5분 내
+                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n5MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 300)
+                                            {
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n5MinPrice = ea[nCurIdx].nFb;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].f5MinPower = ea[nCurIdx].fPower;
+                                            }
+
+                                            // 10분 내
+                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n10MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 600)
+                                            {
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n10MinPrice = ea[nCurIdx].nFb;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].f10MinPower = ea[nCurIdx].fPower;
+                                            }
+
+                                            // 15분 내
+                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n15MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 900)
+                                            {
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n15MinPrice = ea[nCurIdx].nFb;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].f15MinPower = ea[nCurIdx].fPower;
+                                            }
+
+                                            // 20분 내
+                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n20MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 1200)
+                                            {
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n20MinPrice = ea[nCurIdx].nFb;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].f20MinPower = ea[nCurIdx].fPower;
+                                            }
+
+                                            // 30분 내
+                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n30MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 1800)
+                                            {
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n30MinPrice = ea[nCurIdx].nFb;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].f30MinPower = ea[nCurIdx].fPower;
+                                            }
+
+                                            // 50분 내
+                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n50MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 3000)
+                                            {
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n50MinPrice = ea[nCurIdx].nFb;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].f50MinPower = ea[nCurIdx].fPower;
+                                            }
+                                            #endregion
+
+                                            if (isHogaJanRyang)
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nHogaCnt++;
+                                            if (isZooSikCheGyul)
+                                            {
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nCnt++;
+                                                if (ea[nCurIdx].fPowerDiff != 0)
+                                                {
+                                                    ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nUpDownCnt++;
+                                                    if (ea[nCurIdx].fPowerDiff > 0)
+                                                    {
+                                                        ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].fUpPower += ea[nCurIdx].fPowerDiff;
+                                                    }
+                                                    else
+                                                    {
+                                                        ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].fDownPower -= ea[nCurIdx].fPowerDiff;
+                                                    }
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                    #endregion
+
+
+                                    // END ---- 기록영역 
+
+                                    // if (!ea[nCurIdx].isExcluded)  // 개인종목이 제외되지 않았으면 매매 가능 강제장종료가 되도 매도는 해야지..
+                                    {
+                                        // ===================================================================================
+                                        // -----------------------------------------------------------------
+                                        // Also 대응의 영역
+                                        if (!ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].isAllSelled &&
+                                            !ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].isSelling &&
+                                            ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurVolume > 0) // 매수만 돼있을때
+                                        {
+                                            int nBuyPrice;
+                                            double fYield;
+
+                                            nBuyPrice = ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyPrice; // 처음 초기화됐을때는 0인데 체결이 된 상태에서만 접근 가능하니 사졌을 때의 평균매입가
+                                            fYield = (double)(ea[nCurIdx].nFb - nBuyPrice) / nBuyPrice; // 현재 최우선매수호가 와의 손익률을 구한다
+                                            ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPower = fYield; // 수수료 미포함 손익율
+                                            fYield -= REAL_STOCK_COMMISSION; // 거래세와 거래수수료 차감
+                                            ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee = fYield; // 수수료 포함 손익율
+
+                                            //////////////////////////////////////////////////////////////////////////////////
+                                            /////  가격변동, 시간변동, 가격가속도, 시간가속도, 호가속도, 체결속도, 체결량, 호가매수매도대비, vi_cnt  등등 고려해서 ( 가능성을 봐야함 .. ) 
+                                            /////  매니징한다. ex) 더 일찍 판다던가 팔지않고 기다린다던가 아니면 추가매수를 한다던가 방식
+                                            ////////////////////////////////////////////////////////////////////////////////////
+                                            /// 대응의 영역
+                                            { // START ---- 대응의 영역
+
+                                                sSharedSellDescription.Clear();
+
+                                                // 상한가 도달했을때
+                                                if (ea[nCurIdx].fPower >= 0.29)
+                                                {
+                                                    RequestThisSell(nCurIdx, checkSellIterIdx, false);
+                                                    sSharedSellDescription.Append($"상한가 도달!{NEW_LINE}");
+                                                    PrintLog($"상한가 도달! : {checkSellIterIdx}번째 매매슬롯 {nSharedTime} {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName}", nCurIdx, checkSellIterIdx);
+                                                }
+                                                else
+                                                {
+                                                    bool isSell = HandleTradeLine(nCurIdx, checkSellIterIdx);
+                                                }
+
+                                            } // END---- 대응의 영역
+                                        }  // END ---- 매수만 돼있을때 
+                                    } // END ---- 제외되지 않았다면( 장마감이후에는 접근 불가란 소리) isExcluded
+                                } // END ---- 구매가 완료됐다면
+                                else // 구매가 완료되지 않았다면 매수취소 가능성이 있다.
+                                {
+                                    if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].isResponsed && !ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].isCanceling && !ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].isBuyBanned) // 취소 가능하다면
+                                    {
+
+                                        // nFb를 기준으로 지정상한가를 만드니 일정시간동안은 가격이 더 높았어도 버틸 예정
+                                        if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nRequestTime) >= BUY_CANCEL_ACCESS_SEC)
+                                        {
+                                            // 현재 최우선매도호가가 지정상한가를 넘었거나 매매 요청시간과 현재시간이 너무 오래 차이난다면(= 매수가 너무 오래걸린다 = 거래량이 낮고 머 별거 없다)
+                                            if ((ea[nCurIdx].nFs > ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nOrderPrice) || (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nRequestTime) >= MAX_REQ_SEC)) // 지정가를 초과하거나 오래걸린다면
+                                            {
+                                                string sRq;
+                                                if ((ea[nCurIdx].nFs > ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nOrderPrice))
+                                                    sRq = "가격초과 매수취소";
+                                                else
+                                                    sRq = "시간초과 매수취소";
+                                                SetAndServeCurSlot(sRq, BUY_CANCEL, ea[nCurIdx].sCode, checkSellIterIdx, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].sCurOrgOrderId, nCurIdx, 0, 0, 0, MARKET_ORDER, TradeMethodCategory.None, 0, 0, sRq);
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nDeathTime = nSharedTime; // 매수취소가 일부 혹은 전량 실패해도 매도하면서 nDeathTime이 덮어지니 괜찮다.
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nDeathPrice = ea[nCurIdx].nFs;
+                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].sSellDescription = sRq;
+
+                                                PrintLog($"{nSharedTime} : {ea[nCurIdx].sCode}  {ea[nCurIdx].sCodeName}  {checkSellIterIdx}번째 매매슬롯 {sRq} 매수취소신청", nCurIdx, checkSellIterIdx);
+                                            }
+                                        }
+                                    }
+                                } // END ---- 구매가 완료되지 않았다면
+                            } // END ---- 매매블록 반복적 확인 종료
+                        } // END ---- 보유종목이 있다면 ( 적어도 하나의 매매블록이 있다면 )
                         #endregion
                     }
                 }
                 #endregion
             }
-            #endregion
+            else // 장시작 전
+            {
+                if (isHogaJanRyang && nFirstTime == 0)
+                {
+                    nCurIdx = eachStockDict[sCode]; // 오류 가능원인 1. 해당종목코드가 리스트에 없다 2. sCode가  이상한거다
+                    if (nCurIdx == INIT_CODEIDX_NUM)
+                        throw new Exception();
+
+                    ea[nCurIdx].nStopHogaCnt++;
+
+                    int s1 = Math.Abs(int.Parse(axKHOpenAPI1.GetCommRealData(sCode, 41))); // 매도호가1
+                    if (s1 == 0)
+                        return;
+
+
+                    if (ea[nCurIdx].nStopFirstPrice == 0)
+                    {
+                        ea[nCurIdx].nStopFirstPrice = s1;
+                        ea[nCurIdx].nStopPrevPrice = s1;
+                        ea[nCurIdx].nStopMaxPrice = s1;
+                        ea[nCurIdx].nStopMinPrice = s1;
+                        ea[nCurIdx].fStopMaxPower = (double)(ea[nCurIdx].nStopMaxPrice - ea[nCurIdx].nStopFirstPrice) / ((ea[nCurIdx].nYesterdayEndPrice == 0) ? ea[nCurIdx].nStopFirstPrice : ea[nCurIdx].nYesterdayEndPrice);
+                        ea[nCurIdx].fStopMinPower = (double)(ea[nCurIdx].nStopMinPrice - ea[nCurIdx].nStopFirstPrice) / ((ea[nCurIdx].nYesterdayEndPrice == 0) ? ea[nCurIdx].nStopFirstPrice : ea[nCurIdx].nYesterdayEndPrice);
+                    }
+                    else
+                    {
+                        if (ea[nCurIdx].nStopPrevPrice != s1)
+                        {
+                            ea[nCurIdx].nStopUpDownCnt++;
+                            ea[nCurIdx].nStopPrevPrice = s1;
+                        }
+                    }
+
+                    if (ea[nCurIdx].nStopMaxPrice < s1) // max
+                    {
+                        ea[nCurIdx].nStopMaxPrice = s1;
+                        ea[nCurIdx].fStopMaxPower = (double)(ea[nCurIdx].nStopMaxPrice - ea[nCurIdx].nStopFirstPrice) / ((ea[nCurIdx].nYesterdayEndPrice == 0) ? ea[nCurIdx].nStopFirstPrice : ea[nCurIdx].nYesterdayEndPrice);
+                    }
+
+                    if (ea[nCurIdx].nStopMinPrice > s1) // min
+                    {
+                        ea[nCurIdx].nStopMinPrice = s1;
+                        ea[nCurIdx].fStopMinPower = (double)(ea[nCurIdx].nStopMinPrice - ea[nCurIdx].nStopFirstPrice) / ((ea[nCurIdx].nYesterdayEndPrice == 0) ? ea[nCurIdx].nStopFirstPrice : ea[nCurIdx].nYesterdayEndPrice);
+                    }
+
+                    ea[nCurIdx].fStopMaxMinDiff = ea[nCurIdx].fStopMaxPower - ea[nCurIdx].fStopMinPower;
+                }
+            }
+
         }
         #endregion
+    }
+    #endregion
 
-    } // END ---- MainForm
-}
+} // END ---- MainForm
+

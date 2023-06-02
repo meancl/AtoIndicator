@@ -5,12 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AtoTrader.DB
+namespace AtoIndicator.DB
 {
     public class myDbContext : DbContext
     {
         public DbSet<BasicInfo> basicInfo { get; set; }
-        public DbSet<FakeReports> fakeReports { get; set; }
+        public DbSet<BuyReport> buyReports { get; set; }
+        public DbSet<SellReport> sellReports { get; set; }
+        public DbSet<FakeReport> fakeReports { get; set; }
         public DbSet<StrategyNameDict> strategyNameDict { get; set; }
         public DbSet<LocationUser> locationUserDict { get; set; }
         // Entity를 DB에 삽입하는 과정 
@@ -60,26 +62,45 @@ namespace AtoTrader.DB
 
             modelBuilder.Entity<StrategyNameDict>(entity =>
             {
-                entity.HasKey(k => new { k.sStrategyName });
-                entity.HasIndex(i => i.nStrategyNameIdx).IsUnique();
+                entity.HasKey(k => new { k.nStrategyGroupNum, k.sStrategyName });
             });
 
-
-            modelBuilder.Entity<FakeReports>(entity =>
+            modelBuilder.Entity<BuyReport>(entity =>
             {
-                entity.HasKey(k => new { k.dTradeTime, k.sCode, k.nAccessFakeStrategyGroupNum, k.nAccessFakeStrategyIdx, k.nAccessFakeStrategySequenceIdx, k.nLocationOfComp });
+                entity.HasKey(k => new { k.dTradeTime, k.sCode, k.nBuyStrategyIdx, k.nBuyStrategySequenceIdx, k.nLocationOfComp });
                 entity.Property(k => k.dTradeTime).IsRequired();
                 entity.Property(k => k.sCode).IsRequired();
                 entity.Property(k => k.sCodeName).IsRequired();
-                entity.Property(k => k.nAccessFakeStrategyGroupNum).IsRequired();
-                entity.Property(k => k.nAccessFakeStrategyIdx).IsRequired();
-                entity.Property(k => k.nAccessFakeStrategySequenceIdx).IsRequired();
+                entity.Property(k => k.nBuyStrategyIdx).IsRequired();
+                entity.Property(k => k.nBuyStrategySequenceIdx).IsRequired();
+            });
+
+            modelBuilder.Entity<SellReport>(entity =>
+            {
+                entity.HasKey(k => new { k.dTradeTime, k.sCode, k.nBuyStrategyIdx, k.nBuyStrategySequenceIdx, k.nPartedIdx, k.nLocationOfComp });
+                entity.Property(k => k.dTradeTime).IsRequired();
+                entity.Property(k => k.sCode).IsRequired();
+                entity.Property(k => k.sCodeName).IsRequired();
+                entity.Property(k => k.nBuyStrategyIdx).IsRequired();
+                entity.Property(k => k.nBuyStrategySequenceIdx).IsRequired();
+            });
+
+            modelBuilder.Entity<FakeReport>(entity =>
+            {
+                entity.HasKey(k => new { k.dTradeTime, k.sCode, k.nBuyStrategyGroupNum, k.nBuyStrategyIdx, k.nBuyStrategySequenceIdx, k.nLocationOfComp });
+                entity.Property(k => k.dTradeTime).IsRequired();
+                entity.Property(k => k.sCode).IsRequired();
+                entity.Property(k => k.sCodeName).IsRequired();
+                entity.Property(k => k.nBuyStrategyGroupNum).IsRequired();
+                entity.Property(k => k.nBuyStrategyIdx).IsRequired();
+                entity.Property(k => k.nBuyStrategySequenceIdx).IsRequired();
             });
 
             modelBuilder.Entity<LocationUser>(entity =>
             {
                 entity.HasKey(k => new { k.sUserName });
             });
+
 
         }
     }

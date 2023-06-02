@@ -22,7 +22,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;AI_NO;</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;AI;</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <LangVersion>7.3</LangVersion>
@@ -209,8 +209,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DB\FakeReports.cs" />
+    <Compile Include="ChejanHandler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DB\BuyReport.cs" />
+    <Compile Include="DB\FakeReport.cs" />
     <Compile Include="DB\LocationUser.cs" />
+    <Compile Include="DB\SellReport.cs" />
     <Compile Include="DB\StrategyNameDict.cs" />
     <Compile Include="KiwoomLib\Errors.cs" />
     <Compile Include="Migrations\20221227031747_mig1.cs" />
@@ -297,30 +302,58 @@
     <Compile Include="Migrations\20230507021448_mig_add_buyreports_top_bottom.designer.cs">
       <DependentUpon>20230507021448_mig_add_buyreports_top_bottom.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\20230508081210_mig_add_fake_bound.cs" />
-    <Compile Include="Migrations\20230508081210_mig_add_fake_bound.designer.cs">
-      <DependentUpon>20230508081210_mig_add_fake_bound.cs</DependentUpon>
+    <Compile Include="Migrations\20230515074421_mig_add_del_reports.cs" />
+    <Compile Include="Migrations\20230515074421_mig_add_del_reports.designer.cs">
+      <DependentUpon>20230515074421_mig_add_del_reports.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\20230508120137_mig_add_candle_delete.cs" />
-    <Compile Include="Migrations\20230508120137_mig_add_candle_delete.designer.cs">
-      <DependentUpon>20230508120137_mig_add_candle_delete.cs</DependentUpon>
+    <Compile Include="Migrations\20230515075041_mig_add_renew_reports.cs" />
+    <Compile Include="Migrations\20230515075041_mig_add_renew_reports.designer.cs">
+      <DependentUpon>20230515075041_mig_add_renew_reports.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\20230509154745_mig_add_del_fakereports.cs" />
-    <Compile Include="Migrations\20230509154745_mig_add_del_fakereports.designer.cs">
-      <DependentUpon>20230509154745_mig_add_del_fakereports.cs</DependentUpon>
+    <Compile Include="Migrations\20230518073302_mig_add_final_info.cs" />
+    <Compile Include="Migrations\20230518073302_mig_add_final_info.designer.cs">
+      <DependentUpon>20230518073302_mig_add_final_info.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\20230509154833_mig_add_renew_fakereports.cs" />
-    <Compile Include="Migrations\20230509154833_mig_add_renew_fakereports.designer.cs">
-      <DependentUpon>20230509154833_mig_add_renew_fakereports.cs</DependentUpon>
+    <Compile Include="Migrations\20230518110013_mig_add_fake_down.cs" />
+    <Compile Include="Migrations\20230518110013_mig_add_fake_down.designer.cs">
+      <DependentUpon>20230518110013_mig_add_fake_down.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20230520110759_mig_add_tmp_delete_reports.cs" />
+    <Compile Include="Migrations\20230520110759_mig_add_tmp_delete_reports.designer.cs">
+      <DependentUpon>20230520110759_mig_add_tmp_delete_reports.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20230520110909_mig_add_renew_reportss.cs" />
+    <Compile Include="Migrations\20230520110909_mig_add_renew_reportss.designer.cs">
+      <DependentUpon>20230520110909_mig_add_renew_reportss.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20230520111418_mig_add_ai_version.cs" />
+    <Compile Include="Migrations\20230520111418_mig_add_ai_version.designer.cs">
+      <DependentUpon>20230520111418_mig_add_ai_version.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20230520151239_mig_add_ai_scoreJar.cs" />
+    <Compile Include="Migrations\20230520151239_mig_add_ai_scoreJar.designer.cs">
+      <DependentUpon>20230520151239_mig_add_ai_scoreJar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20230521160752_mig_del_reports_all.cs" />
+    <Compile Include="Migrations\20230521160752_mig_del_reports_all.designer.cs">
+      <DependentUpon>20230521160752_mig_del_reports_all.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20230521163143_mig_add_reports_compatable.cs" />
+    <Compile Include="Migrations\20230521163143_mig_add_reports_compatable.designer.cs">
+      <DependentUpon>20230521163143_mig_add_reports_compatable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20230528035152_mig_add_strategy_name_dict_group_num.cs" />
+    <Compile Include="Migrations\20230528035152_mig_add_strategy_name_dict_group_num.designer.cs">
+      <DependentUpon>20230528035152_mig_add_strategy_name_dict_group_num.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\myDbContextModelSnapshot.cs" />
-    <Compile Include="Shared_Memory\MMF.cs" />
     <Compile Include="Models\Constants.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="DB\BasicInfo.cs" />
     <Compile Include="DB\myDbContext.cs" />
-    <Compile Include="Shared_Memory\SharedAIBlock.cs" />
+    <Compile Include="Shared Memory\MMF.cs" />
+    <Compile Include="Shared Memory\SharedAIBlock.cs" />
     <Compile Include="Utils\Logging.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -330,11 +363,20 @@
     <Compile Include="Utils\RealDataHandler\Recorder.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Utils\RealDataHandler\TradingLiner.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="View\EachStockHistoryForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="View\EachStockHistoryForm.Designer.cs">
       <DependentUpon>EachStockHistoryForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\EachStrategyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\EachStrategyForm.Designer.cs">
+      <DependentUpon>EachStrategyForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Login\EventConnectHandler.cs">
       <SubType>Form</SubType>
@@ -370,6 +412,12 @@
     <Compile Include="View\ScrollableMessageBox.Designer.cs">
       <DependentUpon>ScrollableMessageBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\StatisticResultForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\StatisticResultForm.Designer.cs">
+      <DependentUpon>StatisticResultForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="StructCollections.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -382,7 +430,16 @@
     <Compile Include="View\TextLogForm.Designer.cs">
       <DependentUpon>TextLogForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\TradeRecodForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\TradeRecodForm.Designer.cs">
+      <DependentUpon>TradeRecodForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="TradingBlock\TimeLineGenerator.cs" />
+    <Compile Include="TrHandler.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Utils\Comparer.cs" />
     <Compile Include="Utils\Protractor.cs" />
     <Compile Include="Utils\Timer.cs" />
@@ -391,6 +448,9 @@
     </Compile>
     <EmbeddedResource Include="View\EachStockHistoryForm.resx">
       <DependentUpon>EachStockHistoryForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\EachStrategyForm.resx">
+      <DependentUpon>EachStrategyForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -411,8 +471,14 @@
     <EmbeddedResource Include="View\ScrollableMessageBox.resx">
       <DependentUpon>ScrollableMessageBox.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="View\StatisticResultForm.resx">
+      <DependentUpon>StatisticResultForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="View\TextLogForm.resx">
       <DependentUpon>TextLogForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\TradeRecodForm.resx">
+      <DependentUpon>TradeRecodForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

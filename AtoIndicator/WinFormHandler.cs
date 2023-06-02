@@ -1,40 +1,36 @@
 ﻿using System;
 using System.Threading;
 using System.Windows.Forms;
-using static AtoTrader.TradingBlock.TimeLineGenerator;
-using AtoTrader.View.EachStockHistory;
+using static AtoIndicator.TradingBlock.TimeLineGenerator;
+using AtoIndicator.View.TradeRecod;
+using AtoIndicator.View.EachStockHistory;
 using Microsoft.ML;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AtoTrader.View.TextLog;
+using AtoIndicator.View.TextLog;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using AtoTrader.View;
+using AtoIndicator.View;
+using AtoIndicator.DB;
+using Microsoft.EntityFrameworkCore;
 
-namespace AtoTrader
+namespace AtoIndicator
 {
     public partial class MainForm
     {
         public bool isBuyDeny = true;
+
         // ============================================
         // 버튼 클릭 이벤트의 핸들러 메소드
+        // 1. buyButton
         // 2. checkChartButton
         // ============================================
-        private void CheckChartByButtonHandler(object sender, EventArgs e)
-        {
-            if (sender.Equals(checkChartButton))
-            {
-                CheckChartByButton();
-
-            }
-        } // End ---- 버튼클릭 핸들러
-
-        public void CheckChartByButton()
+        private void Button_Click(object sender, EventArgs e)
         {
             string sCodeTxt = sCodeToBuyTextBox.Text.Trim();
-            bool isCorrect;
-            int nCurIdx;
+            bool isCorrect = false;
+            int nCurIdx = -1;
 
             try
             {
@@ -50,21 +46,29 @@ namespace AtoTrader
                 }
                 catch
                 {
-                    isCorrect = false;
-                    nCurIdx = -1;
-                }
+                }   
             }
 
 
-            if (isCorrect)
+            if (sender.Equals(buyButton))
             {
-                CallThreadEachStockHistoryForm(nCurIdx);
+                if (isCorrect)
+                {
+                    ea[nCurIdx].realBuyStrategy.isManualOrderSignal = true;
+                }
+                else
+                    MessageBox.Show("입력오류거나 해당종목이 리스트에 없습니다.");
             }
-            else
-                MessageBox.Show("입력오류거나 해당종목이 리스트에 없습니다.");
-
-        }
-
+            else if (sender.Equals(checkChartButton))
+            {
+                if (isCorrect)
+                {
+                    CallThreadEachStockHistoryForm(nCurIdx);
+                }
+                else
+                    MessageBox.Show("입력오류거나 해당종목이 리스트에 없습니다.");
+            }
+        } // End ---- 버튼클릭 핸들러
 
         public bool isCtrlPushed = false;
         public bool isShiftPushed = false;
@@ -77,10 +81,10 @@ namespace AtoTrader
             if (cUp == 191) // 수동작업 on/off (/)
             {
                 manualGroupBox.Visible = !manualGroupBox.Visible;
+                this.ActiveControl = sCodeToBuyTextBox;
                 if (manualGroupBox.Visible)
                 {
                     sCodeToBuyTextBox.Clear();
-                    this.ActiveControl = this.sCodeToBuyTextBox;
                     PrintLog("수동매수창 출력 완료");
                 }
                 else
@@ -99,6 +103,14 @@ namespace AtoTrader
             if (cUp == 'G')
             {
                 ShowConfiguration();
+            }
+            if (cUp == 'D') // 예수금확인
+            {
+                RequestDeposit();
+            }
+            if (cUp == 'H') // 보유종목확인
+            {
+                RequestHoldings(0);
             }
             if (cUp == 'T')
             {
@@ -119,7 +131,7 @@ namespace AtoTrader
                 //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
                 //    test_val, test_val
                 //};
-                //var nMMFNum = mmf.RequestAIService(sCode: ea[nCurIdx].sCode, nRqTime: nSharedTime, nRqType: SELL_AI_NUM, inputData: testData);
+                //var nMMFNum = mmf.RequestAIService(sCode: ea[0].sCode, nRqTime: nSharedTime, nRqType: EVERY_SIGNAL, inputData: testData);
                 //if (nMMFNum == -1)
                 //{
                 //    PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
@@ -151,11 +163,17 @@ namespace AtoTrader
 #endif
                 #endregion
             }
+            if (cUp == 'R') // 현황기록
+            {
+                //TradeRecodForm tradeRecordForm = new TradeRecodForm(this);
+                //tradeRecordForm.Show();
+                CallThreadTradeRecordForm();
+            }
             if (cUp == 'L')
             {
                 CallThreadTextLogForm();
             }
-            if (cUp == 'R')
+            if (cUp == 'I')
             {
                 CallThreadFastInfo();
             }
@@ -167,6 +185,8 @@ namespace AtoTrader
                     StoreLog();
                     this.Close();
                 }
+                if (cUp == 'Z')
+                    SellALL();
             }
 
             if (cUp == 'W')
@@ -185,22 +205,32 @@ namespace AtoTrader
 
             if (isCtrlPushed)
             {
+
+
                 if (cUp == 'F') // 강제장시작
                 {
-                    ForceMarketOn();
+                    if (isShiftPushed)
+                        ForceMarketOn(false);
+                    else
+                        ForceMarketOn();
                 }
+                if (cUp == 'S') // 강제장종료
+                {
+                    if (isShiftPushed)
+                        ForceMarketOff(true);
+                    else
+                        ForceMarketOff();
+
+                }
+
             }
         }
         public void KeyDownHandler(Object sender, KeyEventArgs e)
         {
             char cPressed = (char)e.KeyValue; // 대문자로 준다.
-
+            
             if (manualGroupBox.Visible)
-            {
-                if(cPressed == 13)
-                CheckChartByButton();
                 return;
-            }
 
 
             if (cPressed == 16)
@@ -209,25 +239,101 @@ namespace AtoTrader
                 isCtrlPushed = true;
         }
 
-        
-        public void ForceMarketOn()
+        public void ForceMarketOff(bool isComplete = false)
         {
-            isMarketStart = true;
-            
-            if(nFirstTime == 0)
-                nFirstTime = nSharedTime - nSharedTime % MINUTE_KIWOOM;
+            isTradeEnd = true;
+            for (int i = 0; i < nStockLength; i++)
+                ea[i].isExcluded = true;
+            isBuyDeny = true;
 
-            if (nPrevBoardUpdateTime == 0)
-                nPrevBoardUpdateTime = nFirstTime;
+            if (isComplete)
+            {
+                isMarketStart = false;
+                PrintLog("강제 장종료 완료");
+            }
+            else
+                PrintLog("임시 장종료 완료");
         }
 
+        public void ForceMarketOn(bool isBuyDenied = true)
+        {
+
+            if (!isBuyDeny) // 매수 가능상태인데
+            {
+                if (isBuyDenied) // 매수 금지 장시작을 하네?
+                    PrintLog($"매수금지 임시 장마감을 대신 사용하세요"); // 장시작인데 매수 금지를 여기서 할 순 없지
+                else
+                    PrintLog($"이미 매수 허용 상태입니다"); // 매수 가능상태인데 매수 허용을 한 경우
+            }
+            else // 매수 금지 상태인데
+            {
+                isBuyDeny = isBuyDenied;
+                for (int i = 0; i < nStockLength; i++)
+                    ea[i].isExcluded = isBuyDenied;
+
+                if (isBuyDenied) // 매수 금지 장시작을 한다면?
+                {
+                    PrintLog($"이미 매수 금지 상태입니다");
+                }
+                else
+                {
+                    PrintLog($"매수 허용 성공했습니다");
+                }
+            }
+
+            if (!isMarketStart) // 장끝나고 강제시작하면 안켜짐.
+            {
+                if (nSharedTime > REAL_DATA_END_TIME) // MARKET_END_TIME 이후로 설정하면 마켓이후의 체결데이터로 인해 무쓸모한 차트데이터가 더해지기 때문에 시각화에 방해가 된다.
+                {
+                    PrintLog("장마감시간 이후라 강제 장시작 불가");
+                }
+                else
+                {
+                    PrintLog("강제 장시작 완료");
+                    if (nFirstTime == 0) // 첫 시간이 설정되지 않았다면 
+                    {
+                        nFirstTime = nSharedTime - nSharedTime % MINUTE_KIWOOM; // x시간 00분 00 초 형태로 만든다
+
+                        BlockizeUndisposal();
+                    }
+                    isMarketStart = true;
+
+                    if (nPrevBoardUpdateTime == 0) // 이전업데이트 시간이 초기화되지 않았다면 
+                    {
+                        nPrevBoardUpdateTime = nFirstTime; // 장초반시간으로 업데이트한다.
+                    }
+                }
+            }
+
+            isTradeEnd = false;
+        }
         public void ToolTipItemClickHandler(object sender, EventArgs e)
         {
             ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
-            
-            if (menuItem.Name.Equals("onMarketToolStripMenuItem"))// 강제장시작
+
+            if (menuItem.Name.Equals("depositToolStripMenuItem")) // 예수금상세현황요청
+            {
+                RequestDeposit();
+            }
+            else if (menuItem.Name.Equals("holdingsToolStripMenuItem")) // 계좌평가현황요청 
+            {
+                RequestHoldings(0);
+            }
+            else if (menuItem.Name.Equals("onMarketToolStripMenuItem"))// 강제장시작
             {
                 ForceMarketOn();
+            }
+            else if (menuItem.Name.Equals("onMarketWithBuyAccToolStripMenuItem"))// 강제장시작 with 매수 가능
+            {
+                ForceMarketOn(false);
+            }
+            else if (menuItem.Name.Equals("offMarketToolStripMenuItem")) //  임시 장종료
+            {
+                ForceMarketOff();
+            }
+            else if (menuItem.Name.Equals("curRecordToolStripMenuItem"))
+            {
+                CallThreadTradeRecordForm();
             }
             else if (menuItem.Name.Equals("onManualToolStripMenuItem"))
             {
@@ -238,6 +344,10 @@ namespace AtoTrader
             {
                 manualGroupBox.Visible = false;
                 PrintLog("수동매수창 은닉 완료");
+            }
+            else if (menuItem.Name.Equals("todayResultStripMenuItem"))
+            {
+                RequestTradeResult(0);
             }
             else if (menuItem.Name.Equals("realTimeLogStripMenuItem"))
             {
@@ -263,6 +373,10 @@ namespace AtoTrader
         ///          --> eachStockHistoryForm
         /// </summary>
 #region Thread Call Method
+        public void CallThreadTradeRecordForm()
+        {
+            new Thread(() => new TradeRecodForm(this).ShowDialog()).Start();
+        }
         public void CallThreadEachStockHistoryForm(int nCallIdx)
         {
             new Thread(() => new EachStockHistoryForm(this, nCallIdx).ShowDialog()).Start();
