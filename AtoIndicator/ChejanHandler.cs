@@ -65,7 +65,7 @@ namespace AtoIndicator
                     // 매도
 
                     // 초기세팅을 해야한다.
-                    
+                    nCurBuySlotIdx = -1;
                 }
                 else if(nEaIdx != nCurIdx) // 사용중이라 나오는데 먼가 이상함.
                 {
@@ -269,9 +269,6 @@ namespace AtoIndicator
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].nTotalSelledVolume += nOkTradeVolume; // 처분갯수 증가
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].nTotalSelledPrice += nOkTradeVolume * nOkTradePrice; // 처분총가격 증가 
 
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.recList[ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.nLen].nTotalSellVolume += nOkTradeVolume;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.recList[ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.nLen].nTotalSellPrice += nOkTradeVolume * nOkTradePrice;
-
                         nTodayDisposalSellPrice += nOkTradeVolume * nOkTradePrice; // 오늘자 매도가격 증가
                         PrintLog($"[매도] {sTradeTime} : {sCode}  {ea[nCurIdx].sCodeName}  {nCurBuySlotIdx}번째슬롯  매도가 : {nOkTradePrice}, 매도수량 : {nOkTradeVolume}, 미체결량 : {nNoTradeVolume}", nCurIdx, nCurBuySlotIdx, false);
 
@@ -282,18 +279,6 @@ namespace AtoIndicator
                             string sTmpScrNo = ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].sSellScrNo;
                             ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].isSelling = false; // 일부만 매도 됐을 수 있으니
                             ShutOffScreen(ref ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].sSellScrNo); // 매도체결완료 해당화면번호 꺼줍니다.
-
-                            // 분할매도 (최소 1회 방문)
-                            {
-                                ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.recList[ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.nLen].isSelled = true;
-                                ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.recList[ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.nLen].nDeathTime = nSharedTime;
-                                ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.recList[ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.nLen].nDeathPrice = ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.recList[ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.nLen].nTotalSellPrice / ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.recList[ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.nLen].nTotalSellVolume;
-                                ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.recList[ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.nLen].fProfit = (double)(ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.recList[ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.nLen].nDeathPrice - ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].nBuyPrice) / ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].nBuyPrice - REAL_STOCK_COMMISSION;
-                                
-                                PrintLog($"{sTradeTime} : {sCode}  {ea[nCurIdx].sCodeName} 화면번호 : {sTmpScrNo} {nCurBuySlotIdx}번쨰슬롯 {ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.nLen}번째 분할매도 체결완료, 매도가 : {ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.recList[ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.nLen].nDeathPrice} 손익 : {ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.recList[ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.nLen].fProfit * 100}", nCurIdx, nCurBuySlotIdx);
-                                
-                                ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].recGroup.nLen++;
-                            }
 
 
                             if (ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].nCurVolume == 0)

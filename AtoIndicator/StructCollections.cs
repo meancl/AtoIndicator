@@ -229,221 +229,7 @@ namespace AtoIndicator
             }
 
 
-            public void SetSellFix(int nSlotIdx)
-            {
-                if (myTradeManager.arrBuyedSlots[nSlotIdx].recGroup.recList[myTradeManager.arrBuyedSlots[nSlotIdx].recGroup.nLen].fixedSellingInfo == null)
-                    myTradeManager.arrBuyedSlots[nSlotIdx].recGroup.recList[myTradeManager.arrBuyedSlots[nSlotIdx].recGroup.nLen].fixedSellingInfo = new SellReport();
-                //else
-                //    return; // 매도가 실패해서 다시 매도하는거 -> 내가 원하는건 매도를 결정한 처음시점의 데이터
-
-                SellReport rep = myTradeManager.arrBuyedSlots[nSlotIdx].recGroup.recList[myTradeManager.arrBuyedSlots[nSlotIdx].recGroup.nLen].fixedSellingInfo;
-
-                // 매매블럭
-                rep.dTradeTime = DateTime.Today; // key
-                rep.sCode = sCode; // key 
-                rep.sCodeName = sCodeName;
-                rep.nBuyStrategySequenceIdx = myTradeManager.arrBuyedSlots[nSlotIdx].nSequence; // key
-                rep.nLocationOfComp = COMPUTER_LOCATION; // key 
-                rep.nBuyVolume = myTradeManager.arrBuyedSlots[nSlotIdx].nBuyVolume;
-                rep.nRqTime = myTradeManager.arrBuyedSlots[nSlotIdx].nRequestTime;
-                rep.nReceiptTime = myTradeManager.arrBuyedSlots[nSlotIdx].nReceiptTime;
-                rep.nBuyEndTime = myTradeManager.arrBuyedSlots[nSlotIdx].nBuyEndTime;
-                rep.nBuyPrice = myTradeManager.arrBuyedSlots[nSlotIdx].nBuyPrice;
-                rep.nTradeType = (int)myTradeManager.arrBuyedSlots[nSlotIdx].eTradeMethod;
-                rep.nCurLineIdx = myTradeManager.arrBuyedSlots[nSlotIdx].nCurLineIdx;
-
-
-                // 개인구조체 정보
-
-                rep.nStopHogaCnt = nStopHogaCnt;
-                rep.nStopUpDownCnt = nStopUpDownCnt;
-                rep.nStopFirstPrice = nStopFirstPrice;
-                rep.nStopMaxPrice = nStopMaxPrice;
-                rep.nStopMinPrice = nStopMinPrice;
-                rep.fStopMaxPower = fStopMaxPower;
-                rep.fStopMinPower = fStopMinPower;
-                rep.fStopMaxMinDiff = fStopMaxMinDiff;
-
-                rep.fPositiveStickPower = fPositiveStickPower;
-                rep.fNegativeStickPower = fNegativeStickPower;
-                rep.nFirstVolume = nFirstVolume;
-                rep.lFirstPrice = lFirstPrice;
-                rep.nFs = nFs;
-                rep.nFb = nFb;
-                rep.fTs = fTs;
-                rep.fTradeRatioCompared = fTradeRatioCompared;
-                rep.nEveryCount = fakeStrategyMgr.nEveryAICount;
-                rep.nPrevLastFs = timeLines1m.arrTimeLine[timeLines1m.nRealDataIdx].nLastFs;
-                rep.nPrevStartFs = timeLines1m.arrTimeLine[timeLines1m.nRealDataIdx].nStartFs;
-                rep.nPrevMaxFs = timeLines1m.arrTimeLine[timeLines1m.nRealDataIdx].nMaxFs;
-                rep.nPrevMinFs = timeLines1m.arrTimeLine[timeLines1m.nRealDataIdx].nMinFs;
-                rep.nPrevVolume = timeLines1m.arrTimeLine[timeLines1m.nRealDataIdx].nTotalVolume;
-                rep.nCurLastFs = timeLines1m.arrTimeLine[timeLines1m.nPrevTimeLineIdx].nLastFs;
-                rep.nCurStartFs = timeLines1m.arrTimeLine[timeLines1m.nPrevTimeLineIdx].nStartFs;
-                rep.nCurMaxFs = timeLines1m.arrTimeLine[timeLines1m.nPrevTimeLineIdx].nMaxFs;
-                rep.nCurMinFs = timeLines1m.arrTimeLine[timeLines1m.nPrevTimeLineIdx].nMinFs;
-                rep.nCurVolume = timeLines1m.arrTimeLine[timeLines1m.nPrevTimeLineIdx].nTotalVolume;
-                rep.nTodayMaxPrice = nTodayMaxPrice;
-                rep.nTodayMaxTime = nTodayMaxTime;
-                rep.fTodayMaxPower = fTodayMaxPower;
-                rep.nTodayMinPrice = nTodayMinPrice;
-                rep.nTodayMinTime = nTodayMinTime;
-                rep.fTodayMinPower = fTodayMinPower;
-                rep.fStartGap = fStartGap;
-                rep.sType = sMarketGubunTag;
-                rep.fPowerWithOutGap = fPowerWithoutGap;
-                rep.fPower = fPower;
-                rep.fPlusCnt07 = fPlusCnt07;
-                rep.fMinusCnt07 = fMinusCnt07;
-                rep.fPlusCnt09 = fPlusCnt09;
-                rep.fMinusCnt09 = fMinusCnt09;
-                rep.fPowerJar = fPowerJar;
-                rep.fOnlyDownPowerJar = fOnlyDownPowerJar;
-                rep.fOnlyUpPowerJar = fOnlyUpPowerJar;
-                rep.nChegyulCnt = nChegyulCnt;
-                rep.nNoMoveCnt = nNoMoveCount;
-                rep.nFewSpeedCnt = nFewSpeedCount;
-                rep.nMissCnt = nMissCount;
-                rep.lTotalTradePrice = lTotalTradePrice;
-                rep.lTotalBuyPrice = lOnlyBuyPrice;
-                rep.lTotalSellPrice = lOnlySellPrice;
-                rep.nDownCntMa20m = maOverN.nDownCntMa20m;
-                rep.nDownCntMa1h = maOverN.nDownCntMa1h;
-                rep.nDownCntMa2h = maOverN.nDownCntMa2h;
-                rep.nUpCntMa20m = maOverN.nUpCntMa20m;
-                rep.nUpCntMa1h = maOverN.nUpCntMa1h;
-                rep.nUpCntMa2h = maOverN.nUpCntMa2h;
-                rep.fMa20mDiff = (maOverN.fCurDownFs - maOverN.fCurMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fMa1hDiff = (maOverN.fCurDownFs - maOverN.fCurMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fMa2hDiff = (maOverN.fCurDownFs - maOverN.fCurMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fMa20mCurDiff = (nFs - maOverN.fCurMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fMa1hCurDiff = (nFs - maOverN.fCurMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fMa2hCurDiff = (nFs - maOverN.fCurMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fGapMa20mDiff = (maOverN.fCurDownFs - maOverN.fCurGapMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fGapMa1hDiff = (maOverN.fCurDownFs - maOverN.fCurGapMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fGapMa2hDiff = (maOverN.fCurDownFs - maOverN.fCurGapMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fGapMa20mCurDiff = (nFs - maOverN.fCurGapMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fGapMa1hCurDiff = (nFs - maOverN.fCurGapMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fGapMa2hCurDiff = (nFs - maOverN.fCurGapMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fIAngle = timeLines1m.fInitAngle;
-                rep.fMAngle = timeLines1m.fMaxAngle;
-                rep.fTAngle = timeLines1m.fTotalMedianAngle;
-                rep.fHAngle = timeLines1m.fHourMedianAngle;
-                rep.fRAngle = timeLines1m.fRecentMedianAngle;
-                rep.fDAngle = timeLines1m.fDAngle;
-                rep.fISlope = timeLines1m.fInitSlope;
-                rep.fMSlope = timeLines1m.fMaxSlope;
-                rep.fTSlope = timeLines1m.fTotalMedian;
-                rep.fHSlope = timeLines1m.fHourMedian;
-                rep.fRSlope = timeLines1m.fRecentMedian;
-                rep.fDSlope = timeLines1m.fMaxSlope - timeLines1m.fInitSlope;
-                rep.fSpeedCur = speedStatus.fCur;
-                rep.fHogaSpeedCur = hogaSpeedStatus.fCur;
-                rep.fTradeCur = tradeStatus.fCur;
-                rep.fPureTradeCur = pureTradeStatus.fCur;
-                rep.fPureBuyCur = pureBuyStatus.fCur;
-                rep.fPriceMoveCur = priceMoveStatus.fCur;
-                rep.fPriceUpMoveCur = priceUpMoveStatus.fCur;
-                rep.fHogaRatioCur = hogaRatioStatus.fCur;
-                rep.fSharePerHoga = fSharePerHoga;
-                rep.fSharePerTrade = fSharePerTrade;
-                rep.fHogaPerTrade = fHogaPerTrade;
-                rep.fTradePerPure = fTradePerPure;
-
-                // new
-                rep.nHogaCnt = nHogaCnt;
-                rep.lTotalTradeVolume = lTotalTradeVolume;
-                rep.lTotalBuyVolume = lOnlyBuyVolume;
-                rep.lTotalSellVolume = lOnlySellVolume;
-                rep.nAccumUpDownCount = nAccumUpDownCount;
-                rep.fAccumUpPower = fAccumUpPower;
-                rep.fAccumDownPower = fAccumDownPower;
-                rep.lMarketCap = lFixedMarketCap;
-
-                rep.nRankHold10 = rankSystem.nRankHold10;
-                rep.nRankHold20 = rankSystem.nRankHold20;
-                rep.nRankHold50 = rankSystem.nRankHold50;
-                rep.nRankHold100 = rankSystem.nRankHold100;
-                rep.nRankHold200 = rankSystem.nRankHold200;
-                rep.nRankHold500 = rankSystem.nRankHold500;
-                rep.nRankHold1000 = rankSystem.nRankHold1000;
-
-                rep.nSummationRankMove = rankSystem.nSummationMove;
-                rep.nTotalRank = rankSystem.nSummationRanking;
-                rep.nAccumCountRanking = rankSystem.nAccumCountRanking;
-                rep.nMarketCapRanking = rankSystem.nMarketCapRanking;
-                rep.nPowerRanking = rankSystem.nPowerRanking;
-                rep.nTotalBuyPriceRanking = rankSystem.nTotalBuyPriceRanking;
-                rep.nTotalBuyVolumeRanking = rankSystem.nTotalBuyVolumeRanking;
-                rep.nTotalTradePriceRanking = rankSystem.nTotalTradePriceRanking;
-                rep.nTotalTradeVolumeRanking = rankSystem.nTotalTradeVolumeRanking;
-
-                rep.nMinuteTotalRank = rankSystem.nMinuteSummationRanking;
-                rep.nMinuteBuyPriceRanking = rankSystem.nMinuteBuyPriceRanking;
-                rep.nMinuteBuyVolumeRanking = rankSystem.nMinuteBuyVolumeRanking;
-                rep.nMinuteCountRanking = rankSystem.nMinuteCountRanking;
-                rep.nMinutePowerRanking = rankSystem.nMinutePowerRanking;
-                rep.nMinuteTradePriceRanking = rankSystem.nMinuteTradePriceRanking;
-                rep.nMinuteTradeVolumeRanking = rankSystem.nMinuteTradeVolumeRanking;
-                rep.nMinuteUpDownRanking = rankSystem.nMinuteUpDownRanking;
-                rep.nTradeCnt = paperBuyStrategy.nStrategyNum;
-                rep.nFakeBuyCnt = fakeBuyStrategy.nStrategyNum;
-                rep.nFakeResistCnt = fakeResistStrategy.nStrategyNum;
-                rep.nFakeAssistantCnt = fakeAssistantStrategy.nStrategyNum;
-                rep.nPriceUpCnt = fakeVolatilityStrategy.nStrategyNum;
-                rep.nPriceDownCnt = fakeDownStrategy.nStrategyNum;
-                rep.nRealBuyMinuteCnt = paperBuyStrategy.nMinuteLocationCount;
-                rep.nFakeBuyMinuteCnt = fakeBuyStrategy.nMinuteLocationCount;
-                rep.nFakeResistMinuteCnt = fakeResistStrategy.nMinuteLocationCount;
-                rep.nFakeAssistantMinuteCnt = fakeAssistantStrategy.nMinuteLocationCount;
-                rep.nPriceUpMinuteCnt = fakeVolatilityStrategy.nMinuteLocationCount;
-                rep.nPriceDownMinuteCnt = fakeDownStrategy.nMinuteLocationCount;
-                rep.nFakeBuyUpperCnt = fakeBuyStrategy.nUpperCount;
-                rep.nFakeResistUpperCnt = fakeResistStrategy.nUpperCount;
-                rep.nFakeAssistantUpperCnt = fakeAssistantStrategy.nUpperCount;
-                rep.nPriceUpUpperCnt = fakeVolatilityStrategy.nUpperCount;
-                rep.nPriceDownUpperCnt = fakeDownStrategy.nUpperCount;
-                rep.nTotalFakeCnt = fakeStrategyMgr.nTotalFakeCount;
-                rep.nTotalFakeMinuteCnt = fakeStrategyMgr.nTotalFakeMinuteAreaNum;
-                rep.nUpCandleCnt = timeLines1m.onePerCandleList.Count;
-                rep.nTwoPerCandleCnt = timeLines1m.twoPerCandleList.Count;
-                rep.nShootingCnt = timeLines1m.threePerCandleList.Count;
-                rep.nFourPerCandleCnt = timeLines1m.fourPerCandleList.Count;
-                rep.nDownCandleCnt = timeLines1m.downCandleList.Count;
-                rep.nUpTailCnt = timeLines1m.upTailList.Count;
-                rep.nDownTailCnt = timeLines1m.downTailList.Count;
-                rep.nCrushCnt = crushMinuteManager.nCurCnt;
-                rep.nCrushUpCnt = crushMinuteManager.nUpCnt;
-                rep.nCrushDownCnt = crushMinuteManager.nDownCnt;
-                rep.nCrushSpecialDownCnt = crushMinuteManager.nSpecialDownCnt;
-
-                rep.nYesterdayEndPrice = nYesterdayEndPrice;
-
-                rep.nRealBuyAIPass = fakeStrategyMgr.nAIPassed;
-                rep.nFakeBuyAIPass = fakeStrategyMgr.nFakeAccumPassed;
-                rep.nEveryBuyAIPass = fakeStrategyMgr.nEveryAIPassNum;
-                rep.fAIScore = fakeStrategyMgr.fAIScore;
-                rep.fAIScoreJar = fakeStrategyMgr.fAIScoreJar;
-                rep.fAIScoreJarDegree = fakeStrategyMgr.fAIScoreJarDegree;
-
-                rep.nCandleTwoOverRealCnt = sequenceStrategy.nCandleTwoOverRealCount;
-                rep.nCandleTwoOverRealNoLeafCnt = sequenceStrategy.nCandleTwoOverRealNoLeafCount;
-
-                rep.fMaDownFsVal = maOverN.fCurDownFs;
-                rep.fMa20mVal = maOverN.fCurMa20m;
-                rep.fMa1hVal = maOverN.fCurMa1h;
-                rep.fMa2hVal = maOverN.fCurMa2h;
-                rep.fMaxMaDownFsVal = maOverN.fMaxDownFs;
-                rep.fMaxMa20mVal = maOverN.fMaxMa20m;
-                rep.fMaxMa1hVal = maOverN.fMaxMa1h;
-                rep.fMaxMa2hVal = maOverN.fMaxMa2h;
-                rep.nMaxMaDownFsTime = maOverN.nMaxDownFsTime;
-                rep.nMaxMa20mTime = maOverN.nMaxMa20mTime;
-                rep.nMaxMa1hTime = maOverN.nMaxMa1hTime;
-                rep.nMaxMa2hTime = maOverN.nMaxMa2hTime;
-            }
-
-
+       
             public void GetFakeFix(FakeReport rep)
             {
                 try
@@ -906,9 +692,6 @@ namespace AtoIndicator
             public bool isBuyBanned;
             public bool isResponsed; // 응답을 받았는 지
 
-            #region 사고나서 
-            public RecordGroup recGroup;
-            #endregion
 
             public TradeMethodCategory eTradeMethod; // 
             public double fTargetPer; // 얼마에 익절할거야
@@ -932,7 +715,6 @@ namespace AtoIndicator
             public int nDeathTime; // 소멸시간
             public int nDeathPrice; // 소멸가격
 
-            public int[] lineCheckingArr;
 
             public bool isRespiteSignal; // 유예중인지 확인변수
             public int nRespiteFirstTime; // 해당 유예의 첫시간
@@ -946,85 +728,18 @@ namespace AtoIndicator
             public int nSystemeticBuyCancelFail;
 
             public string sFixedMsg;
-            public BuyReport fixedBuyingInfo;
 
             public MaOverN maOverN;
 
             public BuyedSlot()
             {
-                lineCheckingArr = new int[STEP_TRADE * 2];
                 sEachLog = new StringBuilder();
-                recGroup.Init();
+                
             }
 
         }
 
-        public struct RecordGroup
-        {
-            public int nLen;
-            public List<RecordStruct> recList;
-
-            public void Init()
-            {
-                recList = new List<RecordStruct>();
-                recList.Add(new RecordStruct());
-                nLen = recList.Count;
-            }
-        }
-
-        public class RecordStruct
-        {
-            public SellReport fixedSellingInfo;
-
-            public MaxMinRecorder maxMinRealTilThree;
-            public MaxMinRecorder maxMinRealWhile10;
-            public MaxMinRecorder maxMinRealWhile30;
-            public MaxMinRecorder maxMinRealWhile60;
-
-            public MaxMinRecorder maxMinMinuteTilThree;
-            public MaxMinRecorder maxMinMinuteTilThreeWhile10;
-            public MaxMinRecorder maxMinMinuteTilThreeWhile30;
-
-            public int n2MinPrice { get; set; }
-            public double f2MinPower { get; set; }
-            public int n3MinPrice { get; set; }
-            public double f3MinPower { get; set; }
-            public int n5MinPrice { get; set; }
-            public double f5MinPower { get; set; }
-            public int n10MinPrice { get; set; }
-            public double f10MinPower { get; set; }
-            public int n15MinPrice { get; set; }
-            public double f15MinPower { get; set; }
-            public int n20MinPrice { get; set; }
-            public double f20MinPower { get; set; }
-            public int n30MinPrice { get; set; }
-            public double f30MinPower { get; set; }
-            public int n50MinPrice { get; set; }
-            public double f50MinPower { get; set; }
-
-            public int nFinalPrice { get; set; }
-            public int nCnt { get; set; }
-            public int nHogaCnt { get; set; }
-            public int nUpDownCnt { get; set; }
-            public double fUpPower { get; set; }
-            public double fDownPower { get; set; }
-            public int nNoMoveCount { get; set; }
-            public int nFewSpeedCount { get; set; }
-            public int nMissCount { get; set; }
-            public long lTotalTradePrice { get; set; }
-            public long lOnlyBuyPrice { get; set; }
-            public long lOnlySellPrice { get; set; }
-
-            public bool isSelled { get; set; }
-            public int nTotalSellVolume { get; set; }
-            public int nTotalSellPrice { get; set; }
-            public string sSellDescription { get; set; }
-            public int nDeathTime { get; set; }
-            public int nSellRequestTime { get; set; }
-            public int nDeathPrice { get; set; }
-            public double fProfit { get; set; }
-
-        }
+        
 
         // 매수후 맥스값과 민값을 기록하기위한 구조체
         public struct MaxMinRecorder
@@ -1622,6 +1337,7 @@ namespace AtoIndicator
 
         public struct PaperTradeSlot
         {
+            
             public int nRqTime; // 언제 주문신청했는 지
             public int nRqCount; // 어떤 체결카운트에 주문신청했는 지
             public int nRqPrice; // 얼마에 주문신청했는 지
@@ -1636,6 +1352,7 @@ namespace AtoIndicator
             public int nTargetRqVolume;
 
             // 매도
+            public TradeMethodCategory methodCategory;
             public bool isSelling;
             public bool isAllSelled;
             public int nBuyHogaVolume; // 호가에 얼마나 걸려있는 지

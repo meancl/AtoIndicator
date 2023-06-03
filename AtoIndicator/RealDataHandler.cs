@@ -126,7 +126,6 @@ namespace AtoIndicator
             RisingMethod,
             BottomUpMethod,
             ScalpingMethod,
-            OnlyAIUsedMethod,
         }
 
         public const int FAKE_REQUEST_SIGNAL = -1;
@@ -1590,9 +1589,6 @@ namespace AtoIndicator
                                     {
                                         ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].nSellRequestTime = curSlot.nRqTime;
                                         ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].sSellDescription = curSlot.sDescription;
-
-                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].recGroup.recList[ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].recGroup.nLen].sSellDescription = curSlot.sDescription;
-                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].recGroup.recList[ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].recGroup.nLen].nSellRequestTime = curSlot.nRqTime;
 
                                         PrintLog($"{nSharedTime} : {curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName} 매도신청 전송", curSlot.nEaIdx);
                                         ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].sSellScrNo = GetScreenNum(ORDER_NEW_SELL, curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
@@ -3726,7 +3722,7 @@ namespace AtoIndicator
                                     GetAccess(ea[nCurIdx].paperBuyStrategy, nPaperBuyStrategyPointer, nCycle: 11)
                                 )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory:TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -3915,7 +3911,7 @@ namespace AtoIndicator
                                     GetAccess(ea[nCurIdx].paperBuyStrategy, nPaperBuyStrategyPointer, nCycle: 11)
                                      )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -3927,7 +3923,7 @@ namespace AtoIndicator
                                     GetAccess(ea[nCurIdx].paperBuyStrategy, nPaperBuyStrategyPointer, nCycle: 11)
                                      )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -3959,7 +3955,7 @@ namespace AtoIndicator
                                     !ea[nCurIdx].sequenceStrategy.botUpMinute421.CheckIsRedundancy()
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -3970,7 +3966,7 @@ namespace AtoIndicator
                                     !ea[nCurIdx].sequenceStrategy.botUpMinute432.CheckIsRedundancy()
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -3981,7 +3977,7 @@ namespace AtoIndicator
                                     !ea[nCurIdx].sequenceStrategy.botUpMinute642.CheckIsRedundancy()
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -3992,7 +3988,7 @@ namespace AtoIndicator
                                     !ea[nCurIdx].sequenceStrategy.botUpMinute643.CheckIsRedundancy()
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4003,7 +3999,7 @@ namespace AtoIndicator
                                     !ea[nCurIdx].sequenceStrategy.botUpMinute732.CheckIsRedundancy()
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4014,7 +4010,7 @@ namespace AtoIndicator
                                     !ea[nCurIdx].sequenceStrategy.botUpMinute743.CheckIsRedundancy()
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4025,7 +4021,7 @@ namespace AtoIndicator
                                     !ea[nCurIdx].sequenceStrategy.botUpMinute953.CheckIsRedundancy()
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4035,7 +4031,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].sequenceStrategy.botUpMinute421.isJumped
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4045,7 +4041,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].sequenceStrategy.botUpMinute432.isJumped
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4055,7 +4051,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].sequenceStrategy.botUpMinute642.isJumped
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4065,7 +4061,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].sequenceStrategy.botUpMinute643.isJumped
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4075,7 +4071,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].sequenceStrategy.botUpMinute732.isJumped
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4085,7 +4081,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].sequenceStrategy.botUpMinute743.isJumped
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4095,7 +4091,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].sequenceStrategy.botUpMinute953.isJumped
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4105,7 +4101,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].sequenceStrategy.botUpMinute421.isCrushed
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4115,7 +4111,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].sequenceStrategy.botUpMinute432.isCrushed
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4125,7 +4121,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].sequenceStrategy.botUpMinute642.isCrushed
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4135,7 +4131,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].sequenceStrategy.botUpMinute643.isCrushed
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4145,7 +4141,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].sequenceStrategy.botUpMinute732.isCrushed
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4155,7 +4151,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].sequenceStrategy.botUpMinute743.isCrushed
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4165,7 +4161,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].sequenceStrategy.botUpMinute953.isCrushed
                                     )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4476,18 +4472,18 @@ namespace AtoIndicator
                                     {
                                         if (ea[nCurIdx].nTv < 0) // 매도 경우만
                                         {
-                                            if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqCount + 10 < ea[nCurIdx].nChegyulCnt )
+                                            if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqCount + 10 < ea[nCurIdx].nChegyulCnt)
                                             {
                                                 ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyHogaVolume += ea[nCurIdx].nTv;
                                                 ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndPrice = Min(ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqPrice, ea[nCurIdx].nFb);
-                                                
+
                                                 if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyHogaVolume < 0)
                                                 {
                                                     if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume == 0)
                                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume -= ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyHogaVolume;
                                                     else
                                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume -= ea[nCurIdx].nTv;
-                                                    if(ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume >= ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqVolume)
+                                                    if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume >= ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqVolume)
                                                     {
                                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqVolume;
                                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTime = nSharedTime;
@@ -4605,139 +4601,6 @@ namespace AtoIndicator
                                     else
                                         nRecordBuyPrice = ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nOrderPrice; // 전량매수취소됐다면 상향주문가로 측정한다.
 
-                                    #region 매도블록 기록 
-                                    for (int nRecordNum = 0; nRecordNum < ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.nLen; nRecordNum++)
-                                    {
-                                        if (nSharedTime < SHUTDOWN_TIME || ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nFinalPrice == 0)
-                                        {
-                                            ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nFinalPrice = ea[nCurIdx].nFb;
-                                            // 거래하고 3시전까지 실시간으로
-                                            ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].maxMinRealTilThree.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nRecordBuyPrice, nRecordBuyPrice);
-
-
-                                            // 거래하고 3시전까지 분봉으로(바로 처음 타임라인인덱스는 사기전을 가리키기 때문에 접근못한다)
-                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyMinuteIdx < ea[nCurIdx].timeLines1m.nRealDataIdx) // nBuyMinuteIdx가 N일때 nRealDataIdx는 N -1 , 사고 난 다음분봉 데이터부터 기록
-                                            {
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].maxMinMinuteTilThree.CheckMaxMin(ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nTime, ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nDownFs, ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nUpFs, nRecordBuyPrice, nRecordBuyPrice);
-
-                                                if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 600)
-                                                    ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].maxMinMinuteTilThreeWhile10.CheckMaxMin(ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nTime, ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nDownFs, ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nUpFs, nRecordBuyPrice, nRecordBuyPrice);
-
-                                                if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 1800)
-                                                    ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].maxMinMinuteTilThreeWhile30.CheckMaxMin(ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nTime, ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nDownFs, ea[nCurIdx].timeLines1m.arrTimeLine[ea[nCurIdx].timeLines1m.nRealDataIdx].nUpFs, nRecordBuyPrice, nRecordBuyPrice);
-                                            }
-
-                                            if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 600) // 거래하고 10분정도만
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].maxMinRealWhile10.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nRecordBuyPrice, nRecordBuyPrice);
-
-                                            if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 1800) // 거래하고 30분정도만
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].maxMinRealWhile30.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nRecordBuyPrice, nRecordBuyPrice);
-
-                                            if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 3600) // 거래하고 1시간정도만
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].maxMinRealWhile60.CheckMaxMin(nSharedTime, ea[nCurIdx].nFb, ea[nCurIdx].nFb, nRecordBuyPrice, nRecordBuyPrice);
-
-                                            #region 슬리피지용 변수 기록
-                                            if (nRecordNum == 0)
-                                            {
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nNoMoveCount = ea[nCurIdx].nNoMoveCount - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fixedBuyingInfo.nNoMoveCnt;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nFewSpeedCount = ea[nCurIdx].nFewSpeedCount - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fixedBuyingInfo.nFewSpeedCnt;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nMissCount = ea[nCurIdx].nMissCount - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fixedBuyingInfo.nMissCnt;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].lTotalTradePrice = ea[nCurIdx].lTotalTradePrice - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fixedBuyingInfo.lTotalTradePrice;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].lOnlyBuyPrice = ea[nCurIdx].lOnlyBuyPrice - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fixedBuyingInfo.lTotalBuyPrice;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].lOnlySellPrice = ea[nCurIdx].lOnlySellPrice - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fixedBuyingInfo.lTotalSellPrice;
-                                            }
-                                            else
-                                            {
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nNoMoveCount = ea[nCurIdx].nNoMoveCount - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].fixedSellingInfo.nNoMoveCnt;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nFewSpeedCount = ea[nCurIdx].nFewSpeedCount - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].fixedSellingInfo.nFewSpeedCnt;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nMissCount = ea[nCurIdx].nMissCount - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].fixedSellingInfo.nMissCnt;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].lTotalTradePrice = ea[nCurIdx].lTotalTradePrice - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].fixedSellingInfo.lTotalTradePrice;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].lOnlyBuyPrice = ea[nCurIdx].lOnlyBuyPrice - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].fixedSellingInfo.lTotalBuyPrice;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].lOnlySellPrice = ea[nCurIdx].lOnlySellPrice - ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].fixedSellingInfo.lTotalSellPrice;
-                                            }
-                                            #endregion
-
-                                            #region 시간 내 트랙킹
-                                            // 2분 내
-                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n2MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 120)
-                                            {
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n2MinPrice = ea[nCurIdx].nFb;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].f2MinPower = ea[nCurIdx].fPower;
-                                            }
-
-                                            // 3분 내
-                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n3MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 180)
-                                            {
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n3MinPrice = ea[nCurIdx].nFb;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].f3MinPower = ea[nCurIdx].fPower;
-                                            }
-
-                                            // 5분 내
-                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n5MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 300)
-                                            {
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n5MinPrice = ea[nCurIdx].nFb;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].f5MinPower = ea[nCurIdx].fPower;
-                                            }
-
-                                            // 10분 내
-                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n10MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 600)
-                                            {
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n10MinPrice = ea[nCurIdx].nFb;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].f10MinPower = ea[nCurIdx].fPower;
-                                            }
-
-                                            // 15분 내
-                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n15MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 900)
-                                            {
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n15MinPrice = ea[nCurIdx].nFb;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].f15MinPower = ea[nCurIdx].fPower;
-                                            }
-
-                                            // 20분 내
-                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n20MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 1200)
-                                            {
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n20MinPrice = ea[nCurIdx].nFb;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].f20MinPower = ea[nCurIdx].fPower;
-                                            }
-
-                                            // 30분 내
-                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n30MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 1800)
-                                            {
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n30MinPrice = ea[nCurIdx].nFb;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].f30MinPower = ea[nCurIdx].fPower;
-                                            }
-
-                                            // 50분 내
-                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n50MinPrice == 0 || SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyEndTime) <= 3000)
-                                            {
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].n50MinPrice = ea[nCurIdx].nFb;
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].f50MinPower = ea[nCurIdx].fPower;
-                                            }
-                                            #endregion
-
-                                            if (isHogaJanRyang)
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nHogaCnt++;
-                                            if (isZooSikCheGyul)
-                                            {
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nCnt++;
-                                                if (ea[nCurIdx].fPowerDiff != 0)
-                                                {
-                                                    ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].nUpDownCnt++;
-                                                    if (ea[nCurIdx].fPowerDiff > 0)
-                                                    {
-                                                        ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].fUpPower += ea[nCurIdx].fPowerDiff;
-                                                    }
-                                                    else
-                                                    {
-                                                        ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].recGroup.recList[nRecordNum].fDownPower -= ea[nCurIdx].fPowerDiff;
-                                                    }
-                                                }
-                                            }
-
-                                        }
-                                    }
-                                    #endregion
-
 
                                     // END ---- 기록영역 
 
@@ -4766,19 +4629,11 @@ namespace AtoIndicator
                                             /// 대응의 영역
                                             { // START ---- 대응의 영역
 
-                                                sSharedSellDescription.Clear();
 
                                                 // 상한가 도달했을때
-                                                if (ea[nCurIdx].fPower >= 0.29)
-                                                {
-                                                    RequestThisSell(nCurIdx, checkSellIterIdx, false);
-                                                    sSharedSellDescription.Append($"상한가 도달!{NEW_LINE}");
-                                                    PrintLog($"상한가 도달! : {checkSellIterIdx}번째 매매슬롯 {nSharedTime} {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName}", nCurIdx, checkSellIterIdx);
-                                                }
-                                                else
-                                                {
-                                                    bool isSell = HandleTradeLine(nCurIdx, checkSellIterIdx);
-                                                }
+
+                                                bool isSell = HandleTradeLine(nCurIdx, checkSellIterIdx);
+
 
                                             } // END---- 대응의 영역
                                         }  // END ---- 매수만 돼있을때 

@@ -15,6 +15,23 @@ namespace AtoIndicator
     {
         public bool HandleTradeLine(int nCurIdx, int checkSellIterIdx)
         {
+            void RequestThisSell()
+            {
+                try
+                {
+                    sSharedSellDescription.Append($"매도단계 : {ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx}");
+
+                    curSlot = SetAndServeCurSlot("매도", NEW_SELL, ea[nCurIdx].sCode, checkSellIterIdx, "", nCurIdx, 0, 0, 0, MARKET_ORDER, TradeMethodCategory.None, 0, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurVolume, sSharedSellDescription.ToString(), isAIUse: false);
+
+                    PrintLog($"{checkSellIterIdx}번째 매매슬롯 매도단계 : {ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx}", nCurIdx, checkSellIterIdx, false);
+                    PrintLog($"매도인큐 {nSharedTime} {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName} {Math.Round(ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee * 100, 1)}(%) 현재단계 : {ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx}");
+
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+
             bool isSell = false;
 
             sSharedSellDescription.Clear();
@@ -159,8 +176,7 @@ namespace AtoIndicator
 
                 } // END---- 상승라인
 
-                if (isSell)
-                    RequestThisSell(nCurIdx, checkSellIterIdx, false);
+               
             } // END ---- 단계형 매매
             else if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].eTradeMethod == TradeMethodCategory.ScalpingMethod) // 스캘핑 매매기법
             {
@@ -191,8 +207,6 @@ namespace AtoIndicator
                     }
                 }
 
-                if (isSell)
-                    RequestThisSell(nCurIdx, checkSellIterIdx, false);
             }// END ----  스캘핑 매매
             else if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].eTradeMethod == TradeMethodCategory.BottomUpMethod) // 바텀업 매매기법
             {
@@ -223,8 +237,6 @@ namespace AtoIndicator
                     }
                 }
 
-                if (isSell)
-                    RequestThisSell(nCurIdx, checkSellIterIdx, false);
             }// END ---- 바텀업 매매
             else if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].eTradeMethod == TradeMethodCategory.FixedMethod) // 고정형 매매기법
             {
@@ -241,88 +253,21 @@ namespace AtoIndicator
                     sSharedSellDescription.Append($"고정형 매도 - 익절{NEW_LINE}");
                 }
 
-                if (isSell)
-                    RequestThisSell(nCurIdx, checkSellIterIdx, false);
             } // END---- 고정형 매매
-            else if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].eTradeMethod == TradeMethodCategory.OnlyAIUsedMethod) // END ---- AI 매매기법
+
+            if (ea[nCurIdx].fPower >= 0.29)
             {
-                {
+                sSharedSellDescription.Append($"상한가 도달!{NEW_LINE}");
+                PrintLog($"상한가 도달! : {checkSellIterIdx}번째 매매슬롯 {nSharedTime} {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName}", nCurIdx, checkSellIterIdx);
+            }
 
-                }
+            if (isSell)
+                RequestThisSell();
 
-                if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].lineCheckingArr[ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx]) >= 300 &&
-                    ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee <= ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fBottomPer) // 처분라인
-                {
-                    isSell = true;
-                    ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].lineCheckingArr[ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx] = nSharedTime;
-
-                    PrintLog($"AI 매도 : {checkSellIterIdx}번째 매매슬롯 {nSharedTime} {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName} {Math.Round(ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee * 100, 1)}(%)", nCurIdx, checkSellIterIdx);
-                    sSharedSellDescription.Append($"AI 매도{NEW_LINE}");
-                }
-                else if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].lineCheckingArr[STEP_TRADE + ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx]) >= 300 &&
-                    ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee >= ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fTargetPer) // 상승라인
-                {
-                    ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].lineCheckingArr[STEP_TRADE + ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx] = nSharedTime;
-
-                    while (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee >= ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fTargetPer)
-                    {
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx++;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fTargetPer = GetNextCeiling(ref ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx); // something higher
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fBottomPer = GetNextFloor(ref ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx, TradeMethodCategory.OnlyAIUsedMethod); // something higher
-                    }
-                    ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nLastTouchLineTime = nSharedTime;
-
-                    if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx > 2) // 1퍼센트는 넘어야 분할매도 가능..
-                        isSell = true;
-                }
-
-                if (isSell)
-                    RequestThisSell(nCurIdx, checkSellIterIdx, true);
-            } // END---- 고정형 매매
             return isSell;
         }
 
 
-        
-        // 매도 1차 신청 메서드
-        #region RequestSellAI
-        private void RequestThisSell(int nEaIdx, int checkSellIterIdx, bool isAIUse)
-        {
-            try
-            {
-                sSharedSellDescription.Append($"매도단계 : {ea[nEaIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx}");
-
-                curSlot = SetAndServeCurSlot("매도", NEW_SELL, ea[nEaIdx].sCode, checkSellIterIdx, "", nEaIdx, 0, 0, 0, MARKET_ORDER, TradeMethodCategory.None, 0, ea[nEaIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurVolume, sSharedSellDescription.ToString(), isAIUse: isAIUse);
-
-                PrintLog($"{checkSellIterIdx}번째 매매슬롯 매도단계 : {ea[nEaIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx}", nEaIdx, checkSellIterIdx, false);
-                PrintLog($"매도인큐 {nSharedTime} {ea[nEaIdx].sCode} {ea[nEaIdx].sCodeName} {Math.Round(ea[nEaIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee * 100, 1)}(%) 현재단계 : {ea[nEaIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx}");
-
-#if AI
-                if (isAIUse)
-                {
-                    double[] features102 = GetParameters(nCurIdx: nEaIdx, 102, nTradeMethod: REAL_SELL_SIGNAL, nRealStrategyNum: -1);
-
-                    int nMMFNum = mmf.RequestAIService(sCode: ea[nEaIdx].sCode, nRqTime: nSharedTime, nRqType: REAL_SELL_SIGNAL, inputData: features102); // AI 서비스 요청, nSellReqNum는 이벤트 호출용
-                    if (nMMFNum == -1) // AI 서비스 슬롯이 없다면
-                    {
-                        PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
-                        return;
-                    }
-                    ea[nEaIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].isSelling = true;
-                    aiSlot.nEaIdx = nEaIdx;
-                    aiSlot.slot = curSlot;
-                    aiSlot.nRequestId = REAL_SELL_SIGNAL;
-                    aiSlot.nMMFNumber = nMMFNum;
-                    aiQueue.Enqueue(aiSlot);
-                }
-#endif
-
-            }
-            catch (Exception ex)
-            {
-            }
-        }
-        #endregion
 
 
        
