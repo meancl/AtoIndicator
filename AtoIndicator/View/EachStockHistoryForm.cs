@@ -40,7 +40,7 @@ namespace AtoIndicator.View.EachStockHistory
         public int nLastMinuteIdx = 0;
         public int nLastBuyedBlockIdx = 0;
 
-        public int nCurBuyedId;
+        public int nCurBuyedId = -1;
 
         public int nMinPositionX1;
         public int nMinPositionY1;
@@ -90,7 +90,13 @@ namespace AtoIndicator.View.EachStockHistory
         }
         #endregion
 
-        
+        public delegate void SetRadioDelegate();
+        public SetRadioDelegate setRadioDelegate;
+        public int nPrevRadioCnt = 0;
+        public const int RADIO_BUTTON_REMOVAL = 1;
+        public const int RADIO_BUTTON_CHECKED = 2;
+        public int nB = RADIO_BUTTON_CHECKED; // radioButton 취소용
+
         #region 생성자
         public EachStockHistoryForm(MainForm parentForm, int nCallIdx, int? specificStrategy = null)
         {
@@ -144,8 +150,100 @@ namespace AtoIndicator.View.EachStockHistory
                 isSellArrowVisible = true; // 매도만 
                 UpdateMinuteHistoryData();
             }
+            #region Raio Button Delegate
+            // ---------------------------------------------
+            // START ---- Radio Button 파트
+            setRadioDelegate = delegate
+            {
+                curEa = mainForm.ea[nCurIdx];
+                rdCnt = curEa.paperBuyStrategy.nStrategyNum;
+                if (rdCnt > 0)
+                {
+                    blockFlowLayoutPanel.Controls.Clear();
+                    nPrevRadioCnt = rdCnt;
+                    RadioButton newRd;
 
-         
+                    for (int i = 0; i < rdCnt; i++)
+                    {
+                        newRd = new RadioButton();
+
+                        if (curEa.paperBuyStrategy.paperTradeSlot[i].nBuyedVolume == curEa.paperBuyStrategy.paperTradeSlot[i].nTargetRqVolume) // 다 사졌으면
+                        {
+                            string sSpecificBling = "";
+
+                            if (nSpecificStrategyIdx != null && curEa.paperBuyStrategy.arrSpecificStrategy[i] == nSpecificStrategyIdx)
+                            {
+                                sSpecificBling = "#";
+                            }
+
+
+                            if (curEa.paperBuyStrategy.paperTradeSlot[i].nBuyedVolume > 0) // 체결이 일부라도 됐으면
+                                newRd.Text = sSpecificBling + i.ToString() + "번째";
+                            else
+                                newRd.Text = sSpecificBling + i.ToString() + "번째(매수취소)";
+
+
+                            newRd.Name = i.ToString();
+
+                            newRd.CheckedChanged += delegate (Object oo, EventArgs ee)
+                            {
+                                // 처음누를때 순서
+                                // checkedChanged -> Click
+
+                                // 눌려진걸 누를때 순서(radio는 원래 눌려진거 눌러도 안꺼짐)
+                                // Click
+
+                                // 눌려진걸 눌러서 버튼취소하는 메서드가 있는 경우 순서(사용자 메서드로 강제 버튼취소했을때)
+                                // Click -> checkedChanged
+
+                                // 눌려져있는데 다른 버튼을 누른경우 순서
+                                // checkedChanged(이전거off) -> checkedChanged(새로운거on) -> Click
+
+
+                                RadioButton r = (RadioButton)oo;
+                                if (nB == RADIO_BUTTON_CHECKED)
+                                {
+                                    nCurBuyedId = int.Parse(r.Name); // 체크된 매매블록의 인덱스
+                                }
+                                nB = RADIO_BUTTON_CHECKED;
+
+                            };
+
+                            // END ---- CheckedChanged
+                            newRd.Click += delegate (Object oo, EventArgs ee)
+                            {
+                                if (nB == RADIO_BUTTON_REMOVAL) // 접근 가능한 상황 : 이미 눌려진 버튼을 눌러서 취소하는 상황
+                                {
+                                    RadioButton checkedRd = (RadioButton)oo;
+                                    checkedRd.Checked = false;
+                                    nCurBuyedId = -1;
+                                    nB = RADIO_BUTTON_CHECKED;
+                                }
+                                else
+                                    nB = RADIO_BUTTON_REMOVAL;
+                            };
+
+                            if (nSpecificStrategyIdx != null && curEa.paperBuyStrategy.arrSpecificStrategy[i] != nSpecificStrategyIdx)
+                                    newRd.Enabled = false;
+
+                        }
+                        else
+                        {
+                            newRd.Text = i.ToString() + "번째(매매중..)";
+                            newRd.Enabled = false;
+                        }
+
+                        newRd.Width = (TextRenderer.MeasureText(newRd.Text, newRd.Font)).Width + 20; // 글자 안잘리게
+                        blockFlowLayoutPanel.Controls.Add(newRd);
+                        blockFlowLayoutPanel.SetFlowBreak(newRd, true); // 각행마다 너비가 차이나면 개행이 잘 안돼서 강제하는 코드
+                    }
+                }
+            };
+            #endregion
+
+            setRadioDelegate();
+
+
         }
         #endregion
 
@@ -174,6 +272,15 @@ namespace AtoIndicator.View.EachStockHistory
                 else
                     historyChart.Annotations.Clear();
 
+                if (curEa.paperBuyStrategy.nStrategyNum > nPrevRadioCnt)
+                {
+                    if (blockFlowLayoutPanel.InvokeRequired)
+                    {
+                        blockFlowLayoutPanel.Invoke(new MethodInvoker(setRadioDelegate));
+                    }
+                    else
+                        setRadioDelegate();
+                }
 
                 UpdateMinuteHistoryData();
             }
@@ -324,7 +431,6 @@ namespace AtoIndicator.View.EachStockHistory
 
                 int nTimeNow;
                 string sTime;
-                bool isExtraOdd = false;
 
                 curEa = mainForm.ea[nCurIdx];
 
@@ -390,7 +496,6 @@ namespace AtoIndicator.View.EachStockHistory
                         {
                             nTimeNow = AddTimeBySec(curEa.timeLines1m.arrTimeLine[curEa.timeLines1m.nRealDataIdx].nTime, MainForm.MINUTE_SEC);
                             sTime = nTimeNow.ToString();
-                            isExtraOdd = true;
 
                             historyChart.Series["MinuteStick"].Points.AddXY(sTime, curEa.timeLines1m.arrTimeLine[curEa.timeLines1m.nPrevTimeLineIdx].nMaxFs);
                             historyChart.Series["MinuteStick"].Points[nLastMinuteIdx].YValues[1] = curEa.timeLines1m.arrTimeLine[curEa.timeLines1m.nPrevTimeLineIdx].nMinFs;
@@ -422,30 +527,54 @@ namespace AtoIndicator.View.EachStockHistory
                                           //  그래서 삭제할 위치를 정할때는 Name == "M" + nNumInjector로 구분하면 된다.
                                           // "F" 시리즈는 분봉이 중첩되면 가장최근것만 삭제하면된다
 
-
+              
                     //START ---- PAPER BUY ARROW
                     if (curEa.paperBuyStrategy.nStrategyNum > 0 && isPaperBuyArrowVisible)
                     {
-                        int nPrevPaperBuyMinArrowIdx = -1;
-                        int nPaperBuyOverlapCount = 0;
-                        string sPaperBuyArrowToolTip = "";
+                        
 
                         for (int p = 0; p < curEa.paperBuyStrategy.nStrategyNum; p++)
                         {
+                            if (nSpecificStrategyIdx != null && curEa.paperBuyStrategy.arrSpecificStrategy[p] != nSpecificStrategyIdx) // 특정한 전략만 보여주게 설정했다면
+                                continue; // 특정전략인덱스가 아니면 건너뛴다.
+
+                            if (nCurBuyedId != -1 && curEa.paperBuyStrategy.arrSpecificStrategy[p] != nCurBuyedId)
+                                continue;                            
+
                             if (curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedVolume != curEa.paperBuyStrategy.paperTradeSlot[p].nTargetRqVolume)
                                 continue;
 
                             nNumInjector++;
-                            if (nPrevPaperBuyMinArrowIdx == curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedTimeLineIdx) // 같은 minute Idx랑 겹친다면
+
+                            int nPaperBuyAnnotationIdx = curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedTimeLineIdx;
+                            string sPaperBuyArrowToolTip = "";
+
+                            if (curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedVolume == 0) // 전량 매수취소가 된 상황 
                             {
-                                nPaperBuyOverlapCount++;
+                                sPaperBuyArrowToolTip +=
+                                    "매매블록ID : " + p + "\n" +
+                                    "주문수량 : " + curEa.paperBuyStrategy.paperTradeSlot[p].nRqVolume + "(주)\n" +
+                                    "매수설명 : " + mainForm.strategyNameDict[(MainForm.PAPER_BUY_SIGNAL, strategyNames.arrPaperBuyStrategyName[curEa.paperBuyStrategy.arrSpecificStrategy[p]])] + "\n\n";
+
                             }
-                            else
+                            else // 일부 매수취소 + 정상 매수
                             {
-                                nPrevPaperBuyMinArrowIdx = curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedTimeLineIdx;
-                                nPaperBuyOverlapCount = 0;
-                                sPaperBuyArrowToolTip = "";
+                                sPaperBuyArrowToolTip +=
+                                     $"매수요청시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nRqTime}  체결시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nBuyEndTime}\n" +
+                                     $"매수블록ID : {p}  주문가격(수량) : {curEa.paperBuyStrategy.paperTradeSlot[p].nOverPrice}(원)({curEa.paperBuyStrategy.paperTradeSlot[p].nRqVolume}),  매수가격(수량) : {curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedPrice}({curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedVolume})\n" +
+                                     "매수설명 : " + mainForm.strategyNameDict[(MainForm.PAPER_BUY_SIGNAL, strategyNames.arrPaperBuyStrategyName[curEa.paperBuyStrategy.arrSpecificStrategy[p]])] + "\n\n";
                             }
+
+                            if (realDictionary.ContainsKey(nPaperBuyAnnotationIdx)) // 해당위치(같은분봉) 에 값이 들어있다면
+                            {
+                                realDictionary[nPaperBuyAnnotationIdx].nCount++;
+                                realDictionary[nPaperBuyAnnotationIdx].sTooltipMessage += sPaperBuyArrowToolTip;
+                            }
+                            else // 값이 없다면 => 1번째 데이터
+                            {
+                                realDictionary[nPaperBuyAnnotationIdx] = new RealAnnotationInfo(1, sPaperBuyArrowToolTip);
+                            }
+
 
                             // 매도 어노테이션 삽입
                             ArrowAnnotation arrowPaperBuy = new ArrowAnnotation();
@@ -461,40 +590,36 @@ namespace AtoIndicator.View.EachStockHistory
                             arrowPaperBuy.Height = -4;// -면 아래쪽방향, + 면 위쪽방향
                             arrowPaperBuy.AnchorOffsetY = -1.5;
 
-                            if (curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedVolume == 0) // 전량 매수취소가 된 상황 
-                            {
-                                sPaperBuyArrowToolTip +=
-                                    "매매블록ID : " + p + "\n" +
-                                    "주문수량 : " + curEa.paperBuyStrategy.paperTradeSlot[p].nRqVolume + "(주)\n" +
-                                    "매수설명 : " + mainForm.strategyNameDict[(MainForm.PAPER_BUY_SIGNAL, strategyNames.arrPaperBuyStrategyName[curEa.paperBuyStrategy.arrSpecificStrategy[p]])] + "\n\n";  
+                      
 
-                            }
-                            else // 일부 매수취소 + 정상 매수
-                            {
-                                sPaperBuyArrowToolTip +=
-                                     $"매수요청시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nRqTime}  체결시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nBuyEndTime}\n" +
-                                     $"매수블록ID : {p}  주문가격(수량) : {curEa.paperBuyStrategy.paperTradeSlot[p].nOverPrice}(원)({curEa.paperBuyStrategy.paperTradeSlot[p].nRqVolume}),  매수가격(수량) : {curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedPrice}({curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedVolume})\n" +
-                                     "매수설명 : " + mainForm.strategyNameDict[(MainForm.PAPER_BUY_SIGNAL, strategyNames.arrPaperBuyStrategyName[curEa.paperBuyStrategy.arrSpecificStrategy[p]])] + "\n\n";
-                            }
-
-                            arrowPaperBuy.ToolTip = $"*모의매수 총 갯수 : {nPaperBuyOverlapCount + 1}개\n" +
-                               $"=====================================================\n" + sPaperBuyArrowToolTip;
-                            if (nPaperBuyOverlapCount == 0)
+                            arrowPaperBuy.ToolTip = $"*모의매수 총 갯수 : {realDictionary[nPaperBuyAnnotationIdx].nCount}개\n" +
+                               $"=====================================================\n" + realDictionary[nPaperBuyAnnotationIdx].sTooltipMessage;
+                            if (realDictionary[nPaperBuyAnnotationIdx].nCount == 1 )
                                 arrowPaperBuy.Height = -4;
                             else
                             {
-                                historyChart.Annotations.RemoveAt(historyChart.Annotations.Count - 1);
+                                for (int k = 0; k < historyChart.Annotations.Count; k++) // 어노테이션들 중
+                                {
+                                    if (historyChart.Annotations[k].Name.Equals("P" + realDictionary[nPaperBuyAnnotationIdx].nLastAnnotationLoc))  // P + 해당분봉의 최근삽입정보
+                                    {
+                                        historyChart.Annotations.RemoveAt(k);
+                                    }
+                                }
                                 arrowPaperBuy.Height = -7;
                             }
+
+                            realDictionary[nPaperBuyAnnotationIdx].nLastAnnotationLoc = nNumInjector;  // 최근 삽입시점 삽입
+
                             arrowPaperBuy.BackColor = Color.Red;
                             arrowPaperBuy.SetAnchor(historyChart.Series["MinuteStick"].Points[curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedTimeLineIdx]);
                             // arrowFakeBuy.AnchorY = historyChart.Series["MinuteStick"].Points[curEa.fakeBuyStrategy.arrMinuteIdx[p]].YValues[1]; // 고.저.시종
-                            arrowPaperBuy.Name = "F" + nNumInjector;
+                            arrowPaperBuy.Name = "P" + nNumInjector;
                             arrowPaperBuy.LineColor = Color.Black;
 
                             historyChart.Annotations.Add(arrowPaperBuy);
                         }
                     }//END ---- PAPER BUY ARROW
+                    realDictionary.Clear(); // 모의매수 어노테이션 설정후 클리어
 
                     //START ---- FAKE BUY ARROW
                     if (curEa.fakeBuyStrategy.nStrategyNum > 0 && isFakeBuyArrowVisible)
@@ -673,43 +798,26 @@ namespace AtoIndicator.View.EachStockHistory
                         }
                     }//END ---- FAKE RESIST ARROW
 
+               
                     //START ---- PAPER SELL ARROW
                     if (curEa.paperBuyStrategy.nStrategyNum > 0 && isPaperSellArrowVisible)
                     {
-                        int nPrevPaperSellMinArrowIdx = -1;
-                        int nPaperSellOverlapCount = 0;
-                        string sPaperSellArrowToolTip = "";
-
                         for (int p = 0; p < curEa.paperBuyStrategy.nStrategyNum; p++)
                         {
+                            if (nSpecificStrategyIdx != null && curEa.paperBuyStrategy.arrSpecificStrategy[p] != nSpecificStrategyIdx) // 특정한 전략만 보여주게 설정했다면
+                                continue; // 특정전략인덱스가 아니면 건너뛴다.
+
+                            if (nCurBuyedId != -1 && curEa.paperBuyStrategy.arrSpecificStrategy[p] != nCurBuyedId)
+                                continue;
+
                             if (!curEa.paperBuyStrategy.paperTradeSlot[p].isAllSelled)
                                 continue;
 
+
                             nNumInjector++;
-                            if (nPrevPaperSellMinArrowIdx == curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndTimeLineIdx) // 같은 minute Idx랑 겹친다면
-                            {
-                                nPaperSellOverlapCount++;
-                            }
-                            else
-                            {
-                                nPrevPaperSellMinArrowIdx = curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndTimeLineIdx;
-                                nPaperSellOverlapCount = 0;
-                                sPaperSellArrowToolTip = "";
-                            }
 
-                            // 매도 어노테이션 삽입
-                            ArrowAnnotation arrowPaperSell = new ArrowAnnotation();
-                            if (!isArrowGrouping)
-                            {
-                                arrowPaperSell.Width = 1; // -가 왼쪽으로 기움, + 가 오른쪽으로 기움 , 0이 수직자세
-                            }
-                            else
-                            {
-                                arrowPaperSell.Width = 0.2; // -가 왼쪽으로 기움, + 가 오른쪽으로 기움 , 0이 수직자세
-
-                            }
-                            arrowPaperSell.Height = -4;// -면 아래쪽방향, + 면 위쪽방향
-                            arrowPaperSell.AnchorOffsetY = -1.5;
+                            int nPaperSellAnnotationIdx = curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndTimeLineIdx;
+                            string sPaperSellArrowToolTip = "";
 
                             if (curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedVolume == 0) // 전량 매수취소가 된 상황 
                             {
@@ -727,27 +835,62 @@ namespace AtoIndicator.View.EachStockHistory
                                      "매도설명 : " + curEa.paperBuyStrategy.paperTradeSlot[p].sSellDescription + "\n\n";
                             }
 
-                          
 
-                            arrowPaperSell.ToolTip = $"*모의매도 총 갯수 : {nPaperSellOverlapCount + 1}개\n" +
-                               $"=====================================================\n" + sPaperSellArrowToolTip;
-                            if (nPaperSellOverlapCount == 0)
+                            if (realDictionary.ContainsKey(nPaperSellAnnotationIdx)) // 해당위치(같은분봉) 에 값이 들어있다면
+                            {
+                                realDictionary[nPaperSellAnnotationIdx].nCount++;
+                                realDictionary[nPaperSellAnnotationIdx].sTooltipMessage += sPaperSellArrowToolTip;
+                            }
+                            else // 값이 없다면 => 1번째 데이터
+                            {
+                                realDictionary[nPaperSellAnnotationIdx] = new RealAnnotationInfo(1, sPaperSellArrowToolTip);
+                            }
+
+
+                            // 매도 어노테이션 삽입
+                            ArrowAnnotation arrowPaperSell = new ArrowAnnotation();
+                            if (!isArrowGrouping)
+                            {
+                                arrowPaperSell.Width = 1; // -가 왼쪽으로 기움, + 가 오른쪽으로 기움 , 0이 수직자세
+                            }
+                            else
+                            {
+                                arrowPaperSell.Width = 0.2; // -가 왼쪽으로 기움, + 가 오른쪽으로 기움 , 0이 수직자세
+
+                            }
+                            arrowPaperSell.Height = -4;// -면 아래쪽방향, + 면 위쪽방향
+                            arrowPaperSell.AnchorOffsetY = -1.5;
+
+                           
+                            arrowPaperSell.ToolTip = $"*모의매도 총 갯수 : {realDictionary[nPaperSellAnnotationIdx].nCount + 1}개\n" +
+                               $"=====================================================\n" + realDictionary[nPaperSellAnnotationIdx].sTooltipMessage;
+                           
+                            if (realDictionary[nPaperSellAnnotationIdx].nCount == 1)
                                 arrowPaperSell.Height = -4;
                             else
                             {
-                                historyChart.Annotations.RemoveAt(historyChart.Annotations.Count - 1);
+                                for (int k = 0; k < historyChart.Annotations.Count; k++) // 어노테이션들 중
+                                {
+                                    if (historyChart.Annotations[k].Name.Equals("P" + realDictionary[nPaperSellAnnotationIdx].nLastAnnotationLoc))  // P + 해당분봉의 최근삽입정보
+                                    {
+                                        historyChart.Annotations.RemoveAt(k);
+                                    }
+                                }
                                 arrowPaperSell.Height = -7;
                             }
+
+                            realDictionary[nPaperSellAnnotationIdx].nLastAnnotationLoc = nNumInjector;  // 최근 삽입시점 삽입
+
                             arrowPaperSell.BackColor = Color.Blue;
                             arrowPaperSell.SetAnchor(historyChart.Series["MinuteStick"].Points[curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndTimeLineIdx]);
                             // arrowFakeBuy.AnchorY = historyChart.Series["MinuteStick"].Points[curEa.fakeBuyStrategy.arrMinuteIdx[p]].YValues[1]; // 고.저.시종
-                            arrowPaperSell.Name = "F" + nNumInjector;
+                            arrowPaperSell.Name = "P" + nNumInjector;
                             arrowPaperSell.LineColor = Color.Black;
 
                             historyChart.Annotations.Add(arrowPaperSell);
                         }
                     }//END ---- PAPER SELL ARROW
-
+                    realDictionary.Clear(); // 모의매도 어노테이션 설정후 클리어
 
                     //START ---- FAKE Volatility Arrow
                     if (curEa.fakeVolatilityStrategy.nStrategyNum > 0 && isFakeVolatilityArrowVisible)
@@ -806,7 +949,7 @@ namespace AtoIndicator.View.EachStockHistory
                         }
                     }//END ---- FAKE Volatility ARROW
 
-                    
+
                     //START ---- FAKE Down Arrow
                     if (curEa.fakeDownStrategy.nStrategyNum > 0 && isFakeDownArrowVisible)
                     {
@@ -865,7 +1008,7 @@ namespace AtoIndicator.View.EachStockHistory
                     }//END ---- FAKE Down ARROW
 
 
-
+                    
                     ////START ---- REAL BUY ARROW
                     //for (int buyId = 0; buyId < curEa.myTradeManager.nIdx; buyId++)
                     //{
@@ -1675,7 +1818,7 @@ namespace AtoIndicator.View.EachStockHistory
                 moveLabel.Text = "";
 
 
-            if (isReservationLined && historyChart.Series["MinuteStick"].Points.Count > 0 )
+            if (isReservationLined && historyChart.Series["MinuteStick"].Points.Count > 0)
             {
                 try
                 {
@@ -1689,7 +1832,7 @@ namespace AtoIndicator.View.EachStockHistory
                         prevgpHorizontalCount = historyChart.Series["MinuteStick"].Points.Count;
                         gpHorizontal = historyChart.CreateGraphics();
                     }
-                    
+
                     if (curEa.manualReserve.nReserveCheckVersion == MainForm.UP_RESERVE)
                     {
                         reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.fReserveCheckPrice);
@@ -1853,7 +1996,7 @@ namespace AtoIndicator.View.EachStockHistory
                     prevGpCount = historyChart.Series["MinuteStick"].Points.Count;
                     gp = historyChart.CreateGraphics();
                 }
-                
+
                 if (hit.ChartArea != null)
                 {
                     if (isRightPressed || isPreciselyCheck)
@@ -2106,7 +2249,7 @@ namespace AtoIndicator.View.EachStockHistory
             }
             else if (e.Button == MouseButtons.Right)
             {
-                if (historyChart.Series["MinuteStick"].Points.Count > 0 )
+                if (historyChart.Series["MinuteStick"].Points.Count > 0)
                 {
                     double yCoord = historyChart.ChartAreas["TotalArea"].AxisY.PixelPositionToValue(e.Y);
                     if (double.IsNaN(yCoord))
@@ -2196,10 +2339,10 @@ namespace AtoIndicator.View.EachStockHistory
                 }
 
             }
-            else if(e.Button == MouseButtons.Middle)
+            else if (e.Button == MouseButtons.Middle)
             {
                 isReservationLined = !isReservationLined;
-                
+
             }
         }
 
@@ -2250,7 +2393,7 @@ namespace AtoIndicator.View.EachStockHistory
                 SetChartViewRange(0, curEa.timeLines1m.nRealDataIdx + 2, curEa.nFs, curEa.nFs, "TotalArea");
             }
 
-            if(cUp == 37) // 왼쪽 화살표
+            if (cUp == 37) // 왼쪽 화살표
             {
                 fMaxPlus = 0;
                 fMinPlus = 0;
@@ -2434,12 +2577,12 @@ namespace AtoIndicator.View.EachStockHistory
             {
                 isReserveMode = false;
                 nReserveNum = MainForm.NONE_RESERVE;
-                if(isCtrlPushed) // 취소
+                if (isCtrlPushed) // 취소
                 {
-                    if(curEa.manualReserve.nReserveCheckVersion != MainForm.NONE_RESERVE)
+                    if (curEa.manualReserve.nReserveCheckVersion != MainForm.NONE_RESERVE)
                         reserveLabel.Text = "예약이 취소됐습니다.";
-                    
-                    if(!curEa.manualReserve.isChosen3)
+
+                    if (!curEa.manualReserve.isChosen3)
                         curEa.manualReserve.isReserveSelected3 = false;
                     if (!curEa.manualReserve.isChosen4)
                         curEa.manualReserve.isReserveSelected4 = false;
@@ -2453,7 +2596,7 @@ namespace AtoIndicator.View.EachStockHistory
                 }
             }
 
-            if(isCtrlPushed)
+            if (isCtrlPushed)
             {
                 if (cUp == 191) // ?
                 {
@@ -2466,7 +2609,7 @@ namespace AtoIndicator.View.EachStockHistory
                     curEa.manualReserve.isReserveSelected4 = false;
                     curEa.manualReserve.isReserveSelected5 = false;
                     curEa.manualReserve.isReserveSelected6 = false;
-                   
+
                     reserveLabel.Text = "예약을 초기화했습니다.";
                 }
             }
@@ -2493,8 +2636,8 @@ namespace AtoIndicator.View.EachStockHistory
                     isRightPressed = true;
                 }
             }
-            
-            if(cPressed == 'B' || cPressed == 'N' || cPressed == 'M')
+
+            if (cPressed == 'B' || cPressed == 'N' || cPressed == 'M')
             {
                 isReserveMode = true;
 
@@ -2502,11 +2645,11 @@ namespace AtoIndicator.View.EachStockHistory
                 {
                     nReserveNum = MainForm.UP_RESERVE;
                 }
-                else if( cPressed == 'M')
+                else if (cPressed == 'M')
                 {
                     nReserveNum = MainForm.DOWN_RESERVE;
                 }
-                else if(cPressed == 'B')
+                else if (cPressed == 'B')
                 {
                     nReserveNum = MainForm.BOX_RESERVE;
                 }

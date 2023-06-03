@@ -54,12 +54,25 @@ namespace AtoIndicator
                 ReceiveScreenNoIdx(sScrNo, out int? nEaIdx, out int? nSlotIdx, out string sPurpose);
 
                 int nCurBuySlotIdx;
-                if (nSlotIdx == null || nEaIdx != nCurIdx || nCurIdx == INIT_CODEIDX_NUM)
+
+                if (nSlotIdx == null || nEaIdx == null)  // 사용중이지 않음
+                {
+                    // 매수 매도 구분
+                    // 매수
+                    // 해당종목 처음 매수 데이터가 들어왔다면 
+                    // 만들어
+
+                    // 매도
+
+                    // 초기세팅을 해야한다.
+                    
+                }
+                else if(nEaIdx != nCurIdx) // 사용중이라 나오는데 먼가 이상함.
                 {
                     PrintLog($"시간 : {nSharedTime}  화면번호 : {sScrNo}, 종목명 : {ea[nCurIdx].sCodeName}  개인번호 : {nEaIdx}  슬롯번호 : {nSlotIdx} 치명적인 오류 발견");
                     return;
                 }
-                else
+                else // API 매매
                     nCurBuySlotIdx = (int)nSlotIdx;
 
                 #endregion
