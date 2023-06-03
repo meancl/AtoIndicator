@@ -1336,8 +1336,8 @@ namespace AtoIndicator.View
                             nPass += ((isC1501 ? int.Parse(sC1501) <= mainForm.ea[i].sequenceStrategy.nSpeed150CurSec : true) &&
                               (isC1502 ? mainForm.ea[i].sequenceStrategy.nSpeed150CurSec <= int.Parse(sC1502) : true)) ? 1 : 0;
                         if (isRBA1 || isRBA2)
-                            nPass += ((isRBA1 ? int.Parse(sRBA1) <= mainForm.ea[i].myTradeManager.nIdx : true) &&
-                              (isRBA2 ? mainForm.ea[i].myTradeManager.nIdx <= int.Parse(sRBA2) : true)) ? 1 : 0;
+                            nPass += ((isRBA1 ? int.Parse(sRBA1) <= mainForm.ea[i].paperBuyStrategy.nStrategyNum: true) &&
+                              (isRBA2 ? mainForm.ea[i].paperBuyStrategy.nStrategyNum <= int.Parse(sRBA2) : true)) ? 1 : 0;
                         if (isRBD1 || isRBD2)
                             nPass += ((isRBD1 ? int.Parse(sRBD1) <= mainForm.ea[i].paperBuyStrategy.nMinuteLocationCount : true) &&
                               (isRBD2 ? mainForm.ea[i].paperBuyStrategy.nMinuteLocationCount <= int.Parse(sRBD2) : true)) ? 1 : 0;

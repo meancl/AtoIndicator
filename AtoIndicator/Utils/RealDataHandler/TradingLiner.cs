@@ -17,6 +17,8 @@ namespace AtoIndicator
         {
             bool isSell = false;
 
+            sSharedSellDescription.Clear();
+
             if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].eTradeMethod == TradeMethodCategory.RisingMethod) // 단계별 매매기법
             {
                 // ---------------------------------------------------------

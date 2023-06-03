@@ -89,7 +89,7 @@ namespace AtoIndicator
             stockDashBoard.stockPanel = new StockPiece[nStockLength]; // 순위 결정을 위한 구조체 배열 생성
 
             strategyName = new StrategyNames();
-            strategyHistoryList = new List<StrategyHistory>[strategyName.arrPaperSellStrategyName.Count]; // 전략매매후 정보를 담는 list
+            strategyHistoryList = new List<StrategyHistory>[strategyName.arrPaperBuyStrategyName.Count]; // 전략매매후 정보를 담는 list
          
 
             for (int i = 0; i < nStockLength; i++)
@@ -100,10 +100,10 @@ namespace AtoIndicator
                 ea[i].fakeResistStrategy = new FakeResistStrategy(FAKE_RESIST_SIGNAL, strategyName.arrFakeResistStrategyName.Count);
                 ea[i].fakeAssistantStrategy = new FakeAssistantStrategy(FAKE_ASSISTANT_SIGNAL, strategyName.arrFakeAssistantStrategyName.Count);
                 ea[i].paperBuyStrategy = new PaperBuyStrategy(PAPER_BUY_SIGNAL, strategyName.arrPaperBuyStrategyName.Count);
-                ea[i].paperSellStrategy = new PaperSellStrategy(PAPER_SELL_SIGNAL, strategyName.arrPaperSellStrategyName.Count);
+                
             }
             // 각 전략마다 기록용 리스트 생성
-            for (int i = 0; i < strategyName.arrPaperSellStrategyName.Count; i++)
+            for (int i = 0; i < strategyName.arrPaperBuyStrategyName.Count; i++)
                 strategyHistoryList[i] = new List<StrategyHistory>();
 
             

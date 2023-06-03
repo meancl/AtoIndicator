@@ -21,6 +21,7 @@ namespace AtoIndicator
         public const double VIRTUAL_STOCK_FEE = 0.0035; // 가상증권 매매수수료
         public const double VIRTUAL_STOCK_COMMISSION = STOCK_TAX + VIRTUAL_STOCK_FEE * 2; // 최종 거래수수료 *현재 : 거래세 + 가상증권 매매수수료 *  2( 가상증권 매수수수료 + 가상증권매매수수료 )
         public const double REAL_STOCK_COMMISSION = STOCK_TAX + STOCK_FEE * 2;
+        public const double PAPER_STOCK_COMMISSION = 0.004;
 
         public const double REAL_STOCK_BUY_COMMISION = STOCK_FEE;
         public const double REAL_STOCK_SELL_COMMISION = STOCK_FEE + STOCK_TAX;
@@ -233,8 +234,6 @@ namespace AtoIndicator
 
                             PrintLog($"{sTradeTime} : {sCode}  {ea[nCurIdx].sCodeName} 화면번호 : {ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].sBuyScrNo} {nCurBuySlotIdx}번째슬롯 {nOrderVolume}(주) 매수 접수완료", nCurIdx, nCurBuySlotIdx);
 
-                            strategyHistoryList[ea[nCurIdx].myTradeManager.arrBuyedSlots[nCurBuySlotIdx].nStrategyIdx].Add(new StrategyHistory(nCurIdx, nCurBuySlotIdx)); // 전략리스트 인덱스에 맞게 삽입
-                            totalTradeHistoryList.Add(new StrategyHistory(nCurIdx, nCurBuySlotIdx)); // 전체 매매리스트 
                         }
                         #endregion
                     }

@@ -83,7 +83,7 @@ namespace AtoIndicator.View.StatisticResult
         public void CalcAndShowResult()
         {
             MainForm.StrategyHistory curStrategyHistory;
-            MainForm.BuyedSlot curBuyedSlot;
+            MainForm.PaperTradeSlot curBuyedSlot;
             MainForm.EachResultTracker curResultTracker;
 
             int nZeroCount; // 0퍼 초과
@@ -112,7 +112,7 @@ namespace AtoIndicator.View.StatisticResult
                     for (int eachPointer = 0; eachPointer < mainForm.strategyHistoryList[strategyNum].Count; eachPointer++) // 해당 전략의 매수데이터들을 순회한다.
                     {
                         curStrategyHistory = mainForm.strategyHistoryList[strategyNum][eachPointer]; // nEaIdx와 nBuyedIdx를 얻었다
-                        curBuyedSlot = mainForm.ea[curStrategyHistory.nEaIdx].myTradeManager.arrBuyedSlots[curStrategyHistory.nBuyedIdx]; // 해당 BuyedSlot을 얻었다.
+                        curBuyedSlot = mainForm.ea[curStrategyHistory.nEaIdx].paperBuyStrategy.paperTradeSlot[curStrategyHistory.nBuyedIdx]; // 해당 BuyedSlot을 얻었다.
                         
                         curResultTracker.nEaIdx = curStrategyHistory.nEaIdx;
                         curResultTracker.nBuyedIdx = curStrategyHistory.nBuyedIdx;
@@ -120,17 +120,17 @@ namespace AtoIndicator.View.StatisticResult
 
                         if (curBuyedSlot.isAllSelled) // 매매완료라면 
                         {
-                            curResultTracker.nTradingHoldingTime = SubTimeToTimeAndSec(curBuyedSlot.nDeathTime, curBuyedSlot.nBuyEndTime);
-                            if (curBuyedSlot.nBuyVolume == 0) // 전량매수취소됐다면
+                            curResultTracker.nTradingHoldingTime = SubTimeToTimeAndSec(curBuyedSlot.nSellEndTime, curBuyedSlot.nBuyEndTime);
+                            if (curBuyedSlot.nBuyedVolume == 0) // 전량매수취소됐다면
                             {
                                 statisticer.strategyResult[strategyNum].nCanceledNum++;
                                 statisticer.strategyResult[strategyNum].nAllTradeNum++;
                             }
                             else // 정상 매매종료
                             {
-                                curResultTracker.fProfit = (double)(curBuyedSlot.nDeathPrice - curBuyedSlot.nBuyPrice) / curBuyedSlot.nBuyPrice - MainForm.REAL_STOCK_COMMISSION;
-                                lEachSumBuyed += curBuyedSlot.nBuyVolume * curBuyedSlot.nBuyPrice;
-                                lEachStrategyProfit += (long)(curBuyedSlot.nBuyVolume * curBuyedSlot.nBuyPrice * curResultTracker.fProfit);
+                                curResultTracker.fProfit = (double)(curBuyedSlot.nSellEndPrice - curBuyedSlot.nBuyedPrice) / curBuyedSlot.nBuyedPrice - MainForm.PAPER_STOCK_COMMISSION;
+                                lEachSumBuyed += curBuyedSlot.nBuyedVolume * curBuyedSlot.nBuyedPrice;
+                                lEachStrategyProfit += (long)(curBuyedSlot.nBuyedVolume * curBuyedSlot.nBuyedPrice * curResultTracker.fProfit);
                                 statisticer.strategyResult[strategyNum].nTradedNum++;
                                 statisticer.strategyResult[strategyNum].nAllTradeNum++;
                                 statisticer.eachTradedTracker.Add(curResultTracker);
@@ -139,12 +139,12 @@ namespace AtoIndicator.View.StatisticResult
                         }
                         else // 매매중
                         {
-                            if (curBuyedSlot.isAllBuyed) // 매수가 완료됐다면
+                            if (curBuyedSlot.nBuyedVolume == curBuyedSlot.nTargetRqVolume) // 매수가 완료됐다면
                             {
                                 curResultTracker.nTradingHoldingTime = 0;
                                 curResultTracker.fProfit = curBuyedSlot.fPowerWithFee;
-                                lEachSumBuyed += curBuyedSlot.nBuyVolume * curBuyedSlot.nBuyPrice;
-                                lEachStrategyProfit += (long)(curBuyedSlot.nBuyVolume * curBuyedSlot.nBuyPrice * curResultTracker.fProfit);
+                                lEachSumBuyed += curBuyedSlot.nBuyedVolume * curBuyedSlot.nBuyedPrice;
+                                lEachStrategyProfit += (long)(curBuyedSlot.nBuyedVolume * curBuyedSlot.nBuyedPrice * curResultTracker.fProfit);
                                 statisticer.strategyResult[strategyNum].nTradingNum++;
                                 statisticer.strategyResult[strategyNum].nAllTradeNum++;
                                 statisticer.eachTotalTracker.Add(curResultTracker);

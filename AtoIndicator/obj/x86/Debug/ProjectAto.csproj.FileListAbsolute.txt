@@ -204,7 +204,6 @@ C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\System.Threadin
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\System.Threading.Tasks.Extensions.xml
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\Interop.KHOpenAPILib.dll
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\AxInterop.KHOpenAPILib.dll
-C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\ProjectAto.csproj.AssemblyReference.cache
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\Interop.KHOpenAPILib.dll
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AxInterop.KHOpenAPILib.dll
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\ProjectAto.csproj.ResolveComReference.cache
@@ -222,3 +221,4 @@ C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AtoIndicator.Vi
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AtoIndicator.View.StatisticResult.StatisticResultForm.resources
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AtoIndicator.View.TextLog.TextLogForm.resources
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AtoIndicator.View.TradeRecod.TradeRecodForm.resources
+C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\ProjectAto.csprojAssemblyReference.cache

@@ -177,6 +177,9 @@
                 case TradeMethodCategory.ScalpingMethod:
                     retVal = arrScalpingFloor[nIdx];
                     break;
+                case TradeMethodCategory.None:
+                    retVal = arrStepByStepFloor[nIdx];
+                    break;
                 default:
                     PrintLog("매매방식이 잘못됐습니다.");
                     break;

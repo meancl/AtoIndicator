@@ -117,9 +117,6 @@ namespace AtoIndicator.View.TradeRecod
                 //srForm.Show();
                 CallThreadStatisticResultForm();
 
-            if (isCtrlPushed)
-                if (cUp == 'S') // 강제매도
-                    ForceSell();
 
         }
 
@@ -185,23 +182,6 @@ namespace AtoIndicator.View.TradeRecod
             }
 
         }
-        public void ForceSell()
-        {
-            if (tradeRecordListView.FocusedItem != null) // 행을 선택하지 않았다면
-            {
-                string sCode = tradeRecordListView.FocusedItem.SubItems[1].Text;
-                int nCurIdx = mainForm.eachStockDict[sCode.Trim()];
-                for (int buyId = 0; buyId < mainForm.ea[nCurIdx].myTradeManager.nIdx; buyId++) // 해당 종목의 전수량을 일괄매도
-                {
-                    if (!mainForm.ea[nCurIdx].myTradeManager.arrBuyedSlots[buyId].isAllSelled && !mainForm.ea[nCurIdx].myTradeManager.arrBuyedSlots[buyId].isSelling) // 다 안팔리고 파는중 아니고
-                    {
-                        mainForm.SetAndServeCurSlot("직접입력매도", MainForm.NEW_SELL, sCode, buyId, "", nCurIdx, 0, 0, 0, MainForm.MARKET_ORDER, MainForm.TradeMethodCategory.None, 0, mainForm.ea[nCurIdx].myTradeManager.arrBuyedSlots[buyId].nCurVolume, "직접입력단일일괄매도");
-                    }
-                }
-            }
-            else
-                MessageBox.Show("행이 없거나 선택되지 않았습니다.");
-        }
 
 
         public void RunThread() // delegate로 바꿀 수 있게끔 해보자
@@ -250,14 +230,14 @@ namespace AtoIndicator.View.TradeRecod
                 {
                     tmpEa = mainForm.ea[i];
 
-                    if (tmpEa.myTradeManager.nIdx == 0) // 매매가 없으면 패스
+                    if (tmpEa.paperBuyStrategy.nStrategyNum == 0) // 매매가 없으면 패스
                         continue;
 
                     tmpInfo.sGubun = tmpEa.sMarketGubunTag;
                     tmpInfo.sCode = tmpEa.sCode;
                     tmpInfo.sCodeName = tmpEa.sCodeName;
                     tmpInfo.nTradingNum = 0;
-                    tmpInfo.nTradeNum = tmpEa.myTradeManager.nIdx;
+                    tmpInfo.nTradeNum = tmpEa.paperBuyStrategy.nStrategyNum;
                     tmpInfo.isTradeStatus = false;
                     tmpInfo.nCurFb = 0;
                     tmpInfo.fEverageProfit = 0;
@@ -273,33 +253,33 @@ namespace AtoIndicator.View.TradeRecod
                     fTotalPrice = 0;  // 매도총가격
                     fTotalBuyPrice = 0; // 구매총가격
 
-                    for (int j = 0; j < tmpEa.myTradeManager.nIdx; j++)
+                    for (int j = 0; j < tmpEa.paperBuyStrategy.nStrategyNum; j++)
                     {
-                        if (tmpEa.myTradeManager.arrBuyedSlots[j].isAllBuyed && tmpEa.myTradeManager.arrBuyedSlots[j].nBuyVolume > 0) // 다 사졌으면
+                        if (tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume == tmpEa.paperBuyStrategy.paperTradeSlot[j].nTargetRqVolume && tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume > 0) // 다 사졌으면
                         {
-                            if (tmpEa.myTradeManager.arrBuyedSlots[j].isAllSelled) // 다 팔렸던거
+                            if (tmpEa.paperBuyStrategy.paperTradeSlot[j].isAllSelled) // 다 팔렸던거
                             {
-                                fTotalPrice += tmpEa.myTradeManager.arrBuyedSlots[j].nTotalSelledPrice;
-                                nTotalVolume += tmpEa.myTradeManager.arrBuyedSlots[j].nTotalSelledVolume;
+                                fTotalPrice += tmpEa.paperBuyStrategy.paperTradeSlot[j].nSellEndPrice * tmpEa.paperBuyStrategy.paperTradeSlot[j].nSellEndVolume;
+                                nTotalVolume += tmpEa.paperBuyStrategy.paperTradeSlot[j].nSellEndVolume;
                             }
                             else // 매매중
                             {
                                 tmpInfo.nTradingNum++;
                                 tmpInfo.isTradeStatus = true;
 
-                                if (tmpEa.myTradeManager.arrBuyedSlots[j].isSelling) // 판매중이라면
+                                if (tmpEa.paperBuyStrategy.paperTradeSlot[j].isSelling) // 판매중이라면
                                 {
-                                    fTotalPrice += tmpEa.myTradeManager.arrBuyedSlots[j].nTotalSelledPrice + tmpEa.myTradeManager.arrBuyedSlots[j].nCurVolume * ((tmpEa.nFb > 0) ? tmpEa.nFb : tmpEa.myTradeManager.arrBuyedSlots[j].nBuyPrice); // 판매된만큼 + 잔량만큼 가격
-                                    nTotalVolume += tmpEa.myTradeManager.arrBuyedSlots[j].nTotalSelledVolume + tmpEa.myTradeManager.arrBuyedSlots[j].nCurVolume; // 판매된만큼 + 잔량만큼 수량
+                                    fTotalPrice += tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume * ((tmpEa.nFb > 0) ? tmpEa.nFb : tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedPrice); // 판매된만큼 + 잔량만큼 가격
+                                    nTotalVolume += tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume; // 판매된만큼 + 잔량만큼 수량
                                 }
                                 else // 사기만 함
                                 {
-                                    fTotalPrice += tmpEa.myTradeManager.arrBuyedSlots[j].nBuyVolume * ((tmpEa.nFb > 0) ? tmpEa.nFb : tmpEa.myTradeManager.arrBuyedSlots[j].nBuyPrice);
-                                    nTotalVolume += tmpEa.myTradeManager.arrBuyedSlots[j].nBuyVolume;
+                                    fTotalPrice += tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedPrice * tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume;
+                                    nTotalVolume += tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume;
                                 }
                             }
 
-                            fTotalBuyPrice += tmpEa.myTradeManager.arrBuyedSlots[j].nBuyPrice * tmpEa.myTradeManager.arrBuyedSlots[j].nBuyVolume;
+                            fTotalBuyPrice += tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedPrice * tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume;
                         }
                     }
 

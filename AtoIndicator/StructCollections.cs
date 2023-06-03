@@ -89,7 +89,6 @@ namespace AtoIndicator
             public int nHoldingsCnt; // 보유종목수
             public double fAccumBuyedRatio; // 최대매수기준 현재 비율(추매 시 1을 넘을 수 있음) // 추가??
             public PaperBuyStrategy paperBuyStrategy;
-            public PaperSellStrategy paperSellStrategy;
             public FakeVolatilityStrategy fakeVolatilityStrategy;
             public FakeDownStrategy fakeDownStrategy;
             public FakeBuyStrategy fakeBuyStrategy;
@@ -208,7 +207,7 @@ namespace AtoIndicator
             public int nTodayMaxTime;
             public double fTodayMaxPower;
 
-            
+
 
             public void Init()
             {
@@ -659,7 +658,7 @@ namespace AtoIndicator
                         $"카운트07  P : {Math.Round(fPlusCnt07, 3)}  M : {Math.Round(fMinusCnt07, 3)}{NEW_LINE}" +
                         $"카운트09  P : {Math.Round(fPlusCnt09, 3)}  M : {Math.Round(fMinusCnt09, 3)}{NEW_LINE}" +
                         $"파워자 : {fPowerJar}{NEW_LINE}" +
-                        $"실매수횟수 : {myTradeManager.nIdx}{NEW_LINE}" +
+                        $"실매수횟수 : {paperBuyStrategy.nStrategyNum}{NEW_LINE}" +
                         $"체결카운트 : {nChegyulCnt}{NEW_LINE}" +
                         $"호가카운트 : {nHogaCnt}{NEW_LINE}" +
                         $"노무브 : {nNoMoveCount}{NEW_LINE}" +
@@ -1613,13 +1612,60 @@ namespace AtoIndicator
             public int nPrevMaxMinIdx;
             public int nPrevMaxMinUpperCount;
             public int nPrevMinuteIdx;
-            public int nCurBarBuyCount; 
+            public int nCurBarBuyCount;
             public int nMinuteLocationCount;
 
             public int[] arrPrevMinuteIdx;
 
         }
 
+
+        public struct PaperTradeSlot
+        {
+            public int nRqTime; // 언제 주문신청했는 지
+            public int nRqCount; // 어떤 체결카운트에 주문신청했는 지
+            public int nRqPrice; // 얼마에 주문신청했는 지
+            public int nOverPrice; // 주문시점 + Alpha
+            public int nRqVolume; // 얼만큼 주문신청했는 지
+            public int nBuyedVolume; // 언제 사졌는 지
+            public int nBuyedPrice; // 얼마에 사졌는 지 
+            public int nBuyedTimeLineIdx;
+            public int nBuyEndTime;
+            public int nSellHogaVolume; // 호가에 얼마나 걸려있는 지
+            public int nCanceledVolume; // 매수취소 적용된 매수요청물량
+            public int nTargetRqVolume;
+
+            // 매도
+            public bool isSelling;
+            public bool isAllSelled;
+            public int nBuyHogaVolume; // 호가에 얼마나 걸려있는 지
+            public int nSellRqVolume; // 얼만큼 주문신청했는 지
+            public int nSellRqCount;
+            public int nSellRqTime; 
+            public int nSellRqPrice; 
+            public int nSellEndVolume; 
+            public int nSellEndPrice; 
+            public int nSellEndTime; 
+            public int nSellEndTimeLineIdx;
+            public string sSellDescription;
+
+
+            public int nPreemptionPrevUpdateTime;
+
+            public int nLastTouchLineTime;
+            
+            public int nCurLineIdx;
+            public double fTargetPer;
+            public double fBottomPer;
+            public double fPowerWithFee;
+            public double fPower;
+
+            public bool isRespiteSignal;
+            public int nRespitePrevUpdateTime;
+            public int nRespiteFirstTime;
+            public int nEachRespiteCount;
+            public double fRespiteCriticalLine;
+        }
 
         /// <summary>
         /// ABOUT 실제전략
@@ -1630,15 +1676,9 @@ namespace AtoIndicator
             // 임시용 
             public bool isOrderCheck;
 
-            // 매매 정보
-            public int[] arrRqTime; // 언제 주문신청했는 지
-            public int[] arrRqPrice; // 얼마에 주문신청했는 지
-            public int[] arrOverPrice; // 주문시점 + Alpha
-            public int[] arrRqVolume; // 얼만큼 주문신청했는 지
-            public int[] arrBuyedVolume; // 언제 사졌는 지
-            public int[] arrBuyedPrice; // 얼마에 사졌는 지 
-
-
+            #region 매매 정보
+            public PaperTradeSlot[] paperTradeSlot;
+            #endregion
 
             // -------------------------------------------------------------------------------
             // END ---- 전략별  추가변수들
@@ -1651,50 +1691,17 @@ namespace AtoIndicator
                 arrLastTouch = new int[s];
                 arrPrevMinuteIdx = new int[s];
 
-                arrMinuteIdx = new int[PAPER_BUY_MAX_NUM];
-                arrBuyTime = new int[PAPER_BUY_MAX_NUM];
-                arrBuyPrice = new int[PAPER_BUY_MAX_NUM];
-                arrSpecificStrategy = new int[PAPER_BUY_MAX_NUM];
+                arrMinuteIdx = new int[PAPER_TRADE_MAX_NUM];
+                arrBuyTime = new int[PAPER_TRADE_MAX_NUM];
+                arrBuyPrice = new int[PAPER_TRADE_MAX_NUM];
+                arrSpecificStrategy = new int[PAPER_TRADE_MAX_NUM];
 
                 nPrevMinuteIdx = -1;
 
-                arrRqTime = new int[PAPER_BUY_MAX_NUM];
-                arrRqPrice = new int[PAPER_BUY_MAX_NUM];
-                arrOverPrice = new int[PAPER_BUY_MAX_NUM];
-                arrRqVolume = new int[PAPER_BUY_MAX_NUM];
-                arrBuyedVolume = new int[PAPER_BUY_MAX_NUM];
-                arrBuyedPrice = new int[PAPER_BUY_MAX_NUM];
+                paperTradeSlot = new PaperTradeSlot[PAPER_TRADE_MAX_NUM];
             }
 
         }
-
-        /// <summary>
-        /// ABOUT 실제전략
-        /// </summary>
-        public class PaperSellStrategy : FakeFrame
-        {
-
-            // -------------------------------------------------------------------------------
-            // END ---- 전략별  추가변수들
-            // -------------------------------------------------------------------------------
-            public PaperSellStrategy(int t, int s)
-            {
-                nFakeType = t;
-
-                arrStrategy = new int[s];
-                arrLastTouch = new int[s];
-                arrPrevMinuteIdx = new int[s];
-
-                arrMinuteIdx = new int[PAPER_SELL_MAX_NUM];
-                arrBuyTime = new int[PAPER_SELL_MAX_NUM];
-                arrBuyPrice = new int[PAPER_SELL_MAX_NUM];
-                arrSpecificStrategy = new int[PAPER_SELL_MAX_NUM];
-
-                nPrevMinuteIdx = -1;
-            }
-
-        }
-
 
         public class FakeVolatilityStrategy : FakeFrame
         {
@@ -1732,7 +1739,7 @@ namespace AtoIndicator
 
         }
 
-        
+
 
         /// <summary>
         ///  가짜 전략 해당 종목의 과열성을 체크함과 동시에 고점 정도를 파악한다.
@@ -2219,7 +2226,6 @@ namespace AtoIndicator
             public List<string> arrFakeVolatilityStrategyName;
             public List<string> arrFakeDownStrategyName;
             public List<string> arrPaperBuyStrategyName;
-            public List<string> arrPaperSellStrategyName;
 
             public StrategyNames()
             {
@@ -2229,7 +2235,6 @@ namespace AtoIndicator
                 arrFakeVolatilityStrategyName = new List<string>();
                 arrFakeDownStrategyName = new List<string>();
                 arrPaperBuyStrategyName = new List<string>();
-                arrPaperSellStrategyName = new List<string>();
 
                 try
                 {
@@ -2305,7 +2310,7 @@ namespace AtoIndicator
 
                 }
 
-              
+
                 try
                 {
                     arrFakeVolatilityStrategyName.Add("차분 5 0.03 5분주기");
@@ -2420,17 +2425,6 @@ namespace AtoIndicator
 
                 }
 
-
-                try
-                {
-                    arrPaperSellStrategyName.Add("선점");
-                    arrPaperSellStrategyName.Add("유예 불가");
-                    arrPaperSellStrategyName.Add("상한가");
-                }
-                catch (Exception indexError)
-                {
-
-                }
 
             }
 
