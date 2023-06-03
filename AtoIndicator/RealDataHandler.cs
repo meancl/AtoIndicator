@@ -168,13 +168,6 @@ namespace AtoIndicator
         public const int FAKE_VOLATILITY_MAX_NUM = 200;
         public const int FAKE_DOWN_MAX_NUM = 200;
         public const int PAPER_TRADE_MAX_NUM = 50; // 최대 모의매수 
-                                                   // 
-                                                   //public const int REAL_BUY_STRATEGY_NUM = 84; // 전략 갯수
-                                                   //public const int PRICE_UP_STRATEGY_NUM = 20; // 전략 갯수
-                                                   //public const int PRICE_DOWN_STRATEGY_NUM = 20; // 전략 갯수
-                                                   //public const int FAKE_BUY_STRATEGY_NUM = 20;
-                                                   //public const int FAKE_RESIST_STRATEGY_NUM = 20;
-                                                   //public const int FAKE_ASSISTANT_STRATEGY_NUM = 20;
 
         public const long SHT_PER_INIT = BILLION;
 
@@ -1278,50 +1271,6 @@ namespace AtoIndicator
                                     ea[aiSlot.nEaIdx].fakeStrategyMgr.nAIStepMinuteCount++;
                                 }
 
-                                // 예약 생성
-                                //ea[aiSlot.nEaIdx].reserveMgr.Approach(nSharedTime, ea[aiSlot.nEaIdx].fPower);
-                                //ea[aiSlot.nEaIdx].reserveMgr.listReservation.Add(new ReservedPoint
-                                //{
-                                //    isReserveEnd = false,
-                                //    fReservePower = ea[aiSlot.nEaIdx].fPower,
-                                //    nReserveTime = nSharedTime,
-                                //    fMaxPower = ea[aiSlot.nEaIdx].fPower,
-                                //    fMinusPower = 0.025,
-                                //    nTargetLimitTime = AddTimeBySec(nSharedTime, 600)
-                                //});
-                                //PrintLog($"{nSharedTime}  {ea[aiSlot.nEaIdx].sCode}  {ea[aiSlot.nEaIdx].sCodeName} fs : {ea[aiSlot.nEaIdx].nFs} power : {ea[aiSlot.nEaIdx].fPower} {AddTimeBySec(nSharedTime, 600)}시간 까지 대략 {ea[aiSlot.nEaIdx].nYesterdayEndPrice * (1 + ea[aiSlot.nEaIdx].fPower - 0.025)}원, {ea[aiSlot.nEaIdx].fPower - 0.025}(%) 예약매수", aiSlot.nEaIdx);
-
-                                //ea[aiSlot.nEaIdx].reserveMgr.listReservation.Add(new ReservedPoint
-                                //{
-                                //    isReserveEnd = false,
-                                //    fReservePower = ea[aiSlot.nEaIdx].fPower,
-                                //    nReserveTime = nSharedTime,
-                                //    fMaxPower = ea[aiSlot.nEaIdx].fPower,
-                                //    fMinusPower =  0.05,
-                                //    nTargetLimitTime = AddTimeBySec(nSharedTime, 5400)
-                                //});
-                                //PrintLog($"{nSharedTime}  {ea[aiSlot.nEaIdx].sCode}  {ea[aiSlot.nEaIdx].sCodeName} fs : {ea[aiSlot.nEaIdx].nFs} power : {ea[aiSlot.nEaIdx].fPower} {AddTimeBySec(nSharedTime, 5400)}시간 까지 대략 {ea[aiSlot.nEaIdx].nYesterdayEndPrice * (1 + ea[aiSlot.nEaIdx].fPower - 0.05)}원, {ea[aiSlot.nEaIdx].fPower - 0.05}(%) 예약매수", aiSlot.nEaIdx);
-
-                                //ea[aiSlot.nEaIdx].reserveMgr.listReservation.Add(new ReservedPoint
-                                //{
-                                //    isReserveEnd = false,
-                                //    fReservePower = ea[aiSlot.nEaIdx].fPower,
-                                //    nReserveTime = nSharedTime,
-                                //    fMaxPower = ea[aiSlot.nEaIdx].fPower,
-                                //    fMinusPower = 0.1,
-                                //    nTargetLimitTime = AddTimeBySec(nSharedTime, 5400)
-                                //});
-                                //PrintLog($"{nSharedTime}  {ea[aiSlot.nEaIdx].sCode}  {ea[aiSlot.nEaIdx].sCodeName} fs : {ea[aiSlot.nEaIdx].nFs} power : {ea[aiSlot.nEaIdx].fPower} {AddTimeBySec(nSharedTime, 5400)}시간 까지 대략 {ea[aiSlot.nEaIdx].nYesterdayEndPrice * (1 + ea[aiSlot.nEaIdx].fPower - 0.1)}원, {ea[aiSlot.nEaIdx].fPower - 0.1}(%) 예약매수", aiSlot.nEaIdx);
-
-                                //tradeQueue.Enqueue(aiSlot.slot);
-                            }
-                            break;
-                        case REAL_SELL_SIGNAL: // 분할매도 여부 체크(분할매도를 위해 AI 서비스를 이용한다)
-                            if (isAIPassed)
-                            {
-                                aiSlot.slot.nQty = (int)((1 - fRatio) * ea[aiSlot.nEaIdx].myTradeManager.arrBuyedSlots[aiSlot.slot.nBuyedSlotIdx].nBuyVolume);
-                                aiSlot.slot.nQty = GetBetweenMinAndMax(aiSlot.slot.nQty, 1, ea[aiSlot.nEaIdx].myTradeManager.arrBuyedSlots[aiSlot.slot.nBuyedSlotIdx].nCurVolume);
-                                tradeQueue.Enqueue(aiSlot.slot);
                             }
                             break;
                         case FAKE_REQUEST_SIGNAL:
@@ -1954,31 +1903,7 @@ namespace AtoIndicator
                         ea[nCurIdx].nRealMaxPrice = ea[nCurIdx].nFs;
 
 
-                    #region 예약 처리
-                    // 예약 처리
-                    //if (!ea[nCurIdx].isExcluded)
-                    //{
-                    //    for (int i = 0; i < ea[nCurIdx].reserveMgr.listReservation.Count; i++)
-                    //    {
-                    //        if (!ea[nCurIdx].reserveMgr.listReservation[i].isReserveEnd)
-                    //        {
-                    //            ea[nCurIdx].reserveMgr.listReservation[i].fMaxPower = Max(ea[nCurIdx].reserveMgr.listReservation[i].fMaxPower, ea[nCurIdx].fPower);
-
-                    //            if (ea[nCurIdx].reserveMgr.listReservation[i].nTargetLimitTime < nSharedTime) // 제한시간을 넘겼다면
-                    //            {
-                    //                ea[nCurIdx].reserveMgr.listReservation[i].isReserveEnd = true;
-                    //                continue;
-                    //            }
-
-                    //            if ((ea[nCurIdx].reserveMgr.listReservation[i].fReservePower - ea[nCurIdx].reserveMgr.listReservation[i].fMinusPower) > ea[nCurIdx].fPower) // 원하는 가격으로 내려왔다면
-                    //            {
-                    //                ea[nCurIdx].reserveMgr.listReservation[i].isReserveEnd = true;
-                    //                RequestThisRealBuy(nCurIdx, 0, isAIUse: false);
-                    //            }
-                    //        }
-                    //    }
-                    //}
-                    #endregion
+                  
 
                     if (ea[nCurIdx].isViMode)
                     {
@@ -3668,14 +3593,14 @@ namespace AtoIndicator
                     // 실매수 전 Update
                     //=====================================================
                     {
-                        if (ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece.Count > 0)
-                        {
-                            if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[0].nSharedTime) > 900)
-                            {
-                                UpdateFakeHistory(nCurIdx);
-                                CalcFakeHistory(nCurIdx);
-                            }
-                        }
+                        //if (ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece.Count > 0)
+                        //{
+                        //    if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].fakeStrategyMgr.listFakeHistoryPiece[0].nSharedTime) > 900)
+                        //    {
+                        //        UpdateFakeHistory(nCurIdx);
+                        //        CalcFakeHistory(nCurIdx);
+                        //    }
+                        //}
                     }
                     #endregion
 

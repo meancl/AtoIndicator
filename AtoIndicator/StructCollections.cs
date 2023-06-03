@@ -68,7 +68,6 @@ namespace AtoIndicator
             public RankSystem rankSystem;             // 랭킹데이터 변수
             public SequenceStrategy sequenceStrategy; // 순차적전략 변수
             public FeeManager feeMgr;                 // 세금, 수수료 관련 변수
-            public ReservationManager reserveMgr;     // 예약매수 관련 변수
 
             // ----------------------------------
             // 기본정보 변수
@@ -215,7 +214,6 @@ namespace AtoIndicator
                 rankSystem.Init();
                 sequenceStrategy.Init();
                 timeLines1m.Init();
-                reserveMgr.Init();
                 fakeStrategyMgr.Init();
 
                 manualReserve = new ManualReservation();
@@ -537,7 +535,6 @@ namespace AtoIndicator
 
             public string sDescription;
             public string sFixedInfoPassanger;
-            public BuyReport tFixedResPassanger; // 매수시점 기록
             // ----------------------------------
             // 매수 인자들
             // ----------------------------------
@@ -610,49 +607,6 @@ namespace AtoIndicator
             }
         }
 
-        // 예약 관리용 클래스
-        public struct ReservationManager
-        {
-            public int nFirstTime;  // 이 종목에 처음 전략이 통과된 시점
-            public double fFirstPower; // 그때 파워
-
-            public int nLastTime; // 종목이 가장 최근에 통과된 시점
-            public double fLastPower; // 그때 파워
-
-
-            public void Approach(int nTime, double fPower)
-            {
-                if (nFirstTime == 0)
-                {
-                    nFirstTime = nTime;
-                    fFirstPower = fPower;
-                }
-                nLastTime = nTime;
-                fLastPower = fPower;
-            }
-
-            public List<ReservedPoint> listReservation;
-            public void Init()
-            {
-                listReservation = new List<ReservedPoint>();
-            }
-        }
-
-        // 하나의 예약 블럭
-        public class ReservedPoint
-        {
-            // condition values.
-            public bool isReserveEnd;  // 예약 종료인지 아닌지
-
-
-            public double fReservePower; // 생성시점 파워
-            public int nReserveTime; // 생성시점 시간
-            public int nReservePrice; // 생성시점 가격
-
-            public double fMaxPower; // 최대 가격
-            public double fMinusPower; // 마이너스 파워
-            public int nTargetLimitTime; // 예약매수 제한시간
-        }
 
 
         // ============================================

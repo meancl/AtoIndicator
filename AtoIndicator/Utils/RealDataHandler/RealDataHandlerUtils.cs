@@ -31,7 +31,7 @@ namespace AtoIndicator
 
             newF.fr.nRqTime = nSharedTime;
             newF.fr.nOverPrice = newF.fr.nFb;
-            
+
             if (newF.fr.nOverPrice == 0) // 값이 없다면..?
                 newF.fr.nOverPrice = ea[nEaIdx].nCurHogaPrice;
 
@@ -82,6 +82,7 @@ namespace AtoIndicator
                     newF.fr.nBuyStrategyIdx = strategyNameDict[(PAPER_BUY_SIGNAL, strategyName.arrPaperBuyStrategyName[nBuyStrategyNum])]; // key
                     newF.fr.nBuyStrategyGroupNum = PAPER_SELL_SIGNAL; // key
                     newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].paperBuyStrategy.arrStrategy[nBuyStrategyNum]; // key
+                    nRequestSignal = EVERY_SIGNAL;
                     break;
                 case EVERY_SIGNAL:
                     newF.fr.nBuyStrategyIdx = nBuyStrategyNum; // key
@@ -95,26 +96,25 @@ namespace AtoIndicator
 
             ea[nEaIdx].fakeStrategyMgr.fd.Add(newF);
 
-            if (nFakeNum != PAPER_SELL_SIGNAL)
-            {
+
 #if AI
-                // AI 서비스 요청
-                double[] features102 = GetParameters(nCurIdx: nEaIdx, 102, nTradeMethod: nRequestSignal, nRealStrategyNum: newF.fr.nBuyStrategyIdx);
+            // AI 서비스 요청
+            double[] features102 = GetParameters(nCurIdx: nEaIdx, 102, nTradeMethod: nRequestSignal, nRealStrategyNum: newF.fr.nBuyStrategyIdx);
 
-                var nMMFNum = mmf.RequestAIService(sCode: ea[nEaIdx].sCode, nRqTime: nSharedTime, nRqType: nRequestSignal, inputData: features102);
-                if (nMMFNum == -1)
-                {
-                    PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
-                    return;
-                }
-                aiSlot.nEaIdx = nEaIdx;
-                aiSlot.nRequestId = nRequestSignal;
-                aiSlot.nMMFNumber = nMMFNum;
+            var nMMFNum = mmf.RequestAIService(sCode: ea[nEaIdx].sCode, nRqTime: nSharedTime, nRqType: nRequestSignal, inputData: features102);
+            if (nMMFNum == -1)
+            {
+                PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
+                return;
+            }
+            aiSlot.nEaIdx = nEaIdx;
+            aiSlot.nRequestId = nRequestSignal;
+            aiSlot.nMMFNumber = nMMFNum;
 
-                aiQueue.Enqueue(aiSlot);
+            aiQueue.Enqueue(aiSlot);
 
 #endif
-            }
+
         }
 
         #region SetThisFake
@@ -339,9 +339,9 @@ namespace AtoIndicator
 
                 } // END---- 상승라인
 
-              
+
             }
-            else if(frame.paperTradeSlot[i].methodCategory == TradeMethodCategory.BottomUpMethod)
+            else if (frame.paperTradeSlot[i].methodCategory == TradeMethodCategory.BottomUpMethod)
             {
                 {
 
@@ -420,7 +420,7 @@ namespace AtoIndicator
             {
                 UpFakeCount(nCurIdx, PAPER_SELL_SIGNAL, i);
                 frame.paperTradeSlot[i].isSelling = true;
-                frame.paperTradeSlot[i].nSellHogaVolume = frame.paperTradeSlot[i].nBuyHogaVolume / 10;
+                frame.paperTradeSlot[i].nBuyHogaVolume = ea[nCurIdx].nTotalBuyHogaVolume / 10;
                 frame.paperTradeSlot[i].nSellRqVolume = frame.paperTradeSlot[i].nBuyedVolume;
                 frame.paperTradeSlot[i].nSellRqTime = nSharedTime;
                 frame.paperTradeSlot[i].nSellRqCount = ea[nCurIdx].nChegyulCnt;

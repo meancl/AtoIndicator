@@ -126,8 +126,7 @@ namespace AtoIndicator.View.EachStockHistory
 
             showVarToolStripMenuItem.Click += ToolTipItemClickHandler;
             showLogToolStripMenuItem.Click += ToolTipItemClickHandler;
-            buyedBlockToolStripMenuItem.Click += ToolTipItemClickHandler;
-
+           
             historyChart.MouseMove += ChartMouseMoveHandler; // this.MouseMove로 바꾸면 chart cursor이런거 동작 안한다.
             historyChart.MouseClick += ChartMouseClickHandler; // 이하동문
             this.KeyPreview = true;
@@ -862,7 +861,7 @@ namespace AtoIndicator.View.EachStockHistory
                             arrowPaperSell.AnchorOffsetY = -1.5;
 
                            
-                            arrowPaperSell.ToolTip = $"*모의매도 총 갯수 : {realDictionary[nPaperSellAnnotationIdx].nCount + 1}개\n" +
+                            arrowPaperSell.ToolTip = $"*모의매도 총 갯수 : {realDictionary[nPaperSellAnnotationIdx].nCount}개\n" +
                                $"=====================================================\n" + realDictionary[nPaperSellAnnotationIdx].sTooltipMessage;
                            
                             if (realDictionary[nPaperSellAnnotationIdx].nCount == 1)

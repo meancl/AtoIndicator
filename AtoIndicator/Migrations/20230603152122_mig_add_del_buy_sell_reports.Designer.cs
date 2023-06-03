@@ -3,14 +3,16 @@ using System;
 using AtoIndicator.DB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AtoIndicator.Migrations
 {
     [DbContext(typeof(myDbContext))]
-    partial class myDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230603152122_mig_add_del_buy_sell_reports")]
+    partial class mig_add_del_buy_sell_reports
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

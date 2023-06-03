@@ -101,3 +101,51 @@
    위치: AtoTrader.MainForm..ctor() 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\View\MainForm.cs:줄 59
    위치: AtoTrader.Program.Main() 파일 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\Program.cs:줄 62
 
+2023-06-04 오전 12:18:04 ## Msg : An exception has been raised that is likely due to a transient failure. Consider enabling transient error resiliency by adding 'EnableRetryOnFailure()' to the 'UseMySql' call.
+======================================================
+   위치: Pomelo.EntityFrameworkCore.MySql.Storage.Internal.MySqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   위치: Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, TState state, Func`2 operation, Func`2 verifySucceeded)
+   위치: Pomelo.EntityFrameworkCore.MySql.Storage.Internal.MySqlDatabaseCreator.Exists(Boolean retryOnNotExists)
+   위치: Pomelo.EntityFrameworkCore.MySql.Storage.Internal.MySqlDatabaseCreator.Exists()
+   위치: Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureCreated()
+   위치: Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade.EnsureCreated()
+   위치: AtoIndicator.MainForm.InitAto() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\InitFunction.cs:줄 64
+   위치: AtoIndicator.MainForm..ctor() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\MainForm.cs:줄 59
+   위치: AtoIndicator.Program.Main() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\Program.cs:줄 69
+
+2023-06-04 오전 12:19:09 ## Msg : An exception has been raised that is likely due to a transient failure. Consider enabling transient error resiliency by adding 'EnableRetryOnFailure()' to the 'UseMySql' call.
+======================================================
+   위치: Pomelo.EntityFrameworkCore.MySql.Storage.Internal.MySqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   위치: Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, TState state, Func`2 operation, Func`2 verifySucceeded)
+   위치: Pomelo.EntityFrameworkCore.MySql.Storage.Internal.MySqlDatabaseCreator.Exists(Boolean retryOnNotExists)
+   위치: Pomelo.EntityFrameworkCore.MySql.Storage.Internal.MySqlDatabaseCreator.Exists()
+   위치: Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureCreated()
+   위치: Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade.EnsureCreated()
+   위치: AtoIndicator.MainForm.InitAto() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\InitFunction.cs:줄 64
+   위치: AtoIndicator.MainForm..ctor() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\MainForm.cs:줄 59
+   위치: AtoIndicator.Program.Main() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\Program.cs:줄 69
+
+2023-06-04 오전 12:19:41 ## Msg : An exception has been raised that is likely due to a transient failure. Consider enabling transient error resiliency by adding 'EnableRetryOnFailure()' to the 'UseMySql' call.
+======================================================
+   위치: Pomelo.EntityFrameworkCore.MySql.Storage.Internal.MySqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   위치: Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, TState state, Func`2 operation, Func`2 verifySucceeded)
+   위치: Pomelo.EntityFrameworkCore.MySql.Storage.Internal.MySqlDatabaseCreator.Exists(Boolean retryOnNotExists)
+   위치: Pomelo.EntityFrameworkCore.MySql.Storage.Internal.MySqlDatabaseCreator.Exists()
+   위치: Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureCreated()
+   위치: Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade.EnsureCreated()
+   위치: AtoIndicator.MainForm.InitAto() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\InitFunction.cs:줄 64
+   위치: AtoIndicator.MainForm..ctor() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\MainForm.cs:줄 59
+   위치: AtoIndicator.Program.Main() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\Program.cs:줄 69
+
+2023-06-04 오전 12:20:23 ## Msg : An exception has been raised that is likely due to a transient failure. Consider enabling transient error resiliency by adding 'EnableRetryOnFailure()' to the 'UseMySql' call.
+======================================================
+   위치: Pomelo.EntityFrameworkCore.MySql.Storage.Internal.MySqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   위치: Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, TState state, Func`2 operation, Func`2 verifySucceeded)
+   위치: Pomelo.EntityFrameworkCore.MySql.Storage.Internal.MySqlDatabaseCreator.Exists(Boolean retryOnNotExists)
+   위치: Pomelo.EntityFrameworkCore.MySql.Storage.Internal.MySqlDatabaseCreator.Exists()
+   위치: Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureCreated()
+   위치: Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade.EnsureCreated()
+   위치: AtoIndicator.MainForm.InitAto() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\InitFunction.cs:줄 64
+   위치: AtoIndicator.MainForm..ctor() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\MainForm.cs:줄 59
+   위치: AtoIndicator.Program.Main() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\Program.cs:줄 69
+
