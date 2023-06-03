@@ -1056,33 +1056,33 @@ namespace AtoIndicator.View.EachStockHistory
         }
 
 
-        public void ShowRealBuy()
+        public void ShowPaperBuy()
         {
             curEa = mainForm.ea[nCurIdx];
-            string sTitle = "[실매수 전략] " + mainForm.nSharedTime + " " + curEa.sCode + " " + curEa.sCodeName + " " + curEa.sMarketGubunTag;
-            string sMessage = $"실매수 전략 횟수 : {curEa.myTradeManager.nIdx}번{NEW_LINE}" +
-                $"실매수 전략 마지막 접근시각 : {curEa.realBuyStrategy.nLastTouchTime}{NEW_LINE}" +
-                $"실매수 전략 최고 어깨점 : {curEa.realBuyStrategy.nMaxShoulderPrice}(원){NEW_LINE}" +
-                $"실매수 전략 단순평균 어깨점 : {Math.Round(curEa.realBuyStrategy.fEverageShoulderPrice, 2)}(원){NEW_LINE}" +
-                $"실매수 전략 어깨 상승횟수 : {curEa.realBuyStrategy.nUpperCount}번{NEW_LINE}" +
-                $"실매수 전략 분포횟수 : {curEa.realBuyStrategy.nMinuteLocationCount}번{NEW_LINE}" +
+            string sTitle = "[모의매수 전략] " + mainForm.nSharedTime + " " + curEa.sCode + " " + curEa.sCodeName + " " + curEa.sMarketGubunTag;
+            string sMessage = $"모의매수 전략 횟수 : {curEa.myTradeManager.nIdx}번{NEW_LINE}" +
+                $"모의매수 전략 마지막 접근시각 : {curEa.paperBuyStrategy.nLastTouchTime}{NEW_LINE}" +
+                $"모의매수 전략 최고 어깨점 : {curEa.paperBuyStrategy.nMaxShoulderPrice}(원){NEW_LINE}" +
+                $"모의매수 전략 단순평균 어깨점 : {Math.Round(curEa.paperBuyStrategy.fEverageShoulderPrice, 2)}(원){NEW_LINE}" +
+                $"모의매수 전략 어깨 상승횟수 : {curEa.paperBuyStrategy.nUpperCount}번{NEW_LINE}" +
+                $"모의매수 전략 분포횟수 : {curEa.paperBuyStrategy.nMinuteLocationCount}번{NEW_LINE}" +
                 $"공유 전략 분포횟수 : {curEa.fakeStrategyMgr.nSharedMinuteLocationCount}번{NEW_LINE}" +
                 $"--------------------------------------------------{NEW_LINE}{NEW_LINE}";
 
-            for (int i = 0; i < strategyNames.arrRealBuyStrategyName.Count; i++)
+            for (int i = 0; i < strategyNames.arrPaperBuyStrategyName.Count; i++)
             {
-                sMessage += $"==================== {i}번째 실매수 전략 ===================={NEW_LINE}" +
-                    $"##전략명 : {strategyNames.arrRealBuyStrategyName[i]}  !!!!!!!!!!!!{NEW_LINE}";
+                sMessage += $"==================== {i}번째 모의매수 전략 ===================={NEW_LINE}" +
+                    $"##전략명 : {strategyNames.arrPaperBuyStrategyName[i]}  !!!!!!!!!!!!{NEW_LINE}";
 
-                if (curEa.realBuyStrategy.arrStrategy[i] == 0)
+                if (curEa.paperBuyStrategy.arrStrategy[i] == 0)
                 {
                     sMessage += $"--> 해당전략은 활성화되지 않았습니다.{NEW_LINE}";
                 }
                 else
                 {
                     sMessage +=
-                        $"--> 마지막 접근시각 : {curEa.realBuyStrategy.arrLastTouch[i]}{NEW_LINE}" +
-                        $"--> 접근 횟수 : {curEa.realBuyStrategy.arrStrategy[i]}번{NEW_LINE}";
+                        $"--> 마지막 접근시각 : {curEa.paperBuyStrategy.arrLastTouch[i]}{NEW_LINE}" +
+                        $"--> 접근 횟수 : {curEa.paperBuyStrategy.arrStrategy[i]}번{NEW_LINE}";
                 }
 
                 sMessage += $"{NEW_LINE}";
@@ -2194,7 +2194,7 @@ namespace AtoIndicator.View.EachStockHistory
             {
                 if (isSpacePushed) // 스페이도 눌린상태라면 
                 {
-                    ShowRealBuy(); // 전략현황을 출력해주고
+                    ShowPaperBuy(); // 전략현황을 출력해주고
                     isSpacePushed = false;
                 }
                 else // 아니라면

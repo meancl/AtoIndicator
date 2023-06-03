@@ -1339,8 +1339,8 @@ namespace AtoIndicator.View
                             nPass += ((isRBA1 ? int.Parse(sRBA1) <= mainForm.ea[i].myTradeManager.nIdx : true) &&
                               (isRBA2 ? mainForm.ea[i].myTradeManager.nIdx <= int.Parse(sRBA2) : true)) ? 1 : 0;
                         if (isRBD1 || isRBD2)
-                            nPass += ((isRBD1 ? int.Parse(sRBD1) <= mainForm.ea[i].realBuyStrategy.nMinuteLocationCount : true) &&
-                              (isRBD2 ? mainForm.ea[i].realBuyStrategy.nMinuteLocationCount <= int.Parse(sRBD2) : true)) ? 1 : 0;
+                            nPass += ((isRBD1 ? int.Parse(sRBD1) <= mainForm.ea[i].paperBuyStrategy.nMinuteLocationCount : true) &&
+                              (isRBD2 ? mainForm.ea[i].paperBuyStrategy.nMinuteLocationCount <= int.Parse(sRBD2) : true)) ? 1 : 0;
                         if (isFBA1 || isFBA2)
                             nPass += ((isFBA1 ? int.Parse(sFBA1) <= mainForm.ea[i].fakeBuyStrategy.nStrategyNum : true) &&
                               (isFBA2 ? mainForm.ea[i].fakeBuyStrategy.nStrategyNum <= int.Parse(sFBA2) : true)) ? 1 : 0;
@@ -1450,7 +1450,7 @@ namespace AtoIndicator.View
                                 Math.Round(mainForm.ea[i].tradeStatus.fCur , 2).ToString(),
                                 Math.Round(mainForm.ea[i].pureTradeStatus.fCur , 2).ToString(),
 
-                                mainForm.ea[i].realBuyStrategy.nTrialNum.ToString(),
+                                mainForm.ea[i].paperBuyStrategy.nStrategyNum.ToString(),
                                 mainForm.ea[i].fakeBuyStrategy.nStrategyNum.ToString(),
 
                                 mainForm.ea[i].fakeStrategyMgr.nEveryAICount.ToString(),

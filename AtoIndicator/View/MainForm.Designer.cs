@@ -45,7 +45,6 @@
             this.axKHOpenAPI1 = new AxKHOpenAPILib.AxKHOpenAPI();
             this.label3 = new System.Windows.Forms.Label();
             this.sCodeToBuyTextBox = new System.Windows.Forms.TextBox();
-            this.buyButton = new System.Windows.Forms.Button();
             this.totalClockLabel = new System.Windows.Forms.Label();
             this.checkChartButton = new System.Windows.Forms.Button();
             this.manualGroupBox = new System.Windows.Forms.GroupBox();
@@ -231,16 +230,6 @@
             this.sCodeToBuyTextBox.Size = new System.Drawing.Size(114, 25);
             this.sCodeToBuyTextBox.TabIndex = 18;
             // 
-            // buyButton
-            // 
-            this.buyButton.Location = new System.Drawing.Point(218, 78);
-            this.buyButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.buyButton.Name = "buyButton";
-            this.buyButton.Size = new System.Drawing.Size(122, 42);
-            this.buyButton.TabIndex = 15;
-            this.buyButton.Text = "주문신청";
-            this.buyButton.UseVisualStyleBackColor = true;
-            // 
             // totalClockLabel
             // 
             this.totalClockLabel.AutoSize = true;
@@ -252,7 +241,7 @@
             // 
             // checkChartButton
             // 
-            this.checkChartButton.Location = new System.Drawing.Point(22, 78);
+            this.checkChartButton.Location = new System.Drawing.Point(194, 79);
             this.checkChartButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.checkChartButton.Name = "checkChartButton";
             this.checkChartButton.Size = new System.Drawing.Size(122, 42);
@@ -265,7 +254,6 @@
             this.manualGroupBox.Controls.Add(this.label3);
             this.manualGroupBox.Controls.Add(this.checkChartButton);
             this.manualGroupBox.Controls.Add(this.sCodeToBuyTextBox);
-            this.manualGroupBox.Controls.Add(this.buyButton);
             this.manualGroupBox.Location = new System.Drawing.Point(14, 508);
             this.manualGroupBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.manualGroupBox.Name = "manualGroupBox";
@@ -456,7 +444,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox sCodeToBuyTextBox;
-        private System.Windows.Forms.Button buyButton;
         private System.Windows.Forms.Label totalClockLabel;
         private System.Windows.Forms.Button checkChartButton;
         private System.Windows.Forms.GroupBox manualGroupBox;

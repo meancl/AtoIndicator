@@ -281,7 +281,7 @@ namespace AtoIndicator
         }
 
 
-
+        
         // 매도 1차 신청 메서드
         #region RequestSellAI
         private void RequestThisSell(int nEaIdx, int checkSellIterIdx, bool isAIUse)
@@ -323,69 +323,7 @@ namespace AtoIndicator
         #endregion
 
 
-        // 매수 1차 신청 메서드z
-        #region RequestThisRealBuy
-        private void RequestThisRealBuy(int nCurIdx, int nRealStrategyNum, double fBuyRatio = NORMAL_TRADE_RATIO, int nExtraChance = 0, TradeMethodCategory eTradeMethod = TradeMethodCategory.RisingMethod, double fCeil = 0, double fFloor = 0, bool isAIUse = true)
-        {
-            try
-            {
-                #region 실매수요청 접근시점 기록 및 처리
-                if (nRealStrategyNum > 0)
-                {
-                    if (ea[nCurIdx].realBuyStrategy.arrRequest[nRealStrategyNum] > (2 + nExtraChance))// 한 전략당 3번제한(nExtraChance 미포함)
-                        return;
-
-                    bool isFakeSet = SetThisFake(ea[nCurIdx].realBuyStrategy, nCurIdx, nRealStrategyNum);
-
-
-                    // 실매수 접근 true(실매수에 다시 쓰임)
-                    ea[nCurIdx].realBuyStrategy.isOrderCheck = true;
-
-
-
-                    if (ea[nCurIdx].myTradeManager.nIdx >= REAL_BUY_MAX_NUM || ea[nCurIdx].fPower > 0.22)
-                        return;
-
-                    ea[nCurIdx].realBuyStrategy.arrRequest[nRealStrategyNum]++; // 필터링 후
-                }
-                #endregion
-
-
-
-                curSlot = SetAndServeCurSlot(strategyName.arrRealBuyStrategyName[nRealStrategyNum], NEW_BUY, ea[nCurIdx].sCode, 0, "", nCurIdx, ea[nCurIdx].realBuyStrategy.arrStrategy[nRealStrategyNum],
-                         ea[nCurIdx].nFb + GetIntegratedMarketGap(ea[nCurIdx].nFb), // 호가 스프레드를 줄이기 위한 방법 : 호가스프레드가 벌어졌을떄 nFb 기준으로 가격을 산정
-                         fBuyRatio, MARKET_ORDER, eTradeMethod, nRealStrategyNum, 0, strategyName.arrRealBuyStrategyName[nRealStrategyNum], fCeil: fCeil, fFloor: fFloor, isAIUse: false);
-
-#if AI
-                if (isAIUse)
-                {
-                    double[] features102 = GetParameters(nCurIdx: nCurIdx, 102, nTradeMethod: REAL_BUY_SIGNAL, nRealStrategyNum: nRealStrategyNum);
-
-                    var nMMFNum = mmf.RequestAIService(sCode: ea[nCurIdx].sCode, nRqTime: nSharedTime, nRqType: REAL_BUY_SIGNAL, inputData: features102);
-                    if (nMMFNum == -1)
-                    {
-                        PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
-                        return;
-                    }
-                    aiSlot.nEaIdx = nCurIdx;
-                    aiSlot.slot = curSlot;
-                    aiSlot.nRequestId = REAL_BUY_SIGNAL;
-                    aiSlot.nMMFNumber = nMMFNum;
-                    aiQueue.Enqueue(aiSlot);
-                }
-#endif
-
-
-                ea[nCurIdx].realBuyStrategy.nTrialNum++;
-
-                PrintLog($"시간 : {nSharedTime}, 종목코드 : {ea[nCurIdx].sCode} 종목명 : {ea[nCurIdx].sCodeName}, 현재가 : {ea[nCurIdx].nFs} 전략 : {nRealStrategyNum} {strategyName.arrRealBuyStrategyName[nRealStrategyNum]} 매수신청", nCurIdx);
-            }
-            catch (Exception ex)
-            {
-                PrintLog($"매수 체크 중 오류 발생 {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName} {nRealStrategyNum}", nCurIdx);
-            }
-        }
-        #endregion
+       
 
         // 머신러닝에 사용할 변수를 
         #region GetParameters
@@ -404,7 +342,7 @@ namespace AtoIndicator
                                 ea[nCurIdx].fPowerJar,
                                 ea[nCurIdx].fOnlyDownPowerJar,
                                 ea[nCurIdx].fOnlyUpPowerJar,
-                                ea[nCurIdx].realBuyStrategy.nStrategyNum,
+                                ea[nCurIdx].paperBuyStrategy.nStrategyNum,
                                 ea[nCurIdx].nChegyulCnt,
                                 ea[nCurIdx].nHogaCnt,
                                 ea[nCurIdx].nNoMoveCount,

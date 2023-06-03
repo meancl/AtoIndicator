@@ -20,9 +20,12 @@ namespace AtoIndicator
         {
             if (nFakeNum != EVERY_SIGNAL)
             {
-                if (nFakeNum != REAL_BUY_SIGNAL)
-                    ea[nEaIdx].fakeStrategyMgr.nTotalFakeCount++; // 실매수 미포함
-                ea[nEaIdx].fakeStrategyMgr.nTotalArrowCount++; // 실매수 포함 
+                if (nFakeNum != PAPER_SELL_SIGNAL)
+                {
+                    if (nFakeNum != PAPER_BUY_SIGNAL)
+                        ea[nEaIdx].fakeStrategyMgr.nTotalFakeCount++; // 실매수 미포함
+                    ea[nEaIdx].fakeStrategyMgr.nTotalArrowCount++; // 실매수 포함 
+                }
             }
 
             FakeDBRecordInfo newF = new FakeDBRecordInfo();
@@ -33,8 +36,12 @@ namespace AtoIndicator
             if (newF.fr.nOverPrice == 0) // 값이 없다면..?
                 newF.fr.nOverPrice = ea[nEaIdx].nCurHogaPrice;
 
-            for (int i = 0; i < EYES_CLOSE_NUM; i++)
-                newF.fr.nOverPrice += GetIntegratedMarketGap(newF.fr.nOverPrice);
+
+            if (nFakeNum != PAPER_SELL_SIGNAL)
+            {
+                for (int i = 0; i < EYES_CLOSE_NUM; i++)
+                    newF.fr.nOverPrice += GetIntegratedMarketGap(newF.fr.nOverPrice);
+            }
             newF.nTimeLineIdx = nTimeLineIdx;
 
             int nRequestSignal = FAKE_REQUEST_SIGNAL; // default로 FAKE_REQUEST_SIGNAL
@@ -67,10 +74,15 @@ namespace AtoIndicator
                     newF.fr.nBuyStrategyGroupNum = FAKE_DOWN_SIGNAL; // key
                     newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeDownStrategy.arrStrategy[nBuyStrategyNum]; // key
                     break;
-                case REAL_BUY_SIGNAL:
-                    newF.fr.nBuyStrategyIdx = strategyNameDict[(REAL_BUY_SIGNAL, strategyName.arrRealBuyStrategyName[nBuyStrategyNum])]; // key
-                    newF.fr.nBuyStrategyGroupNum = REAL_BUY_SIGNAL; // key
-                    newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].realBuyStrategy.arrStrategy[nBuyStrategyNum]; // key
+                case PAPER_BUY_SIGNAL:
+                    newF.fr.nBuyStrategyIdx = strategyNameDict[(PAPER_BUY_SIGNAL, strategyName.arrPaperBuyStrategyName[nBuyStrategyNum])]; // key
+                    newF.fr.nBuyStrategyGroupNum = PAPER_BUY_SIGNAL; // key
+                    newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].paperBuyStrategy.arrStrategy[nBuyStrategyNum]; // key
+                    break;
+                case PAPER_SELL_SIGNAL:
+                    newF.fr.nBuyStrategyIdx = strategyNameDict[(PAPER_SELL_SIGNAL, strategyName.arrPaperSellStrategyName[nBuyStrategyNum])]; // key
+                    newF.fr.nBuyStrategyGroupNum = PAPER_SELL_SIGNAL; // key
+                    newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].paperSellStrategy.arrStrategy[nBuyStrategyNum]; // key
                     break;
                 case EVERY_SIGNAL:
                     newF.fr.nBuyStrategyIdx = nBuyStrategyNum; // key
@@ -84,31 +96,46 @@ namespace AtoIndicator
 
             ea[nEaIdx].fakeStrategyMgr.fd.Add(newF);
 
-#if AI
-            // AI 서비스 요청
-            double[] features102 = GetParameters(nCurIdx: nEaIdx, 102, nTradeMethod: nRequestSignal, nRealStrategyNum: newF.fr.nBuyStrategyIdx);
-
-            var nMMFNum = mmf.RequestAIService(sCode: ea[nEaIdx].sCode, nRqTime: nSharedTime, nRqType: nRequestSignal, inputData: features102);
-            if (nMMFNum == -1)
+            if (nFakeNum != PAPER_SELL_SIGNAL)
             {
-                PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
-                return;
-            }
-            aiSlot.nEaIdx = nEaIdx;
-            aiSlot.nRequestId = nRequestSignal;
-            aiSlot.nMMFNumber = nMMFNum;
-            aiQueue.Enqueue(aiSlot);
+#if AI
+                // AI 서비스 요청
+                double[] features102 = GetParameters(nCurIdx: nEaIdx, 102, nTradeMethod: nRequestSignal, nRealStrategyNum: newF.fr.nBuyStrategyIdx);
+
+                var nMMFNum = mmf.RequestAIService(sCode: ea[nEaIdx].sCode, nRqTime: nSharedTime, nRqType: nRequestSignal, inputData: features102);
+                if (nMMFNum == -1)
+                {
+                    PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
+                    return;
+                }
+                aiSlot.nEaIdx = nEaIdx;
+                aiSlot.nRequestId = nRequestSignal;
+                aiSlot.nMMFNumber = nMMFNum;
+
+                aiQueue.Enqueue(aiSlot);
+
 #endif
+            }
         }
 
         #region SetThisFake
         bool SetThisFake(FakeFrame frame, int nEaIdx, int nFakeBuyStrategyNum)
         {
-            if (frame.nFakeType != REAL_BUY_SIGNAL) // 페이크의 경우
+            if (frame.nFakeType != PAPER_BUY_SIGNAL && frame.nFakeType != PAPER_SELL_SIGNAL)
             {
                 if (frame.nStrategyNum >= FAKE_BUY_MAX_NUM || frame.arrStrategy[nFakeBuyStrategyNum] > 5) // 한 전략당 6번제한
                     return false;
+
+                
             }
+
+            #region 공용 파트
+            if (frame.nFakeType != PAPER_SELL_SIGNAL && ea[nEaIdx].fakeStrategyMgr.nSharedPrevMinuteIdx != nTimeLineIdx)
+            {
+                ea[nEaIdx].fakeStrategyMgr.nSharedPrevMinuteIdx = nTimeLineIdx;
+                ea[nEaIdx].fakeStrategyMgr.nSharedMinuteLocationCount++;
+            }
+
 
             if (frame.nPrevMinuteIdx != nTimeLineIdx)
             {
@@ -130,11 +157,6 @@ namespace AtoIndicator
             }
 
 
-            if (ea[nEaIdx].fakeStrategyMgr.nSharedPrevMinuteIdx != nTimeLineIdx)
-            {
-                ea[nEaIdx].fakeStrategyMgr.nSharedPrevMinuteIdx = nTimeLineIdx;
-                ea[nEaIdx].fakeStrategyMgr.nSharedMinuteLocationCount++;
-            }
 
             if (frame.nLastTouchTime != 0 && SubTimeToTimeAndSec(nSharedTime, frame.nLastTouchTime) >= 2400) // 40분 이상 매수가 안됐었으면
             {
@@ -166,19 +188,70 @@ namespace AtoIndicator
                 }
                 frame.nUpperCount++;
             }
+            #endregion
 
 
-            if (frame.nFakeType != REAL_BUY_SIGNAL) // 페이크의 경우
+            if (frame.nFakeType != PAPER_BUY_SIGNAL && frame.nFakeType != PAPER_SELL_SIGNAL)
             {
                 UpdateFakeHistory(nEaIdx);
                 AddFakeHistory(frame.nFakeType, nEaIdx, nFakeBuyStrategyNum);
                 CalcFakeHistory(nEaIdx);
+
+                UpFakeCount(nEaIdx, frame.nFakeType, nFakeBuyStrategyNum);
             }
 
-            UpFakeCount(nEaIdx, frame.nFakeType, nFakeBuyStrategyNum);
             return true;
         }
 
+        #endregion
+
+        #region SetThisPaperBuy
+        private void SetThisPaperBuy(PaperBuyStrategy frame, int nEaIdx, int nPaperBuyStrategyNum)
+        {
+            try
+            {
+                #region 실매수요청 접근시점 기록 및 처리
+
+                if (ea[nEaIdx].myTradeManager.nIdx >= PAPER_BUY_MAX_NUM || frame.arrStrategy[nPaperBuyStrategyNum] > 2 || ea[nEaIdx].fPower > 0.27) // 한 전략당 3번제한(nExtraChance 미포함)
+                    return;
+
+
+                frame.arrRqPrice[frame.nStrategyNum] = ea[nEaIdx].nFs;
+                frame.arrRqTime[frame.nStrategyNum] = nSharedTime;
+
+                bool isFakeSet = SetThisFake(ea[nEaIdx].paperBuyStrategy, nEaIdx, nPaperBuyStrategyNum);
+
+                frame.isOrderCheck = true;
+                #endregion
+
+                
+
+
+
+#if AI
+
+                double[] features102 = GetParameters(nCurIdx: nEaIdx, 102, nTradeMethod: PAPER_BUY_SIGNAL, nRealStrategyNum: nPaperBuyStrategyNum);
+
+                var nMMFNum = mmf.RequestAIService(sCode: ea[nEaIdx].sCode, nRqTime: nSharedTime, nRqType: PAPER_BUY_SIGNAL, inputData: features102);
+                if (nMMFNum == -1)
+                {
+                    PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
+                    return;
+                }
+                aiSlot.nEaIdx = nEaIdx;
+                aiSlot.nRequestId = PAPER_BUY_SIGNAL;
+                aiSlot.nMMFNumber = nMMFNum;
+
+                aiQueue.Enqueue(aiSlot);
+
+#endif
+                PrintLog($"[모의매수] 시간 : {nSharedTime}, 종목코드 : {ea[nEaIdx].sCode} 종목명 : {ea[nEaIdx].sCodeName}, 현재가 : {ea[nEaIdx].nFs} 전략 : {nPaperBuyStrategyNum} {strategyName.arrPaperBuyStrategyName[nPaperBuyStrategyNum]} 매수신청");
+            }
+            catch (Exception ex)
+            {
+                PrintLog($"[모의매수] 체크 중 오류 발생 {ea[nEaIdx].sCode} {ea[nEaIdx].sCodeName} {nPaperBuyStrategyNum}");
+            }
+        }
         #endregion
 
 
@@ -295,19 +368,17 @@ namespace AtoIndicator
         #endregion
 
         #region GetAccess
-        public bool GetAccess(FakeFrame frame, int nStrategy, int? nTrial = null, int? nCycle = null, int? nFailApprove = null)
+        public bool GetAccess(FakeFrame frame, int nStrategy, int? nTrial = null, int? nCycle = null)
         {
             bool isRet;
 
             // 사이클이 없다면 기본 도전 1회이다.
             if (nCycle == null)
                 isRet = frame.arrPrevMinuteIdx[nStrategy] < nTimeLineIdx &&
-                    frame.arrStrategy[nStrategy] < ((nTrial != null) ? (int)nTrial : 1) &&
-                    (frame.nFakeType == REAL_BUY_SIGNAL && nFailApprove != null ? ((RealBuyStrategy)frame).arrReqFail[nStrategy] < (int)nFailApprove : true);
+                    frame.arrStrategy[nStrategy] < ((nTrial != null) ? (int)nTrial : 1);
             else
                 isRet = ((nTrial != null) ? frame.arrStrategy[nStrategy] < (int)nTrial : true) &&
-                    (frame.arrPrevMinuteIdx[nStrategy] == 0 || frame.arrPrevMinuteIdx[nStrategy] + (int)nCycle - 1 < nTimeLineIdx) &&
-                    (frame.nFakeType == REAL_BUY_SIGNAL && nFailApprove != null ? ((RealBuyStrategy)frame).arrReqFail[nStrategy] < (int)nFailApprove : true);
+                    (frame.arrPrevMinuteIdx[nStrategy] == 0 || frame.arrPrevMinuteIdx[nStrategy] + (int)nCycle - 1 < nTimeLineIdx);
 
             return isRet;
         }
@@ -323,96 +394,7 @@ namespace AtoIndicator
         }
         #endregion
 
-        #region SELL ALL
-        public void SellALL(string sSellName = "일괄전부매도")
-        {
-            bool isAllSell = false;
-            PrintLog("일괄매도를 시작합니다.");
-            isBuyDeny = true;
-            for (int id = 0; id < nStockLength; id++)
-            {
-                ea[id].isExcluded = true;
-                for (int buyId = 0; buyId < ea[id].myTradeManager.nIdx; buyId++)
-                {
-                    if (ea[id].myTradeManager.arrBuyedSlots[buyId].isAllBuyed)
-                    {
-                        if (!ea[id].myTradeManager.arrBuyedSlots[buyId].isAllSelled && ea[id].myTradeManager.arrBuyedSlots[buyId].nCurVolume > 0 && !ea[id].myTradeManager.arrBuyedSlots[buyId].isSelling) // 처분이 안됐으면(근처에서 오류가 나서 일단 조건 많이 달아둠)
-                        {
-                            isAllSell = true;
-                            SetAndServeCurSlot(sSellName, NEW_SELL, ea[id].sCode, buyId, "", id, 0, 0, 0, MARKET_ORDER, TradeMethodCategory.None, 0, ea[id].myTradeManager.arrBuyedSlots[buyId].nCurVolume, sSellName);
-                        }
-                    }
-                    else
-                    {
-                        var sRq = "일괄매수취소";
-                        SetAndServeCurSlot(sRq, BUY_CANCEL, ea[id].sCode, buyId, ea[id].myTradeManager.arrBuyedSlots[buyId].sCurOrgOrderId, id, 0, 0, 0, MARKET_ORDER, TradeMethodCategory.None, 0, 0, sRq);
-                    }
-                }
-            }
-            if (!isAllSell)
-                PrintLog("매도물량이 없습니다.");
-        }
-        #endregion
 
-        #region 미처분 매매블록화
-        public bool isUndisposalHandle = true;
-        public void BlockizeUndisposal()
-        {
-            if (isUndisposalHandle)
-            {
-                isUndisposalHandle = false;
-
-                #region 미처분 매매블록화
-                StringBuilder tmpSB = new StringBuilder();
-                for (int nUndisposalIdx = 0; nUndisposalIdx < nHoldingCnt; nUndisposalIdx++)
-                {
-                    // 미처분 가격처리
-
-                    nYesterdayUndisposalBuyPrice += holdingsArray[nUndisposalIdx].nBuyedPrice * holdingsArray[nUndisposalIdx].nHoldingQty;
-
-                    if (holdingsArray[nUndisposalIdx].nNumPossibleToSell != holdingsArray[nUndisposalIdx].nHoldingQty)
-                        tmpSB.Append($"{nUndisposalIdx + 1}번째  {holdingsArray[nUndisposalIdx].sCode}  {holdingsArray[nUndisposalIdx].sCodeName} 매매가능수량 : {holdingsArray[nUndisposalIdx].nNumPossibleToSell}(주)가 보유수량 : {holdingsArray[nUndisposalIdx].nHoldingQty}(주)와 같지 않습니다.{NEW_LINE}");
-
-                    if (holdingsArray[nUndisposalIdx].nNumPossibleToSell > 0)
-                    {
-                        int nCurIdx = eachStockDict[holdingsArray[nUndisposalIdx].sCode.Trim()];
-                        int nSlotIdx = ea[nCurIdx].myTradeManager.nIdx++;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots.Add(new BuyedSlot());
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyedSlotId = nSlotIdx;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyedSumPrice = holdingsArray[nUndisposalIdx].nNumPossibleToSell * holdingsArray[nUndisposalIdx].nBuyedPrice;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].isAllBuyed = true;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBirthPrice = holdingsArray[nUndisposalIdx].nBuyedPrice;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyPrice = holdingsArray[nUndisposalIdx].nBuyedPrice;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurVolume = holdingsArray[nUndisposalIdx].nNumPossibleToSell;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyVolume = holdingsArray[nUndisposalIdx].nNumPossibleToSell;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBirthTime = nFirstTime;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nLastTouchLineTime = nFirstTime;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyMinuteIdx = BRUSH;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyEndTime = nFirstTime;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].sBuyDescription = $"미처분 매매블록{NEW_LINE}";
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].sBuyScrNo = null;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].sSellScrNo = null;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].eTradeMethod = TradeMethodCategory.RisingMethod;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurLineIdx = 0;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].fTargetPer = GetNextCeiling(ref ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurLineIdx);
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].fBottomPer = GetNextFloor(ref ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurLineIdx, ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].eTradeMethod);
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nStrategyIdx = UNDISPOSAL_STRATEGY_IDX;
-                        PrintLog($"미처분 매매블록화 성공  체결가 : {holdingsArray[nUndisposalIdx].nBuyedPrice}  체결량 : {holdingsArray[nUndisposalIdx].nHoldingQty}  매매가능 : { holdingsArray[nUndisposalIdx].nNumPossibleToSell}", nCurIdx, nSlotIdx, false);
-
-
-                        tmpSB.Append($"{nUndisposalIdx + 1}번째 미처분 매매블록 생성 : {nFirstTime}  {holdingsArray[nUndisposalIdx].sCode}  {holdingsArray[nUndisposalIdx].sCodeName}  {holdingsArray[nUndisposalIdx].nNumPossibleToSell} {holdingsArray[nUndisposalIdx].nBuyedPrice}{NEW_LINE}");
-                    }
-
-                }
-                #endregion
-                PrintLog(tmpSB.ToString());
-            }
-            else
-            {
-                PrintLog($"미처분 매매블록화가 이미 완료됐습니다.");
-            }
-        }
-        #endregion
 
         #region ShutOff MMF Slot
         public void TurnOffMMFSlot(int nMMFSlot)

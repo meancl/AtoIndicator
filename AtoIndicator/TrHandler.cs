@@ -349,22 +349,7 @@ namespace AtoIndicator
                                 #region FAILURE
                                 if (axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "주문번호").Trim().Equals("")) // 오류가 발견됐다면
                                 {
-                                    if (sTypeReq.Equals(ORDER_NEW_BUY)) // 신규매수 비정상처리
-                                    {
-                                        if (ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].isBuying)
-                                        {
-                                            PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nErrorOwner].sCode}  종목명 : {ea[nErrorOwner].sCodeName}  매매블럭 : {nErrorBuyedSlot}  화면번호 : {ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].sBuyScrNo}  e화면번호 : {e.sScrNo}  매수가 비정상처리됐습니다.", nErrorOwner, nErrorBuyedSlot);
-                                            ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].isBuying = false;
-                                            ea[nErrorOwner].myTradeManager.nBuyReqCnt--;
-                                            ShutOffScreen(ref ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].sBuyScrNo);
-                                            ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].isBuyBanned = true;
-                                            nCurDepositCalc += ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].nOrderPrice * ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].nOrderVolume + ea[nErrorOwner].feeMgr.GetRoughFee(ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].nOrderPrice * ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].nOrderVolume);
-                                            ea[nErrorOwner].realBuyStrategy.BuyCancelMethod(ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].nStrategyIdx); // 매수 전략인덱스 낮춤.
-                                        }
-                                        else
-                                            PrintLog($"{nSharedTime} 화면번호 : {e.sScrNo} 종목명 : {ea[nErrorOwner].sCodeName} sRq : {e.sRQName} 이미 신규매수 비정상인데 다시 접근 에러");
-                                    }
-                                    else if (sTypeReq.Equals(ORDER_NEW_SELL)) // 신규매도 비정상처리
+                                    if (sTypeReq.Equals(ORDER_NEW_SELL)) // 신규매도 비정상처리
                                     {
                                         if (ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].isSelling)
                                         {
@@ -377,17 +362,6 @@ namespace AtoIndicator
                                         else
                                             PrintLog($"{nSharedTime} 화면번호 : {e.sScrNo} 종목명 : {ea[nErrorOwner].sCodeName} sRq : {e.sRQName} 이미 신규매도 비정상인데 다시 접근 에러");
                                     }
-                                    else if (sTypeReq.Equals(ORDER_BUY_CANCEL)) // 매수취소 비정상처리
-                                    {
-                                        if (ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].isCanceling)
-                                        {
-                                            PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nErrorOwner].sCode}  종목명 : {ea[nErrorOwner].sCodeName}  매매블럭 : {nErrorBuyedSlot}  화면번호 : {ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].sBuyScrNo}  e화면번호 : {e.sScrNo}  매수취소가 비정상처리됐습니다.", nErrorOwner, nErrorBuyedSlot);
-                                            ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].isCanceling = false; // 해당 블록의 매수취소 시그널 취소
-                                            ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].nSystemeticBuyCancelFail++;
-                                        }
-                                        else
-                                            PrintLog($"{nSharedTime} 화면번호 : {e.sScrNo} 종목명 : {ea[nErrorOwner].sCodeName} sRq : {e.sRQName} 이미 매수취소 비정상인데 다시 접근 에러");
-                                    }
                                     else
                                     {
                                         PrintLog($"시간 : {nSharedTime}  종목명 : {ea[nErrorOwner].sCodeName}  화면번호 : {e.sScrNo}  안좋은RQ명 : {e.sRQName} 에러");
@@ -398,17 +372,9 @@ namespace AtoIndicator
                                 #region SUCCESS
                                 else // 매매 정상처리
                                 {
-                                    if (sTypeReq.Equals(ORDER_NEW_BUY)) // 신규매수 정상처리
-                                    {
-                                        PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nErrorOwner].sCode}  종목명 : {ea[nErrorOwner].sCodeName}  매매블럭 : {nErrorBuyedSlot}  화면번호 : {ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].sBuyScrNo}  e화면번호 : {e.sScrNo}  매수요청이 정상처리됐습니다.", nErrorOwner, nErrorBuyedSlot);
-                                    }
-                                    else if (sTypeReq.Equals(ORDER_NEW_SELL)) // 신규매도 정상처리
+                                    if (sTypeReq.Equals(ORDER_NEW_SELL)) // 신규매도 정상처리
                                     {
                                         PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nErrorOwner].sCode}  종목명 : {ea[nErrorOwner].sCodeName}  매매블럭 : {nErrorBuyedSlot}  화면번호 : {ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].sSellScrNo}  e화면번호 : {e.sScrNo}  매도요청이 정상처리됐습니다.", nErrorOwner, nErrorBuyedSlot);
-                                    }
-                                    else if (sTypeReq.Equals(ORDER_BUY_CANCEL)) // 매수취소 정상처리
-                                    {
-                                        PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nErrorOwner].sCode}  종목명 : {ea[nErrorOwner].sCodeName}  매매블럭 : {nErrorBuyedSlot}  화면번호 : {ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].sBuyScrNo}  e화면번호 : {e.sScrNo}  매수취소요청이 정상처리됐습니다.", nErrorOwner, nErrorBuyedSlot);
                                     }
                                     else
                                         PrintLog($"시간 : {nSharedTime}  종목명 : {ea[nErrorOwner].sCodeName}  화면번호 : {e.sScrNo}  정상처리RQ명 : {e.sRQName} 에러");

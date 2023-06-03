@@ -88,7 +88,8 @@ namespace AtoIndicator
             // ----------------------------------
             public int nHoldingsCnt; // 보유종목수
             public double fAccumBuyedRatio; // 최대매수기준 현재 비율(추매 시 1을 넘을 수 있음) // 추가??
-            public RealBuyStrategy realBuyStrategy;
+            public PaperBuyStrategy paperBuyStrategy;
+            public PaperSellStrategy paperSellStrategy;
             public FakeVolatilityStrategy fakeVolatilityStrategy;
             public FakeDownStrategy fakeDownStrategy;
             public FakeBuyStrategy fakeBuyStrategy;
@@ -228,207 +229,6 @@ namespace AtoIndicator
                 myTradeManager = new BuyedManager(); // 개인구조체 매매관리자 초기화
             }
 
-            public BuyReport GetBuyFix()
-            {
-                BuyReport rep = new BuyReport();
-                rep.dTradeTime = DateTime.Today; // key
-                rep.sCode = sCode; // key
-                rep.nLocationOfComp = COMPUTER_LOCATION; // key
-
-                rep.sCodeName = sCodeName;
-
-                // 개인구조체 정보
-
-                rep.nStopHogaCnt = nStopHogaCnt;
-                rep.nStopUpDownCnt = nStopUpDownCnt;
-                rep.nStopFirstPrice = nStopFirstPrice;
-                rep.nStopMaxPrice = nStopMaxPrice;
-                rep.nStopMinPrice = nStopMinPrice;
-                rep.fStopMaxPower = fStopMaxPower;
-                rep.fStopMinPower = fStopMinPower;
-                rep.fStopMaxMinDiff = fStopMaxMinDiff;
-
-
-                rep.fPositiveStickPower = fPositiveStickPower;
-                rep.fNegativeStickPower = fNegativeStickPower;
-                rep.nFirstVolume = nFirstVolume;
-                rep.lFirstPrice = lFirstPrice;
-                rep.nFs = nFs;
-                rep.nFb = nFb;
-                rep.fTs = fTs;
-                rep.fTradeRatioCompared = fTradeRatioCompared;
-                rep.nEveryCount = fakeStrategyMgr.nEveryAICount;
-                rep.nPrevLastFs = timeLines1m.arrTimeLine[timeLines1m.nRealDataIdx].nLastFs;
-                rep.nPrevStartFs = timeLines1m.arrTimeLine[timeLines1m.nRealDataIdx].nStartFs;
-                rep.nPrevMaxFs = timeLines1m.arrTimeLine[timeLines1m.nRealDataIdx].nMaxFs;
-                rep.nPrevMinFs = timeLines1m.arrTimeLine[timeLines1m.nRealDataIdx].nMinFs;
-                rep.nPrevVolume = timeLines1m.arrTimeLine[timeLines1m.nRealDataIdx].nTotalVolume;
-                rep.nCurLastFs = timeLines1m.arrTimeLine[timeLines1m.nPrevTimeLineIdx].nLastFs;
-                rep.nCurStartFs = timeLines1m.arrTimeLine[timeLines1m.nPrevTimeLineIdx].nStartFs;
-                rep.nCurMaxFs = timeLines1m.arrTimeLine[timeLines1m.nPrevTimeLineIdx].nMaxFs;
-                rep.nCurMinFs = timeLines1m.arrTimeLine[timeLines1m.nPrevTimeLineIdx].nMinFs;
-                rep.nCurVolume = timeLines1m.arrTimeLine[timeLines1m.nPrevTimeLineIdx].nTotalVolume;
-                rep.nTodayMaxPrice = nTodayMaxPrice;
-                rep.nTodayMaxTime = nTodayMaxTime;
-                rep.fTodayMaxPower = fTodayMaxPower;
-                rep.nTodayMinPrice = nTodayMinPrice;
-                rep.nTodayMinTime = nTodayMinTime;
-                rep.fTodayMinPower = fTodayMinPower;
-                rep.fStartGap = fStartGap;
-                rep.sType = sMarketGubunTag;
-                rep.fPowerWithOutGap = fPowerWithoutGap;
-                rep.fPower = fPower;
-                rep.fPlusCnt07 = fPlusCnt07;
-                rep.fMinusCnt07 = fMinusCnt07;
-                rep.fPlusCnt09 = fPlusCnt09;
-                rep.fMinusCnt09 = fMinusCnt09;
-                rep.fPowerJar = fPowerJar;
-                rep.fOnlyDownPowerJar = fOnlyDownPowerJar;
-                rep.fOnlyUpPowerJar = fOnlyUpPowerJar;
-                rep.nChegyulCnt = nChegyulCnt;
-                rep.nNoMoveCnt = nNoMoveCount;
-                rep.nFewSpeedCnt = nFewSpeedCount;
-                rep.nMissCnt = nMissCount;
-                rep.lTotalTradePrice = lTotalTradePrice;
-                rep.lTotalBuyPrice = lOnlyBuyPrice;
-                rep.lTotalSellPrice = lOnlySellPrice;
-                rep.nDownCntMa20m = maOverN.nDownCntMa20m;
-                rep.nDownCntMa1h = maOverN.nDownCntMa1h;
-                rep.nDownCntMa2h = maOverN.nDownCntMa2h;
-                rep.nUpCntMa20m = maOverN.nUpCntMa20m;
-                rep.nUpCntMa1h = maOverN.nUpCntMa1h;
-                rep.nUpCntMa2h = maOverN.nUpCntMa2h;
-                rep.fMa20mDiff = (maOverN.fCurDownFs - maOverN.fCurMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fMa1hDiff = (maOverN.fCurDownFs - maOverN.fCurMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fMa2hDiff = (maOverN.fCurDownFs - maOverN.fCurMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fMa20mCurDiff = (nFs - maOverN.fCurMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fMa1hCurDiff = (nFs - maOverN.fCurMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fMa2hCurDiff = (nFs - maOverN.fCurMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fGapMa20mDiff = (maOverN.fCurDownFs - maOverN.fCurGapMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fGapMa1hDiff = (maOverN.fCurDownFs - maOverN.fCurGapMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fGapMa2hDiff = (maOverN.fCurDownFs - maOverN.fCurGapMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fGapMa20mCurDiff = (nFs - maOverN.fCurGapMa20m) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fGapMa1hCurDiff = (nFs - maOverN.fCurGapMa1h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fGapMa2hCurDiff = (nFs - maOverN.fCurGapMa2h) / ((nYesterdayEndPrice > 0) ? nYesterdayEndPrice : 1);
-                rep.fIAngle = timeLines1m.fInitAngle;
-                rep.fMAngle = timeLines1m.fMaxAngle;
-                rep.fTAngle = timeLines1m.fTotalMedianAngle;
-                rep.fHAngle = timeLines1m.fHourMedianAngle;
-                rep.fRAngle = timeLines1m.fRecentMedianAngle;
-                rep.fDAngle = timeLines1m.fDAngle;
-                rep.fISlope = timeLines1m.fInitSlope;
-                rep.fMSlope = timeLines1m.fMaxSlope;
-                rep.fTSlope = timeLines1m.fTotalMedian;
-                rep.fHSlope = timeLines1m.fHourMedian;
-                rep.fRSlope = timeLines1m.fRecentMedian;
-                rep.fDSlope = timeLines1m.fMaxSlope - timeLines1m.fInitSlope;
-                rep.fSpeedCur = speedStatus.fCur;
-                rep.fHogaSpeedCur = hogaSpeedStatus.fCur;
-                rep.fTradeCur = tradeStatus.fCur;
-                rep.fPureTradeCur = pureTradeStatus.fCur;
-                rep.fPureBuyCur = pureBuyStatus.fCur;
-                rep.fPriceMoveCur = priceMoveStatus.fCur;
-                rep.fPriceUpMoveCur = priceUpMoveStatus.fCur;
-                rep.fHogaRatioCur = hogaRatioStatus.fCur;
-                rep.fSharePerHoga = fSharePerHoga;
-                rep.fSharePerTrade = fSharePerTrade;
-                rep.fHogaPerTrade = fHogaPerTrade;
-                rep.fTradePerPure = fTradePerPure;
-
-                // new
-                rep.nHogaCnt = nHogaCnt;
-                rep.lTotalTradeVolume = lTotalTradeVolume;
-                rep.lTotalBuyVolume = lOnlyBuyVolume;
-                rep.lTotalSellVolume = lOnlySellVolume;
-                rep.nAccumUpDownCount = nAccumUpDownCount;
-                rep.fAccumUpPower = fAccumUpPower;
-                rep.fAccumDownPower = fAccumDownPower;
-                rep.lMarketCap = lFixedMarketCap;
-
-                rep.nRankHold10 = rankSystem.nRankHold10;
-                rep.nRankHold20 = rankSystem.nRankHold20;
-                rep.nRankHold50 = rankSystem.nRankHold50;
-                rep.nRankHold100 = rankSystem.nRankHold100;
-                rep.nRankHold200 = rankSystem.nRankHold200;
-                rep.nRankHold500 = rankSystem.nRankHold500;
-                rep.nRankHold1000 = rankSystem.nRankHold1000;
-
-                rep.nSummationRankMove = rankSystem.nSummationMove;
-                rep.nTotalRank = rankSystem.nSummationRanking;
-                rep.nAccumCountRanking = rankSystem.nAccumCountRanking;
-                rep.nMarketCapRanking = rankSystem.nMarketCapRanking;
-                rep.nPowerRanking = rankSystem.nPowerRanking;
-                rep.nTotalBuyPriceRanking = rankSystem.nTotalBuyPriceRanking;
-                rep.nTotalBuyVolumeRanking = rankSystem.nTotalBuyVolumeRanking;
-                rep.nTotalTradePriceRanking = rankSystem.nTotalTradePriceRanking;
-                rep.nTotalTradeVolumeRanking = rankSystem.nTotalTradeVolumeRanking;
-
-                rep.nMinuteTotalRank = rankSystem.nMinuteSummationRanking;
-                rep.nMinuteBuyPriceRanking = rankSystem.nMinuteBuyPriceRanking;
-                rep.nMinuteBuyVolumeRanking = rankSystem.nMinuteBuyVolumeRanking;
-                rep.nMinuteCountRanking = rankSystem.nMinuteCountRanking;
-                rep.nMinutePowerRanking = rankSystem.nMinutePowerRanking;
-                rep.nMinuteTradePriceRanking = rankSystem.nMinuteTradePriceRanking;
-                rep.nMinuteTradeVolumeRanking = rankSystem.nMinuteTradeVolumeRanking;
-                rep.nMinuteUpDownRanking = rankSystem.nMinuteUpDownRanking;
-                rep.nTradeCnt = realBuyStrategy.nStrategyNum;
-                rep.nFakeBuyCnt = fakeBuyStrategy.nStrategyNum;
-                rep.nFakeResistCnt = fakeResistStrategy.nStrategyNum;
-                rep.nFakeAssistantCnt = fakeAssistantStrategy.nStrategyNum;
-                rep.nPriceUpCnt = fakeVolatilityStrategy.nStrategyNum;
-                rep.nPriceDownCnt = fakeDownStrategy.nStrategyNum;
-                rep.nRealBuyMinuteCnt = realBuyStrategy.nMinuteLocationCount;
-                rep.nFakeBuyMinuteCnt = fakeBuyStrategy.nMinuteLocationCount;
-                rep.nFakeResistMinuteCnt = fakeResistStrategy.nMinuteLocationCount;
-                rep.nFakeAssistantMinuteCnt = fakeAssistantStrategy.nMinuteLocationCount;
-                rep.nPriceUpMinuteCnt = fakeVolatilityStrategy.nMinuteLocationCount;
-                rep.nPriceDownMinuteCnt = fakeDownStrategy.nMinuteLocationCount;
-                rep.nFakeBuyUpperCnt = fakeBuyStrategy.nUpperCount;
-                rep.nFakeResistUpperCnt = fakeResistStrategy.nUpperCount;
-                rep.nFakeAssistantUpperCnt = fakeAssistantStrategy.nUpperCount;
-                rep.nPriceUpUpperCnt = fakeVolatilityStrategy.nUpperCount;
-                rep.nPriceDownUpperCnt = fakeDownStrategy.nUpperCount;
-                rep.nTotalFakeCnt = fakeStrategyMgr.nTotalFakeCount;
-                rep.nTotalFakeMinuteCnt = fakeStrategyMgr.nTotalFakeMinuteAreaNum;
-                rep.nUpCandleCnt = timeLines1m.onePerCandleList.Count;
-                rep.nTwoPerCandleCnt = timeLines1m.twoPerCandleList.Count;
-                rep.nShootingCnt = timeLines1m.threePerCandleList.Count;
-                rep.nFourPerCandleCnt = timeLines1m.fourPerCandleList.Count;
-                rep.nDownCandleCnt = timeLines1m.downCandleList.Count;
-                rep.nUpTailCnt = timeLines1m.upTailList.Count;
-                rep.nDownTailCnt = timeLines1m.downTailList.Count;
-                rep.nCrushCnt = crushMinuteManager.nCurCnt;
-                rep.nCrushUpCnt = crushMinuteManager.nUpCnt;
-                rep.nCrushDownCnt = crushMinuteManager.nDownCnt;
-                rep.nCrushSpecialDownCnt = crushMinuteManager.nSpecialDownCnt;
-
-                rep.nYesterdayEndPrice = nYesterdayEndPrice;
-
-                rep.nRealBuyAIPass = fakeStrategyMgr.nAIPassed;
-                rep.nFakeBuyAIPass = fakeStrategyMgr.nFakeAccumPassed;
-                rep.nEveryBuyAIPass = fakeStrategyMgr.nEveryAIPassNum;
-                rep.fAIScore = fakeStrategyMgr.fAIScore;
-                rep.fAIScoreJar = fakeStrategyMgr.fAIScoreJar;
-                rep.fAIScoreJarDegree = fakeStrategyMgr.fAIScoreJarDegree;
-
-                rep.nCandleTwoOverRealCnt = sequenceStrategy.nCandleTwoOverRealCount;
-                rep.nCandleTwoOverRealNoLeafCnt = sequenceStrategy.nCandleTwoOverRealNoLeafCount;
-
-                rep.fMaDownFsVal = maOverN.fCurDownFs;
-                rep.fMa20mVal = maOverN.fCurMa20m;
-                rep.fMa1hVal = maOverN.fCurMa1h;
-                rep.fMa2hVal = maOverN.fCurMa2h;
-                rep.fMaxMaDownFsVal = maOverN.fMaxDownFs;
-                rep.fMaxMa20mVal = maOverN.fMaxMa20m;
-                rep.fMaxMa1hVal = maOverN.fMaxMa1h;
-                rep.fMaxMa2hVal = maOverN.fMaxMa2h;
-                rep.nMaxMaDownFsTime = maOverN.nMaxDownFsTime;
-                rep.nMaxMa20mTime = maOverN.nMaxMa20mTime;
-                rep.nMaxMa1hTime = maOverN.nMaxMa1hTime;
-                rep.nMaxMa2hTime = maOverN.nMaxMa2hTime;
-
-                return rep;
-            }
 
             public void SetSellFix(int nSlotIdx)
             {
@@ -587,13 +387,13 @@ namespace AtoIndicator
                 rep.nMinuteTradePriceRanking = rankSystem.nMinuteTradePriceRanking;
                 rep.nMinuteTradeVolumeRanking = rankSystem.nMinuteTradeVolumeRanking;
                 rep.nMinuteUpDownRanking = rankSystem.nMinuteUpDownRanking;
-                rep.nTradeCnt = realBuyStrategy.nStrategyNum;
+                rep.nTradeCnt = paperBuyStrategy.nStrategyNum;
                 rep.nFakeBuyCnt = fakeBuyStrategy.nStrategyNum;
                 rep.nFakeResistCnt = fakeResistStrategy.nStrategyNum;
                 rep.nFakeAssistantCnt = fakeAssistantStrategy.nStrategyNum;
                 rep.nPriceUpCnt = fakeVolatilityStrategy.nStrategyNum;
                 rep.nPriceDownCnt = fakeDownStrategy.nStrategyNum;
-                rep.nRealBuyMinuteCnt = realBuyStrategy.nMinuteLocationCount;
+                rep.nRealBuyMinuteCnt = paperBuyStrategy.nMinuteLocationCount;
                 rep.nFakeBuyMinuteCnt = fakeBuyStrategy.nMinuteLocationCount;
                 rep.nFakeResistMinuteCnt = fakeResistStrategy.nMinuteLocationCount;
                 rep.nFakeAssistantMinuteCnt = fakeAssistantStrategy.nMinuteLocationCount;
@@ -787,13 +587,13 @@ namespace AtoIndicator
                     rep.nMinuteTradePriceRanking = rankSystem.nMinuteTradePriceRanking;
                     rep.nMinuteTradeVolumeRanking = rankSystem.nMinuteTradeVolumeRanking;
                     rep.nMinuteUpDownRanking = rankSystem.nMinuteUpDownRanking;
-                    rep.nTradeCnt = realBuyStrategy.nStrategyNum;
+                    rep.nTradeCnt = paperBuyStrategy.nStrategyNum;
                     rep.nFakeBuyCnt = fakeBuyStrategy.nStrategyNum;
                     rep.nFakeResistCnt = fakeResistStrategy.nStrategyNum;
                     rep.nFakeAssistantCnt = fakeAssistantStrategy.nStrategyNum;
                     rep.nPriceUpCnt = fakeVolatilityStrategy.nStrategyNum;
                     rep.nPriceDownCnt = fakeDownStrategy.nStrategyNum;
-                    rep.nRealBuyMinuteCnt = realBuyStrategy.nMinuteLocationCount;
+                    rep.nRealBuyMinuteCnt = paperBuyStrategy.nMinuteLocationCount;
                     rep.nFakeBuyMinuteCnt = fakeBuyStrategy.nMinuteLocationCount;
                     rep.nFakeResistMinuteCnt = fakeResistStrategy.nMinuteLocationCount;
                     rep.nFakeAssistantMinuteCnt = fakeAssistantStrategy.nMinuteLocationCount;
@@ -1824,71 +1624,77 @@ namespace AtoIndicator
         /// <summary>
         /// ABOUT 실제전략
         /// </summary>
-        public class RealBuyStrategy : FakeFrame
+        public class PaperBuyStrategy : FakeFrame
         {
-            public int[] arrReqFail; // 실패한 시도횟수를 저장한다.
-            public int[] arrRequest;
 
-            // =========================================================================
-            // 전략별 추가 변수들 
-            // =========================================================================
-            // ***  번호와 변수  ***
-            // 추가매수 전략 0번 
-            // 직접입력 전략 마지막 번
-            public bool isManualOrderSignal;
-            public int nManualEndurationTime; // 매수버튼을 눌렀는데 한참동안 매수가 안되면 문제가 있는거니 취소
-
-            public int nTotalFail;
             // 임시용 
             public bool isOrderCheck;
-            public int nCurBarBuyCount;
-            public int nFakePrevTimeLineIdx;
-            public int nTrialNum;
 
-            // END-- 페이크 DB 관련 변수
+            // 매매 정보
+            public int[] arrRqTime; // 언제 주문신청했는 지
+            public int[] arrRqPrice; // 얼마에 주문신청했는 지
+            public int[] arrOverPrice; // 주문시점 + Alpha
+            public int[] arrRqVolume; // 얼만큼 주문신청했는 지
+            public int[] arrBuyedVolume; // 언제 사졌는 지
+            public int[] arrBuyedPrice; // 얼마에 사졌는 지 
+
 
 
             // -------------------------------------------------------------------------------
             // END ---- 전략별  추가변수들
             // -------------------------------------------------------------------------------
-            public RealBuyStrategy(int t, int s)
+            public PaperBuyStrategy(int t, int s)
             {
                 nFakeType = t;
 
                 arrStrategy = new int[s];
                 arrLastTouch = new int[s];
                 arrPrevMinuteIdx = new int[s];
-                arrReqFail = new int[s];
-                arrRequest = new int[s];
 
-                arrMinuteIdx = new int[REAL_BUY_MAX_NUM];
-                arrBuyTime = new int[REAL_BUY_MAX_NUM];
-                arrBuyPrice = new int[REAL_BUY_MAX_NUM];
-                arrSpecificStrategy = new int[REAL_BUY_MAX_NUM];
+                arrMinuteIdx = new int[PAPER_BUY_MAX_NUM];
+                arrBuyTime = new int[PAPER_BUY_MAX_NUM];
+                arrBuyPrice = new int[PAPER_BUY_MAX_NUM];
+                arrSpecificStrategy = new int[PAPER_BUY_MAX_NUM];
 
+                nPrevMinuteIdx = -1;
 
-                nManualEndurationTime = 200;
+                arrRqTime = new int[PAPER_BUY_MAX_NUM];
+                arrRqPrice = new int[PAPER_BUY_MAX_NUM];
+                arrOverPrice = new int[PAPER_BUY_MAX_NUM];
+                arrRqVolume = new int[PAPER_BUY_MAX_NUM];
+                arrBuyedVolume = new int[PAPER_BUY_MAX_NUM];
+                arrBuyedPrice = new int[PAPER_BUY_MAX_NUM];
+            }
+
+        }
+
+        /// <summary>
+        /// ABOUT 실제전략
+        /// </summary>
+        public class PaperSellStrategy : FakeFrame
+        {
+
+            // -------------------------------------------------------------------------------
+            // END ---- 전략별  추가변수들
+            // -------------------------------------------------------------------------------
+            public PaperSellStrategy(int t, int s)
+            {
+                nFakeType = t;
+
+                arrStrategy = new int[s];
+                arrLastTouch = new int[s];
+                arrPrevMinuteIdx = new int[s];
+
+                arrMinuteIdx = new int[PAPER_SELL_MAX_NUM];
+                arrBuyTime = new int[PAPER_SELL_MAX_NUM];
+                arrBuyPrice = new int[PAPER_SELL_MAX_NUM];
+                arrSpecificStrategy = new int[PAPER_SELL_MAX_NUM];
+
                 nPrevMinuteIdx = -1;
             }
 
-            public void BuyCancelMethod(int nCanceledStrategyIdx, bool isExtra = false)
-            {
-                // this.arrStrategy[nCanceledStrategyIdx]--; // 필터링 전
-                this.arrReqFail[nCanceledStrategyIdx]++;
-                this.arrRequest[nCanceledStrategyIdx]--; // 필터링 후
-                nTotalFail++;
-
-                if (isExtra)
-                {
-                    if (nCanceledStrategyIdx == 0) // 추가매수
-                    {
-                    }
-                    else if (nCanceledStrategyIdx == 1)
-                    {
-                    }
-                }
-            }
         }
+
 
         public class FakeVolatilityStrategy : FakeFrame
         {
@@ -2407,21 +2213,23 @@ namespace AtoIndicator
 
         public class StrategyNames
         {
-            public List<string> arrRealBuyStrategyName;
             public List<string> arrFakeBuyStrategyName;
             public List<string> arrFakeResistStrategyName;
             public List<string> arrFakeAssistantStrategyName;
             public List<string> arrFakeVolatilityStrategyName;
             public List<string> arrFakeDownStrategyName;
+            public List<string> arrPaperBuyStrategyName;
+            public List<string> arrPaperSellStrategyName;
 
             public StrategyNames()
             {
-                arrRealBuyStrategyName = new List<string>();
                 arrFakeBuyStrategyName = new List<string>();
                 arrFakeResistStrategyName = new List<string>();
                 arrFakeAssistantStrategyName = new List<string>();
                 arrFakeVolatilityStrategyName = new List<string>();
                 arrFakeDownStrategyName = new List<string>();
+                arrPaperBuyStrategyName = new List<string>();
+                arrPaperSellStrategyName = new List<string>();
 
                 try
                 {
@@ -2497,71 +2305,7 @@ namespace AtoIndicator
 
                 }
 
-                try
-                {
-                    arrRealBuyStrategyName.Add("추가매수");
-                    arrRealBuyStrategyName.Add("5분전 갭포함 6퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("10분전 갭포함 8.5퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("5퍼돌파후 전고점(매매:전고점) .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p7-m7>=15 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p7-m7>=25 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p7+m7>=30 and p7-m7>=15 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p7+m7>=50 and p7-m7>=15 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p9+m9>=50 and p9-m9>=15 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p9+m9>=70 and p9-m9>=15 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p9+m9>=90 and p9-m9>=10 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p9+m9>=90 and p9-m9>=20 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("p9-m9>=30 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("파워자 2퍼 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("파워자 3퍼 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("파워자 4퍼 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("총 순위 1위 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("현재 분당 파워 순위 1위 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("총 순위 2위 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("현재 분당 파워 순위 2위 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("분당 속도 1000이상 p7-m7>= 15 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("전고점 총순위 30위 이전(매매:전고점) .. 11분 주기");
-                    arrRealBuyStrategyName.Add("전고점 총순위 10위 이전(매매:전고점) .. 11분 주기");
-                    arrRealBuyStrategyName.Add("분당 순위 1위 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("R각도 50도 이상 .. 11분 주기");
-                    arrRealBuyStrategyName.Add("직접입력매수");
-                    arrRealBuyStrategyName.Add("botUp 421 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 432 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 642 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 643 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 732 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 743 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 953 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 421 전고점 일점돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 432 전고점 일점돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 642 전고점 일점돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 643 전고점 일점돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 732 전고점 일점돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 743 전고점 일점돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 953 전고점 일점돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 421 전고점 돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 432 전고점 돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 642 전고점 돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 643 전고점 돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 732 전고점 돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 743 전고점 돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("botUp 953 전고점 돌파 .. 반복");
-                    arrRealBuyStrategyName.Add("갭제외 +6.5퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("갭제외 +8퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("갭제외 +11퍼 .. 단한번");
-                    arrRealBuyStrategyName.Add("onlyUpPowerJar 4퍼 .. 11분주기");
-                    arrRealBuyStrategyName.Add("9시 30분 전 7퍼 상승 .. 단한번");
-                    arrRealBuyStrategyName.Add("9시 30분 전 10퍼 상승 .. 단한번");
-                    arrRealBuyStrategyName.Add("9시 30분 전 12퍼 상승 .. 단한번");
-                    arrRealBuyStrategyName.Add("10시 전 8퍼 상승 .. 단한번");
-                    arrRealBuyStrategyName.Add("10시 전 12퍼 상승 .. 단한번");
-                    arrRealBuyStrategyName.Add("10시 전 15퍼 상승 .. 단한번");
-                }
-                catch (Exception IdxError)
-                {
-
-                }
-
+              
                 try
                 {
                     arrFakeVolatilityStrategyName.Add("차분 5 0.03 5분주기");
@@ -2612,12 +2356,88 @@ namespace AtoIndicator
                 {
 
                 }
+
+                try
+                {
+                    arrPaperBuyStrategyName.Add("5분전 갭포함 6퍼 .. 단한번");
+                    arrPaperBuyStrategyName.Add("10분전 갭포함 8.5퍼 .. 단한번");
+                    arrPaperBuyStrategyName.Add("5퍼돌파후 전고점(매매:전고점) .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("p7-m7>=15 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("p7-m7>=25 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("p7+m7>=30 and p7-m7>=15 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("p7+m7>=50 and p7-m7>=15 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("p9+m9>=50 and p9-m9>=15 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("p9+m9>=70 and p9-m9>=15 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("p9+m9>=90 and p9-m9>=10 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("p9+m9>=90 and p9-m9>=20 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("p9-m9>=30 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("파워자 2퍼 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("파워자 3퍼 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("파워자 4퍼 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("총 순위 1위 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("현재 분당 파워 순위 1위 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("총 순위 2위 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("현재 분당 파워 순위 2위 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("분당 속도 1000이상 p7-m7>= 15 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("전고점 총순위 30위 이전(매매:전고점) .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("전고점 총순위 10위 이전(매매:전고점) .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("분당 순위 1위 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("R각도 50도 이상 .. 11분 주기");
+                    arrPaperBuyStrategyName.Add("botUp 421 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 432 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 642 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 643 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 732 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 743 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 953 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 421 전고점 일점돌파 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 432 전고점 일점돌파 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 642 전고점 일점돌파 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 643 전고점 일점돌파 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 732 전고점 일점돌파 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 743 전고점 일점돌파 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 953 전고점 일점돌파 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 421 전고점 돌파 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 432 전고점 돌파 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 642 전고점 돌파 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 643 전고점 돌파 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 732 전고점 돌파 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 743 전고점 돌파 .. 반복");
+                    arrPaperBuyStrategyName.Add("botUp 953 전고점 돌파 .. 반복");
+                    arrPaperBuyStrategyName.Add("갭제외 +6.5퍼 .. 단한번");
+                    arrPaperBuyStrategyName.Add("갭제외 +8퍼 .. 단한번");
+                    arrPaperBuyStrategyName.Add("갭제외 +11퍼 .. 단한번");
+                    arrPaperBuyStrategyName.Add("onlyUpPowerJar 4퍼 .. 11분주기");
+                    arrPaperBuyStrategyName.Add("9시 30분 전 7퍼 상승 .. 단한번");
+                    arrPaperBuyStrategyName.Add("9시 30분 전 10퍼 상승 .. 단한번");
+                    arrPaperBuyStrategyName.Add("9시 30분 전 12퍼 상승 .. 단한번");
+                    arrPaperBuyStrategyName.Add("10시 전 8퍼 상승 .. 단한번");
+                    arrPaperBuyStrategyName.Add("10시 전 12퍼 상승 .. 단한번");
+                    arrPaperBuyStrategyName.Add("10시 전 15퍼 상승 .. 단한번");
+                }
+                catch (Exception IdxError)
+                {
+
+                }
+
+
+                try
+                {
+                    arrPaperSellStrategyName.Add("선점");
+                    arrPaperSellStrategyName.Add("유예 불가");
+                    arrPaperSellStrategyName.Add("상한가");
+                }
+                catch (Exception indexError)
+                {
+
+                }
+
             }
 
             public int GetStrategySize(int signal)
             {
-                if (signal == REAL_BUY_SIGNAL)
-                    return arrRealBuyStrategyName.Count;
+                if (signal == PAPER_BUY_SIGNAL)
+                    return arrPaperBuyStrategyName.Count;
                 else if (signal == FAKE_BUY_SIGNAL)
                     return arrFakeBuyStrategyName.Count;
                 else if (signal == FAKE_ASSISTANT_SIGNAL)
@@ -2634,8 +2454,8 @@ namespace AtoIndicator
 
             public bool GetStrategyExistsByIdx(int signal, int idx)
             {
-                if (signal == REAL_BUY_SIGNAL)
-                    return arrRealBuyStrategyName.Count > idx;
+                if (signal == PAPER_BUY_SIGNAL)
+                    return arrPaperBuyStrategyName.Count > idx;
                 else if (signal == FAKE_BUY_SIGNAL)
                     return arrFakeBuyStrategyName.Count > idx;
                 else if (signal == FAKE_ASSISTANT_SIGNAL)
@@ -2652,8 +2472,8 @@ namespace AtoIndicator
 
             public string GetStrategyNameByIdx(int signal, int idx)
             {
-                if (signal == REAL_BUY_SIGNAL)
-                    return arrRealBuyStrategyName[idx];
+                if (signal == PAPER_BUY_SIGNAL)
+                    return arrPaperBuyStrategyName[idx];
                 else if (signal == FAKE_BUY_SIGNAL)
                     return arrFakeBuyStrategyName[idx];
                 else if (signal == FAKE_ASSISTANT_SIGNAL)

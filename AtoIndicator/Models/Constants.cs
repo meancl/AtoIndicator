@@ -11,9 +11,9 @@
         // ------------------------------------------------------
         public const int IGNORE_REQ_SEC = 10; // 요청무시용 seconds 변수
 
-        public const int NEW_BUY = 1; // 신규매수
+        // public const int NEW_BUY = 1; // 신규매수
         public const int NEW_SELL = 2; // 신규매도
-        public const int BUY_CANCEL = 3; // 매수취소
+        // public const int BUY_CANCEL = 3; // 매수취소
         public const int SELL_CANCEL = 4; // 매도취소
         public const int BUY_UPDATE = 5; // 매수정정
         public const int SELL_UPDATE = 6; // 매도정정

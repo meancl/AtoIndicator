@@ -46,7 +46,6 @@ namespace AtoIndicator
             configStripMenuItem.Click += ToolTipItemClickHandler;
             offMarketToolStripMenuItem.Click += ToolTipItemClickHandler;
 
-            buyButton.Click += Button_Click;
             checkChartButton.Click += Button_Click;
 
             axKHOpenAPI1.OnEventConnect += OnEventConnectHandler; // 로그인 event slot connect

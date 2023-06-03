@@ -206,16 +206,16 @@
 
             switch(nOrderType)
             {
-                case NEW_BUY:
-                    curSlot.nStrategyIdx = nStrategyIdx;
-                    curSlot.nOrderPrice = nOrderPrice;
-                    curSlot.nSequence = nSequence;
-                    curSlot.fRequestRatio = fRequestRatio;
-                    curSlot.fTargetPercent = fCeil;
-                    curSlot.fBottomPercent = fFloor;
-                    curSlot.tFixedResPassanger = ea[nEaIdx].GetBuyFix();
-                    curSlot.sFixedInfoPassanger = ea[nEaIdx].GetInfoString();
-                    break;
+                //case NEW_BUY:
+                //    curSlot.nStrategyIdx = nStrategyIdx;
+                //    curSlot.nOrderPrice = nOrderPrice;
+                //    curSlot.nSequence = nSequence;
+                //    curSlot.fRequestRatio = fRequestRatio;
+                //    curSlot.fTargetPercent = fCeil;
+                //    curSlot.fBottomPercent = fFloor;
+                //    curSlot.tFixedResPassanger = ea[nEaIdx].GetBuyFix();
+                //    curSlot.sFixedInfoPassanger = ea[nEaIdx].GetInfoString();
+                //    break;
                 case NEW_SELL:
                     curSlot.nQty = nQty;
                     ea[nEaIdx].myTradeManager.arrBuyedSlots[nBuyedSlotIdx].isSelling = true;
@@ -224,9 +224,9 @@
 
                     ea[nEaIdx].SetSellFix(nBuyedSlotIdx);
                     break;
-                case BUY_CANCEL:
-                    ea[nEaIdx].myTradeManager.arrBuyedSlots[nBuyedSlotIdx].isCanceling = true; // 현재 매수취소 불가능상태로 만든다
-                    break;
+                //case BUY_CANCEL:
+                //    ea[nEaIdx].myTradeManager.arrBuyedSlots[nBuyedSlotIdx].isCanceling = true; // 현재 매수취소 불가능상태로 만든다
+                //    break;
                 default:
                     break;
             }

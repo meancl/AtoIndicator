@@ -80,9 +80,9 @@ namespace AtoIndicator
                                         curBlock.fixedBuyingInfo.isAllBuyed = curBlock.isAllBuyed;
                                         curBlock.fixedBuyingInfo.isAllSelled = curBlock.isAllSelled;
                                         curBlock.fixedBuyingInfo.nBuyVolume = curBlock.nBuyVolume;
-                                        curBlock.fixedBuyingInfo.nBuyStrategyIdx = strategyNameDict[(REAL_BUY_SIGNAL, strategyName.arrRealBuyStrategyName[curBlock.nStrategyIdx])]; // key
+                                        curBlock.fixedBuyingInfo.nBuyStrategyIdx = strategyNameDict[(PAPER_BUY_SIGNAL, strategyName.arrPaperBuyStrategyName[curBlock.nStrategyIdx])]; // key
                                         curBlock.fixedBuyingInfo.nBuyStrategySequenceIdx = curBlock.nSequence; // key
-                                        curBlock.fixedBuyingInfo.sBuyStrategyName = strategyName.arrRealBuyStrategyName[curBlock.nStrategyIdx];
+                                        curBlock.fixedBuyingInfo.sBuyStrategyName = strategyName.arrPaperBuyStrategyName[curBlock.nStrategyIdx];
                                         curBlock.fixedBuyingInfo.sSellStrategyMsg = curBlock.sSellDescription;
 
                                         curBlock.fixedBuyingInfo.nSellVersion = SELL_VERSION;
@@ -301,8 +301,8 @@ namespace AtoIndicator
                                             #endregion
                                             curBlock.recGroup.recList[nRecordNum].fixedSellingInfo.isAllSelled = curBlock.recGroup.recList[nRecordNum].isSelled;
                                             curBlock.recGroup.recList[nRecordNum].fixedSellingInfo.nSumCut = curBlock.recGroup.recList[nRecordNum].nTotalSellPrice;
-                                            curBlock.recGroup.recList[nRecordNum].fixedSellingInfo.nBuyStrategyIdx = strategyNameDict[(REAL_BUY_SIGNAL, strategyName.arrRealBuyStrategyName[curBlock.nStrategyIdx])]; // key
-                                            curBlock.recGroup.recList[nRecordNum].fixedSellingInfo.sBuyStrategyName = strategyName.arrRealBuyStrategyName[curBlock.nStrategyIdx];
+                                            curBlock.recGroup.recList[nRecordNum].fixedSellingInfo.nBuyStrategyIdx = strategyNameDict[(PAPER_BUY_SIGNAL, strategyName.arrPaperBuyStrategyName[curBlock.nStrategyIdx])]; // key
+                                            curBlock.recGroup.recList[nRecordNum].fixedSellingInfo.sBuyStrategyName = strategyName.arrPaperBuyStrategyName[curBlock.nStrategyIdx];
                                             curBlock.recGroup.recList[nRecordNum].fixedSellingInfo.sSellStrategyMsg = curBlock.recGroup.recList[nRecordNum].sSellDescription;
                                             curBlock.recGroup.recList[nRecordNum].fixedSellingInfo.nDeathTime = curBlock.recGroup.recList[nRecordNum].nDeathTime;
                                             curBlock.recGroup.recList[nRecordNum].fixedSellingInfo.nDeathRqTime = curBlock.recGroup.recList[nRecordNum].nSellRequestTime;

@@ -45,11 +45,11 @@ namespace AtoIndicator.View.StatisticResult
             updateButton.Click += buttonClickHandler;
             mainForm = parentForm;
             strategyNames = mainForm.strategyName;
-            statisticer.Init(strategyNames.arrRealBuyStrategyName.Count);
+            statisticer.Init(strategyNames.arrPaperBuyStrategyName.Count);
             nBoxWidth = (this.ClientSize.Width - (nLeftRightPadding * 2 + nMiddlePadding * (nLineLimitNum - 1))) / nLineLimitNum;
             nBoxHeight = nBoxWidth + 50;
-            textBoxArr = new TextBox[strategyNames.arrRealBuyStrategyName.Count];
-            for (int _ = 0; _ < strategyNames.arrRealBuyStrategyName.Count; _++)
+            textBoxArr = new TextBox[strategyNames.arrPaperBuyStrategyName.Count];
+            for (int _ = 0; _ < strategyNames.arrPaperBuyStrategyName.Count; _++)
                 MakeGroupBox();
             RunThread();
             this.ActiveControl = updateButton;
@@ -97,7 +97,7 @@ namespace AtoIndicator.View.StatisticResult
             long lEachStrategyProfit; // 한 전략에서 총 이익금액
 
 
-            for (int strategyNum = 0; strategyNum < strategyNames.arrRealBuyStrategyName.Count; strategyNum++) // 전략별로
+            for (int strategyNum = 0; strategyNum < strategyNames.arrPaperBuyStrategyName.Count; strategyNum++) // 전략별로
             {
                 // 전략이 돌때마다 초기화해줘야되는 변수들 정리
                 statisticer.Clear(); // 일단 비우고
@@ -239,7 +239,7 @@ namespace AtoIndicator.View.StatisticResult
                     } // END ---- (매매중 + 매매완료)된 트랙커
                 } // END ---- 해당전략의 데이터가 하나라도 있다면
 
-                string sMessage = $"##전략명 : {strategyNames.arrRealBuyStrategyName[strategyNum]} ##{NEW_LINE}{NEW_LINE}";
+                string sMessage = $"##전략명 : {strategyNames.arrPaperBuyStrategyName[strategyNum]} ##{NEW_LINE}{NEW_LINE}";
 
                 if (statisticer.strategyResult[strategyNum].isTradeDataExists)
                 {
@@ -345,7 +345,7 @@ namespace AtoIndicator.View.StatisticResult
         /// </summary>
         public void MakeGroupBox()
         {
-            if (nCurStrategyMaking >= strategyNames.arrRealBuyStrategyName.Count) // 예비용
+            if (nCurStrategyMaking >= strategyNames.arrPaperBuyStrategyName.Count) // 예비용
                 return;
 
             GroupBox newGroupBox = new GroupBox();
@@ -404,7 +404,7 @@ namespace AtoIndicator.View.StatisticResult
             MainForm.StrategyNames strategyName = mainForm.strategyName;
             if (strategyList.Count <= 0 ) // 해당전략이 사용되지 않았다면
             {
-                MessageBox.Show($"{clickedStrategy}번 : {strategyName.arrRealBuyStrategyName[clickedStrategy]} 전략은 사용되지 않았습니다.");
+                MessageBox.Show($"{clickedStrategy}번 : {strategyName.arrPaperBuyStrategyName[clickedStrategy]} 전략은 사용되지 않았습니다.");
             }
             else // 사용됐다면 
             {

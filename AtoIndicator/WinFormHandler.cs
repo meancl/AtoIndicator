@@ -49,17 +49,7 @@ namespace AtoIndicator
                 }   
             }
 
-
-            if (sender.Equals(buyButton))
-            {
-                if (isCorrect)
-                {
-                    ea[nCurIdx].realBuyStrategy.isManualOrderSignal = true;
-                }
-                else
-                    MessageBox.Show("입력오류거나 해당종목이 리스트에 없습니다.");
-            }
-            else if (sender.Equals(checkChartButton))
+            if (sender.Equals(checkChartButton))
             {
                 if (isCorrect)
                 {
@@ -185,8 +175,6 @@ namespace AtoIndicator
                     StoreLog();
                     this.Close();
                 }
-                if (cUp == 'Z')
-                    SellALL();
             }
 
             if (cUp == 'W')
@@ -294,7 +282,6 @@ namespace AtoIndicator
                     {
                         nFirstTime = nSharedTime - nSharedTime % MINUTE_KIWOOM; // x시간 00분 00 초 형태로 만든다
 
-                        BlockizeUndisposal();
                     }
                     isMarketStart = true;
 
