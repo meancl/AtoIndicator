@@ -452,6 +452,7 @@ namespace AtoIndicator
                     frame.paperTradeSlot[frame.nStrategyNum].nOverPrice += GetIntegratedMarketGap(frame.paperTradeSlot[frame.nStrategyNum].nOverPrice);
                 frame.paperTradeSlot[frame.nStrategyNum].nRqTime = nSharedTime;
                 frame.paperTradeSlot[frame.nStrategyNum].nRqVolume = nMaxNumToBuy;
+                frame.paperTradeSlot[frame.nStrategyNum].nRqTimeLineIdx= nTimeLineIdx;
                 frame.paperTradeSlot[frame.nStrategyNum].nTargetRqVolume = nMaxNumToBuy;
                 frame.paperTradeSlot[frame.nStrategyNum].nSellHogaVolume = ea[nEaIdx].nThreeSellHogaVolume / 3;
                 frame.paperTradeSlot[frame.nStrategyNum].nCanceledVolume = 0;
@@ -459,9 +460,16 @@ namespace AtoIndicator
                 frame.paperTradeSlot[frame.nStrategyNum].methodCategory = methodCategory;
                 frame.paperTradeSlot[frame.nStrategyNum].fTargetPer = GetNextCeiling(ref frame.paperTradeSlot[frame.nStrategyNum].nCurLineIdx);
                 frame.paperTradeSlot[frame.nStrategyNum].fBottomPer = GetNextFloor(ref frame.paperTradeSlot[frame.nStrategyNum].nCurLineIdx, frame.paperTradeSlot[frame.nStrategyNum].methodCategory);
+                frame.paperTradeSlot[frame.nStrategyNum].sFixedMsg = ea[nEaIdx].GetInfoString();
+                frame.paperTradeSlot[frame.nStrategyNum].nSequence = frame.arrStrategy[nPaperBuyStrategyNum] + 1;
+                frame.paperTradeSlot[frame.nStrategyNum].nLastTouchLineTime = nSharedTime;
+
+                strategyHistoryList[nPaperBuyStrategyNum].Add(new StrategyHistory(nEaIdx, frame.nStrategyNum)); // 전략리스트 인덱스에 맞게 삽입
+                totalTradeHistoryList.Add(new StrategyHistory(nEaIdx, frame.nStrategyNum)); // 전체 매매리스트
                 #endregion
 
                 bool isFakeSet = SetThisFake(ea[nEaIdx].paperBuyStrategy, nEaIdx, nPaperBuyStrategyNum);
+
 
                 frame.isOrderCheck = true;
 

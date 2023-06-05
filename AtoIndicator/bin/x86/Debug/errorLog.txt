@@ -149,3 +149,126 @@
    위치: AtoIndicator.MainForm..ctor() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\MainForm.cs:줄 59
    위치: AtoIndicator.Program.Main() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\Program.cs:줄 69
 
+2023-06-05 오전 10:13:08 ## Msg : 이름이 'P4'인 차트 요소가 'AnnotationCollection'에 이미 있습니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartNamedElementCollection`1.InsertItem(Int32 index, T item)
+   위치: System.Collections.ObjectModel.Collection`1.Add(T item)
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.<UpdateMinuteHistoryData>g__voidDelegate|55_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 889
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.UpdateMinuteHistoryData() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 1216
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.KeyUpHandler(Object sender, KeyEventArgs e) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 2487
+   위치: System.Windows.Forms.Control.OnKeyUp(KeyEventArgs e)
+   위치: System.Windows.Forms.Control.ProcessKeyEventArgs(Message& m)
+   위치: System.Windows.Forms.Form.ProcessKeyPreview(Message& m)
+   위치: System.Windows.Forms.Control.ProcessKeyMessage(Message& m)
+   위치: System.Windows.Forms.Control.WmKeyChar(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+   위치: System.Windows.Forms.UnsafeNativeMethods.DispatchMessageW(MSG& msg)
+   위치: System.Windows.Forms.Application.ComponentManager.System.Windows.Forms.UnsafeNativeMethods.IMsoComponentManager.FPushMessageLoop(IntPtr dwComponentID, Int32 reason, Int32 pvLoopData)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoopInner(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoop(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.RunDialog(Form form)
+   위치: System.Windows.Forms.Form.ShowDialog(IWin32Window owner)
+   위치: System.Windows.Forms.Form.ShowDialog()
+   위치: AtoIndicator.View.TradeRecod.TradeRecodForm.<>c__DisplayClass21_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\TradeRecodForm.cs:줄 382
+   위치: System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   위치: System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   위치: System.Threading.ThreadHelper.ThreadStart()
+
+2023-06-05 오전 10:20:24 ## Msg : 이름이 'P2'인 차트 요소가 'AnnotationCollection'에 이미 있습니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartNamedElementCollection`1.InsertItem(Int32 index, T item)
+   위치: System.Collections.ObjectModel.Collection`1.Add(T item)
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.<UpdateMinuteHistoryData>g__voidDelegate|55_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 618
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.UpdateMinuteHistoryData() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 1216
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.KeyUpHandler(Object sender, KeyEventArgs e) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 2487
+   위치: System.Windows.Forms.Control.OnKeyUp(KeyEventArgs e)
+   위치: System.Windows.Forms.Control.ProcessKeyEventArgs(Message& m)
+   위치: System.Windows.Forms.Form.ProcessKeyPreview(Message& m)
+   위치: System.Windows.Forms.Control.ProcessKeyMessage(Message& m)
+   위치: System.Windows.Forms.Control.WmKeyChar(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+   위치: System.Windows.Forms.UnsafeNativeMethods.DispatchMessageW(MSG& msg)
+   위치: System.Windows.Forms.Application.ComponentManager.System.Windows.Forms.UnsafeNativeMethods.IMsoComponentManager.FPushMessageLoop(IntPtr dwComponentID, Int32 reason, Int32 pvLoopData)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoopInner(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoop(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.RunDialog(Form form)
+   위치: System.Windows.Forms.Form.ShowDialog(IWin32Window owner)
+   위치: System.Windows.Forms.Form.ShowDialog()
+   위치: AtoIndicator.View.TradeRecod.TradeRecodForm.<>c__DisplayClass21_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\TradeRecodForm.cs:줄 382
+   위치: System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   위치: System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   위치: System.Threading.ThreadHelper.ThreadStart()
+
+2023-06-05 오전 10:40:37 ## Msg : 이름이 'P1'인 차트 요소가 'AnnotationCollection'에 이미 있습니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartNamedElementCollection`1.InsertItem(Int32 index, T item)
+   위치: System.Collections.ObjectModel.Collection`1.Add(T item)
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.<UpdateMinuteHistoryData>g__voidDelegate|55_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 620
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.UpdateMinuteHistoryData() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 1218
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.<.ctor>b__47_2(Object oo, EventArgs ee) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 209
+   위치: System.Windows.Forms.RadioButton.OnCheckedChanged(EventArgs e)
+   위치: System.Windows.Forms.RadioButton.set_Checked(Boolean value)
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.<.ctor>b__47_3(Object oo, EventArgs ee) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 218
+   위치: System.Windows.Forms.Control.OnClick(EventArgs e)
+   위치: System.Windows.Forms.RadioButton.OnClick(EventArgs e)
+   위치: System.Windows.Forms.RadioButton.OnMouseUp(MouseEventArgs mevent)
+   위치: System.Windows.Forms.Control.WmMouseUp(Message& m, MouseButtons button, Int32 clicks)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.ButtonBase.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+   위치: System.Windows.Forms.UnsafeNativeMethods.DispatchMessageW(MSG& msg)
+   위치: System.Windows.Forms.Application.ComponentManager.System.Windows.Forms.UnsafeNativeMethods.IMsoComponentManager.FPushMessageLoop(IntPtr dwComponentID, Int32 reason, Int32 pvLoopData)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoopInner(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoop(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.RunDialog(Form form)
+   위치: System.Windows.Forms.Form.ShowDialog(IWin32Window owner)
+   위치: System.Windows.Forms.Form.ShowDialog()
+   위치: AtoIndicator.View.TradeRecod.TradeRecodForm.<>c__DisplayClass21_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\TradeRecodForm.cs:줄 382
+   위치: System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   위치: System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   위치: System.Threading.ThreadHelper.ThreadStart()
+
+2023-06-05 오전 10:45:37 ## Msg : 이름이 'P2'인 차트 요소가 'AnnotationCollection'에 이미 있습니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartNamedElementCollection`1.InsertItem(Int32 index, T item)
+   위치: System.Collections.ObjectModel.Collection`1.Add(T item)
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.<UpdateMinuteHistoryData>g__voidDelegate|55_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 620
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.UpdateMinuteHistoryData() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 1218
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.KeyUpHandler(Object sender, KeyEventArgs e) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 2574
+   위치: System.Windows.Forms.Control.OnKeyUp(KeyEventArgs e)
+   위치: System.Windows.Forms.Control.ProcessKeyEventArgs(Message& m)
+   위치: System.Windows.Forms.Form.ProcessKeyPreview(Message& m)
+   위치: System.Windows.Forms.Control.ProcessKeyMessage(Message& m)
+   위치: System.Windows.Forms.Control.WmKeyChar(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+   위치: System.Windows.Forms.UnsafeNativeMethods.DispatchMessageW(MSG& msg)
+   위치: System.Windows.Forms.Application.ComponentManager.System.Windows.Forms.UnsafeNativeMethods.IMsoComponentManager.FPushMessageLoop(IntPtr dwComponentID, Int32 reason, Int32 pvLoopData)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoopInner(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoop(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.RunDialog(Form form)
+   위치: System.Windows.Forms.Form.ShowDialog(IWin32Window owner)
+   위치: System.Windows.Forms.Form.ShowDialog()
+   위치: AtoIndicator.View.TradeRecod.TradeRecodForm.<>c__DisplayClass21_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\TradeRecodForm.cs:줄 382
+   위치: System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   위치: System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   위치: System.Threading.ThreadHelper.ThreadStart()
+

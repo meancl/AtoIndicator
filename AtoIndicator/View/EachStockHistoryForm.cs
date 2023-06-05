@@ -145,8 +145,8 @@ namespace AtoIndicator.View.EachStockHistory
             {
                 this.Text += $" {specificStrategy}번 전략 전용창";
                 ReverseAllArrowVisible();
-                isBuyArrowVisible = true; // 매수와
-                isSellArrowVisible = true; // 매도만 
+                isPaperBuyArrowVisible = true; // 매수와
+                isPaperSellArrowVisible = true; // 매도만 
                 UpdateMinuteHistoryData();
             }
             #region Raio Button Delegate
@@ -206,6 +206,7 @@ namespace AtoIndicator.View.EachStockHistory
                                 }
                                 nB = RADIO_BUTTON_CHECKED;
 
+                                
                             };
 
                             // END ---- CheckedChanged
@@ -220,6 +221,8 @@ namespace AtoIndicator.View.EachStockHistory
                                 }
                                 else
                                     nB = RADIO_BUTTON_REMOVAL;
+
+                                updateDelegate();
                             };
 
                             if (nSpecificStrategyIdx != null && curEa.paperBuyStrategy.arrSpecificStrategy[i] != nSpecificStrategyIdx)
@@ -422,11 +425,12 @@ namespace AtoIndicator.View.EachStockHistory
         {
             void voidDelegate()
             {
-                for (int i = historyChart.Annotations.Count - 1; i >= 0; i--) // 삭제가 돼도 실시간으로 바뀐다.
-                {
-                    if (historyChart.Annotations[i].Name[0] == 'M' || historyChart.Annotations[i].Name[0] == 'F') // 실매수와 페이크
-                        historyChart.Annotations.RemoveAt(i);
-                }
+                //for (int i = historyChart.Annotations.Count - 1; i >= 0; i--) // 삭제가 돼도 실시간으로 바뀐다.
+                //{
+                //    if (historyChart.Annotations[i].Name[0] == 'P' || historyChart.Annotations[i].Name[0] == 'F') // 실매수와 페이크
+                //        historyChart.Annotations.RemoveAt(i);
+                //}
+                historyChart.Annotations.Clear();
 
                 int nTimeNow;
                 string sTime;
@@ -537,8 +541,8 @@ namespace AtoIndicator.View.EachStockHistory
                             if (nSpecificStrategyIdx != null && curEa.paperBuyStrategy.arrSpecificStrategy[p] != nSpecificStrategyIdx) // 특정한 전략만 보여주게 설정했다면
                                 continue; // 특정전략인덱스가 아니면 건너뛴다.
 
-                            if (nCurBuyedId != -1 && curEa.paperBuyStrategy.arrSpecificStrategy[p] != nCurBuyedId)
-                                continue;                            
+                            if (nCurBuyedId != -1 && p != nCurBuyedId)
+                                continue;
 
                             if (curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedVolume != curEa.paperBuyStrategy.paperTradeSlot[p].nTargetRqVolume)
                                 continue;
@@ -551,9 +555,9 @@ namespace AtoIndicator.View.EachStockHistory
                             if (curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedVolume == 0) // 전량 매수취소가 된 상황 
                             {
                                 sPaperBuyArrowToolTip +=
-                                    "매매블록ID : " + p + "\n" +
-                                    "주문수량 : " + curEa.paperBuyStrategy.paperTradeSlot[p].nRqVolume + "(주)\n" +
-                                    "매수설명 : " + mainForm.strategyNameDict[(MainForm.PAPER_BUY_SIGNAL, strategyNames.arrPaperBuyStrategyName[curEa.paperBuyStrategy.arrSpecificStrategy[p]])] + "\n\n";
+                                    $"[매수취소] 매수요청시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nRqTime}  매도요청시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nSellRqTime}\n" +
+                                    $"매수블록ID : {p}  주문수량 : " + curEa.paperBuyStrategy.paperTradeSlot[p].nRqVolume + "(주)\n" +
+                                    "매수설명 : " +  strategyNames.arrPaperBuyStrategyName[curEa.paperBuyStrategy.arrSpecificStrategy[p]] + "\n\n";
 
                             }
                             else // 일부 매수취소 + 정상 매수
@@ -561,7 +565,7 @@ namespace AtoIndicator.View.EachStockHistory
                                 sPaperBuyArrowToolTip +=
                                      $"매수요청시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nRqTime}  체결시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nBuyEndTime}\n" +
                                      $"매수블록ID : {p}  주문가격(수량) : {curEa.paperBuyStrategy.paperTradeSlot[p].nOverPrice}(원)({curEa.paperBuyStrategy.paperTradeSlot[p].nRqVolume}),  매수가격(수량) : {curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedPrice}({curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedVolume})\n" +
-                                     "매수설명 : " + mainForm.strategyNameDict[(MainForm.PAPER_BUY_SIGNAL, strategyNames.arrPaperBuyStrategyName[curEa.paperBuyStrategy.arrSpecificStrategy[p]])] + "\n\n";
+                                     "매수설명 : " + strategyNames.arrPaperBuyStrategyName[curEa.paperBuyStrategy.arrSpecificStrategy[p]] + "\n\n";
                             }
 
                             if (realDictionary.ContainsKey(nPaperBuyAnnotationIdx)) // 해당위치(같은분봉) 에 값이 들어있다면
@@ -806,7 +810,7 @@ namespace AtoIndicator.View.EachStockHistory
                             if (nSpecificStrategyIdx != null && curEa.paperBuyStrategy.arrSpecificStrategy[p] != nSpecificStrategyIdx) // 특정한 전략만 보여주게 설정했다면
                                 continue; // 특정전략인덱스가 아니면 건너뛴다.
 
-                            if (nCurBuyedId != -1 && curEa.paperBuyStrategy.arrSpecificStrategy[p] != nCurBuyedId)
+                            if (nCurBuyedId != -1 && p != nCurBuyedId)
                                 continue;
 
                             if (!curEa.paperBuyStrategy.paperTradeSlot[p].isAllSelled)
@@ -821,15 +825,15 @@ namespace AtoIndicator.View.EachStockHistory
                             if (curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedVolume == 0) // 전량 매수취소가 된 상황 
                             {
                                 sPaperSellArrowToolTip +=
-                                    "매매블록ID : " + p + "\n" +
-                                    "주문수량 : " + curEa.paperBuyStrategy.paperTradeSlot[p].nRqVolume + "(주)\n" +
+                                    $"[매수취소] 매수요청시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nRqTime}  매도요청시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nSellRqTime}{NEW_LINE}"+
+                                    $"매매블록ID : {p}  주문수량 : " + curEa.paperBuyStrategy.paperTradeSlot[p].nRqVolume + "(주)\n" +
                                     "매도설명 : " + curEa.paperBuyStrategy.paperTradeSlot[p].sSellDescription + "\n\n";
 
                             }
                             else // 일부 매수취소 + 정상 매수
                             {
                                 sPaperSellArrowToolTip +=
-                                     $"매도요청시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nSellRqTime}  체결시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndTime}\n" +
+                                     $"매도요청시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nSellRqTime}  체결시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndTime}  손익률 : {Math.Round(((double)(curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndPrice - curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedPrice) / curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedPrice - MainForm.PAPER_STOCK_COMMISSION) * 100 , 2)} (%)\n" +
                                      $"매도블록ID : {p}  주문가격(수량) : {curEa.paperBuyStrategy.paperTradeSlot[p].nSellRqPrice}(원)({curEa.paperBuyStrategy.paperTradeSlot[p].nSellRqVolume}),  매도가격(수량) : {curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndPrice}({curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndVolume})\n" +
                                      "매도설명 : " + curEa.paperBuyStrategy.paperTradeSlot[p].sSellDescription + "\n\n";
                             }
@@ -2421,6 +2425,11 @@ namespace AtoIndicator.View.EachStockHistory
             {
                 ShowVariables();
             }
+            if (cUp == 'X') // 매매블럭
+            {
+                new ScrollableMessageBox().ShowEachBlock(mainForm.ea[nCurIdx]);
+            }
+
             if (cUp == 'G')
             {
                 isViewGapMa = !isViewGapMa;

@@ -1903,7 +1903,7 @@ namespace AtoIndicator
                         ea[nCurIdx].nRealMaxPrice = ea[nCurIdx].nFs;
 
 
-                  
+
 
                     if (ea[nCurIdx].isViMode)
                     {
@@ -2237,10 +2237,8 @@ namespace AtoIndicator
                     }
                     #endregion
 
-                    #region HIT 초기화
-                    // 페이크매수/매도 히트횟수 초기화(*동일분봉동안 가지는 히트횟수)
-                    if (nTimeLineIdx != ea[nCurIdx].fakeStrategyMgr.nFakePrevTimeLineIdx)
                     {
+
                         int nTotalHitNum = ea[nCurIdx].paperBuyStrategy.nHitNum
                                             + ea[nCurIdx].fakeBuyStrategy.nHitNum
                                             + ea[nCurIdx].fakeResistStrategy.nHitNum
@@ -2263,16 +2261,21 @@ namespace AtoIndicator
                             ea[nCurIdx].fakeStrategyMgr.nCurHitType++;
                         if (ea[nCurIdx].fakeDownStrategy.nHitNum > 0) // 페이크 다운
                             ea[nCurIdx].fakeStrategyMgr.nCurHitType++;
+                    }
 
+                    #region HIT 초기화
+                    // 페이크매수/매도 히트횟수 초기화(*동일분봉동안 가지는 히트횟수)
+                    if (nTimeLineIdx != ea[nCurIdx].fakeStrategyMgr.nFakePrevTimeLineIdx)
+                    {
                         if (ea[nCurIdx].fakeStrategyMgr.nCurHitType >= 3)
                         {
-                            if (nTotalHitNum >= 5)
+                            if (ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 5)
                             {
                                 ea[nCurIdx].fakeStrategyMgr.nHit5Num++;
-                                if (nTotalHitNum >= 8)
+                                if (ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 8)
                                 {
                                     ea[nCurIdx].fakeStrategyMgr.nHit8Num++;
-                                    if (nTotalHitNum >= 10)
+                                    if (ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 10)
                                     {
                                         ea[nCurIdx].fakeStrategyMgr.nHit10Num++;
                                     }
@@ -3647,7 +3650,7 @@ namespace AtoIndicator
                                     GetAccess(ea[nCurIdx].paperBuyStrategy, nPaperBuyStrategyPointer, nCycle: 11)
                                 )
                                 {
-                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory:TradeMethodCategory.BottomUpMethod);
+                                    SetThisPaperBuy(ea[nCurIdx].paperBuyStrategy, nCurIdx, nPaperBuyStrategyPointer, methodCategory: TradeMethodCategory.BottomUpMethod);
                                 }
                             }
                             PaperBuyPointerMove();
@@ -4387,120 +4390,148 @@ namespace AtoIndicator
                         {
                             for (int i = 0; i < ea[nCurIdx].paperBuyStrategy.nStrategyNum; i++)
                             {
-                                if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume > 0 && ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume == ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nTargetRqVolume) // 다 사졌다면
+                                if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume == ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nTargetRqVolume) // 다 사졌다면
                                 {
-                                    if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].isAllSelled)
+                                    if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume > 0)
                                     {
-                                        // 할일 없을듯?
-                                    }
-                                    else if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].isSelling)
-                                    {
-                                        if (ea[nCurIdx].nTv < 0) // 매도 경우만
+                                        if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].isAllSelled)
+                                        {
+                                            // 할일 없을듯?
+                                        }
+                                        else if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].isSelling)
                                         {
                                             if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqCount + 10 < ea[nCurIdx].nChegyulCnt)
                                             {
-                                                ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyHogaVolume += ea[nCurIdx].nTv;
-                                                ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndPrice = Min(ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqPrice, ea[nCurIdx].nFb);
-
-                                                if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyHogaVolume < 0)
+                                                if (ea[nCurIdx].nFb <= ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqPrice)
                                                 {
-                                                    if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume == 0)
-                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume -= ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyHogaVolume;
-                                                    else
-                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume -= ea[nCurIdx].nTv;
-                                                    if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume >= ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqVolume)
-                                                    {
-                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqVolume;
-                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTime = nSharedTime;
-                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTimeLineIdx = nTimeLineIdx;
-                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].isAllSelled = true;
+                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyHogaVolume -= Math.Abs(ea[nCurIdx].nTv);
+                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndPrice = Min(ea[nCurIdx].nFb, ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqPrice);
 
-                                                        strategyHistoryList[ea[nCurIdx].paperBuyStrategy.arrSpecificStrategy[i]].Add(new StrategyHistory(nCurIdx, i)); // 전략리스트 인덱스에 맞게 삽입
-                                                        totalTradeHistoryList.Add(new StrategyHistory(nCurIdx, i)); // 전체 매매리스트 
+                                                    if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyHogaVolume < 0)
+                                                    {
+                                                        if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume == 0)
+                                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume -= ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyHogaVolume;
+                                                        else
+                                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume += Math.Abs(ea[nCurIdx].nTv);
+                                                        if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume >= ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqVolume)
+                                                        {
+                                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqVolume;
+                                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTime = nSharedTime;
+                                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTimeLineIdx = nTimeLineIdx;
+                                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].isAllSelled = true;
+
+                                                        }
+
                                                     }
+                                                }
+                                                else if (ea[nCurIdx].nFb > ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqPrice)
+                                                {
+                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndPrice = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqPrice;
+                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqVolume;
+                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTime = nSharedTime;
+                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTimeLineIdx = nTimeLineIdx;
+                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].isAllSelled = true;
 
                                                 }
+
                                             }
                                         }
-                                    }
-                                    else //  판매중도 판매완료도 아닌 상황
-                                    {
-                                        int nBuyPrice = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedPrice; // 처음 초기화됐을때는 0인데 체결이 된 상태에서만 접근 가능하니 사졌을 때의 평균매입가
-                                        double fYield = (double)(ea[nCurIdx].nFb - nBuyPrice) / nBuyPrice; // 현재 최우선매수호가 와의 손익률을 구한다
-                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].fPower = fYield; // 수수료 미포함 손익율
-                                        fYield -= REAL_STOCK_COMMISSION;
-                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].fPowerWithFee = fYield; // 수수료 포함 손익율
+                                        else //  판매중도 판매완료도 아닌 상황
+                                        {
+                                            int nBuyPrice = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedPrice; // 처음 초기화됐을때는 0인데 체결이 된 상태에서만 접근 가능하니 사졌을 때의 평균매입가
+                                            double fYield = (double)(ea[nCurIdx].nFb - nBuyPrice) / nBuyPrice; // 현재 최우선매수호가 와의 손익률을 구한다
+                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].fPower = fYield; // 수수료 미포함 손익율
+                                            fYield -= REAL_STOCK_COMMISSION;
+                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].fPowerWithFee = fYield; // 수수료 포함 손익율
 
-                                        SetThisPaperSell(ea[nCurIdx].paperBuyStrategy, nCurIdx, i);
+                                            SetThisPaperSell(ea[nCurIdx].paperBuyStrategy, nCurIdx, i);
+                                        }
                                     }
                                 }
                                 else // 전부 체결이 안됐다면
                                 {
                                     if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nRqTime) >= MAX_REQ_SEC) // 시간 지나 매수취소
                                     {
-                                        if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume == 0)
-                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].isAllSelled = true;
                                         // 남은 잔량만큼 매수취소
                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nCanceledVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nRqVolume - ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume;
                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nTargetRqVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume;
                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedPrice = Max(ea[nCurIdx].nFs, ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nOverPrice);
                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyEndTime = nSharedTime;
                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedTimeLineIdx = nTimeLineIdx;
+
+
+                                        if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume == 0)
+                                        {
+                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].isAllSelled = true;
+                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndPrice = Max(ea[nCurIdx].nFs, ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nOverPrice);
+                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume;
+                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTime = nSharedTime;
+                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTimeLineIdx = nTimeLineIdx;
+                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].sSellDescription = "시간초과 전량 매수취소";
+                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedTimeLineIdx = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nRqTimeLineIdx;
+                                        }
                                     }
                                     else // 시간이 안지남
                                     {
-                                        if (ea[nCurIdx].nTv > 0) // 매수 경우만
+                                        if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nRqCount + 10 < ea[nCurIdx].nChegyulCnt) // 매수신청하고 10체결이 지나야함
                                         {
-                                            if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nRqCount + 10 < ea[nCurIdx].nChegyulCnt) // 매수신청하고 10체결이 지나야함
+                                            if (ea[nCurIdx].nFs == ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nOverPrice) // 가격이 같다면
                                             {
-                                                if (ea[nCurIdx].nFs == ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nOverPrice) // 가격이 같다면
+
+                                                ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellHogaVolume -= ea[nCurIdx].nTv;
+                                                ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedPrice = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nOverPrice;
+
+                                                if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellHogaVolume < 0)
                                                 {
+                                                    if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume == 0)
+                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume -= ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellHogaVolume;
+                                                    else
+                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume += ea[nCurIdx].nTv;
 
-                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellHogaVolume -= ea[nCurIdx].nTv;
-                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedPrice = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nOverPrice;
-
-                                                    if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellHogaVolume < 0)
+                                                    if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume >= ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nTargetRqVolume) // 다 사졌다
                                                     {
-                                                        if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume == 0)
-                                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume -= ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellHogaVolume;
-                                                        else
-                                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume += ea[nCurIdx].nTv;
-
-                                                        if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume >= ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nTargetRqVolume) // 다 사졌다
-                                                        {
-                                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nTargetRqVolume;
-                                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyEndTime = nSharedTime;
-                                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedTimeLineIdx = nTimeLineIdx;
-                                                        }
-                                                    }
-
-                                                }
-                                                else if (ea[nCurIdx].nFs < ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nOverPrice) // 현재 체결대금보다 내 가격이 높다면
-                                                {
-                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedPrice = ea[nCurIdx].nFs;
-
-                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nTargetRqVolume;
-                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyEndTime = nSharedTime;
-                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedTimeLineIdx = nTimeLineIdx;
-                                                }
-                                                else // 현재 체결대금보다 내 가격이 낮다면
-                                                {
-                                                    if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nRqTime) >= MAX_REQ_SEC)
-                                                    {
-                                                        // 남은 잔량만큼 매수취소
-                                                        if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume == 0)
-                                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].isAllSelled = true;
-                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nCanceledVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nRqVolume - ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume;
-                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nTargetRqVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume;
-                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedPrice = ea[nCurIdx].nFs;
+                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nTargetRqVolume;
                                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyEndTime = nSharedTime;
                                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedTimeLineIdx = nTimeLineIdx;
                                                     }
                                                 }
 
-
                                             }
+                                            else if (ea[nCurIdx].nFs < ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nOverPrice) // 현재 체결대금보다 내 가격이 높다면
+                                            {
+                                                ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedPrice = ea[nCurIdx].nFs;
+
+                                                ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nTargetRqVolume;
+                                                ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyEndTime = nSharedTime;
+                                                ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedTimeLineIdx = nTimeLineIdx;
+                                            }
+                                            else // 현재 체결대금보다 내 가격이 낮다면
+                                            {
+                                                if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nRqTime) >= BUY_CANCEL_ACCESS_SEC)
+                                                {
+                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nCanceledVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nRqVolume - ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume;
+                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nTargetRqVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume;
+                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedPrice = ea[nCurIdx].nFs;
+                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyEndTime = nSharedTime;
+                                                    ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedTimeLineIdx = nTimeLineIdx;
+
+                                                    // 남은 잔량만큼 매수취소
+                                                    if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume == 0)
+                                                    {
+                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].isAllSelled = true;
+                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndPrice = ea[nCurIdx].nFs;
+                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume;
+                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTime = nSharedTime;
+                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTimeLineIdx = nTimeLineIdx;
+                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].sSellDescription = "가격상승 전량 매수취소";
+                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedTimeLineIdx = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nRqTimeLineIdx;
+                                                    }
+                                                }
+                                            }
+
+
                                         }
+
                                     }
                                 }
                             }

@@ -157,7 +157,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.메뉴ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1320, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1320, 30);
             this.menuStrip1.TabIndex = 13;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -167,19 +167,19 @@ namespace AtoIndicator.View.EachStockHistory
             this.showVarToolStripMenuItem,
             this.showLogToolStripMenuItem});
             this.메뉴ToolStripMenuItem.Name = "메뉴ToolStripMenuItem";
-            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
+            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 26);
             this.메뉴ToolStripMenuItem.Text = "메뉴";
             // 
             // showVarToolStripMenuItem
             // 
             this.showVarToolStripMenuItem.Name = "showVarToolStripMenuItem";
-            this.showVarToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.showVarToolStripMenuItem.Size = new System.Drawing.Size(184, 26);
             this.showVarToolStripMenuItem.Text = "변수출력( V )";
             // 
             // showLogToolStripMenuItem
             // 
             this.showLogToolStripMenuItem.Name = "showLogToolStripMenuItem";
-            this.showLogToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.showLogToolStripMenuItem.Size = new System.Drawing.Size(184, 26);
             this.showLogToolStripMenuItem.Text = "로그 확인( L )";
             // 
             // gapLabel
@@ -240,6 +240,7 @@ namespace AtoIndicator.View.EachStockHistory
             // 
             // blockFlowLayoutPanel
             // 
+            this.blockFlowLayoutPanel.AutoScroll = true;
             this.blockFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.blockFlowLayoutPanel.Location = new System.Drawing.Point(3, 21);
             this.blockFlowLayoutPanel.Name = "blockFlowLayoutPanel";

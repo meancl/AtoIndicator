@@ -201,6 +201,11 @@ namespace AtoIndicator.View.TradeRecod
                 const double REAL_STOCK_COMMISSION = MainForm.REAL_STOCK_COMMISSION;
                 List<ListViewItem> listViewItems = new List<ListViewItem>();
 
+
+                int nTodayTotalDisposalBuy = 0;
+                int nTodayTotalDisposalSell = 0;
+
+
                 // 리스트뷰 클리어
                 if (tradeRecordListView.InvokeRequired)
                     tradeRecordListView.Invoke(new MethodInvoker(delegate
@@ -257,10 +262,12 @@ namespace AtoIndicator.View.TradeRecod
                     {
                         if (tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume == tmpEa.paperBuyStrategy.paperTradeSlot[j].nTargetRqVolume && tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume > 0) // 다 사졌으면
                         {
+                            
                             if (tmpEa.paperBuyStrategy.paperTradeSlot[j].isAllSelled) // 다 팔렸던거
                             {
                                 fTotalPrice += tmpEa.paperBuyStrategy.paperTradeSlot[j].nSellEndPrice * tmpEa.paperBuyStrategy.paperTradeSlot[j].nSellEndVolume;
                                 nTotalVolume += tmpEa.paperBuyStrategy.paperTradeSlot[j].nSellEndVolume;
+                                nTodayTotalDisposalSell += tmpEa.paperBuyStrategy.paperTradeSlot[j].nSellEndPrice * tmpEa.paperBuyStrategy.paperTradeSlot[j].nSellEndVolume;
                             }
                             else // 매매중
                             {
@@ -269,17 +276,18 @@ namespace AtoIndicator.View.TradeRecod
 
                                 if (tmpEa.paperBuyStrategy.paperTradeSlot[j].isSelling) // 판매중이라면
                                 {
-                                    fTotalPrice += tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume * ((tmpEa.nFb > 0) ? tmpEa.nFb : tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedPrice); // 판매된만큼 + 잔량만큼 가격
+                                    fTotalPrice += tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume * ((tmpEa.nFb > 0) ? tmpEa.nFb : tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedPrice);
                                     nTotalVolume += tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume; // 판매된만큼 + 잔량만큼 수량
                                 }
                                 else // 사기만 함
                                 {
-                                    fTotalPrice += tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedPrice * tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume;
+                                    fTotalPrice += tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume * ((tmpEa.nFb > 0) ? tmpEa.nFb : tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedPrice);
                                     nTotalVolume += tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume;
                                 }
                             }
 
                             fTotalBuyPrice += tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedPrice * tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume;
+                            nTodayTotalDisposalBuy += tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedPrice * tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume;
                         }
                     }
 
@@ -339,21 +347,14 @@ namespace AtoIndicator.View.TradeRecod
                     tradeRecordListView.EndUpdate();
                 }
 
-                int nYesterdayDisposalBuy = mainForm.nYesterdayUndisposalBuyPrice;
-                int nTodayTotalDisposalBuy = mainForm.nTodayDisposalBuyPrice;
-                int nTodayTotalDisposalSell = mainForm.nTodayDisposalSellPrice;
-                int nTodayProfit = nTodayTotalDisposalSell - (nTodayTotalDisposalBuy + nYesterdayDisposalBuy);
-                int nTodayProfitWithRealFee = (int)(nTodayTotalDisposalSell * (1 - MainForm.REAL_STOCK_COMMISSION) - (nTodayTotalDisposalBuy + nYesterdayDisposalBuy));
-                int nTodayProfitWithVirtualFree = (int)(nTodayTotalDisposalSell * (1 - MainForm.VIRTUAL_STOCK_COMMISSION) - (nTodayTotalDisposalBuy + nYesterdayDisposalBuy));
+                int nTodayProfit = nTodayTotalDisposalSell - nTodayTotalDisposalBuy;
+                int nTodayProfitWithRealFee = (int)(nTodayTotalDisposalSell * (1 - MainForm.PAPER_STOCK_COMMISSION) - nTodayTotalDisposalBuy );
+                int nTodayProfitWithVirtualFree = (int)(nTodayTotalDisposalSell * (1 - MainForm.VIRTUAL_STOCK_COMMISSION) - nTodayTotalDisposalBuy );
 
                 VoidDelegator tmpDelegator = delegate
                 {
                     todayTotalResultTextBox.Clear();
-                    if (nYesterdayDisposalBuy > 0)
-                    {
-                        todayTotalResultTextBox.AppendText($" 미처분 매수금액 : {((double)nYesterdayDisposalBuy / MainForm.MILLION)}(백만원){NEW_LINE}");
-                        todayTotalResultTextBox.AppendText($" 미처분 포함 총매수금액 : {((double)(nYesterdayDisposalBuy + nTodayTotalDisposalBuy) / MainForm.MILLION)}(백만원){NEW_LINE}");
-                    }
+                    
                     todayTotalResultTextBox.AppendText($"=============================== 오늘자 현재 결과 =====================================\r\n");
                     todayTotalResultTextBox.AppendText($" 오늘자 매수금액 : {((double)nTodayTotalDisposalBuy / MainForm.MILLION)}(백만원){NEW_LINE}");
                     todayTotalResultTextBox.AppendText($" 오늘자 매도금액 : {((double)nTodayTotalDisposalSell / MainForm.MILLION)}(백만원){NEW_LINE}");

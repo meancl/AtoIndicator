@@ -1300,6 +1300,7 @@ namespace AtoIndicator
             public int nBuyedVolume; // 언제 사졌는 지
             public int nBuyedPrice; // 얼마에 사졌는 지 
             public int nBuyedTimeLineIdx;
+            public int nRqTimeLineIdx;
             public int nBuyEndTime;
             public int nSellHogaVolume; // 호가에 얼마나 걸려있는 지
             public int nCanceledVolume; // 매수취소 적용된 매수요청물량
@@ -1336,6 +1337,9 @@ namespace AtoIndicator
             public int nRespiteFirstTime;
             public int nEachRespiteCount;
             public double fRespiteCriticalLine;
+
+            public string sFixedMsg;
+            public int nSequence;
         }
 
         /// <summary>

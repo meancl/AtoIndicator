@@ -17,7 +17,7 @@ namespace AtoIndicator.View.EachStrategy
         MainForm mainForm;
         int nStrategyIdx;
         MainForm.EachStock curEa;
-        MainForm.BuyedSlot buyedSlot;
+        MainForm.PaperTradeSlot buyedSlot;
         string NEW_LINE = Environment.NewLine;
         #endregion
 
@@ -103,16 +103,16 @@ namespace AtoIndicator.View.EachStrategy
                     for (int i = 0; i < list.Count; i++)
                     {
                         curEa = mainForm.ea[list[i].nEaIdx];
-                        buyedSlot = curEa.myTradeManager.arrBuyedSlots[list[i].nBuyedIdx];
+                        buyedSlot = curEa.paperBuyStrategy.paperTradeSlot[list[i].nBuyedIdx];
 
                         // Default 작업
                         eachStrategyInfo.isAllCanceled = false;
                         eachStrategyInfo.isTrading = false;
                         eachStrategyInfo.sCode = curEa.sCode;
                         eachStrategyInfo.sCodeName = curEa.sCodeName;
-                        eachStrategyInfo.nStrategySequence = curEa.myTradeManager.arrBuyedSlots[list[i].nBuyedIdx].nSequence;
+                        eachStrategyInfo.nStrategySequence = buyedSlot.nSequence;
                         eachStrategyInfo.fProfit = 0.0;
-                        eachStrategyInfo.nBuyedPrice = buyedSlot.nBirthPrice;
+                        eachStrategyInfo.nBuyedPrice = buyedSlot.nBuyedPrice;
                         eachStrategyInfo.nCurPrice = curEa.nFs;
                         eachStrategyInfo.nBuyedTime = buyedSlot.nBuyEndTime;
                         eachStrategyInfo.nSlotIdx = list[i].nBuyedIdx;
@@ -120,18 +120,18 @@ namespace AtoIndicator.View.EachStrategy
 
                         if (buyedSlot.isAllSelled)
                         {
-                            if (buyedSlot.nBuyVolume == 0) // 전량 매수취소된 케이스 
+                            if (buyedSlot.nBuyedVolume == 0) // 전량 매수취소된 케이스 
                             {
                                 eachStrategyInfo.isAllCanceled = true;
                             }
                             else // 정상매매
                             {
-                                eachStrategyInfo.fProfit = (double)(buyedSlot.nDeathPrice - buyedSlot.nBuyPrice) / buyedSlot.nBuyPrice - MainForm.REAL_STOCK_COMMISSION;
+                                eachStrategyInfo.fProfit = (double)(buyedSlot.nSellEndPrice - buyedSlot.nBuyedPrice) / buyedSlot.nBuyedPrice - MainForm.PAPER_STOCK_COMMISSION;
                             }
                         }
                         else
                         {
-                            if (buyedSlot.isAllBuyed) // 다 사지긴 함
+                            if (buyedSlot.nBuyedVolume == buyedSlot.nTargetRqVolume) // 다 사지긴 함
                             {
                                 eachStrategyInfo.fProfit = buyedSlot.fPowerWithFee;
                                 eachStrategyInfo.isTrading = true;
@@ -223,7 +223,7 @@ namespace AtoIndicator.View.EachStrategy
                 int nSlotIdx = int.Parse(eachStrategyListView.FocusedItem.SubItems[9].Text);
 
                 curEa = mainForm.ea[nEaIdx];
-                buyedSlot = mainForm.ea[nEaIdx].myTradeManager.arrBuyedSlots[nSlotIdx];
+                buyedSlot = mainForm.ea[nEaIdx].paperBuyStrategy.paperTradeSlot[nSlotIdx];
 
                 if (buyedSlot.sFixedMsg == null)
                     return;
@@ -233,20 +233,20 @@ namespace AtoIndicator.View.EachStrategy
                     $"매매블럭 : {nSlotIdx}{NEW_LINE}" +
                     $"종목명 : {curEa.sCodeName}{NEW_LINE}" +
                     $"-------------매수--------------{NEW_LINE}" +
-                    $"신청시간 : {buyedSlot.nRequestTime}{NEW_LINE}" +
+                    $"신청시간 : {buyedSlot.nRqTime}{NEW_LINE}" +
                     $"체결시간 : {buyedSlot.nBuyEndTime}{NEW_LINE}" +
-                    $"체결수량 : {buyedSlot.nBuyVolume}{NEW_LINE}" +
-                    $"체결가 : {buyedSlot.nBuyPrice}{NEW_LINE}";
+                    $"체결수량 : {buyedSlot.nBuyedVolume}{NEW_LINE}" +
+                    $"체결가 : {buyedSlot.nBuyedPrice}{NEW_LINE}";
 
                 if (buyedSlot.isAllSelled)
                 {
-                    if (buyedSlot.nBuyVolume > 0)
+                    if (buyedSlot.nBuyedVolume > 0)
                         choosedInfoTextBox.Text +=
                             $"-------------매도--------------{NEW_LINE}" +
-                            $"매도시간 : {buyedSlot.nDeathTime}{NEW_LINE}" +
-                            $"매도가 : {buyedSlot.nDeathPrice}{NEW_LINE}" +
-                            $"매매시간 : {SubTimeToTime(buyedSlot.nDeathTime, buyedSlot.nBuyEndTime)}{NEW_LINE}" +
-                            $"매매결과 : {Math.Round(((double)(buyedSlot.nDeathPrice - buyedSlot.nBuyPrice) / buyedSlot.nBuyPrice - MainForm.REAL_STOCK_COMMISSION) * 100, 2)}(%){NEW_LINE}";
+                            $"매도시간 : {buyedSlot.nSellEndTime}{NEW_LINE}" +
+                            $"매도가 : {buyedSlot.nSellEndPrice}{NEW_LINE}" +
+                            $"매매시간 : {SubTimeToTime(buyedSlot.nSellEndTime, buyedSlot.nBuyEndTime)}{NEW_LINE}" +
+                            $"매매결과 : {Math.Round(((double)(buyedSlot.nSellEndPrice - buyedSlot.nBuyedPrice) / buyedSlot.nBuyedPrice - MainForm.PAPER_STOCK_COMMISSION) * 100, 2)}(%){NEW_LINE}";
                     else
                         choosedInfoTextBox.Text += $"전량 매수취소됐습니다.{NEW_LINE}";
 
