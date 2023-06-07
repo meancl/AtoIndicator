@@ -80,6 +80,8 @@ namespace AtoIndicator
                             if (slot == null)
                             {
                                 PrintLog("손매수 접수 완료");
+                                
+
                                 slot = slotDict[sOrderId] = new BuyedSlot();
                                 slot.nRequestTime = nSharedTime;
                                 slot.nOriginOrderPrice = Math.Abs(int.Parse(sOrderPrice)); // 주문요청금액 설정
@@ -89,6 +91,7 @@ namespace AtoIndicator
                                 slot.fTradeRatio = 1;
                                 slot.sBuyDescription = "직접 매수";
                                 slot.isBuying = true;
+                                slot.isBuyByHand = true;
 
                                 switch (slot.eTradeMethod)
                                 {
@@ -112,7 +115,7 @@ namespace AtoIndicator
                                         break;
                                 }
 
-                                slot.sFixedMsg = null; // 참조형식
+                                nCurDepositCalc -= slot.nOrderPrice * slot.nOrderVolume + ea[nCurIdx].feeMgr.GetRoughFee(slot.nOrderPrice * slot.nOrderVolume);
                             }
 
                             slot.nReceiptTime = nSharedTime;

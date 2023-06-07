@@ -188,7 +188,6 @@
                     curSlot.fRequestRatio = fRequestRatio;
                     curSlot.fTargetPercent = fCeil;
                     curSlot.fBottomPercent = fFloor;
-                    curSlot.sFixedInfoPassanger = ea[nEaIdx].GetInfoString();
                     break;
                 case NEW_SELL:
                     curSlot.nQty = nQty;

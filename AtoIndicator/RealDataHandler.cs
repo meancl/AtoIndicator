@@ -1440,8 +1440,6 @@ namespace AtoIndicator
                                                             }
 
 
-                                                            newSlot.sFixedMsg = curSlot.sFixedInfoPassanger; // 참조형식
-
                                                             SetSlotInScreen(sBuyScrNo, newSlot);
                                                             #endregion
 

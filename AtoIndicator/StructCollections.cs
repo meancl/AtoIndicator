@@ -537,7 +537,6 @@ namespace AtoIndicator
             public int nStrategyIdx; // 전략 인덱스
             
             public string sDescription;
-            public string sFixedInfoPassanger;
             
             // ----------------------------------
             // 매수 인자들
@@ -632,6 +631,7 @@ namespace AtoIndicator
             public int nBuyEndTime; //  매수체결완료시간
             public double fTradeRatio; // 구매비율
             public bool isBuyBanned;
+            public bool isBuyByHand;
 
             public string sBuyScrNo;
             public string sSellScrNo;
@@ -682,7 +682,6 @@ namespace AtoIndicator
             public int nSystemeticSellFail; // 시스템 상으로 매도 비정상처리가 걸린경우가 많으면 제외
             public int nSystemeticBuyCancelFail;
 
-            public string sFixedMsg;
 
             public MaOverN maOverN;
 

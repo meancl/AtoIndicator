@@ -245,6 +245,8 @@ namespace AtoIndicator.View.EachStockHistory
 
             setRadioDelegate();
 
+            gp = historyChart.CreateGraphics();
+            gpHorizontal = historyChart.CreateGraphics();
 
         }
         #endregion
@@ -1766,9 +1768,12 @@ namespace AtoIndicator.View.EachStockHistory
                 else
                     reserveLabel.Text = $"{Math.Round(curEa.manualReserve.fReserveCheckPrice, 2)} 박스라인 선택 중";
             }
+
             powerLabel.Text = $"현재파워 : {Math.Round(curEa.fPower, 3)}";
             gapLabel.Text = $"현재갭 : {Math.Round(curEa.fStartGap, 3)}";
-            label1.Text = $"현재좌표 : {xCoord} {yCoord}";
+            curLocLabel.Text = $"현재좌표 : {xCoord} {yCoord}";
+            curLocPowerLabel.Text = $"커서파워 : {Math.Round((double)(yCoord - curEa.nYesterdayEndPrice) / curEa.nYesterdayEndPrice, 3)}";
+            aiScoreLabel.Text = $"aiScore : {curEa.fakeStrategyMgr.fAIScore}";
 
             if (isRightPressed || isPreciselyCheck)
             {
@@ -1994,7 +1999,9 @@ namespace AtoIndicator.View.EachStockHistory
             if (e.Button == MouseButtons.Left)
             {
                 HitTestResult hit = historyChart.HitTest(e.X, e.Y);
-                if (prevGpCount != historyChart.Series["MinuteStick"].Points.Count)
+
+
+                if ( prevGpCount != historyChart.Series["MinuteStick"].Points.Count)
                 {
                     prevGpCount = historyChart.Series["MinuteStick"].Points.Count;
                     gp = historyChart.CreateGraphics();
@@ -2414,7 +2421,7 @@ namespace AtoIndicator.View.EachStockHistory
             if (cUp == 39) // 오른쪽 화살표
             {
                 isBuyMode = !isBuyMode;
-                buyModeLabel.Text = isBuyMode.ToString();
+                buyModeLabel.Text = $"buy : {isBuyMode}";
             }
 
             if (cUp == 'O') // 각도기

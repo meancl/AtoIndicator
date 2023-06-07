@@ -40,7 +40,7 @@ namespace AtoIndicator.View.EachStockHistory
             System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.historyChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.totalClockLabel = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.curLocLabel = new System.Windows.Forms.Label();
             this.moveLabel = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.메뉴ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,6 +53,8 @@ namespace AtoIndicator.View.EachStockHistory
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.blockFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.buyModeLabel = new System.Windows.Forms.Label();
+            this.aiScoreLabel = new System.Windows.Forms.Label();
+            this.curLocPowerLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.historyChart)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -116,7 +118,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.historyChart.Series.Add(series5);
             this.historyChart.Series.Add(series6);
             this.historyChart.Series.Add(series7);
-            this.historyChart.Size = new System.Drawing.Size(1043, 708);
+            this.historyChart.Size = new System.Drawing.Size(1067, 744);
             this.historyChart.TabIndex = 2;
             this.historyChart.Text = "chart1";
             // 
@@ -125,27 +127,27 @@ namespace AtoIndicator.View.EachStockHistory
             this.totalClockLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.totalClockLabel.AutoSize = true;
             this.totalClockLabel.Font = new System.Drawing.Font("굴림", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.totalClockLabel.Location = new System.Drawing.Point(1090, 9);
+            this.totalClockLabel.Location = new System.Drawing.Point(1114, 9);
             this.totalClockLabel.Name = "totalClockLabel";
             this.totalClockLabel.Size = new System.Drawing.Size(0, 24);
             this.totalClockLabel.TabIndex = 3;
             // 
-            // label1
+            // curLocLabel
             // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label1.Location = new System.Drawing.Point(898, 431);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(8, 17);
-            this.label1.TabIndex = 8;
-            this.label1.Text = "\r\n";
+            this.curLocLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.curLocLabel.AutoSize = true;
+            this.curLocLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.curLocLabel.Location = new System.Drawing.Point(922, 431);
+            this.curLocLabel.Name = "curLocLabel";
+            this.curLocLabel.Size = new System.Drawing.Size(8, 17);
+            this.curLocLabel.TabIndex = 8;
+            this.curLocLabel.Text = "\r\n";
             // 
             // moveLabel
             // 
             this.moveLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.moveLabel.AutoSize = true;
-            this.moveLabel.Location = new System.Drawing.Point(898, 465);
+            this.moveLabel.Location = new System.Drawing.Point(922, 488);
             this.moveLabel.Name = "moveLabel";
             this.moveLabel.Size = new System.Drawing.Size(7, 15);
             this.moveLabel.TabIndex = 11;
@@ -158,7 +160,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.메뉴ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1320, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1344, 28);
             this.menuStrip1.TabIndex = 13;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -188,7 +190,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.gapLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.gapLabel.AutoSize = true;
             this.gapLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.gapLabel.Location = new System.Drawing.Point(898, 399);
+            this.gapLabel.Location = new System.Drawing.Point(922, 399);
             this.gapLabel.Name = "gapLabel";
             this.gapLabel.Size = new System.Drawing.Size(8, 17);
             this.gapLabel.TabIndex = 17;
@@ -199,7 +201,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.powerLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.powerLabel.AutoSize = true;
             this.powerLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.powerLabel.Location = new System.Drawing.Point(898, 368);
+            this.powerLabel.Location = new System.Drawing.Point(922, 368);
             this.powerLabel.Name = "powerLabel";
             this.powerLabel.Size = new System.Drawing.Size(8, 17);
             this.powerLabel.TabIndex = 18;
@@ -210,7 +212,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.reserveLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.reserveLabel.AutoSize = true;
             this.reserveLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.reserveLabel.Location = new System.Drawing.Point(897, 330);
+            this.reserveLabel.Location = new System.Drawing.Point(921, 330);
             this.reserveLabel.Name = "reserveLabel";
             this.reserveLabel.Size = new System.Drawing.Size(8, 17);
             this.reserveLabel.TabIndex = 19;
@@ -221,7 +223,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.expansionLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.expansionLabel.AutoSize = true;
             this.expansionLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.expansionLabel.Location = new System.Drawing.Point(897, 297);
+            this.expansionLabel.Location = new System.Drawing.Point(921, 297);
             this.expansionLabel.Name = "expansionLabel";
             this.expansionLabel.Size = new System.Drawing.Size(8, 17);
             this.expansionLabel.TabIndex = 20;
@@ -232,9 +234,9 @@ namespace AtoIndicator.View.EachStockHistory
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.blockFlowLayoutPanel);
-            this.groupBox1.Location = new System.Drawing.Point(1063, 68);
+            this.groupBox1.Location = new System.Drawing.Point(1087, 68);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(245, 695);
+            this.groupBox1.Size = new System.Drawing.Size(245, 731);
             this.groupBox1.TabIndex = 21;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "매매블록 선택";
@@ -245,7 +247,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.blockFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.blockFlowLayoutPanel.Location = new System.Drawing.Point(3, 21);
             this.blockFlowLayoutPanel.Name = "blockFlowLayoutPanel";
-            this.blockFlowLayoutPanel.Size = new System.Drawing.Size(239, 671);
+            this.blockFlowLayoutPanel.Size = new System.Drawing.Size(239, 707);
             this.blockFlowLayoutPanel.TabIndex = 0;
             // 
             // buyModeLabel
@@ -253,28 +255,52 @@ namespace AtoIndicator.View.EachStockHistory
             this.buyModeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buyModeLabel.AutoSize = true;
             this.buyModeLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.buyModeLabel.Location = new System.Drawing.Point(880, 16);
+            this.buyModeLabel.Location = new System.Drawing.Point(112, 16);
             this.buyModeLabel.Name = "buyModeLabel";
-            this.buyModeLabel.Size = new System.Drawing.Size(48, 17);
+            this.buyModeLabel.Size = new System.Drawing.Size(99, 17);
             this.buyModeLabel.TabIndex = 22;
-            this.buyModeLabel.Text = "false";
+            this.buyModeLabel.Text = "buy : False";
+            // 
+            // aiScoreLabel
+            // 
+            this.aiScoreLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.aiScoreLabel.AutoSize = true;
+            this.aiScoreLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.aiScoreLabel.Location = new System.Drawing.Point(260, 16);
+            this.aiScoreLabel.Name = "aiScoreLabel";
+            this.aiScoreLabel.Size = new System.Drawing.Size(97, 17);
+            this.aiScoreLabel.TabIndex = 23;
+            this.aiScoreLabel.Text = "aiScore : 0";
+            // 
+            // curLocPowerLabel
+            // 
+            this.curLocPowerLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.curLocPowerLabel.AutoSize = true;
+            this.curLocPowerLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.curLocPowerLabel.Location = new System.Drawing.Point(921, 458);
+            this.curLocPowerLabel.Name = "curLocPowerLabel";
+            this.curLocPowerLabel.Size = new System.Drawing.Size(8, 17);
+            this.curLocPowerLabel.TabIndex = 24;
+            this.curLocPowerLabel.Text = "\r\n";
             // 
             // EachStockHistoryForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1320, 792);
+            this.ClientSize = new System.Drawing.Size(1344, 828);
+            this.Controls.Add(this.curLocPowerLabel);
+            this.Controls.Add(this.moveLabel);
+            this.Controls.Add(this.aiScoreLabel);
             this.Controls.Add(this.buyModeLabel);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.curLocLabel);
             this.Controls.Add(this.expansionLabel);
             this.Controls.Add(this.reserveLabel);
             this.Controls.Add(this.powerLabel);
             this.Controls.Add(this.gapLabel);
-            this.Controls.Add(this.moveLabel);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.totalClockLabel);
             this.Controls.Add(this.historyChart);
             this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.groupBox1);
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -292,7 +318,7 @@ namespace AtoIndicator.View.EachStockHistory
         #endregion
         private System.Windows.Forms.DataVisualization.Charting.Chart historyChart;
         private System.Windows.Forms.Label totalClockLabel;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label curLocLabel;
         private System.Windows.Forms.Label moveLabel;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem 메뉴ToolStripMenuItem;
@@ -305,5 +331,7 @@ namespace AtoIndicator.View.EachStockHistory
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.FlowLayoutPanel blockFlowLayoutPanel;
         private System.Windows.Forms.Label buyModeLabel;
+        private System.Windows.Forms.Label aiScoreLabel;
+        private System.Windows.Forms.Label curLocPowerLabel;
     }
 }
