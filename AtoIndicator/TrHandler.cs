@@ -367,7 +367,8 @@ namespace AtoIndicator
                                             PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nEaReq].sCode}  종목명 : {ea[nEaReq].sCodeName}  e화면번호 : {e.sScrNo}  매도가 비정상처리됐습니다.", nEaReq);
                                             ea[nEaReq].myTradeManager.nSellReqCnt--;
                                             slot.isSelling = false;
-                                            slot.nSystemeticSellFail++;
+                                            slot.nSellErrorCount++;
+                                            slot.nSellErrorLastTime = nSharedTime;
                                             ShutOffScreen(e.sScrNo);
                                         }
                                         else
@@ -380,7 +381,6 @@ namespace AtoIndicator
                                         {
                                             PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nEaReq].sCode}  종목명 : {ea[nEaReq].sCodeName}  e화면번호 : {e.sScrNo}  매수취소가 비정상처리됐습니다.", nEaReq);
                                             slot.isCanceling = false; // 해당 블록의 매수취소 시그널 취소
-                                            slot.nSystemeticBuyCancelFail++;
                                         }
                                         else
                                             PrintLog($"{nSharedTime} 화면번호 : {e.sScrNo} 종목명 : {ea[nEaReq].sCodeName} sRq : {e.sRQName} 이미 매수취소 비정상인데 다시 접근 에러");

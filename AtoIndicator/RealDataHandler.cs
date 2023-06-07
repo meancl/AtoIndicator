@@ -175,8 +175,6 @@ namespace AtoIndicator
         public static int SELL_VERSION = 0;
         public static int AI_VERSION = 0;
         public const int TRADE_CONTROLLER_ACCESS_BUY_LIMIT = 10;
-        public const int SYSTEMETIC_SELL_FAIL = 10;
-        public const int SYSTEMETIC_BUY_CANCEL_FAIL = 6;
 
 
         public const int ONE_SEC_MIL_SEC = 1000;
@@ -1370,7 +1368,7 @@ namespace AtoIndicator
                                     {
                                         int nEstimatedPrice = curSlot.nOrderPrice; // 종목의 요청했던 최우선매도호가를 받아온다.
 
-                                     
+
 
                                         int nNumToBuy = (int)(nCurDepositCalc / (nEstimatedPrice * (1 + STOCK_FEE))); // 현재 예수금으로 살 수 있을 만큼
                                         int nMaxNumToBuy = (int)(STANDARD_BUY_PRICE * curSlot.fRequestRatio) / nEstimatedPrice; // 최대매수가능금액으로 살 수 있을 만큼 
@@ -1511,98 +1509,34 @@ namespace AtoIndicator
                             #region NEW_SELL
                             if (curSlot.nOrderType == NEW_SELL)
                             {
-                                if (ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].nSystemeticSellFail <= SYSTEMETIC_SELL_FAIL) // 시스템 상 오류
+                                if (curSlot.sHogaGb.Equals(MARKET_ORDER)) // 시장가매도
                                 {
-                                    if (curSlot.sHogaGb.Equals(MARKET_ORDER)) // 시장가매도
+                                    ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].nSellRequestTime = curSlot.nRqTime;
+                                    ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].sSellDescription = curSlot.sDescription;
+
+                                    PrintLog($"{nSharedTime} : {curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName} 매도신청 전송", curSlot.nEaIdx);
+                                    string sSellScrNo = GetScreenNum();
+
+                                    if (sSellScrNo != null) // 사용가능한 화면번호가 있다면
                                     {
-                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].nSellRequestTime = curSlot.nRqTime;
-                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].sSellDescription = curSlot.sDescription;
+                                        int nSellReqResult = axKHOpenAPI1.SendOrder($"{SEND_ORDER_ERROR_CHECK_PREFIX}{ORDER_NEW_SELL} {curSlot.nEaIdx} {curSlot.nBuyedSlotIdx}", sSellScrNo, sAccountNum,
+                                                curSlot.nOrderType, curSlot.sCode, curSlot.nQty, 0,
+                                                curSlot.sHogaGb, curSlot.sOrgOrderId);
 
-                                        PrintLog($"{nSharedTime} : {curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName} 매도신청 전송", curSlot.nEaIdx);
-                                        string sSellScrNo = GetScreenNum();
-
-                                        if (sSellScrNo != null) // 사용가능한 화면번호가 있다면
-                                        {
-                                            int nSellReqResult = axKHOpenAPI1.SendOrder($"{SEND_ORDER_ERROR_CHECK_PREFIX}{ORDER_NEW_SELL} {curSlot.nEaIdx} {curSlot.nBuyedSlotIdx}", sSellScrNo, sAccountNum,
-                                                    curSlot.nOrderType, curSlot.sCode, curSlot.nQty, 0,
-                                                    curSlot.sHogaGb, curSlot.sOrgOrderId);
-
-                                            if (nSellReqResult == OP_ERR_NONE) // 요청이 성공하면
-                                            {
-                                                isSendOrder = true;
-                                                SetSlotInScreen(sSellScrNo, ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx]);
-                                                ea[curSlot.nEaIdx].myTradeManager.nSellReqCnt++; // 매도요청전송이 성공하면 매도횟수를 증가한다.
-
-                                                PrintLog($"{curSlot.sCode} {ea[curSlot.nEaIdx].sCodeName}  화면번호 : {sSellScrNo}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName} 매도신청 전송 성공", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
-                                            }
-                                            else // 요청이 실패했다는 것
-                                            {
-                                                ShutOffScreen(sSellScrNo);
-
-
-                                                if (nSellReqResult == OP_ERR_ORD_OVERFLOW) // 주문전송과부화
-                                                {
-#if DEBUG
-                                                    dtCurOrderTime = DateTime.UtcNow;
-                                                    if ((dtCurOrderTime - dOverFlowToUp).TotalMilliseconds > ONE_SEC_MIL_SEC)
-                                                    {
-                                                        dtBeforeOrderTime = dtCurOrderTime;
-                                                        isForbidTrade = true;
-                                                        nOverFlowCnt++;
-                                                        dOverFlowToUp = dtCurOrderTime;
-                                                        PrintLog($"{nSharedTime} 주문전송과부하 카운트 : {nOverFlowCnt}회");
-                                                    }
-#endif
-                                                    tradeQueue.Enqueue(curSlot);
-                                                }
-                                                else // 그냥 실패
-                                                {
-                                                    PrintLog($"{curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName}  오류번호 : {nSellReqResult} 매도신청 전송 실패", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
-                                                    ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].isSelling = false;
-                                                }
-                                            }
-                                        } // END ---- 사용가능한 화면번호가 있다면 
-                                        else // 사용가능한 화면번호가 없다면
-                                        {
-                                            PrintLog($"{curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName} 화면번호 할당불가로 매도신청 전송 실패", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
-                                            ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].isSelling = false;
-
-                                        }// END ---- 사용가능한 화면번호가 없다면 
-
-                                    } // END ---- 시장가매도
-                                    else if (curSlot.sHogaGb.Equals(PENDING_ORDER)) // 지정가매도
-                                    {
-
-                                    }
-                                }
-                            }
-                            #endregion
-                            #region BUY_CANCEL
-                            else if (curSlot.nOrderType == BUY_CANCEL)
-                            {
-
-                                BuyedSlot slot = slotDict[curSlot.sOrgOrderId];
-
-                                if (slot.nSystemeticBuyCancelFail <= SYSTEMETIC_BUY_CANCEL_FAIL)
-                                {
-                                    if (!slot.isAllBuyed) // 그와중에 매수가 완료되면 매수취소는 삭제된다.
-                                    {
-                                        PrintLog($"{nSharedTime} : {curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName}  {curSlot.sDescription} 매수취소신청 전송", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
-
-                                        int nCancelReqResult = axKHOpenAPI1.SendOrder($"{SEND_ORDER_ERROR_CHECK_PREFIX}{ORDER_BUY_CANCEL} {curSlot.nEaIdx}", slot.sBuyScrNo, sAccountNum,
-                                            curSlot.nOrderType, curSlot.sCode, 0, 0,
-                                            "", curSlot.sOrgOrderId); // 취소주문수량을 0으로 입력하면 미체결 전량이 취소됩니다.
-                                                                      // 취소주문시 주문가격은 필요없으며 취소하려는 주문 그러니까 미체결 주문의 주문번호가 취소주문시 필요한 원주문번호가 됩니다.
-                                                                      //마지막으로 취소주문시에는 거래구분(시장가, 지정가 등)값이 사용되지 않습니다.
-
-                                        if (nCancelReqResult == OP_ERR_NONE) // 매수취소 전송이 성공하면
+                                        if (nSellReqResult == OP_ERR_NONE) // 요청이 성공하면
                                         {
                                             isSendOrder = true;
-                                            PrintLog($"{nSharedTime} : {curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName} 매수취소신청 전송 성공", curSlot.nEaIdx);
+                                            SetSlotInScreen(sSellScrNo, ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx]);
+                                            ea[curSlot.nEaIdx].myTradeManager.nSellReqCnt++; // 매도요청전송이 성공하면 매도횟수를 증가한다.
+
+                                            PrintLog($"{curSlot.sCode} {ea[curSlot.nEaIdx].sCodeName}  화면번호 : {sSellScrNo}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName} 매도신청 전송 성공", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
                                         }
-                                        else // 전송이 실패했다는것
+                                        else // 요청이 실패했다는 것
                                         {
-                                            if (nCancelReqResult == OP_ERR_ORD_OVERFLOW) // 주문전송과부화
+                                            ShutOffScreen(sSellScrNo);
+
+
+                                            if (nSellReqResult == OP_ERR_ORD_OVERFLOW) // 주문전송과부화
                                             {
 #if DEBUG
                                                 dtCurOrderTime = DateTime.UtcNow;
@@ -1617,15 +1551,75 @@ namespace AtoIndicator
 #endif
                                                 tradeQueue.Enqueue(curSlot);
                                             }
-                                            else // 전송이 실패하면
+                                            else // 그냥 실패
                                             {
-                                                slot.isCanceling = false; // 이래야지 매수취소를 다시 신청할 수 있다.
-                                                PrintLog($"{nSharedTime} : {curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName}  오류번호 : {nCancelReqResult} 매수취소신청 전송 실패!!", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
+                                                PrintLog($"{curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName}  오류번호 : {nSellReqResult} 매도신청 전송 실패", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
+                                                ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].isSelling = false;
                                             }
                                         }
+                                    } // END ---- 사용가능한 화면번호가 있다면 
+                                    else // 사용가능한 화면번호가 없다면
+                                    {
+                                        PrintLog($"{curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName} 화면번호 할당불가로 매도신청 전송 실패", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
+                                        ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].isSelling = false;
 
-                                    } // END ---- !ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].isAllBuyed
+                                    }// END ---- 사용가능한 화면번호가 없다면 
+
+                                } // END ---- 시장가매도
+                                else if (curSlot.sHogaGb.Equals(PENDING_ORDER)) // 지정가매도
+                                {
+
                                 }
+
+                            }
+                            #endregion
+                            #region BUY_CANCEL
+                            else if (curSlot.nOrderType == BUY_CANCEL)
+                            {
+
+                                BuyedSlot slot = slotDict[curSlot.sOrgOrderId];
+
+                                if (!slot.isAllBuyed) // 그와중에 매수가 완료되면 매수취소는 삭제된다.
+                                {
+                                    PrintLog($"{nSharedTime} : {curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName}  {curSlot.sDescription} 매수취소신청 전송", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
+
+                                    int nCancelReqResult = axKHOpenAPI1.SendOrder($"{SEND_ORDER_ERROR_CHECK_PREFIX}{ORDER_BUY_CANCEL} {curSlot.nEaIdx}", slot.sBuyScrNo, sAccountNum,
+                                        curSlot.nOrderType, curSlot.sCode, 0, 0,
+                                        "", curSlot.sOrgOrderId); // 취소주문수량을 0으로 입력하면 미체결 전량이 취소됩니다.
+                                                                  // 취소주문시 주문가격은 필요없으며 취소하려는 주문 그러니까 미체결 주문의 주문번호가 취소주문시 필요한 원주문번호가 됩니다.
+                                                                  //마지막으로 취소주문시에는 거래구분(시장가, 지정가 등)값이 사용되지 않습니다.
+
+                                    if (nCancelReqResult == OP_ERR_NONE) // 매수취소 전송이 성공하면
+                                    {
+                                        isSendOrder = true;
+                                        PrintLog($"{nSharedTime} : {curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName} 매수취소신청 전송 성공", curSlot.nEaIdx);
+                                    }
+                                    else // 전송이 실패했다는것
+                                    {
+                                        if (nCancelReqResult == OP_ERR_ORD_OVERFLOW) // 주문전송과부화
+                                        {
+#if DEBUG
+                                            dtCurOrderTime = DateTime.UtcNow;
+                                            if ((dtCurOrderTime - dOverFlowToUp).TotalMilliseconds > ONE_SEC_MIL_SEC)
+                                            {
+                                                dtBeforeOrderTime = dtCurOrderTime;
+                                                isForbidTrade = true;
+                                                nOverFlowCnt++;
+                                                dOverFlowToUp = dtCurOrderTime;
+                                                PrintLog($"{nSharedTime} 주문전송과부하 카운트 : {nOverFlowCnt}회");
+                                            }
+#endif
+                                            tradeQueue.Enqueue(curSlot);
+                                        }
+                                        else // 전송이 실패하면
+                                        {
+                                            slot.isCanceling = false; // 이래야지 매수취소를 다시 신청할 수 있다.
+                                            PrintLog($"{nSharedTime} : {curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName}  오류번호 : {nCancelReqResult} 매수취소신청 전송 실패!!", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
+                                        }
+                                    }
+
+                                } // END ---- !ea[curSlot.nEaIdx].myTradeManager.arrBuyedSlots[curSlot.nBuyedSlotIdx].isAllBuyed
+
                             }
                             #endregion
 
@@ -4597,6 +4591,7 @@ namespace AtoIndicator
                                         // Also 대응의 영역
                                         if (!ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].isAllSelled &&
                                             !ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].isSelling &&
+                                            SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nSellErrorLastTime) >= ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nSellErrorCount / 2 + 1 &&
                                             ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurVolume > 0) // 매수만 돼있을때
                                         {
                                             int nBuyPrice;
@@ -4614,13 +4609,8 @@ namespace AtoIndicator
                                             ////////////////////////////////////////////////////////////////////////////////////
                                             /// 대응의 영역
                                             { // START ---- 대응의 영역
-
-
                                                 // 상한가 도달했을때
-
                                                 bool isSell = HandleTradeLine(nCurIdx, checkSellIterIdx);
-
-
                                             } // END---- 대응의 영역
                                         }  // END ---- 매수만 돼있을때 
                                     } // END ---- 제외되지 않았다면( 장마감이후에는 접근 불가란 소리) isExcluded
@@ -4628,7 +4618,7 @@ namespace AtoIndicator
 
                             } // END ---- 매매블록 반복적 확인 종료
 
-                            
+
                         } // END ---- 보유종목이 있다면 ( 적어도 하나의 매매블록이 있다면 )
                         #endregion
 
@@ -4658,7 +4648,7 @@ namespace AtoIndicator
                                         else
                                             sRq = "시간초과 매수취소";
                                         SetAndServeCurSlot(sRq, BUY_CANCEL, ea[nCurIdx].sCode, -1, sOrderId, nCurIdx, 0, 0, 0, MARKET_ORDER, TradeMethodCategory.None, 0, 0, sRq);
-                                       
+
 
                                         PrintLog($"{nSharedTime} : {ea[nCurIdx].sCode}  {ea[nCurIdx].sCodeName}  {sRq} 매수취소신청", nCurIdx);
                                     }

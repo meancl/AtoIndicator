@@ -679,8 +679,8 @@ namespace AtoIndicator
             public int nPreemptionPrevUpdateTime; // 선점 최신업데이트 시간
             public int nLastTouchLineTime; // 상승선을 건드린 마지막 시간
 
-            public int nSystemeticSellFail; // 시스템 상으로 매도 비정상처리가 걸린경우가 많으면 제외
-            public int nSystemeticBuyCancelFail;
+            public int nSellErrorLastTime;
+            public int nSellErrorCount;
 
 
             public MaOverN maOverN;

@@ -54,8 +54,7 @@ namespace AtoIndicator
                 string sCurOkTradeVolume = axKHOpenAPI1.GetChejanData(915).Trim(); // 단위체결량 없을땐 ""
                 int nNoTradeVolume = Math.Abs(int.Parse(axKHOpenAPI1.GetChejanData(902))); // 미체결량
                 string sScrNo = axKHOpenAPI1.GetChejanData(920).Trim(); // 화면번호
-                string sOrderPrice = axKHOpenAPI1.GetChejanData(901).Trim(); // 주문가격
-                string sOrderVolume = axKHOpenAPI1.GetChejanData(900).Trim(); // 주문수량
+                int nOrderPrice = Math.Abs(int.Parse(axKHOpenAPI1.GetChejanData(901))); // 주문가격
                 #endregion
 
 
@@ -84,10 +83,10 @@ namespace AtoIndicator
 
                                 slot = slotDict[sOrderId] = new BuyedSlot();
                                 slot.nRequestTime = nSharedTime;
-                                slot.nOriginOrderPrice = Math.Abs(int.Parse(sOrderPrice)); // 주문요청금액 설정
+                                slot.nOriginOrderPrice = nOrderPrice; // 주문요청금액 설정
                                 slot.nOrderPrice = slot.nOriginOrderPrice; // 지정상한가 설정
                                 slot.eTradeMethod = TradeMethodCategory.FixedMethod; // 매매방법 설정
-                                slot.nOrderVolume = Math.Abs(int.Parse(sOrderVolume));
+                                slot.nOrderVolume = nOrderVolume;
                                 slot.fTradeRatio = 1;
                                 slot.sBuyDescription = "손매수";
                                 slot.isBuying = true;
@@ -156,7 +155,10 @@ namespace AtoIndicator
                                 PrintLog($"{sTradeTime} : {sCode}  {ea[nCurIdx].sCodeName} 화면번호 : {sScrNo} {nOrderVolume}(주) 매도 접수완료", nCurIdx);
                             }
                             else
+                            {
                                 PrintLog("손매도 접수");
+                                RegisterGroupSellingRest(nCurIdx, nOrderVolume, nOrderPrice, -1);
+                            }
 
                         }
                         #endregion
@@ -188,7 +190,6 @@ namespace AtoIndicator
                         {
                             if (!slot.isAllBuyed)
                             {
-
                                 slot.isCanceling = false; // 해당종목의 현재매수취소버튼 초기화
                                 slot.isAllBuyed = true; // 해당종목의 매수레코드의 매수완료 on
                                 slot.isBuying = false;
@@ -211,8 +212,10 @@ namespace AtoIndicator
 
                                 slot.nBuyedSlotId = ea[nCurIdx].myTradeManager.arrBuyedSlots.Count;
                                 ea[nCurIdx].myTradeManager.arrBuyedSlots.Add(slot);
+                                
                                 ShutOffScreen(sScrNo);
                                 slotDict.Remove(sOrderId);
+                                ea[nCurIdx].unhandledList.Remove(sOrderId);
 
                                 PrintLog($"시간 : {sTradeTime} {sCode} {ea[nCurIdx].sCodeName} 화면번호 : {sScrNo} {slot.nBuyVolume}(주) 일부 체결완료, 총 주문수량 : {slot.nOrderVolume} 매수가 : {slot.nBuyPrice}", nCurIdx);
                             }
@@ -256,8 +259,11 @@ namespace AtoIndicator
 
                             slot.nBuyedSlotId = ea[nCurIdx].myTradeManager.arrBuyedSlots.Count;
                             ea[nCurIdx].myTradeManager.arrBuyedSlots.Add(slot);
+
                             ShutOffScreen(sScrNo); // 매수체결완료 해당화면번호 꺼줍니다.
                             slotDict.Remove(sOrderId);
+                            ea[nCurIdx].unhandledList.Remove(sOrderId);
+
                             PrintLog($"{sTradeTime} : {sCode}  {ea[nCurIdx].sCodeName} 화면번호 : {sScrNo}  매수 체결완료, 매수가 : {slot.nBuyPrice}", nCurIdx);
 
 
@@ -293,15 +299,13 @@ namespace AtoIndicator
                         if (slot != null)
                         {
                             nSpecificSellIdx = slot.nBuyedSlotId;
-                            if (nNoTradeVolume == 0)
-                                slot.isSelling = false; // 일부만 매도 됐을 수 있으니
                         }
                         else
                         {
                             PrintLog("손매도");
                         }
 
-                        HandleSelledRest(nCurIdx, nCurOkTradeVolume, nCurOkTradePrice, nSpecificSellIdx);
+                        HandleSelledRest(nCurIdx, nCurOkTradeVolume, nCurOkTradePrice, nNoTradeVolume, nSpecificSellIdx);
 
                         if (nNoTradeVolume == 0)
                         {
@@ -331,7 +335,36 @@ namespace AtoIndicator
         }// End ---- 체잔 핸들러
         #endregion
 
-        public void HandleSelledRest(int nEaIdx, int nCurOkTradeVolume, int nCurOkTradePrice, int nSpecificIdx)
+        // 손매도할때 매도 물량만큼 buyedslot 그룹 묶어서 isSelling = true로 만듬
+        public void RegisterGroupSellingRest(int nEaIdx, int nOrderVolume, int nOrderPrice, int nSpecificIdx)
+        {
+            int tmpCurOrderVolume = nOrderVolume;
+
+            void HandleGrouping(int nIdx)
+            {
+                if (ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].isAllBuyed && !ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].isSelling && ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nCurVolume > 0 && tmpCurOrderVolume > 0)
+                {
+                    int disposalVolume = ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nCurVolume > tmpCurOrderVolume ? tmpCurOrderVolume : ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nCurVolume;
+                    ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].isSelling = true; // 매도중 시그널을 설정
+                    tmpCurOrderVolume -= disposalVolume;
+                }
+            }
+
+            PrintLog($"[손매도] {nSharedTime} : {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName}  매도가 : {nOrderPrice}, 매도수량 : {nOrderVolume} 접수", nEaIdx, isTxtBx: false);
+
+            if (nSpecificIdx != -1)
+                HandleGrouping(nSpecificIdx); // 내꺼 먼저
+            //그 다음...
+
+            for (int disposal = 0; disposal < ea[nEaIdx].myTradeManager.arrBuyedSlots.Count && tmpCurOrderVolume > 0; disposal++)
+                HandleGrouping(disposal);
+
+        }
+
+
+        // 손매도 체결처리, 특정 인덱스를 먼저 접근할 수 있다.
+        // 잔여 처리량이 생기면 다음 슬롯으로 토스한다.
+        public void HandleSelledRest(int nEaIdx, int nCurOkTradeVolume, int nCurOkTradePrice, int nNoTradeVolume, int nSpecificIdx)
         {
             int tmpCurOkTradeVolume = nCurOkTradeVolume;
 
@@ -354,6 +387,7 @@ namespace AtoIndicator
                         ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nCurVolume = 0;
                         ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nSellMinuteIdx = nTimeLineIdx;
                         ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].isAllSelled = true;
+                        ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].isSelling = false;
                         ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nDeathTime = nSharedTime;
                         ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nDeathPrice = ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nTotalSelledPrice / ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nTotalSelledVolume;
                         ea[nEaIdx].myTradeManager.nSellReqCnt--;
@@ -364,6 +398,9 @@ namespace AtoIndicator
                     }
 
                     tmpCurOkTradeVolume -= disposalVolume;
+
+                    if(tmpCurOkTradeVolume == 0 && nNoTradeVolume == 0) // 마지막 슬롯은 curVolume > 0 일 수 있으니 마지막 슬롯인데 미체결량이 0인 애는 isSelling = false
+                        ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].isSelling = false;
                 }
             }
 
