@@ -104,7 +104,6 @@ namespace AtoIndicator
             }
             if (cUp == 'T')
             {
-
                 #region ONNX 실전 TEST
 #if AI
                 //double test_val = 10;

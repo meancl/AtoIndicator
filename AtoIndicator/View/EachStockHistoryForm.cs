@@ -2252,90 +2252,97 @@ namespace AtoIndicator.View.EachStockHistory
             }
             else if (e.Button == MouseButtons.Right)
             {
-                if (historyChart.Series["MinuteStick"].Points.Count > 0)
+                if (isBuyMode)
                 {
-                    double yCoord = historyChart.ChartAreas["TotalArea"].AxisY.PixelPositionToValue(e.Y);
-                    if (double.IsNaN(yCoord))
-                        yCoord = 0;
-                    else
+                    mainForm.RequestThisRealBuy(nCurIdx, eyesUp:-3);
+                }
+                else
+                {
+                    if (historyChart.Series["MinuteStick"].Points.Count > 0)
                     {
-                        if (isReserveMode)
+                        double yCoord = historyChart.ChartAreas["TotalArea"].AxisY.PixelPositionToValue(e.Y);
+                        if (double.IsNaN(yCoord))
+                            yCoord = 0;
+                        else
                         {
-                            if (nReserveNum == MainForm.UP_RESERVE) //  N 이상
+                            if (isReserveMode)
                             {
-                                if (!curEa.manualReserve.isChosen3)
+                                if (nReserveNum == MainForm.UP_RESERVE) //  N 이상
                                 {
-                                    curEa.manualReserve.isReserveSelected3 = true;
-
-                                    if (!curEa.manualReserve.isChosen4)
-                                        curEa.manualReserve.isReserveSelected4 = false;
-                                    if (!(curEa.manualReserve.isChosen5 || curEa.manualReserve.isChosen6))
-                                    {
-                                        curEa.manualReserve.isReserveSelected5 = false;
-                                        curEa.manualReserve.isReserveSelected6 = false;
-                                    }
-                                    curEa.manualReserve.nReserveCheckVersion = MainForm.UP_RESERVE;
-                                    curEa.manualReserve.nReserveCheckTime = mainForm.nSharedTime;
-                                    curEa.manualReserve.fReserveCheckPrice = yCoord;
-                                    reserveLabel.Text = $"{Math.Round(curEa.manualReserve.fReserveCheckPrice, 2)} 이상 예약";
-                                }
-                                else
-                                    reserveLabel.Text = "N 찜은 현재 선택된 상태입니다";
-                            }
-                            else if (nReserveNum == MainForm.DOWN_RESERVE) // M 이하
-                            {
-                                if (!curEa.manualReserve.isChosen4)
-                                {
-                                    curEa.manualReserve.isReserveSelected4 = true;
-
                                     if (!curEa.manualReserve.isChosen3)
-                                        curEa.manualReserve.isReserveSelected3 = false;
-                                    if (!(curEa.manualReserve.isChosen5 || curEa.manualReserve.isChosen6))
                                     {
-                                        curEa.manualReserve.isReserveSelected5 = false;
-                                        curEa.manualReserve.isReserveSelected6 = false;
-                                    }
-                                    curEa.manualReserve.nReserveCheckVersion = MainForm.DOWN_RESERVE;
-                                    curEa.manualReserve.nReserveCheckTime = mainForm.nSharedTime;
-                                    curEa.manualReserve.fReserveCheckPrice = yCoord;
-                                    reserveLabel.Text = $"{Math.Round(curEa.manualReserve.fReserveCheckPrice, 2)} 이하 예약";
-                                }
-                                else
-                                    reserveLabel.Text = "M 찜은 현재 선택된 상태입니다";
-                            }
-                            else if (nReserveNum == MainForm.BOX_RESERVE)
-                            {
-                                if (!(curEa.manualReserve.isChosen5 || curEa.manualReserve.isChosen6))
-                                {
-                                    if (curEa.manualReserve.fReserveCheckPrice == 0)
-                                    {
-                                        curEa.manualReserve.fReserveCheckPrice = yCoord;
-                                        reserveLabel.Text = $"{Math.Round(curEa.manualReserve.fReserveCheckPrice, 2)} 박스라인 선택 중";
-                                    }
-                                    else
-                                    {
-                                        curEa.manualReserve.fReserveCheckPrice2 = yCoord;
+                                        curEa.manualReserve.isReserveSelected3 = true;
 
-                                        if (curEa.manualReserve.fReserveCheckPrice < curEa.manualReserve.fReserveCheckPrice2)
-                                        {
-                                            double fSwap = curEa.manualReserve.fReserveCheckPrice;
-                                            curEa.manualReserve.fReserveCheckPrice = curEa.manualReserve.fReserveCheckPrice2;
-                                            curEa.manualReserve.fReserveCheckPrice2 = fSwap;
-                                        }
-                                        curEa.manualReserve.nReserveCheckTime = mainForm.nSharedTime;
-                                        curEa.manualReserve.nReserveCheckVersion = MainForm.BOX_RESERVE;
-                                        if (!curEa.manualReserve.isChosen3)
-                                            curEa.manualReserve.isReserveSelected3 = false;
                                         if (!curEa.manualReserve.isChosen4)
                                             curEa.manualReserve.isReserveSelected4 = false;
-
-                                        curEa.manualReserve.isReserveSelected5 = true;
-                                        curEa.manualReserve.isReserveSelected6 = true;
-                                        reserveLabel.Text = $"( {Math.Round(curEa.manualReserve.fReserveCheckPrice, 2)}, {Math.Round(curEa.manualReserve.fReserveCheckPrice2, 2)} ) 박스권 예약";
+                                        if (!(curEa.manualReserve.isChosen5 || curEa.manualReserve.isChosen6))
+                                        {
+                                            curEa.manualReserve.isReserveSelected5 = false;
+                                            curEa.manualReserve.isReserveSelected6 = false;
+                                        }
+                                        curEa.manualReserve.nReserveCheckVersion = MainForm.UP_RESERVE;
+                                        curEa.manualReserve.nReserveCheckTime = mainForm.nSharedTime;
+                                        curEa.manualReserve.fReserveCheckPrice = yCoord;
+                                        reserveLabel.Text = $"{Math.Round(curEa.manualReserve.fReserveCheckPrice, 2)} 이상 예약";
                                     }
+                                    else
+                                        reserveLabel.Text = "N 찜은 현재 선택된 상태입니다";
                                 }
-                                else
-                                    reserveLabel.Text = "B 찜은 현재 선택된 상태입니다";
+                                else if (nReserveNum == MainForm.DOWN_RESERVE) // M 이하
+                                {
+                                    if (!curEa.manualReserve.isChosen4)
+                                    {
+                                        curEa.manualReserve.isReserveSelected4 = true;
+
+                                        if (!curEa.manualReserve.isChosen3)
+                                            curEa.manualReserve.isReserveSelected3 = false;
+                                        if (!(curEa.manualReserve.isChosen5 || curEa.manualReserve.isChosen6))
+                                        {
+                                            curEa.manualReserve.isReserveSelected5 = false;
+                                            curEa.manualReserve.isReserveSelected6 = false;
+                                        }
+                                        curEa.manualReserve.nReserveCheckVersion = MainForm.DOWN_RESERVE;
+                                        curEa.manualReserve.nReserveCheckTime = mainForm.nSharedTime;
+                                        curEa.manualReserve.fReserveCheckPrice = yCoord;
+                                        reserveLabel.Text = $"{Math.Round(curEa.manualReserve.fReserveCheckPrice, 2)} 이하 예약";
+                                    }
+                                    else
+                                        reserveLabel.Text = "M 찜은 현재 선택된 상태입니다";
+                                }
+                                else if (nReserveNum == MainForm.BOX_RESERVE)
+                                {
+                                    if (!(curEa.manualReserve.isChosen5 || curEa.manualReserve.isChosen6))
+                                    {
+                                        if (curEa.manualReserve.fReserveCheckPrice == 0)
+                                        {
+                                            curEa.manualReserve.fReserveCheckPrice = yCoord;
+                                            reserveLabel.Text = $"{Math.Round(curEa.manualReserve.fReserveCheckPrice, 2)} 박스라인 선택 중";
+                                        }
+                                        else
+                                        {
+                                            curEa.manualReserve.fReserveCheckPrice2 = yCoord;
+
+                                            if (curEa.manualReserve.fReserveCheckPrice < curEa.manualReserve.fReserveCheckPrice2)
+                                            {
+                                                double fSwap = curEa.manualReserve.fReserveCheckPrice;
+                                                curEa.manualReserve.fReserveCheckPrice = curEa.manualReserve.fReserveCheckPrice2;
+                                                curEa.manualReserve.fReserveCheckPrice2 = fSwap;
+                                            }
+                                            curEa.manualReserve.nReserveCheckTime = mainForm.nSharedTime;
+                                            curEa.manualReserve.nReserveCheckVersion = MainForm.BOX_RESERVE;
+                                            if (!curEa.manualReserve.isChosen3)
+                                                curEa.manualReserve.isReserveSelected3 = false;
+                                            if (!curEa.manualReserve.isChosen4)
+                                                curEa.manualReserve.isReserveSelected4 = false;
+
+                                            curEa.manualReserve.isReserveSelected5 = true;
+                                            curEa.manualReserve.isReserveSelected6 = true;
+                                            reserveLabel.Text = $"( {Math.Round(curEa.manualReserve.fReserveCheckPrice, 2)}, {Math.Round(curEa.manualReserve.fReserveCheckPrice2, 2)} ) 박스권 예약";
+                                        }
+                                    }
+                                    else
+                                        reserveLabel.Text = "B 찜은 현재 선택된 상태입니다";
+                                }
                             }
                         }
                     }
@@ -2376,6 +2383,7 @@ namespace AtoIndicator.View.EachStockHistory
         }
         #endregion
 
+        public bool isBuyMode = false;
         #region 키보드 이벤트 핸들러
         public void KeyUpHandler(object sender, KeyEventArgs e)
         {
@@ -2403,7 +2411,11 @@ namespace AtoIndicator.View.EachStockHistory
                 expansionLabel.Text = $"{Math.Round(fMaxPlus, 3)}, {Math.Round(fMinPlus, 3)}";
                 SetChartViewRange(0, curEa.timeLines1m.nRealDataIdx + 2, curEa.nFs, curEa.nFs, "TotalArea");
             }
-
+            if (cUp == 39) // 오른쪽 화살표
+            {
+                isBuyMode = !isBuyMode;
+                buyModeLabel.Text = isBuyMode.ToString();
+            }
 
             if (cUp == 'O') // 각도기
             {

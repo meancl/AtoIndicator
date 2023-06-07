@@ -29,13 +29,11 @@ namespace AtoIndicator
         internal struct ScreenStruct
         {
             public bool isUsing;
-            public int? nEaIdx;
-            public int? nSlotIdx;
-            public string sPurposeToUse;
+            public BuyedSlot slot;
         }
 
 
-        private string GetScreenNum(string sPurpose=null, int? nEaIdx=null, int? nSlotIdx=null)
+        private string GetScreenNum()
         {
             string sRet = null;
 
@@ -46,9 +44,6 @@ namespace AtoIndicator
                 if (!arrScreen[nRand].isUsing)
                 {
                     arrScreen[nRand].isUsing = true;
-                    arrScreen[nRand].nEaIdx = nEaIdx;
-                    arrScreen[nRand].nSlotIdx = nSlotIdx;
-                    arrScreen[nRand].sPurposeToUse = sPurpose;
 
                     nUsingScreenNum++;
                     screenNumLabel.Text = nUsingScreenNum.ToString();
@@ -61,9 +56,6 @@ namespace AtoIndicator
                         if (!arrScreen[curScreen].isUsing)
                         {
                             arrScreen[curScreen].isUsing = true;
-                            arrScreen[curScreen].nEaIdx = nEaIdx;
-                            arrScreen[curScreen].nSlotIdx = nSlotIdx;
-                            arrScreen[curScreen].sPurposeToUse = sPurpose;
 
                             nUsingScreenNum++;
                             screenNumLabel.Text = nUsingScreenNum.ToString();
@@ -80,8 +72,31 @@ namespace AtoIndicator
             return sRet;
         }
 
+        private void SetSlotInScreen(string sScrNo, BuyedSlot slot)
+        {
+            try
+            {
+                int nScrNoIdx = int.Parse(sScrNo) - SCREEN_NUM_START;
+                arrScreen[nScrNoIdx].slot = slot;
+            }
+            catch
+            { }
+        }
 
-        private void ShutOffScreen(ref string sScrNo)
+        private BuyedSlot GetSlotFromScreen(string sScrNo)
+        {
+            try
+            {
+                int nScrNoIdx = int.Parse(sScrNo) - SCREEN_NUM_START;
+                return arrScreen[nScrNoIdx].slot;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private void ShutOffScreen(string sScrNo)
         {
             try
             {
@@ -90,11 +105,9 @@ namespace AtoIndicator
                 {
                     nUsingScreenNum--;
                     arrScreen[nScrNoIdx].isUsing = false;
-                    arrScreen[nScrNoIdx].nEaIdx = null;
-                    arrScreen[nScrNoIdx].nSlotIdx = null;
-                    arrScreen[nScrNoIdx].sPurposeToUse = null;
+                    arrScreen[nScrNoIdx].slot = null;
 
-                    if(screenNumLabel.InvokeRequired)
+                    if (screenNumLabel.InvokeRequired)
                         screenNumLabel.Invoke(new MethodInvoker(delegate { screenNumLabel.Text = nUsingScreenNum.ToString(); }));
                     else
                         screenNumLabel.Text = nUsingScreenNum.ToString();
@@ -106,38 +119,8 @@ namespace AtoIndicator
             }
             finally
             {
-                sScrNo = null;
             }
         }
 
-        private void ReceiveScreenNoIdx(string sScrNo, out int? nEaIdx, out int? nSlotIdx, out string sPurpose)
-        {
-            int? nTmpEaIdx = null;
-            int? nTmpSlotIdx = null;
-            string sPurposeToUse = null;
-            try
-            {
-                int nScrNoIdx = int.Parse(sScrNo) - SCREEN_NUM_START;
-
-                if (arrScreen[nScrNoIdx].isUsing)
-                {
-                    nTmpEaIdx = arrScreen[nScrNoIdx].nEaIdx;
-                    nTmpSlotIdx = arrScreen[nScrNoIdx].nSlotIdx;
-                    sPurposeToUse = arrScreen[nScrNoIdx].sPurposeToUse;
-                }
-                else
-                    throw new Exception();
-            }
-            catch
-            {
-                PrintLog($"{nSharedTime} ReceiveScreenNoIdx 에러 : {sScrNo}");
-            }
-            finally
-            {
-                nEaIdx = nTmpEaIdx;
-                nSlotIdx = nTmpSlotIdx;
-                sPurpose = sPurposeToUse;
-            }
-        }
     }
 }

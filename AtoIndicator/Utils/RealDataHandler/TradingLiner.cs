@@ -176,7 +176,7 @@ namespace AtoIndicator
 
                 } // END---- 상승라인
 
-               
+
             } // END ---- 단계형 매매
             else if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].eTradeMethod == TradeMethodCategory.ScalpingMethod) // 스캘핑 매매기법
             {
@@ -268,122 +268,42 @@ namespace AtoIndicator
         }
 
 
-
-
-       
-
-        // 머신러닝에 사용할 변수를 
-        #region GetParameters
-        public double[] GetParameters(int nCurIdx, int nGetSize, int nTradeMethod, int nRealStrategyNum)
+        #region RequestThisRealBuy
+        public void RequestThisRealBuy(int nCurIdx, int nRequestPrice = 0, int eyesUp = 0, double fBuyRatio = NORMAL_TRADE_RATIO, int nExtraChance = 0, TradeMethodCategory eTradeMethod = TradeMethodCategory.RisingMethod, double fCeil = 0, double fFloor = 0, bool isAIUse = true)
         {
-            double[] features102 = new double[] {
-                                nRealStrategyNum,
-                                nSharedTime,
-                                ea[nCurIdx].fStartGap,
-                                ea[nCurIdx].fPowerWithoutGap,
-                                ea[nCurIdx].fPower,
-                                ea[nCurIdx].fPlusCnt07,
-                                ea[nCurIdx].fMinusCnt07,
-                                ea[nCurIdx].fPlusCnt09,
-                                ea[nCurIdx].fMinusCnt09,
-                                ea[nCurIdx].fPowerJar,
-                                ea[nCurIdx].fOnlyDownPowerJar,
-                                ea[nCurIdx].fOnlyUpPowerJar,
-                                ea[nCurIdx].paperBuyStrategy.nStrategyNum,
-                                ea[nCurIdx].nChegyulCnt,
-                                ea[nCurIdx].nHogaCnt,
-                                ea[nCurIdx].nNoMoveCount,
-                                ea[nCurIdx].nFewSpeedCount,
-                                ea[nCurIdx].nMissCount,
-                                ea[nCurIdx].lTotalTradeVolume,
-                                ea[nCurIdx].lOnlyBuyVolume,
-                                ea[nCurIdx].lOnlySellVolume,
-                                ea[nCurIdx].nAccumUpDownCount,
-                                ea[nCurIdx].fAccumUpPower,
-                                ea[nCurIdx].fAccumDownPower,
-                                ea[nCurIdx].lTotalTradePrice,
-                                ea[nCurIdx].lOnlyBuyPrice,
-                                ea[nCurIdx].lOnlySellPrice,
-                                ea[nCurIdx].lMarketCap,
-                                ea[nCurIdx].rankSystem.nAccumCountRanking,
-                                ea[nCurIdx].rankSystem.nMarketCapRanking,
-                                ea[nCurIdx].rankSystem.nPowerRanking,
-                                ea[nCurIdx].rankSystem.nTotalBuyPriceRanking,
-                                ea[nCurIdx].rankSystem.nTotalBuyVolumeRanking,
-                                ea[nCurIdx].rankSystem.nTotalTradePriceRanking,
-                                ea[nCurIdx].rankSystem.nTotalTradeVolumeRanking,
-                                ea[nCurIdx].rankSystem.nSummationRanking,
-                                ea[nCurIdx].rankSystem.nMinuteSummationRanking,
-                                ea[nCurIdx].rankSystem.nMinuteTradePriceRanking,
-                                ea[nCurIdx].rankSystem.nMinuteTradeVolumeRanking,
-                                ea[nCurIdx].rankSystem.nMinuteBuyPriceRanking,
-                                ea[nCurIdx].rankSystem.nMinuteBuyVolumeRanking,
-                                ea[nCurIdx].rankSystem.nMinutePowerRanking,
-                                ea[nCurIdx].rankSystem.nMinuteCountRanking,
-                                ea[nCurIdx].rankSystem.nMinuteUpDownRanking,
-                                ea[nCurIdx].fakeBuyStrategy.nStrategyNum,
-                                ea[nCurIdx].fakeAssistantStrategy.nStrategyNum,
-                                ea[nCurIdx].fakeResistStrategy.nStrategyNum,
-                                ea[nCurIdx].fakeVolatilityStrategy.nStrategyNum,
-                                ea[nCurIdx].fakeDownStrategy.nStrategyNum,
-                                ea[nCurIdx].fakeStrategyMgr.nTotalFakeCount,
-                                ea[nCurIdx].fakeStrategyMgr.nTotalFakeMinuteAreaNum,
-                                ea[nCurIdx].timeLines1m.onePerCandleList.Count,
-                                ea[nCurIdx].timeLines1m.downCandleList.Count,
-                                ea[nCurIdx].timeLines1m.upTailList.Count,
-                                ea[nCurIdx].timeLines1m.downTailList.Count,
-                                ea[nCurIdx].timeLines1m.threePerCandleList.Count,
-                                ea[nCurIdx].sequenceStrategy.nCandleTwoOverRealCount,
-                                ea[nCurIdx].sequenceStrategy.nCandleTwoOverRealNoLeafCount,
-                                ea[nCurIdx].speedStatus.fCur,
-                                ea[nCurIdx].hogaSpeedStatus.fCur,
-                                ea[nCurIdx].tradeStatus.fCur,
-                                ea[nCurIdx].pureTradeStatus.fCur,
-                                ea[nCurIdx].pureBuyStatus.fCur,
-                                ea[nCurIdx].hogaRatioStatus.fCur,
-                                ea[nCurIdx].fSharePerHoga,
-                                ea[nCurIdx].fSharePerTrade,
-                                ea[nCurIdx].fHogaPerTrade,
-                                ea[nCurIdx].fTradePerPure,
-                                ea[nCurIdx].maOverN.fCurDownFs,
-                                ea[nCurIdx].maOverN.fCurMa20m,
-                                ea[nCurIdx].maOverN.fCurMa1h,
-                                ea[nCurIdx].maOverN.fCurMa2h,
-                                ea[nCurIdx].maOverN.fMaxDownFs,
-                                ea[nCurIdx].maOverN.fMaxMa20m,
-                                ea[nCurIdx].maOverN.fMaxMa1h,
-                                ea[nCurIdx].maOverN.fMaxMa2h,
-                                ea[nCurIdx].maOverN.nMaxDownFsTime,
-                                ea[nCurIdx].maOverN.nMaxMa20mTime,
-                                ea[nCurIdx].maOverN.nMaxMa1hTime,
-                                ea[nCurIdx].maOverN.nMaxMa2hTime,
-                                ea[nCurIdx].maOverN.nDownCntMa20m,
-                                ea[nCurIdx].maOverN.nDownCntMa1h,
-                                ea[nCurIdx].maOverN.nDownCntMa2h,
-                                ea[nCurIdx].maOverN.nUpCntMa20m,
-                                ea[nCurIdx].maOverN.nUpCntMa1h,
-                                ea[nCurIdx].maOverN.nUpCntMa2h,
-                                ea[nCurIdx].timeLines1m.fMaxSlope,
-                                ea[nCurIdx].timeLines1m.fInitSlope,
-                                ea[nCurIdx].timeLines1m.fTotalMedian,
-                                ea[nCurIdx].timeLines1m.fHourMedian,
-                                ea[nCurIdx].timeLines1m.fRecentMedian,
-                                ea[nCurIdx].timeLines1m.fMaxSlope - ea[nCurIdx].timeLines1m.fInitSlope,
-                                ea[nCurIdx].timeLines1m.fMaxAngle,
-                                ea[nCurIdx].timeLines1m.fInitAngle,
-                                ea[nCurIdx].timeLines1m.fTotalMedianAngle,
-                                ea[nCurIdx].timeLines1m.fHourMedianAngle,
-                                ea[nCurIdx].timeLines1m.fRecentMedianAngle,
-                                ea[nCurIdx].timeLines1m.fDAngle,
-                                ea[nCurIdx].crushMinuteManager.nCurCnt,
-                                ea[nCurIdx].crushMinuteManager.nUpCnt,
-                                ea[nCurIdx].crushMinuteManager.nDownCnt,
-                                ea[nCurIdx].crushMinuteManager.nSpecialDownCnt };
+            try
+            {
+
+                int priceToOrder;
+                if (nRequestPrice == 0)
+                    priceToOrder = ea[nCurIdx].nFb + GetIntegratedMarketGap(ea[nCurIdx].nFb);
+                else
+                    priceToOrder = nRequestPrice;
+
+                for (int eyeCloseIdx = 0; eyeCloseIdx < Math.Abs(eyesUp); eyeCloseIdx++)
+                {
+                    if (eyesUp < 0)
+                        priceToOrder -= GetIntegratedMarketGap(priceToOrder); // 반복해서 가격을 n칸 내린다.
+                    else
+                        priceToOrder += GetIntegratedMarketGap(priceToOrder); // 반복해서 가격을 n칸 올린다.
+                }
 
 
+                curSlot = SetAndServeCurSlot("신규매수", NEW_BUY, ea[nCurIdx].sCode, 0, "", nCurIdx, -1,
+                         priceToOrder, // 호가 스프레드를 줄이기 위한 방법 : 호가스프레드가 벌어졌을떄 nFb 기준으로 가격을 산정
+                         fBuyRatio, MARKET_ORDER, eTradeMethod, -1, 0, "신규매수", fCeil: fCeil, fFloor: fFloor, isAIUse: false);
 
-            return features102;
+
+                PrintLog($"시간 : {nSharedTime}, 종목코드 : {ea[nCurIdx].sCode} 종목명 : {ea[nCurIdx].sCodeName}, 현재가 : {ea[nCurIdx].nFs} 매수신청", nCurIdx);
+            }
+            catch (Exception ex)
+            {
+                PrintLog($"매수 체크 중 오류 발생 {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName}", nCurIdx);
+            }
         }
         #endregion
+
+
+
     }
 }

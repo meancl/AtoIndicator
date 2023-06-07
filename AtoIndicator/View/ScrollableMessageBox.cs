@@ -75,7 +75,7 @@ namespace AtoIndicator.View.ScrollableMsgBox
             groupBox1.Visible = true;
             blockFlowLayoutPanel.Controls.Clear();
 
-            this.Text = "[개별] " + curEa.nLastRecordTime + " " + curEa.sCode + " " + curEa.sCodeName + " " + curEa.sMarketGubunTag + " " + curEa.myTradeManager.nIdx;
+            this.Text = "[개별] " + curEa.nLastRecordTime + " " + curEa.sCode + " " + curEa.sCodeName + " " + curEa.sMarketGubunTag + " " + curEa.myTradeManager.arrBuyedSlots.Count;
 
             void WriteFunC(Object o, EventArgs e)
             {
@@ -186,7 +186,7 @@ namespace AtoIndicator.View.ScrollableMsgBox
                 }
             };
 
-            int rdCnt = curEa.myTradeManager.nIdx;
+            int rdCnt = curEa.myTradeManager.arrBuyedSlots.Count;
             RadioButton newRd;
 
             // 전체 0번 확정

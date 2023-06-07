@@ -95,6 +95,8 @@ namespace AtoIndicator
             public FakeAssistantStrategy fakeAssistantStrategy;
             public FakeStrategyManager fakeStrategyMgr;
 
+
+            public List<string> unhandledList;
             // ----------------------------------
             // 초기 변수
             // ----------------------------------
@@ -222,12 +224,13 @@ namespace AtoIndicator
                 manualBoxUpList = new List<(int, double)>();
                 manualBoxDownList = new List<(int, double)>();
 
+                unhandledList = new List<string>();
 
                 myTradeManager = new BuyedManager(); // 개인구조체 매매관리자 초기화
             }
 
 
-       
+
             public void GetFakeFix(FakeReport rep)
             {
                 try
@@ -532,9 +535,10 @@ namespace AtoIndicator
             public int nEaIdx; // 개인구조체인덱스
             public TradeMethodCategory eTradeMethod; // true면 단계별 상승매매, false면 익절,손절 일괄매매
             public int nStrategyIdx; // 전략 인덱스
-
+            
             public string sDescription;
             public string sFixedInfoPassanger;
+            
             // ----------------------------------
             // 매수 인자들
             // ----------------------------------
@@ -589,7 +593,7 @@ namespace AtoIndicator
         // ============================================
         public class BuyedManager
         {
-            public int nIdx;
+            // public int nIdx;
             public List<BuyedSlot> arrBuyedSlots;
             public StringBuilder sTotalLog;
 
@@ -614,6 +618,7 @@ namespace AtoIndicator
         // ============================================
         public class BuyedSlot //TODAY
         {
+
             public int nBuyedSlotId; // 매매블록 아이디 인덱스// 추가??
             public int nBuyPrice; // 구매한 가격
             public int nBuyVolume; // 구매한 주식수
@@ -626,6 +631,7 @@ namespace AtoIndicator
             public int nReceiptTime; // 매수접수시간
             public int nBuyEndTime; //  매수체결완료시간
             public double fTradeRatio; // 구매비율
+            public bool isBuyBanned;
 
             public string sBuyScrNo;
             public string sSellScrNo;
@@ -643,16 +649,12 @@ namespace AtoIndicator
             public bool isAllSelled; // 매도 종료(모두 팔림)
             public bool isAllBuyed; // 매수완료 시그널 ( 같은 매매블럭에 추매를 했을때 다 사졌나를 확인하기 위한 변수 ) 
             public bool isCanceling; // 현재 매수에서 매수취소가 나왔으면 더이상의 현재의 거래에서 매수취소요청을 금지하기 위한 변수
-            public bool isBuyBanned;
             public bool isResponsed; // 응답을 받았는 지
 
 
             public TradeMethodCategory eTradeMethod; // 
             public double fTargetPer; // 얼마에 익절할거야
             public double fBottomPer; // 얼마에 손절할거야
-
-            public int nStrategyIdx; // 전략 인덱스
-            public int nSequence; // 추매시 확인용 인덱스
 
             // 경과 확인용
             public double fPower; // 현재 순수 손익율
@@ -668,7 +670,6 @@ namespace AtoIndicator
             public int nBirthPrice; // 탄생가격
             public int nDeathTime; // 소멸시간
             public int nDeathPrice; // 소멸가격
-
 
             public bool isRespiteSignal; // 유예중인지 확인변수
             public int nRespiteFirstTime; // 해당 유예의 첫시간

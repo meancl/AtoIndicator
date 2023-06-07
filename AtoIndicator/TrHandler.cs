@@ -56,16 +56,17 @@ namespace AtoIndicator
                         requestHoldingsSb.Clear();
                     }
                 }
-                else if(nTrResult == OP_ERR_OVERFLOW1 || nTrResult == OP_ERR_OVERFLOW2 || nTrResult == OP_ERR_OVERFLOW3)
+                else if (nTrResult == OP_ERR_OVERFLOW1 || nTrResult == OP_ERR_OVERFLOW2 || nTrResult == OP_ERR_OVERFLOW3)
                 {
-                    Task.Run(() => {
+                    Task.Run(() =>
+                    {
                         Thread.Sleep(1200);
                         RequestHoldings(2);
                     });
                 }
                 else
                 {
-                    ShutOffScreen(ref sHoldingsTRSrc);
+                    ShutOffScreen(sHoldingsTRSrc);
                     isRequestHoldingsUsing = false;
                     PrintLog($"계좌평가잔고내역요청 TR이 비정상처리됐습니다.");
                 }
@@ -96,7 +97,7 @@ namespace AtoIndicator
                 if (nTrResult != OP_ERR_NONE) // 오류 발생
                 {
                     isRequestDepositUsing = false;
-                    ShutOffScreen(ref sRequestDepositTrSrc);
+                    ShutOffScreen(sRequestDepositTrSrc);
 
                     PrintLog($"예수금상세현황요청 TR이 비정상처리됐습니다.");
                 }
@@ -121,7 +122,7 @@ namespace AtoIndicator
         int nTotalTradeVolume = 0; // 전체체결량
         double fTotalBuyPrice = 0; // 전체매수가
         double fTotalSellPrice = 0; // 전체체결가
-        public StringBuilder todayResultSb = new StringBuilder(); 
+        public StringBuilder todayResultSb = new StringBuilder();
         private void RequestTradeResult(int nPrevNext)
         {
             // 진입조건
@@ -145,19 +146,21 @@ namespace AtoIndicator
                     if (nPrevNext == 0)
                         todayResultSb.Clear();
                 }
-                else if(nTrResult == OP_ERR_OVERFLOW1 || nTrResult == OP_ERR_OVERFLOW2 || nTrResult == OP_ERR_OVERFLOW3)
+                else if (nTrResult == OP_ERR_OVERFLOW1 || nTrResult == OP_ERR_OVERFLOW2 || nTrResult == OP_ERR_OVERFLOW3)
                 {
-                    Task.Run(() => {
+                    Task.Run(() =>
+                    {
                         Thread.Sleep(1200);
-                        RequestTradeResult(2); });
+                        RequestTradeResult(2);
+                    });
                 }
                 else
                 {
                     isRequestTradeResultUsing = false;
-                    ShutOffScreen(ref sTodayResultTRSrc);
+                    ShutOffScreen(sTodayResultTRSrc);
                     PrintLog($"당일실현손익상세요청 TR이 비정상처리됐습니다.");
                 }
-                
+
             }
             else
             {
@@ -174,9 +177,6 @@ namespace AtoIndicator
                 string sRqName = e.sRQName.Substring(SEND_ORDER_ERROR_CHECK_PREFIX.Length);
                 string[] sArr = sRqName.Split();
                 int nEaIdx = int.Parse(sArr[1]);
-                int nSlotIdx = int.Parse(sArr[2]);
-                ea[nEaIdx].myTradeManager.arrBuyedSlots[nSlotIdx].sEachLog.Append(
-                    $"화면번호 : {e.sScrNo}  nEaIdx : {nEaIdx}  nSlotIdx : {nSlotIdx}  RQName : {e.sRQName}  Msg : {e.sMsg}{NEW_LINE}");
             }
         }
         #endregion  
@@ -201,7 +201,7 @@ namespace AtoIndicator
                 myDepositLabel.Text = $"{nCurDeposit}(원)";
                 PrintLog("예수금 세팅 완료"); //++
 
-                ShutOffScreen(ref sRequestDepositTrSrc); // 예수금상세현황요청 해당화면번호 꺼줍니다.
+                ShutOffScreen(sRequestDepositTrSrc); // 예수금상세현황요청 해당화면번호 꺼줍니다.
 
                 isRequestDepositUsing = false;
             }
@@ -244,7 +244,7 @@ namespace AtoIndicator
                         }
                         PrintLog(requestHoldingsSb.ToString()); //++
                     }
-                    ShutOffScreen(ref sHoldingsTRSrc); // 계좌평가잔고내역요청 해당화면번호 꺼줍니다.
+                    ShutOffScreen(sHoldingsTRSrc); // 계좌평가잔고내역요청 해당화면번호 꺼줍니다.
 
                     isRequestHoldingsUsing = false;
                 }
@@ -316,7 +316,7 @@ namespace AtoIndicator
                 }
                 else
                 {
-                    ShutOffScreen(ref sTodayResultTRSrc); // 당일실현손익상세요청 해당화면번호 꺼줍니다.
+                    ShutOffScreen(sTodayResultTRSrc); // 당일실현손익상세요청 해당화면번호 꺼줍니다.
                     isRequestTradeResultUsing = false;
                     PrintLog(todayResultSb.ToString());
                 }
@@ -338,53 +338,81 @@ namespace AtoIndicator
                             string[] sArr = sRQName.Split(); // 메시지가 잘못올때가 있는데..? ( 화면번호를 통해 nErrorOwner와 nErrorBuyedSlot 유추하기 )
                             string sTypeReq = sArr[0].Trim();
                             int nEaReq = int.Parse(sArr[1]);
-                            int nSlotReq = int.Parse(sArr[2]);
 
-                            ReceiveScreenNoIdx(e.sScrNo, out int? nEa, out int? nSlot, out string sPurpose);
-                            int nErrorOwner = (int)nEa;
-                            int nErrorBuyedSlot = (int)nSlot;
-
-                            if (nErrorOwner == nEaReq && nErrorBuyedSlot == nSlotReq) // sRQName 정상
+                            #region FAILURE
+                            if (axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "주문번호").Trim().Equals("")) // 오류가 발견됐다면
                             {
-                                #region FAILURE
-                                if (axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "주문번호").Trim().Equals("")) // 오류가 발견됐다면
+                                BuyedSlot slot = GetSlotFromScreen(e.sScrNo);
+                                if (slot != null)
                                 {
-                                    if (sTypeReq.Equals(ORDER_NEW_SELL)) // 신규매도 비정상처리
+                                    if (sTypeReq.Equals(ORDER_NEW_BUY)) // 신규매수 비정상처리
                                     {
-                                        if (ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].isSelling)
+                                        if (slot.isBuying)
                                         {
-                                            PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nErrorOwner].sCode}  종목명 : {ea[nErrorOwner].sCodeName}  매매블럭 : {nErrorBuyedSlot}  화면번호 : {ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].sSellScrNo}  e화면번호 : {e.sScrNo}  매도가 비정상처리됐습니다.", nErrorOwner, nErrorBuyedSlot);
-                                            ea[nErrorOwner].myTradeManager.nSellReqCnt--;
-                                            ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].isSelling = false;
-                                            ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].nSystemeticSellFail++;
-                                            ShutOffScreen(ref ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].sSellScrNo);
+                                            PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nEaReq].sCode}  종목명 : {ea[nEaReq].sCodeName}  e화면번호 : {e.sScrNo}  매수가 비정상처리됐습니다.", nEaReq);
+                                            slot.isBuying = false;
+                                            ea[nEaReq].myTradeManager.nBuyReqCnt--;
+                                            ShutOffScreen(e.sScrNo);
+                                            slot.isBuyBanned = true;
+                                            nCurDepositCalc += slot.nOrderPrice * slot.nOrderVolume + ea[nEaReq].feeMgr.GetRoughFee(slot.nOrderPrice * slot.nOrderVolume);
                                         }
                                         else
-                                            PrintLog($"{nSharedTime} 화면번호 : {e.sScrNo} 종목명 : {ea[nErrorOwner].sCodeName} sRq : {e.sRQName} 이미 신규매도 비정상인데 다시 접근 에러");
+                                            PrintLog($"{nSharedTime} 화면번호 : {e.sScrNo} 종목명 : {ea[nEaReq].sCodeName} sRq : {e.sRQName} 이미 신규매수 비정상인데 다시 접근 에러");
+                                    }
+                                    else if (sTypeReq.Equals(ORDER_NEW_SELL)) // 신규매도 비정상처리
+                                    {
+
+                                        if (slot.isSelling)
+                                        {
+                                            PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nEaReq].sCode}  종목명 : {ea[nEaReq].sCodeName}  e화면번호 : {e.sScrNo}  매도가 비정상처리됐습니다.", nEaReq);
+                                            ea[nEaReq].myTradeManager.nSellReqCnt--;
+                                            slot.isSelling = false;
+                                            slot.nSystemeticSellFail++;
+                                            ShutOffScreen(e.sScrNo);
+                                        }
+                                        else
+                                            PrintLog($"{nSharedTime} 화면번호 : {e.sScrNo} 종목명 : {ea[nEaReq].sCodeName} sRq : {e.sRQName} 이미 신규매도 비정상인데 다시 접근 에러");
+                                    }
+                                    else if (sTypeReq.Equals(ORDER_BUY_CANCEL)) // 매수취소 비정상처리
+                                    {
+
+                                        if (slot.isCanceling)
+                                        {
+                                            PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nEaReq].sCode}  종목명 : {ea[nEaReq].sCodeName}  e화면번호 : {e.sScrNo}  매수취소가 비정상처리됐습니다.", nEaReq);
+                                            slot.isCanceling = false; // 해당 블록의 매수취소 시그널 취소
+                                            slot.nSystemeticBuyCancelFail++;
+                                        }
+                                        else
+                                            PrintLog($"{nSharedTime} 화면번호 : {e.sScrNo} 종목명 : {ea[nEaReq].sCodeName} sRq : {e.sRQName} 이미 매수취소 비정상인데 다시 접근 에러");
                                     }
                                     else
                                     {
-                                        PrintLog($"시간 : {nSharedTime}  종목명 : {ea[nErrorOwner].sCodeName}  화면번호 : {e.sScrNo}  안좋은RQ명 : {e.sRQName} 에러");
+                                        PrintLog($"시간 : {nSharedTime}  종목명 : {ea[nEaReq].sCodeName}  화면번호 : {e.sScrNo}  안좋은RQ명 : {e.sRQName} 에러");
                                     }
-                                    // ShutOffScreen(e.sScrNo); // 주식주문 해당화면번호 꺼줍니다.
-                                } // END ---- 매매 비정상처리
-                                #endregion
-                                #region SUCCESS
-                                else // 매매 정상처리
-                                {
-                                    if (sTypeReq.Equals(ORDER_NEW_SELL)) // 신규매도 정상처리
-                                    {
-                                        PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nErrorOwner].sCode}  종목명 : {ea[nErrorOwner].sCodeName}  매매블럭 : {nErrorBuyedSlot}  화면번호 : {ea[nErrorOwner].myTradeManager.arrBuyedSlots[nErrorBuyedSlot].sSellScrNo}  e화면번호 : {e.sScrNo}  매도요청이 정상처리됐습니다.", nErrorOwner, nErrorBuyedSlot);
-                                    }
-                                    else
-                                        PrintLog($"시간 : {nSharedTime}  종목명 : {ea[nErrorOwner].sCodeName}  화면번호 : {e.sScrNo}  정상처리RQ명 : {e.sRQName} 에러");
                                 }
-                                #endregion
-                            }
-                            else // sRQName 비정상
+                                // ShutOffScreen(e.sScrNo); // 주식주문 해당화면번호 꺼줍니다.
+                            } // END ---- 매매 비정상처리
+                            #endregion
+                            #region SUCCESS
+                            else // 매매 정상처리
                             {
-                                PrintLog($"{nSharedTime} 화면번호 : {e.sScrNo} RQ명 : {e.sRQName} 요청 : {ea[nEaReq].sCodeName} 현재 : ( {ea[nErrorOwner].sCodeName}, {nErrorBuyedSlot} ) sRQName 비정상 매치");
+                                if (sTypeReq.Equals(ORDER_NEW_BUY)) // 신규매수 정상처리
+                                {
+                                    PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nEaReq].sCode}  종목명 : {ea[nEaReq].sCodeName}e화면번호 : {e.sScrNo}  매수요청이 정상처리됐습니다.", nEaReq);
+                                }
+                                else if (sTypeReq.Equals(ORDER_NEW_SELL)) // 신규매도 정상처리
+                                {
+                                    PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nEaReq].sCode}  종목명 : {ea[nEaReq].sCodeName} e화면번호 : {e.sScrNo}  매도요청이 정상처리됐습니다.", nEaReq);
+                                }
+                                else if (sTypeReq.Equals(ORDER_BUY_CANCEL)) // 매수취소 정상처리
+                                {
+                                    PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nEaReq].sCode}  종목명 : {ea[nEaReq].sCodeName}e화면번호 : {e.sScrNo}  매수취소요청이 정상처리됐습니다.", nEaReq);
+                                }
+                                else
+                                    PrintLog($"시간 : {nSharedTime}  종목명 : {ea[nEaReq].sCodeName}  화면번호 : {e.sScrNo}  정상처리RQ명 : {e.sRQName} 에러");
                             }
+                            #endregion
+
                         }
                         catch // 먼가 문제 생김
                         {

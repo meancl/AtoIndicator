@@ -212,8 +212,10 @@
     <Compile Include="ChejanHandler.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="DB\BuyReport.cs" />
     <Compile Include="DB\FakeReport.cs" />
     <Compile Include="DB\LocationUser.cs" />
+    <Compile Include="DB\SellReport.cs" />
     <Compile Include="DB\StrategyNameDict.cs" />
     <Compile Include="KiwoomLib\Errors.cs" />
     <Compile Include="Migrations\20221227031747_mig1.cs" />
