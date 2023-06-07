@@ -68,7 +68,7 @@ namespace AtoIndicator
                         {
                             PrintLog("전량매수취소 완료");
                             ShutOffScreen(sScrNo);
-                            slotDict.Remove(sOrderId); 
+                            slotDict.Remove(sOrderId);
                             ea[nCurIdx].unhandledList.Remove(sOrderId);
                         }
                         #endregion
@@ -80,7 +80,7 @@ namespace AtoIndicator
                             if (slot == null)
                             {
                                 PrintLog("손매수 접수 완료");
-                                
+
 
                                 slot = slotDict[sOrderId] = new BuyedSlot();
                                 slot.nRequestTime = nSharedTime;
@@ -89,7 +89,7 @@ namespace AtoIndicator
                                 slot.eTradeMethod = TradeMethodCategory.FixedMethod; // 매매방법 설정
                                 slot.nOrderVolume = Math.Abs(int.Parse(sOrderVolume));
                                 slot.fTradeRatio = 1;
-                                slot.sBuyDescription = "직접 매수";
+                                slot.sBuyDescription = "손매수";
                                 slot.isBuying = true;
                                 slot.isBuyByHand = true;
 
@@ -337,7 +337,7 @@ namespace AtoIndicator
 
             void HandleRestOnce(int nIdx)
             {
-                if (ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].isAllBuyed && ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nCurVolume > 0 && tmpCurOkTradeVolume > 0 )
+                if (ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].isAllBuyed && ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nCurVolume > 0 && tmpCurOkTradeVolume > 0)
                 {
                     int disposalVolume = ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nCurVolume > tmpCurOkTradeVolume ? tmpCurOkTradeVolume : ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nCurVolume;
                     ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nCurVolume -= disposalVolume;
@@ -349,6 +349,8 @@ namespace AtoIndicator
                     if (ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nCurVolume <= 0)
                     {
                         PrintLog("하나 처분완료");
+                        if (ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].sSellDescription == null)
+                            ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].sSellDescription = "손매도";
                         ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nCurVolume = 0;
                         ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].nSellMinuteIdx = nTimeLineIdx;
                         ea[nEaIdx].myTradeManager.arrBuyedSlots[nIdx].isAllSelled = true;
@@ -367,13 +369,13 @@ namespace AtoIndicator
 
             PrintLog($"[매도] {nSharedTime} : {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName}  매도가 : {nCurOkTradePrice}, 매도수량 : {nCurOkTradeVolume}", nEaIdx, isTxtBx: false);
 
-            if(nSpecificIdx != -1)
+            if (nSpecificIdx != -1)
                 HandleRestOnce(nSpecificIdx); // 내꺼 먼저
             //그 다음...
 
             for (int disposal = 0; disposal < ea[nEaIdx].myTradeManager.arrBuyedSlots.Count && tmpCurOkTradeVolume > 0; disposal++)
                 HandleRestOnce(disposal);
-            
+
 
         }
     }

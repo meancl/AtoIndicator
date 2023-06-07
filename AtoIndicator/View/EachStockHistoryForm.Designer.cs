@@ -50,14 +50,19 @@ namespace AtoIndicator.View.EachStockHistory
             this.powerLabel = new System.Windows.Forms.Label();
             this.reserveLabel = new System.Windows.Forms.Label();
             this.expansionLabel = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.blockFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.paperBlockFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.buyModeLabel = new System.Windows.Forms.Label();
             this.aiScoreLabel = new System.Windows.Forms.Label();
             this.curLocPowerLabel = new System.Windows.Forms.Label();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.realBlockFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.historyChart)).BeginInit();
             this.menuStrip1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // historyChart
@@ -160,7 +165,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.메뉴ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1344, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1344, 30);
             this.menuStrip1.TabIndex = 13;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -170,7 +175,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.showVarToolStripMenuItem,
             this.showLogToolStripMenuItem});
             this.메뉴ToolStripMenuItem.Name = "메뉴ToolStripMenuItem";
-            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
+            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 26);
             this.메뉴ToolStripMenuItem.Text = "메뉴";
             // 
             // showVarToolStripMenuItem
@@ -229,30 +234,17 @@ namespace AtoIndicator.View.EachStockHistory
             this.expansionLabel.TabIndex = 20;
             this.expansionLabel.Text = "\r\n";
             // 
-            // groupBox1
+            // paperBlockFlowLayoutPanel
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.blockFlowLayoutPanel);
-            this.groupBox1.Location = new System.Drawing.Point(1087, 68);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(245, 731);
-            this.groupBox1.TabIndex = 21;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "매매블록 선택";
-            // 
-            // blockFlowLayoutPanel
-            // 
-            this.blockFlowLayoutPanel.AutoScroll = true;
-            this.blockFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.blockFlowLayoutPanel.Location = new System.Drawing.Point(3, 21);
-            this.blockFlowLayoutPanel.Name = "blockFlowLayoutPanel";
-            this.blockFlowLayoutPanel.Size = new System.Drawing.Size(239, 707);
-            this.blockFlowLayoutPanel.TabIndex = 0;
+            this.paperBlockFlowLayoutPanel.AutoScroll = true;
+            this.paperBlockFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.paperBlockFlowLayoutPanel.Location = new System.Drawing.Point(3, 3);
+            this.paperBlockFlowLayoutPanel.Name = "paperBlockFlowLayoutPanel";
+            this.paperBlockFlowLayoutPanel.Size = new System.Drawing.Size(231, 474);
+            this.paperBlockFlowLayoutPanel.TabIndex = 0;
             // 
             // buyModeLabel
             // 
-            this.buyModeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buyModeLabel.AutoSize = true;
             this.buyModeLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.buyModeLabel.Location = new System.Drawing.Point(112, 16);
@@ -263,7 +255,6 @@ namespace AtoIndicator.View.EachStockHistory
             // 
             // aiScoreLabel
             // 
-            this.aiScoreLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.aiScoreLabel.AutoSize = true;
             this.aiScoreLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.aiScoreLabel.Location = new System.Drawing.Point(260, 16);
@@ -283,11 +274,55 @@ namespace AtoIndicator.View.EachStockHistory
             this.curLocPowerLabel.TabIndex = 24;
             this.curLocPowerLabel.Text = "\r\n";
             // 
+            // tabControl1
+            // 
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Location = new System.Drawing.Point(1087, 55);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(245, 744);
+            this.tabControl1.TabIndex = 25;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.paperBlockFlowLayoutPanel);
+            this.tabPage1.Location = new System.Drawing.Point(4, 25);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(237, 480);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "모의매매";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.realBlockFlowLayoutPanel);
+            this.tabPage2.Location = new System.Drawing.Point(4, 25);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(237, 715);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "실매매";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // realBlockFlowLayoutPanel
+            // 
+            this.realBlockFlowLayoutPanel.AutoScroll = true;
+            this.realBlockFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.realBlockFlowLayoutPanel.Location = new System.Drawing.Point(3, 3);
+            this.realBlockFlowLayoutPanel.Name = "realBlockFlowLayoutPanel";
+            this.realBlockFlowLayoutPanel.Size = new System.Drawing.Size(231, 709);
+            this.realBlockFlowLayoutPanel.TabIndex = 0;
+            // 
             // EachStockHistoryForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1344, 828);
+         
             this.Controls.Add(this.curLocPowerLabel);
             this.Controls.Add(this.moveLabel);
             this.Controls.Add(this.aiScoreLabel);
@@ -300,7 +335,8 @@ namespace AtoIndicator.View.EachStockHistory
             this.Controls.Add(this.totalClockLabel);
             this.Controls.Add(this.historyChart);
             this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.tabControl1);
+
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -309,7 +345,9 @@ namespace AtoIndicator.View.EachStockHistory
             ((System.ComponentModel.ISupportInitialize)(this.historyChart)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -328,10 +366,13 @@ namespace AtoIndicator.View.EachStockHistory
         private System.Windows.Forms.Label powerLabel;
         private System.Windows.Forms.Label reserveLabel;
         private System.Windows.Forms.Label expansionLabel;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.FlowLayoutPanel blockFlowLayoutPanel;
+        private System.Windows.Forms.FlowLayoutPanel paperBlockFlowLayoutPanel;
         private System.Windows.Forms.Label buyModeLabel;
         private System.Windows.Forms.Label aiScoreLabel;
         private System.Windows.Forms.Label curLocPowerLabel;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.FlowLayoutPanel realBlockFlowLayoutPanel;
     }
 }
