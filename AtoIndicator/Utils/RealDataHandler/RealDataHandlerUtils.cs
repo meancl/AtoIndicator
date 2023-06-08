@@ -796,5 +796,66 @@ namespace AtoIndicator
             return features102;
         }
         #endregion
+
+        #region 미처분 매매블록화
+        public bool isUndisposalHandle = true;
+        public void BlockizeUndisposal()
+        {
+            if (isUndisposalHandle)
+            {
+                isUndisposalHandle = false;
+
+                #region 미처분 매매블록화
+                StringBuilder tmpSB = new StringBuilder();
+                for (int nUndisposalIdx = 0; nUndisposalIdx < nHoldingCnt; nUndisposalIdx++)
+                {
+                    // 미처분 가격처리
+
+                    nYesterdayUndisposalBuyPrice += holdingsArray[nUndisposalIdx].nBuyedPrice * holdingsArray[nUndisposalIdx].nHoldingQty;
+
+                    if (holdingsArray[nUndisposalIdx].nNumPossibleToSell != holdingsArray[nUndisposalIdx].nHoldingQty)
+                        tmpSB.Append($"{nUndisposalIdx + 1}번째  {holdingsArray[nUndisposalIdx].sCode}  {holdingsArray[nUndisposalIdx].sCodeName} 매매가능수량 : {holdingsArray[nUndisposalIdx].nNumPossibleToSell}(주)가 보유수량 : {holdingsArray[nUndisposalIdx].nHoldingQty}(주)와 같지 않습니다.{NEW_LINE}");
+
+                    if (holdingsArray[nUndisposalIdx].nNumPossibleToSell > 0)
+                    {
+                        int nCurIdx = eachStockDict[holdingsArray[nUndisposalIdx].sCode.Trim()];
+                        int nSlotIdx = ea[nCurIdx].myTradeManager.arrBuyedSlots.Count;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots.Add(new BuyedSlot());
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyedSlotId = nSlotIdx;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyedSumPrice = holdingsArray[nUndisposalIdx].nNumPossibleToSell * holdingsArray[nUndisposalIdx].nBuyedPrice;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].isAllBuyed = true;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBirthPrice = holdingsArray[nUndisposalIdx].nBuyedPrice;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyPrice = holdingsArray[nUndisposalIdx].nBuyedPrice;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurVolume = holdingsArray[nUndisposalIdx].nNumPossibleToSell;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyVolume = holdingsArray[nUndisposalIdx].nNumPossibleToSell;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBirthTime = nFirstTime;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nLastTouchLineTime = nFirstTime;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyMinuteIdx = BRUSH;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyEndTime = nFirstTime;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].sBuyDescription = $"미처분 매매블록{NEW_LINE}";
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].sBuyScrNo = null;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].sSellScrNo = null;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].eTradeMethod = TradeMethodCategory.RisingMethod;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurLineIdx = 0;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].fTargetPer = GetNextCeiling(ref ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurLineIdx);
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].fBottomPer = GetNextFloor(ref ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurLineIdx, ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].eTradeMethod);
+                        PrintLog($"미처분 매매블록화 성공  체결가 : {holdingsArray[nUndisposalIdx].nBuyedPrice}  체결량 : {holdingsArray[nUndisposalIdx].nHoldingQty}  매매가능 : { holdingsArray[nUndisposalIdx].nNumPossibleToSell}", nCurIdx, nSlotIdx, false);
+
+
+                        tmpSB.Append($"{nUndisposalIdx + 1}번째 미처분 매매블록 생성 : {nFirstTime}  {holdingsArray[nUndisposalIdx].sCode}  {holdingsArray[nUndisposalIdx].sCodeName}  {holdingsArray[nUndisposalIdx].nNumPossibleToSell} {holdingsArray[nUndisposalIdx].nBuyedPrice}{NEW_LINE}");
+                    }
+
+
+                }
+                #endregion
+                PrintLog(tmpSB.ToString());
+            }
+            else
+            {
+                PrintLog($"미처분 매매블록화가 이미 완료됐습니다.");
+            }
+        }
+        #endregion
+
     }
 }

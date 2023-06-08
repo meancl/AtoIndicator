@@ -912,6 +912,7 @@ namespace AtoIndicator.View.EachStockHistory
                             int nPaperSellAnnotationIdx = curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndTimeLineIdx;
                             string sPaperSellArrowToolTip = "";
 
+
                             if (curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedVolume == 0) // 전량 매수취소가 된 상황 
                             {
                                 sPaperSellArrowToolTip +=
@@ -1114,8 +1115,10 @@ namespace AtoIndicator.View.EachStockHistory
                             int nBuyAnnotationIdx = curEa.myTradeManager.arrBuyedSlots[buyId].nBuyMinuteIdx;
                             string sRealBuyMessage = "";
 
+                            if (curEa.myTradeManager.arrBuyedSlots[buyId].isCopied)
+                                sRealBuyMessage += "[복제본]";
 
-                            sRealBuyMessage =
+                            sRealBuyMessage +=
                                  $"매수요청시간 : {curEa.myTradeManager.arrBuyedSlots[buyId].nRequestTime}  접수시간 : {curEa.myTradeManager.arrBuyedSlots[buyId].nReceiptTime}  체결시간 : {curEa.myTradeManager.arrBuyedSlots[buyId].nBuyEndTime}\n" +
                                  $"매수블록ID : {buyId}  주문가격(수량) : {curEa.myTradeManager.arrBuyedSlots[buyId].nOriginOrderPrice}(원)({curEa.myTradeManager.arrBuyedSlots[buyId].nOrderVolume}),  매수가격(수량) : {curEa.myTradeManager.arrBuyedSlots[buyId].nBuyPrice}({curEa.myTradeManager.arrBuyedSlots[buyId].nBuyVolume})\n" +
                                  "매수설명 : " + curEa.myTradeManager.arrBuyedSlots[buyId].sBuyDescription + "\n\n";
@@ -1168,6 +1171,7 @@ namespace AtoIndicator.View.EachStockHistory
                             arrowBuy.LineColor = Color.Black;
 
                             arrowBuy.SetAnchor(historyChart.Series["MinuteStick"].Points[nBuyAnnotationIdx]);
+                            arrowBuy.AnchorY = historyChart.Series["MinuteStick"].Points[nBuyAnnotationIdx].YValues[1]; // 고.저.시종
                             arrowBuy.Name = "M" + nNumInjector;
 
                             historyChart.Annotations.Add(arrowBuy);
@@ -1189,8 +1193,11 @@ namespace AtoIndicator.View.EachStockHistory
                             int nSellAnnotaionIdx = curEa.myTradeManager.arrBuyedSlots[sellId].nSellMinuteIdx;
                             string sRealSellMessage = "";
 
-                            sRealSellMessage =
-                                $"매도시간 : {curEa.myTradeManager.arrBuyedSlots[sellId].nDeathTime}  총손익금 : {(curEa.myTradeManager.arrBuyedSlots[sellId].nDeathPrice - curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice) * curEa.myTradeManager.arrBuyedSlots[sellId].nTotalSelledVolume}(원)\n" +
+                            if (curEa.myTradeManager.arrBuyedSlots[sellId].isCopied)
+                                sRealSellMessage += "[복제본]";
+
+                            sRealSellMessage +=
+                                $"매도시간 : {curEa.myTradeManager.arrBuyedSlots[sellId].nDeathTime}  총손익금 : {(curEa.myTradeManager.arrBuyedSlots[sellId].nDeathPrice - curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice) * curEa.myTradeManager.arrBuyedSlots[sellId].nTotalSelledVolume}(원)  손익률 : {Math.Round(((double)(curEa.myTradeManager.arrBuyedSlots[sellId].nDeathPrice - curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice) / curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice - MainForm.REAL_STOCK_COMMISSION ) * 100 , 2)}(%)\n" +
                                 $"매도블록ID : {sellId}  주문가격(수량) : {curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice}(원)({curEa.myTradeManager.arrBuyedSlots[sellId].nOrderVolume}),  매도가격(수량) : {curEa.myTradeManager.arrBuyedSlots[sellId].nDeathPrice}(원)({curEa.myTradeManager.arrBuyedSlots[sellId].nTotalSelledVolume})\n" +
                                 "매도설명 : " + curEa.myTradeManager.arrBuyedSlots[sellId].sSellDescription + "\n\n";
 
@@ -1245,6 +1252,8 @@ namespace AtoIndicator.View.EachStockHistory
                             arrowSell.BackColor = Color.LightSkyBlue;
                             arrowSell.LineColor = Color.Black;
                             arrowSell.SetAnchor(historyChart.Series["MinuteStick"].Points[nSellAnnotaionIdx]);
+                            arrowSell.AnchorY = historyChart.Series["MinuteStick"].Points[nSellAnnotaionIdx].YValues[1]; // 고.저.시종
+
                             arrowSell.Name = "M" + nNumInjector;
                             historyChart.Annotations.Add(arrowSell);
                         }// END ---- 다 팔렸다면

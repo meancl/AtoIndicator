@@ -364,7 +364,7 @@ namespace AtoIndicator
 
                                         if (slot.isSelling)
                                         {
-                                            PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nEaReq].sCode}  종목명 : {ea[nEaReq].sCodeName}  e화면번호 : {e.sScrNo}  매도가 비정상처리됐습니다.", nEaReq);
+                                            PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nEaReq].sCode}  종목명 : {ea[nEaReq].sCodeName} 블록 : {slot.nBuyedSlotId} e화면번호 : {e.sScrNo}  매도가 비정상처리됐습니다.", nEaReq, slot.nBuyedSlotId);
                                             ea[nEaReq].myTradeManager.nSellReqCnt--;
                                             slot.isSelling = false;
                                             slot.nSellErrorCount++;
@@ -372,7 +372,7 @@ namespace AtoIndicator
                                             ShutOffScreen(e.sScrNo);
                                         }
                                         else
-                                            PrintLog($"{nSharedTime} 화면번호 : {e.sScrNo} 종목명 : {ea[nEaReq].sCodeName} sRq : {e.sRQName} 이미 신규매도 비정상인데 다시 접근 에러");
+                                            PrintLog($"{nSharedTime} 화면번호 : {e.sScrNo} 종목명 : {ea[nEaReq].sCodeName} 블록 : {slot.nBuyedSlotId} sRq : {e.sRQName} 이미 신규매도 비정상인데 다시 접근 에러");
                                     }
                                     else if (sTypeReq.Equals(ORDER_BUY_CANCEL)) // 매수취소 비정상처리
                                     {

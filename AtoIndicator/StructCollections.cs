@@ -535,9 +535,9 @@ namespace AtoIndicator
             public int nEaIdx; // 개인구조체인덱스
             public TradeMethodCategory eTradeMethod; // true면 단계별 상승매매, false면 익절,손절 일괄매매
             public int nStrategyIdx; // 전략 인덱스
-            
+
             public string sDescription;
-            
+
             // ----------------------------------
             // 매수 인자들
             // ----------------------------------
@@ -601,7 +601,7 @@ namespace AtoIndicator
             public int nSellReqCnt; // 현재 종목의 매도신청카운트 
             public bool isOrderStatus; // 현재 매매중인 지 확인하는 변수;
 
-
+            public int nLastSellCheckVersion;
 
             public BuyedManager()
             {
@@ -661,6 +661,7 @@ namespace AtoIndicator
             public double fPowerWithFee; // 세금 수수료 포함 손익율
             public int nCurLineIdx; // 현재 익절선과 손절선의 인덱스
 
+            public bool isCopied;
             public string sBuyDescription; // 매수원인(Annotation용)
             public string sSellDescription; // 매도원인(Annotation용)
             public StringBuilder sEachLog;
@@ -679,21 +680,94 @@ namespace AtoIndicator
             public int nPreemptionPrevUpdateTime; // 선점 최신업데이트 시간
             public int nLastTouchLineTime; // 상승선을 건드린 마지막 시간
 
+            // 매도 관리용
             public int nSellErrorLastTime;
             public int nSellErrorCount;
-
+            public int nTotalSellCheckVersion;
 
             public MaOverN maOverN;
 
             public BuyedSlot()
             {
                 sEachLog = new StringBuilder();
-                
             }
+
+            public BuyedSlot DeepCopy()
+            {
+                BuyedSlot newSlot = new BuyedSlot();
+
+                newSlot.nBuyedSlotId = nBuyedSlotId;
+                newSlot.nBuyPrice = nBuyPrice;
+                newSlot.nBuyVolume = nBuyVolume;
+                newSlot.nCurVolume = nCurVolume;
+                newSlot.nOrderVolume = nOrderVolume;
+                newSlot.nOrderPrice = nOrderPrice;
+                newSlot.nOriginOrderPrice = nOriginOrderPrice;
+                newSlot.nRequestTime = nRequestTime;
+                newSlot.nSellRequestTime = nSellRequestTime;
+                newSlot.nReceiptTime = nReceiptTime;
+                newSlot.nBuyEndTime = nBuyEndTime;
+                newSlot.fTradeRatio = fTradeRatio;
+                newSlot.isBuyBanned = isBuyBanned;
+                newSlot.isBuyByHand = isBuyByHand;
+
+                newSlot.nBuyMinuteIdx = nBuyMinuteIdx;
+                newSlot.nSellMinuteIdx = nSellMinuteIdx;
+
+                newSlot.nBuyedSumPrice = nBuyedSumPrice;
+                newSlot.nTotalSelledVolume = nTotalSelledVolume;
+                newSlot.nTotalSelledPrice = nTotalSelledPrice;
+
+                newSlot.isBuying = isBuying;
+                newSlot.isSelling = isSelling;
+                newSlot.isAllSelled = isAllSelled;
+                newSlot.isAllBuyed = isAllBuyed;
+                newSlot.isCanceling = isCanceling;
+                newSlot.isResponsed = isResponsed;
+                
+                newSlot.eTradeMethod = eTradeMethod;
+                newSlot.fTargetPer = fTargetPer;
+                newSlot.fBottomPer = fBottomPer;
+
+                // 경과 확인용
+                newSlot.fPower = fPower;
+                newSlot.fPowerWithFee = fPowerWithFee;
+                newSlot.nCurLineIdx = nCurLineIdx;
+
+                newSlot.isCopied = true;
+                newSlot.sBuyDescription = sBuyDescription;
+                newSlot.sSellDescription = sSellDescription;
+                newSlot.sEachLog.Append(sEachLog.ToString());
+                newSlot.sBuyScrNo = sBuyScrNo;
+                newSlot.sSellScrNo = sSellScrNo;
+
+                // 전량 매수취소인 경우는 다른방식으로 입력한다.
+                newSlot.nBirthTime = nBirthTime;
+                newSlot.nBirthPrice = nBirthPrice;
+                newSlot.nDeathTime = nDeathTime;
+                newSlot.nDeathPrice = nDeathPrice;
+
+                newSlot.isRespiteSignal = isRespiteSignal;
+                newSlot.nRespiteFirstTime = nRespiteFirstTime;
+                newSlot.nRespitePrevUpdateTime = nRespitePrevUpdateTime;
+                newSlot.fRespiteCriticalLine = fRespiteCriticalLine;
+                newSlot.nEachRespiteCount = nEachRespiteCount;
+                newSlot.nPreemptionPrevUpdateTime = nPreemptionPrevUpdateTime;
+                newSlot.nLastTouchLineTime = nLastTouchLineTime;
+
+                // 매도 관리용
+                newSlot.nSellErrorLastTime = nSellErrorLastTime;
+                newSlot.nSellErrorCount = nSellErrorCount;
+                newSlot.nTotalSellCheckVersion = nTotalSellCheckVersion;
+
+                newSlot.maOverN = maOverN;
+
+                return newSlot;
+        }
 
         }
 
-        
+
 
         // 매수후 맥스값과 민값을 기록하기위한 구조체
         public struct MaxMinRecorder
@@ -1291,7 +1365,7 @@ namespace AtoIndicator
 
         public struct PaperTradeSlot
         {
-            
+
             public int nRqTime; // 언제 주문신청했는 지
             public int nRqCount; // 어떤 체결카운트에 주문신청했는 지
             public int nRqPrice; // 얼마에 주문신청했는 지
@@ -1313,11 +1387,11 @@ namespace AtoIndicator
             public int nBuyHogaVolume; // 호가에 얼마나 걸려있는 지
             public int nSellRqVolume; // 얼만큼 주문신청했는 지
             public int nSellRqCount;
-            public int nSellRqTime; 
-            public int nSellRqPrice; 
-            public int nSellEndVolume; 
-            public int nSellEndPrice; 
-            public int nSellEndTime; 
+            public int nSellRqTime;
+            public int nSellRqPrice;
+            public int nSellEndVolume;
+            public int nSellEndPrice;
+            public int nSellEndTime;
             public int nSellEndTimeLineIdx;
             public string sSellDescription;
 
@@ -1325,7 +1399,7 @@ namespace AtoIndicator
             public int nPreemptionPrevUpdateTime;
 
             public int nLastTouchLineTime;
-            
+
             public int nCurLineIdx;
             public double fTargetPer;
             public double fBottomPer;

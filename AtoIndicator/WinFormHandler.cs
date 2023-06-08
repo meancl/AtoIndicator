@@ -280,7 +280,7 @@ namespace AtoIndicator
                     if (nFirstTime == 0) // 첫 시간이 설정되지 않았다면 
                     {
                         nFirstTime = nSharedTime - nSharedTime % MINUTE_KIWOOM; // x시간 00분 00 초 형태로 만든다
-
+                        BlockizeUndisposal();
                     }
                     isMarketStart = true;
 
