@@ -21,7 +21,7 @@ namespace AtoIndicator
                 {
                     sSharedSellDescription.Append($"매도단계 : {ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx}");
 
-                    curSlot = SetAndServeCurSlot("매도", NEW_SELL, ea[nCurIdx].sCode, checkSellIterIdx, "", nCurIdx, 0, 0, 0, MARKET_ORDER, TradeMethodCategory.None, 0, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurVolume, sSharedSellDescription.ToString(), isAIUse: false);
+                    SetAndServeCurSlot(false, NEW_SELL, nCurIdx, ea[nCurIdx].sCode, MARKET_ORDER, 0, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurVolume,"매도", "", sSharedSellDescription.ToString(), nBuyedSlotIdx:checkSellIterIdx);
 
                     PrintLog($"{checkSellIterIdx}번째 매매슬롯 매도단계 : {ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx}", nCurIdx, checkSellIterIdx, false);
                     PrintLog($"매도인큐 {nSharedTime} {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName} {Math.Round(ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee * 100, 1)}(%) 현재단계 : {ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurLineIdx}");
@@ -268,33 +268,22 @@ namespace AtoIndicator
         }
 
 
-        #region RequestThisRealBuy
-        public void RequestThisRealBuy(int nCurIdx, int nRequestPrice = 0, int eyesUp = 0, double fBuyRatio = NORMAL_TRADE_RATIO, int nExtraChance = 0, TradeMethodCategory eTradeMethod = TradeMethodCategory.RisingMethod, double fCeil = 0, double fFloor = 0, bool isAIUse = true)
+        #region RequestHandBuy
+        public void RequestHandBuy(int nCurIdx, int nRequestPrice = 0, int nQty = 0)
         {
             try
             {
-
                 int priceToOrder;
-                if (nRequestPrice == 0)
+                if (nRequestPrice <= 0)
                     priceToOrder = ea[nCurIdx].nFb + GetIntegratedMarketGap(ea[nCurIdx].nFb);
                 else
                     priceToOrder = nRequestPrice;
 
-                for (int eyeCloseIdx = 0; eyeCloseIdx < Math.Abs(eyesUp); eyeCloseIdx++)
-                {
-                    if (eyesUp < 0)
-                        priceToOrder -= GetIntegratedMarketGap(priceToOrder); // 반복해서 가격을 n칸 내린다.
-                    else
-                        priceToOrder += GetIntegratedMarketGap(priceToOrder); // 반복해서 가격을 n칸 올린다.
-                }
+
+                SetAndServeCurSlot(true, NEW_BUY, nCurIdx, ea[nCurIdx].sCode, PENDING_ORDER, priceToOrder, nQty, "신규매수", "", "손매수");
 
 
-                curSlot = SetAndServeCurSlot("신규매수", NEW_BUY, ea[nCurIdx].sCode, 0, "", nCurIdx, -1,
-                         priceToOrder, // 호가 스프레드를 줄이기 위한 방법 : 호가스프레드가 벌어졌을떄 nFb 기준으로 가격을 산정
-                         fBuyRatio, MARKET_ORDER, eTradeMethod, -1, 0, "신규매수", fCeil: fCeil, fFloor: fFloor, isAIUse: false);
-
-
-                PrintLog($"시간 : {nSharedTime}, 종목코드 : {ea[nCurIdx].sCode} 종목명 : {ea[nCurIdx].sCodeName}, 현재가 : {ea[nCurIdx].nFs} 매수신청", nCurIdx);
+                PrintLog($"시간 : {nSharedTime}, 종목코드 : {ea[nCurIdx].sCode} 종목명 : {ea[nCurIdx].sCodeName}, 매수가 : {priceToOrder} 손매수신청", nCurIdx);
             }
             catch (Exception ex)
             {
@@ -303,7 +292,100 @@ namespace AtoIndicator
         }
         #endregion
 
+        #region RequestHandSell
+        public void RequestHandSell(int nCurIdx, int nRequestPrice, int nQty)
+        {
+            try
+            {
+                int priceToOrder = nRequestPrice;
+                int volumeToOrder = nQty;
 
+                if (volumeToOrder <= 0)
+                {
+                    PrintLog($"시간 : {nSharedTime}, 종목코드 : {ea[nCurIdx].sCode} 종목명 : {ea[nCurIdx].sCodeName}  매도 수량을 선택하지 않았습니다.");
+                    return;
+                }
+
+                if (volumeToOrder > ea[nCurIdx].myTradeManager.nTotalBuyed - (ea[nCurIdx].myTradeManager.nTotalSelled + ea[nCurIdx].myTradeManager.nTotalSelling))
+                {
+                    volumeToOrder = ea[nCurIdx].myTradeManager.nTotalBuyed - (ea[nCurIdx].myTradeManager.nTotalSelled + ea[nCurIdx].myTradeManager.nTotalSelling);
+                    if (volumeToOrder == 0)
+                    {
+                        PrintLog($"시간 : {nSharedTime}, 종목코드 : {ea[nCurIdx].sCode} 종목명 : {ea[nCurIdx].sCodeName}  보유주식이 없습니다.");
+                        return;
+                    }
+                }
+               
+
+                SetAndServeCurSlot(true, NEW_SELL, nCurIdx, ea[nCurIdx].sCode, PENDING_ORDER, priceToOrder, volumeToOrder, "신규매도", "", "손매도");
+
+
+                PrintLog($"시간 : {nSharedTime}, 종목코드 : {ea[nCurIdx].sCode} 종목명 : {ea[nCurIdx].sCodeName}, 매도가 : {priceToOrder} 손매도신청", nCurIdx);
+            }
+            catch (Exception ex)
+            {
+                PrintLog($"매도 체크 중 오류 발생 {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName}", nCurIdx);
+            }
+        }
+        #endregion
+
+        #region RequestHandBuyCancel
+        public void RequestHandBuyCancel(int nCurIdx, string sOriginOrderId)
+        {
+            try
+            {
+                SetAndServeCurSlot(true, BUY_CANCEL, nCurIdx, ea[nCurIdx].sCode, MARKET_ORDER, 0, 0, "신규매수취소", sOriginOrderId, "손매수취소");
+
+
+                PrintLog($"시간 : {nSharedTime}, 종목코드 : {ea[nCurIdx].sCode} 종목명 : {ea[nCurIdx].sCodeName}  매수취소신청", nCurIdx);
+            }
+            catch (Exception ex)
+            {
+                PrintLog($"매수 체크 중 오류 발생 {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName}", nCurIdx);
+            }
+        }
+        #endregion
+
+        #region RequestHandSellCancel
+        public void RequestHandSellCancel(int nCurIdx, string sOriginOrderId)
+        {
+            try
+            {
+                SetAndServeCurSlot(true, SELL_CANCEL, nCurIdx, ea[nCurIdx].sCode, MARKET_ORDER, 0, 0, "신규매도취소", sOriginOrderId, "손매도취소");
+
+
+                PrintLog($"시간 : {nSharedTime}, 종목코드 : {ea[nCurIdx].sCode} 종목명 : {ea[nCurIdx].sCodeName}  매도취소신청", nCurIdx);
+            }
+            catch (Exception ex)
+            {
+                PrintLog($"매수 체크 중 오류 발생 {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName}", nCurIdx);
+            }
+        }
+        #endregion
+
+        #region RequestMachineBuy
+        public void RequestMachineBuy(int nCurIdx, int nRequestPrice = 0, int nQty = 0)
+        {
+            try
+            {
+                int priceToOrder;
+                if (nRequestPrice <= 0)
+                    priceToOrder = ea[nCurIdx].nFb + GetIntegratedMarketGap(ea[nCurIdx].nFb);
+                else
+                    priceToOrder = nRequestPrice;
+
+
+                SetAndServeCurSlot(false, NEW_BUY, nCurIdx, ea[nCurIdx].sCode, PENDING_ORDER, priceToOrder, nQty, "신규매수", "", "기계매수");
+
+
+                PrintLog($"시간 : {nSharedTime}, 종목코드 : {ea[nCurIdx].sCode} 종목명 : {ea[nCurIdx].sCodeName}, 매수가 : {priceToOrder} 손매수신청", nCurIdx);
+            }
+            catch (Exception ex)
+            {
+                PrintLog($"매수 체크 중 오류 발생 {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName}", nCurIdx);
+            }
+        }
+        #endregion
 
     }
 }

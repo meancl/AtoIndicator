@@ -52,7 +52,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.expansionLabel = new System.Windows.Forms.Label();
             this.paperBlockFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.buyModeLabel = new System.Windows.Forms.Label();
-            this.aiScoreLabel = new System.Windows.Forms.Label();
+            this.wheelLabel = new System.Windows.Forms.Label();
             this.curLocPowerLabel = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -240,7 +240,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.paperBlockFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.paperBlockFlowLayoutPanel.Location = new System.Drawing.Point(3, 3);
             this.paperBlockFlowLayoutPanel.Name = "paperBlockFlowLayoutPanel";
-            this.paperBlockFlowLayoutPanel.Size = new System.Drawing.Size(231, 474);
+            this.paperBlockFlowLayoutPanel.Size = new System.Drawing.Size(231, 709);
             this.paperBlockFlowLayoutPanel.TabIndex = 0;
             // 
             // buyModeLabel
@@ -249,19 +249,19 @@ namespace AtoIndicator.View.EachStockHistory
             this.buyModeLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.buyModeLabel.Location = new System.Drawing.Point(112, 16);
             this.buyModeLabel.Name = "buyModeLabel";
-            this.buyModeLabel.Size = new System.Drawing.Size(99, 17);
+            this.buyModeLabel.Size = new System.Drawing.Size(55, 17);
             this.buyModeLabel.TabIndex = 22;
-            this.buyModeLabel.Text = "buy : False";
+            this.buyModeLabel.Text = "buy : ";
             // 
-            // aiScoreLabel
+            // wheelLabel
             // 
-            this.aiScoreLabel.AutoSize = true;
-            this.aiScoreLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.aiScoreLabel.Location = new System.Drawing.Point(260, 16);
-            this.aiScoreLabel.Name = "aiScoreLabel";
-            this.aiScoreLabel.Size = new System.Drawing.Size(97, 17);
-            this.aiScoreLabel.TabIndex = 23;
-            this.aiScoreLabel.Text = "aiScore : 0";
+            this.wheelLabel.AutoSize = true;
+            this.wheelLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.wheelLabel.Location = new System.Drawing.Point(300, 16);
+            this.wheelLabel.Name = "wheelLabel";
+            this.wheelLabel.Size = new System.Drawing.Size(80, 17);
+            this.wheelLabel.TabIndex = 23;
+            this.wheelLabel.Text = "wheel : 0";
             // 
             // curLocPowerLabel
             // 
@@ -292,7 +292,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.tabPage1.Location = new System.Drawing.Point(4, 25);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(237, 480);
+            this.tabPage1.Size = new System.Drawing.Size(237, 715);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "모의매매";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -322,10 +322,9 @@ namespace AtoIndicator.View.EachStockHistory
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1344, 828);
-         
             this.Controls.Add(this.curLocPowerLabel);
             this.Controls.Add(this.moveLabel);
-            this.Controls.Add(this.aiScoreLabel);
+            this.Controls.Add(this.wheelLabel);
             this.Controls.Add(this.buyModeLabel);
             this.Controls.Add(this.curLocLabel);
             this.Controls.Add(this.expansionLabel);
@@ -336,7 +335,6 @@ namespace AtoIndicator.View.EachStockHistory
             this.Controls.Add(this.historyChart);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.tabControl1);
-
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -368,7 +366,7 @@ namespace AtoIndicator.View.EachStockHistory
         private System.Windows.Forms.Label expansionLabel;
         private System.Windows.Forms.FlowLayoutPanel paperBlockFlowLayoutPanel;
         private System.Windows.Forms.Label buyModeLabel;
-        private System.Windows.Forms.Label aiScoreLabel;
+        private System.Windows.Forms.Label wheelLabel;
         private System.Windows.Forms.Label curLocPowerLabel;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;

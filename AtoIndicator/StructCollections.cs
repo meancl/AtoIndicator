@@ -96,7 +96,8 @@ namespace AtoIndicator
             public FakeStrategyManager fakeStrategyMgr;
 
 
-            public List<string> unhandledList;
+            public List<string> unhandledBuyOrderIdList;
+            public List<string> unhandledSellOrderIdList;
             // ----------------------------------
             // 초기 변수
             // ----------------------------------
@@ -224,7 +225,8 @@ namespace AtoIndicator
                 manualBoxUpList = new List<(int, double)>();
                 manualBoxDownList = new List<(int, double)>();
 
-                unhandledList = new List<string>();
+                unhandledBuyOrderIdList = new List<string>();
+                unhandledSellOrderIdList = new List<string>();
 
                 myTradeManager = new BuyedManager(); // 개인구조체 매매관리자 초기화
             }
@@ -562,6 +564,7 @@ namespace AtoIndicator
             public string sHogaGb; // 거래구분 (00:지정가, 03:시장가, ...)
             public string sOrgOrderId;  // 원주문번호. 신규주문에는 공백 입력, 정정/취소시 입력합니다.
 
+            public bool isByHand;
         }
 
         public struct CurStatus
@@ -596,10 +599,15 @@ namespace AtoIndicator
             public List<BuyedSlot> arrBuyedSlots;
             public StringBuilder sTotalLog;
 
+
             // 현재 거래중... 정보
             public int nBuyReqCnt; // 현재 종목의 매수신청카운트
             public int nSellReqCnt; // 현재 종목의 매도신청카운트 
             public bool isOrderStatus; // 현재 매매중인 지 확인하는 변수;
+
+            public int nTotalBuyed;
+            public int nTotalSelled;
+            public int nTotalSelling;
 
             public int nLastSellCheckVersion;
 

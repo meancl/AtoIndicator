@@ -841,9 +841,11 @@ namespace AtoIndicator
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].fBottomPer = GetNextFloor(ref ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurLineIdx, ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].eTradeMethod);
                         PrintLog($"미처분 매매블록화 성공  체결가 : {holdingsArray[nUndisposalIdx].nBuyedPrice}  체결량 : {holdingsArray[nUndisposalIdx].nHoldingQty}  매매가능 : { holdingsArray[nUndisposalIdx].nNumPossibleToSell}", nCurIdx, nSlotIdx, false);
 
+                        ea[nCurIdx].myTradeManager.nTotalBuyed += ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurVolume;
 
                         tmpSB.Append($"{nUndisposalIdx + 1}번째 미처분 매매블록 생성 : {nFirstTime}  {holdingsArray[nUndisposalIdx].sCode}  {holdingsArray[nUndisposalIdx].sCodeName}  {holdingsArray[nUndisposalIdx].nNumPossibleToSell} {holdingsArray[nUndisposalIdx].nBuyedPrice}{NEW_LINE}");
                     }
+                    
 
 
                 }

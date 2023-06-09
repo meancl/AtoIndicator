@@ -126,7 +126,7 @@ namespace AtoIndicator.View.EachStockHistory
                 updateDelegate();
             };
 
-            timer.Enabled = false;
+            timer.Enabled = true;
 
 
             historyChart.AxisViewChanged += ChartViewChanged;
@@ -142,6 +142,8 @@ namespace AtoIndicator.View.EachStockHistory
             this.KeyDown += KeyDownHandler;
             this.KeyUp += KeyUpHandler;
             this.FormClosed += FormClosedHandler;
+
+            this.MouseWheel += MouseWheelEventHandler;
             nSpecificStrategyIdx = specificStrategy;
 
             ResetMinuteChart(); // 이게 먼저 실행되어야 chart를 초기화시켜줌. 먼저 실행안되면 차트가 candleStickType아니라 오류생김
@@ -1838,7 +1840,7 @@ namespace AtoIndicator.View.EachStockHistory
             gapLabel.Text = $"현재갭 : {Math.Round(curEa.fStartGap, 3)}";
             curLocLabel.Text = $"현재좌표 : {xCoord} {yCoord}";
             curLocPowerLabel.Text = $"커서파워 : {Math.Round((double)(yCoord - curEa.nYesterdayEndPrice) / curEa.nYesterdayEndPrice, 3)}";
-            aiScoreLabel.Text = $"aiScore : {curEa.fakeStrategyMgr.fAIScore}";
+            
 
             if (isRightPressed || isPreciselyCheck)
             {
@@ -2324,9 +2326,55 @@ namespace AtoIndicator.View.EachStockHistory
             }
             else if (e.Button == MouseButtons.Right)
             {
-                if (isBuyMode)
+                if (eBuyMode == TRADE_MODE.BUY_MODE)
                 {
-                    mainForm.RequestThisRealBuy(nCurIdx, eyesUp: -3);
+                    double yCoord = historyChart.ChartAreas["TotalArea"].AxisY.PixelPositionToValue(e.Y);
+                    if (double.IsNaN(yCoord))
+                        yCoord = 0;
+                    else
+                    {
+                        int movingPrice = curEa.nFb;
+                        int targetPrice = (int)yCoord;
+
+                        if (movingPrice > targetPrice)
+                        {
+                            while (movingPrice > targetPrice)
+                                movingPrice -= GetIntegratedMarketGap(movingPrice);
+
+                        }
+                        else if (movingPrice < targetPrice)
+                        {
+                            while (movingPrice < targetPrice)
+                                movingPrice += GetIntegratedMarketGap(movingPrice);
+                            movingPrice -= GetIntegratedMarketGap(movingPrice); // 한칸 아래서 살거야
+                        }
+                        mainForm.RequestHandBuy(nCurIdx, movingPrice, nMouseWheel);
+                    };
+                }
+                else if(eBuyMode == TRADE_MODE.SELL_MODE)
+                {
+                    double yCoord = historyChart.ChartAreas["TotalArea"].AxisY.PixelPositionToValue(e.Y);
+                    if (double.IsNaN(yCoord))
+                        yCoord = 0;
+                    else
+                    {
+                        int movingPrice = curEa.nFb;
+                        int targetPrice = (int)yCoord;
+
+                        if (movingPrice > targetPrice)
+                        {
+                            while (movingPrice > targetPrice)
+                                movingPrice -= GetIntegratedMarketGap(movingPrice);
+
+                        }
+                        else if (movingPrice < targetPrice)
+                        {
+                            while (movingPrice < targetPrice)
+                                movingPrice += GetIntegratedMarketGap(movingPrice);
+                            movingPrice -= GetIntegratedMarketGap(movingPrice); // 한칸 아래서 팔거야
+                        }
+                        mainForm.RequestHandSell(nCurIdx, movingPrice, nMouseWheel);
+                    }
                 }
                 else
                 {
@@ -2423,8 +2471,8 @@ namespace AtoIndicator.View.EachStockHistory
             }
             else if (e.Button == MouseButtons.Middle)
             {
-                isBuyMode = !isBuyMode;
-                buyModeLabel.Text = $"buy : {isBuyMode}";
+                eBuyMode = SwitchTradeMode(eBuyMode);
+                buyModeLabel.Text = $"buy : {eBuyMode}";
             }
         }
 
@@ -2455,7 +2503,26 @@ namespace AtoIndicator.View.EachStockHistory
         }
         #endregion
 
-        public bool isBuyMode = false;
+        public TRADE_MODE eBuyMode = TRADE_MODE.NONE_MODE;
+        public const int NONE_MODE = 0; 
+        public const int BUY_MODE = 1; 
+        public const int SELL_MODE = 2;
+        public enum TRADE_MODE
+        {
+            NONE_MODE,
+            BUY_MODE,
+            SELL_MODE,
+        }
+        public TRADE_MODE SwitchTradeMode(TRADE_MODE m)
+        {
+            if (m == TRADE_MODE.NONE_MODE)
+                return TRADE_MODE.BUY_MODE;
+            else if (m == TRADE_MODE.BUY_MODE)
+                return TRADE_MODE.SELL_MODE;
+            else
+                return TRADE_MODE.NONE_MODE;
+        }
+
         #region 키보드 이벤트 핸들러
         public void KeyUpHandler(object sender, KeyEventArgs e)
         {
@@ -2874,6 +2941,20 @@ namespace AtoIndicator.View.EachStockHistory
                     break;
             }
             return ret;
+        }
+
+        public int nMouseWheel = 0;
+        public void MouseWheelEventHandler(object sender, MouseEventArgs e)
+        {
+            if (e.Delta > 0) // Scrolled up
+            {
+                nMouseWheel++;
+            }
+            else if(e.Delta < 0)
+            {
+                nMouseWheel--;
+            }
+            wheelLabel.Text = $"wheel : {nMouseWheel}";
         }
     }
     #endregion

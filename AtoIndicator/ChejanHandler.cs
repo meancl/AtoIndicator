@@ -32,6 +32,7 @@ namespace AtoIndicator
 
         public Dictionary<string, BuyedSlot> slotDict = new Dictionary<string, BuyedSlot>(); // 매매 슬롯 딕셔너리
         public Dictionary<string, int> sellVersionDict = new Dictionary<string, int>(); // 손매도의 경우 번호 지정을 위한 딕셔너리
+        public Dictionary<string, int> sellRestDict = new Dictionary<string, int>(); // 남은 매도를 확인하기 위한 딕셔너리
 
         #region 체잔 핸들러
         // ==================================================
@@ -69,7 +70,7 @@ namespace AtoIndicator
                             PrintLog($"{nSharedTime} {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName} {nOrderVolume}주 {nOrderPrice}가 전량매수취소 완료");
                             ShutOffScreen(sScrNo);
                             slotDict.Remove(sOrderId);
-                            ea[nCurIdx].unhandledList.Remove(sOrderId);
+                            ea[nCurIdx].unhandledBuyOrderIdList.Remove(sOrderId);
                         }
                         #endregion
                         #region 정상 매수주문
@@ -108,8 +109,8 @@ namespace AtoIndicator
                                         slot.fBottomPer = GetNextFloor(ref slot.nCurLineIdx, TradeMethodCategory.BottomUpMethod);
                                         break;
                                     case TradeMethodCategory.FixedMethod:
-                                        slot.fTargetPer = 0.01;
-                                        slot.fBottomPer = -0.02;
+                                        slot.fTargetPer = 0.015;
+                                        slot.fBottomPer = -0.025;
                                         break;
                                     default:
                                         break;
@@ -123,7 +124,7 @@ namespace AtoIndicator
                             slot.isResponsed = true;
                             slot.sBuyScrNo = sScrNo;
                             ea[nCurIdx].myTradeManager.isOrderStatus = true; // 매매중 on
-                            ea[nCurIdx].unhandledList.Add(sOrderId); // 매수취소할 수 있게
+                            ea[nCurIdx].unhandledBuyOrderIdList.Add(sOrderId); // 매수취소할 수 있게
 
                             slotDict[sOrderId].sEachLog.Append($"{nSharedTime} {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName} {nOrderVolume}주 {nOrderPrice}원 매수 접수완료{NEW_LINE}");
                             PrintLog($"{nSharedTime} {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName} {nOrderVolume}주 {nOrderPrice}원 매수 접수완료", nCurIdx);
@@ -174,7 +175,7 @@ namespace AtoIndicator
 
                                 ShutOffScreen(sScrNo);
                                 slotDict.Remove(sOrderId);
-                                ea[nCurIdx].unhandledList.Remove(sOrderId);
+                                ea[nCurIdx].unhandledBuyOrderIdList.Remove(sOrderId);
 
                                 PrintLog($"시간 : {sTradeTime} {sCode} {ea[nCurIdx].sCodeName} 화면번호 : {sScrNo} {slot.nBuyVolume}(주) 일부 체결완료, 총 주문수량 : {slot.nOrderVolume} 매수가 : {slot.nBuyPrice}", nCurIdx);
                             }
@@ -192,6 +193,7 @@ namespace AtoIndicator
                         slot.nCurVolume += nCurOkTradeVolume;
                         slot.nBuyVolume += nCurOkTradeVolume;
                         slot.nBuyPrice = slot.nBuyedSumPrice / slot.nBuyVolume;
+                        ea[nCurIdx].myTradeManager.nTotalBuyed += nCurOkTradeVolume;
                         nTodayDisposalBuyPrice += nCurOkTradePrice * nCurOkTradeVolume; //오늘자 매수가격 증가
 
                         PrintLog($"[매수] {sTradeTime} : {sCode}  {ea[nCurIdx].sCodeName}  매입가 : {nCurOkTradePrice}, 매입수량 : {nCurOkTradeVolume}, 미체결량 : {nNoTradeVolume}", nCurIdx, isTxtBx: false);
@@ -221,7 +223,7 @@ namespace AtoIndicator
 
                             ShutOffScreen(sScrNo); // 매수체결완료 해당화면번호 꺼줍니다.
                             slotDict.Remove(sOrderId);
-                            ea[nCurIdx].unhandledList.Remove(sOrderId);
+                            ea[nCurIdx].unhandledBuyOrderIdList.Remove(sOrderId);
 
                             PrintLog($"{sTradeTime} : {sCode}  {ea[nCurIdx].sCodeName} 화면번호 : {sScrNo}  매수 체결완료, 매수가 : {slot.nBuyPrice}", nCurIdx, slot.nBuyedSlotId);
 
@@ -239,12 +241,16 @@ namespace AtoIndicator
                         #region 전량 매도취소 확정
                         if (nNoTradeVolume == 0) // 전량 매도취소가 완료됐다면 
                         {
-                            ResetGroupSellingBack(nCurIdx, sellVersionDict[sOrderId]);
+                            if(sellVersionDict.ContainsKey(sOrderId))
+                                ResetGroupSellingBack(nCurIdx, sellVersionDict[sOrderId]);
+                            ea[nCurIdx].myTradeManager.nTotalSelling -= sellRestDict[sOrderId];
                             PrintLog($"{nSharedTime} {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName} {nOrderVolume}주 {nOrderPrice}원 전량매도취소 완료");
 
                             ShutOffScreen(sScrNo);
                             slotDict.Remove(sOrderId);
                             sellVersionDict.Remove(sOrderId);
+                            sellRestDict.Remove(sOrderId);
+                            ea[nCurIdx].unhandledSellOrderIdList.Remove(sOrderId);
                         }
                         #endregion
                         #region  정상 매도주문
@@ -283,6 +289,7 @@ namespace AtoIndicator
                                         }
 
                                         ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].isSelling = true;
+                                        ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].sCurOrgOrderId = sOrderId;
                                         ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nTotalSellCheckVersion = ea[nCurIdx].myTradeManager.nLastSellCheckVersion;
 
                                         tmpCurOrderVolume -= disposalVolume;
@@ -291,7 +298,9 @@ namespace AtoIndicator
                                     }
                                 }
                             }
-
+                            ea[nCurIdx].myTradeManager.nTotalSelling += nOrderVolume;
+                            ea[nCurIdx].unhandledSellOrderIdList.Add(sOrderId);
+                            sellRestDict[sOrderId] = nOrderVolume;
                         }
                         #endregion
                     }
@@ -309,10 +318,14 @@ namespace AtoIndicator
                         }
                         catch
                         {
-                            ResetGroupSellingBack(nCurIdx, sellVersionDict[sOrderId]);
+                            if (sellVersionDict.ContainsKey(sOrderId))
+                                ResetGroupSellingBack(nCurIdx, sellVersionDict[sOrderId]);
+                            ea[nCurIdx].myTradeManager.nTotalSelling -= sellRestDict[sOrderId];
                             ShutOffScreen(sScrNo);
                             slotDict.Remove(sOrderId);
                             sellVersionDict.Remove(sOrderId);
+                            sellRestDict.Remove(sOrderId);
+                            ea[nCurIdx].unhandledSellOrderIdList.Remove(sOrderId);
                             return; // 매도취소에 대한 확인용 메시지는 스킵한다.
                         }
 
@@ -320,6 +333,10 @@ namespace AtoIndicator
                         #region 매도 체결 처리
                         nCurDepositCalc += nCurOkTradeVolume * nCurOkTradePrice - (ea[nCurIdx].feeMgr.GetRoughFee(nCurOkTradeVolume * nCurOkTradePrice) + ea[nCurIdx].feeMgr.GetRoughTax(nCurOkTradeVolume * nCurOkTradePrice)); // 세금 빼고 판만큼 더해주기
                         nTodayDisposalSellPrice += nCurOkTradeVolume * nCurOkTradePrice; // 오늘자 매도가격 증가
+
+                        ea[nCurIdx].myTradeManager.nTotalSelling -= nCurOkTradeVolume;
+                        ea[nCurIdx].myTradeManager.nTotalSelled += nCurOkTradeVolume;
+                        sellRestDict[sOrderId] -= nCurOkTradeVolume;
 
                         BuyedSlot slot = slotDict[sOrderId];
 
@@ -338,6 +355,7 @@ namespace AtoIndicator
                                 ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].nSellMinuteIdx = nTimeLineIdx;
                                 ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].isAllSelled = true;
                                 ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].nTotalSellCheckVersion = 0;
+                                ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].sCurOrgOrderId = null;
                                 ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].isSelling = false;
                                 ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].nDeathTime = nSharedTime;
                                 ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].nDeathPrice = ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].nTotalSelledPrice / ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].nTotalSelledVolume;
@@ -375,6 +393,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nSellMinuteIdx = nTimeLineIdx;
                                         ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].isAllSelled = true;
                                         ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nTotalSellCheckVersion = 0;
+                                        ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].sCurOrgOrderId = null;
                                         ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].isSelling = false;
                                         ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nDeathTime = nSharedTime;
                                         ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nDeathPrice = ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nTotalSelledPrice / ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nTotalSelledVolume;
@@ -398,7 +417,10 @@ namespace AtoIndicator
                             ShutOffScreen(sScrNo);
                             slotDict.Remove(sOrderId);
                             sellVersionDict.Remove(sOrderId);
+                            sellRestDict.Remove(sOrderId);
+                            ea[nCurIdx].unhandledSellOrderIdList.Remove(sOrderId);
                         }
+
                     }
                 }
                 else if (sOrderType.Equals("매수취소"))
@@ -438,6 +460,7 @@ namespace AtoIndicator
                 {
                     ea[nEaIdx].myTradeManager.arrBuyedSlots[disposal].isSelling = false;
                     ea[nEaIdx].myTradeManager.arrBuyedSlots[disposal].nTotalSellCheckVersion = 0;
+                    ea[nEaIdx].myTradeManager.arrBuyedSlots[disposal].sCurOrgOrderId = null; 
                     PrintLog($"[매도취소] {nSharedTime} : {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} {disposal}블록 {ea[nEaIdx].myTradeManager.arrBuyedSlots[disposal].nCurVolume}주 취소", nEaIdx, disposal);
                 }
             }
@@ -457,6 +480,8 @@ namespace AtoIndicator
             newSlot.nBuyedSlotId = ea[nEaIdx].myTradeManager.arrBuyedSlots.Count;
             ea[nEaIdx].myTradeManager.arrBuyedSlots.Add(newSlot);
 
+            mySlot.sEachLog.Append($"원본에서 ( 블록 : {mySlot.nBuyedSlotId} 현재 : {mySlot.nCurVolume} )와 분리개체 ( 블록 : {newSlot.nBuyedSlotId} 현재 : {newSlot.nCurVolume} )으로 분리 완료");
+            newSlot.sEachLog.Append($"( 블록 : {mySlot.nBuyedSlotId} 현재 : {mySlot.nCurVolume} )와 분리개체 ( 블록 : {newSlot.nBuyedSlotId} 현재 : {newSlot.nCurVolume} )으로 분리 완료");
             PrintLog($"{nSharedTime} {ea[nEaIdx].sCode} {ea[nEaIdx].sCodeName} {newSlot.nBuyedSlotId}블록 분리  {newSlot.nCurVolume}(주)");
         }
     }
