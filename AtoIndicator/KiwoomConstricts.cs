@@ -45,7 +45,7 @@ namespace AtoIndicator
             {
                 // 한번은 random으로 뽑자 
                 int nRand = rand.Next(0, SCREEN_NUM_LIMIT);
-                if (!arrScreen[nRand].isUsing && SubTimeToTimeAndSec(nSharedTime, arrScreen[nRand].nLastScreenTime) >= REACCESSIBLE_SCREEN_TIME)
+                if (!arrScreen[nRand].isUsing && (nSharedTime ==0 || SubTimeToTimeAndSec(nSharedTime, arrScreen[nRand].nLastScreenTime) >= REACCESSIBLE_SCREEN_TIME))
                 {
                     arrScreen[nRand].isUsing = true;
 
@@ -57,7 +57,7 @@ namespace AtoIndicator
                 {
                     for (int curScreen = 0; curScreen < SCREEN_NUM_LIMIT; curScreen++)
                     {
-                        if (!arrScreen[curScreen].isUsing && SubTimeToTimeAndSec(nSharedTime, arrScreen[curScreen].nLastScreenTime) >= REACCESSIBLE_SCREEN_TIME)
+                        if (!arrScreen[curScreen].isUsing && (nSharedTime == 0 || SubTimeToTimeAndSec(nSharedTime, arrScreen[nRand].nLastScreenTime) >= REACCESSIBLE_SCREEN_TIME))
                         {
                             arrScreen[curScreen].isUsing = true;
 
