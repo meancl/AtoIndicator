@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static AtoIndicator.KiwoomLib.TimeLib;
 
 namespace AtoIndicator
 {
@@ -18,9 +19,11 @@ namespace AtoIndicator
          */
 
         internal const int SCREEN_NUM_START = 1000;
-        internal const int SCREEN_NUM_LIMIT = 200;
+        internal const int SCREEN_NUM_LIMIT = 190;
         internal const int SCREEN_NUM_PADDING = 10;
         internal const int SCREEN_NUM_LAST = SCREEN_NUM_START + SCREEN_NUM_LIMIT;
+
+        internal const int REACCESSIBLE_SCREEN_TIME = 30;
 
         internal ScreenStruct[] arrScreen = new ScreenStruct[SCREEN_NUM_LIMIT];
 
@@ -29,6 +32,7 @@ namespace AtoIndicator
         internal struct ScreenStruct
         {
             public bool isUsing;
+            public int nLastScreenTime;
             public BuyedSlot slot;
         }
 
@@ -41,7 +45,7 @@ namespace AtoIndicator
             {
                 // 한번은 random으로 뽑자 
                 int nRand = rand.Next(0, SCREEN_NUM_LIMIT);
-                if (!arrScreen[nRand].isUsing)
+                if (!arrScreen[nRand].isUsing && SubTimeToTimeAndSec(nSharedTime, arrScreen[nRand].nLastScreenTime) >= REACCESSIBLE_SCREEN_TIME)
                 {
                     arrScreen[nRand].isUsing = true;
 
@@ -53,7 +57,7 @@ namespace AtoIndicator
                 {
                     for (int curScreen = 0; curScreen < SCREEN_NUM_LIMIT; curScreen++)
                     {
-                        if (!arrScreen[curScreen].isUsing)
+                        if (!arrScreen[curScreen].isUsing && SubTimeToTimeAndSec(nSharedTime, arrScreen[curScreen].nLastScreenTime) >= REACCESSIBLE_SCREEN_TIME)
                         {
                             arrScreen[curScreen].isUsing = true;
 
@@ -106,6 +110,7 @@ namespace AtoIndicator
                     nUsingScreenNum--;
                     arrScreen[nScrNoIdx].isUsing = false;
                     arrScreen[nScrNoIdx].slot = null;
+                    arrScreen[nScrNoIdx].nLastScreenTime = nSharedTime;
 
                     if (screenNumLabel.InvokeRequired)
                         screenNumLabel.Invoke(new MethodInvoker(delegate { screenNumLabel.Text = nUsingScreenNum.ToString(); }));

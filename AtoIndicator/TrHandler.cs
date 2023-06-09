@@ -390,6 +390,8 @@ namespace AtoIndicator
                                         PrintLog($"시간 : {nSharedTime}  종목명 : {ea[nEaReq].sCodeName}  화면번호 : {e.sScrNo}  안좋은RQ명 : {e.sRQName} 에러");
                                     }
                                 }
+                                else
+                                    PrintLog($"{nSharedTime} 화면번호 : {e.sScrNo} 종목명 : {ea[nEaReq].sCodeName} sRq : {e.sRQName} scrNo : {e.sScrNo} 비정상매매 TR : slot이 null임");
                                 // ShutOffScreen(e.sScrNo); // 주식주문 해당화면번호 꺼줍니다.
                             } // END ---- 매매 비정상처리
                             #endregion
