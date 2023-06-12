@@ -1925,7 +1925,7 @@ namespace AtoIndicator.View.EachStockHistory
                         gpHorizontal = historyChart.CreateGraphics();
                     }
 
-                    if (curEa.manualReserve.reserveArr[0].isSelected &&  curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.UP_RESERVE)
+                    if (curEa.manualReserve.reserveArr[0].isSelected && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.UP_RESERVE)
                     {
                         reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[0].fCritLine1);
                         if (reservationY1 > 0)
@@ -1934,10 +1934,10 @@ namespace AtoIndicator.View.EachStockHistory
                     else if (curEa.manualReserve.reserveArr[1].isSelected && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.DOWN_RESERVE)
                     {
                         reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[1].fCritLine1);
-                        if(reservationY1 > 0)
-                        gpHorizontal.DrawLine(new Pen(Color.Gold, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                        if (reservationY1 > 0)
+                            gpHorizontal.DrawLine(new Pen(Color.Gold, 3), reservationX1, reservationY1, reservationX2, reservationY1);
                     }
-                    else if (curEa.manualReserve.reserveArr[2].isSelected && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.BOX_UP_RESERVE)
+                    else if (curEa.manualReserve.reserveArr[2].fCritLine1 > 0 && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.BOX_UP_RESERVE)
                     {
                         reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[2].fCritLine1);
                         if (reservationY1 > 0)
@@ -1946,7 +1946,7 @@ namespace AtoIndicator.View.EachStockHistory
                         if (reservationY1 > 0)
                             gpHorizontal.DrawLine(new Pen(Color.Magenta, 3), reservationX1, reservationY1, reservationX2, reservationY1);
                     }
-                    else if (curEa.manualReserve.reserveArr[3].isSelected && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.NO_FLOOR_UP)
+                    else if (curEa.manualReserve.reserveArr[3].fCritLine1 > 0 && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.NO_FLOOR_UP)
                     {
                         reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[3].fCritLine1);
                         if (reservationY1 > 0)
@@ -1955,7 +1955,7 @@ namespace AtoIndicator.View.EachStockHistory
                         if (reservationY1 > 0)
                             gpHorizontal.DrawLine(new Pen(Color.DarkGray, 3), reservationX1, reservationY1, reservationX2, reservationY1);
                     }
-                    else if (curEa.manualReserve.reserveArr[4].isSelected && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.YES_FLOOR_UP)
+                    else if (curEa.manualReserve.reserveArr[4].fCritLine1 > 0 && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.YES_FLOOR_UP)
                     {
                         reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[4].fCritLine1);
                         if (reservationY1 > 0)
@@ -2444,7 +2444,7 @@ namespace AtoIndicator.View.EachStockHistory
                                     else
                                     {
                                         curEa.manualReserve.reserveArr[2].fCritLine2 = yCoord;
-                                        if(curEa.manualReserve.reserveArr[2].fCritLine1 > curEa.manualReserve.reserveArr[2].fCritLine2)
+                                        if (curEa.manualReserve.reserveArr[2].fCritLine1 > curEa.manualReserve.reserveArr[2].fCritLine2)
                                         {
                                             double tmpVal = curEa.manualReserve.reserveArr[2].fCritLine1;
                                             curEa.manualReserve.reserveArr[2].fCritLine1 = curEa.manualReserve.reserveArr[2].fCritLine2;
@@ -2769,30 +2769,40 @@ namespace AtoIndicator.View.EachStockHistory
 
             if (cUp >= 49 && cUp <= 53)
             {
-                curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.NONE_RESERVE;
+                
                 if (isCtrlPushed) // 취소
                 {
                     if (cUp == 49)
                     {
                         curEa.manualReserve.reserveArr[0].Clear();
                     }
-                    else if (cUp == 50)
+                    if (cUp == 50)
                     {
                         curEa.manualReserve.reserveArr[1].Clear();
                     }
-                    else if (cUp == 51)
+                    if (cUp == 51)
                     {
                         curEa.manualReserve.reserveArr[2].Clear();
                     }
-                    else if (cUp == 52)
+                    if (cUp == 52)
                     {
                         curEa.manualReserve.reserveArr[3].Clear();
                     }
-                    else if (cUp == 53)
+                    if (cUp == 53)
                     {
                         curEa.manualReserve.reserveArr[4].Clear();
                     }
                 }
+                else
+                {
+                    if (cUp == 51 && curEa.manualReserve.reserveArr[2].fCritLine1 > 0 && !curEa.manualReserve.reserveArr[2].isSelected)
+                        curEa.manualReserve.reserveArr[2].fCritLine1 = 0;
+                    if (cUp == 52 && curEa.manualReserve.reserveArr[3].fCritLine1 > 0 && !curEa.manualReserve.reserveArr[3].isSelected)
+                        curEa.manualReserve.reserveArr[3].fCritLine1 = 0;
+                    if (cUp == 53 && curEa.manualReserve.reserveArr[4].fCritLine1 > 0 && !curEa.manualReserve.reserveArr[4].isSelected)
+                        curEa.manualReserve.reserveArr[4].fCritLine1 = 0;
+                }    
+                curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.NONE_RESERVE;
             }
 
             if (isCtrlPushed)
