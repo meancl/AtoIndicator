@@ -2539,6 +2539,11 @@ namespace AtoIndicator
                         {
                             if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[0].fCritLine1)
                             {
+                                if(ea[nCurIdx].manualReserve.reserveArr[0].isBuyReserved)
+                                {
+                                    ea[nCurIdx].manualReserve.reserveArr[0].isBuyReserved = false;
+                                    RequestMachineBuy(nCurIdx);
+                                }
                                 ea[nCurIdx].manualReserve.reserveArr[0].isChosen1 = true;
                             }
                         }
@@ -2546,6 +2551,11 @@ namespace AtoIndicator
                         {
                             if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.reserveArr[1].fCritLine1)
                             {
+                                if (ea[nCurIdx].manualReserve.reserveArr[1].isBuyReserved)
+                                {
+                                    ea[nCurIdx].manualReserve.reserveArr[1].isBuyReserved = false;
+                                    RequestMachineBuy(nCurIdx);
+                                }
                                 ea[nCurIdx].manualReserve.reserveArr[1].isChosen1 = true;
                             }
                         }
@@ -2553,6 +2563,11 @@ namespace AtoIndicator
                         {
                             if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine2) 
                             {
+                                if (ea[nCurIdx].manualReserve.reserveArr[2].isBuyReserved)
+                                {
+                                    ea[nCurIdx].manualReserve.reserveArr[2].isBuyReserved = false;
+                                    RequestMachineBuy(nCurIdx);
+                                }
                                 ea[nCurIdx].manualReserve.reserveArr[2].isChosen2 = true;
                             }
                             if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine1) 
@@ -2569,6 +2584,11 @@ namespace AtoIndicator
 
                             if (!ea[nCurIdx].manualReserve.reserveArr[3].isChosen1 && ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[3].fCritLine2)
                             {
+                                if (ea[nCurIdx].manualReserve.reserveArr[3].isBuyReserved)
+                                {
+                                    ea[nCurIdx].manualReserve.reserveArr[3].isBuyReserved = false;
+                                    RequestMachineBuy(nCurIdx);
+                                }
                                 ea[nCurIdx].manualReserve.reserveArr[3].isChosen2 = true;
                             }
                         }
@@ -2581,6 +2601,11 @@ namespace AtoIndicator
                             
                             if (ea[nCurIdx].manualReserve.reserveArr[4].isChosen1 && ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[4].fCritLine2) 
                             {
+                                if (ea[nCurIdx].manualReserve.reserveArr[4].isBuyReserved)
+                                {
+                                    ea[nCurIdx].manualReserve.reserveArr[4].isBuyReserved = false;
+                                    RequestMachineBuy(nCurIdx);
+                                }
                                 ea[nCurIdx].manualReserve.reserveArr[4].isChosen2 = true;
                             }
                         }

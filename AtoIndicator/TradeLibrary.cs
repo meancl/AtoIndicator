@@ -67,12 +67,12 @@
                                                             };
 
 
-        int RaiseStepUp(int nCurLineIdx, int nStep =1)
+        public int RaiseStepUp(int nCurLineIdx, int nStep =1)
         {
             return nCurLineIdx +  nStep;
         }
 
-        int PullStepDown(int nCurLineIdx, int nStep = 1)
+        public int PullStepDown(int nCurLineIdx, int nStep = 1)
         {
             return nCurLineIdx - nStep;
         }
@@ -81,7 +81,7 @@
         // 마지막 편집일 : 2023-04-20
         // 1. 다음 윗 계단을 반환
         // =========================================
-        double GetNextCeiling(int nCurLineIdx)
+        public double GetNextCeiling(int nCurLineIdx)
         {
             if (nCurLineIdx >= STEP_TRADE)
                 return 100; // 닿을 수 없는 천장을 만든다.
@@ -92,7 +92,7 @@
         // 마지막 편집일 : 2023-04-20
         // 1. 다음 아래 계단을 반환
         // =========================================
-        double GetNextFloor(int nIdx, TradeMethodCategory eTradeMethod)
+        public double GetNextFloor(int nIdx, TradeMethodCategory eTradeMethod)
         {
             if (nIdx >= STEP_TRADE)
                 return 100; // 닿을 수 없는 바닥을 만든다.(바로 매도가 되게 만든다.

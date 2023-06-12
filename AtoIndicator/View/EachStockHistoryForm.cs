@@ -9,6 +9,7 @@ using static AtoIndicator.Utils.Comparer;
 using AtoIndicator.View.ScrollableMsgBox;
 using AtoIndicator.MyControl;
 
+
 namespace AtoIndicator.View.EachStockHistory
 {
     #region EachStockHistoryForm
@@ -2769,7 +2770,7 @@ namespace AtoIndicator.View.EachStockHistory
 
             if (cUp >= 49 && cUp <= 53)
             {
-                
+
                 if (isCtrlPushed) // 취소
                 {
                     if (cUp == 49)
@@ -2801,9 +2802,47 @@ namespace AtoIndicator.View.EachStockHistory
                         curEa.manualReserve.reserveArr[3].fCritLine1 = 0;
                     if (cUp == 53 && curEa.manualReserve.reserveArr[4].fCritLine1 > 0 && !curEa.manualReserve.reserveArr[4].isSelected)
                         curEa.manualReserve.reserveArr[4].fCritLine1 = 0;
-                }    
+                }
                 curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.NONE_RESERVE;
             }
+
+            if (cUp >= 54 && cUp <= 57)
+            {
+                curEa = mainForm.ea[nCurIdx];
+                for (int i = 0; i < curEa.myTradeManager.arrBuyedSlots.Count; i++)
+                {
+                    if( !curEa.myTradeManager.arrBuyedSlots[i].isAllSelled && !curEa.myTradeManager.arrBuyedSlots[i].isSelling)
+                    {
+                        curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx = 0;
+
+                        if (cUp == 54)
+                        {
+                            curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.RisingMethod;
+                            curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
+                            curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
+                        }
+                        else if (cUp == 55)
+                        {
+                            curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.BottomUpMethod;
+                            curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
+                            curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
+                        }
+                        else if (cUp == 56)
+                        {
+                            curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.ScalpingMethod;
+                            curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
+                            curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
+                        }
+                        else if (cUp == 57)
+                        {
+                            curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.FixedMethod;
+                            curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = 0.025; // 다시 설정 가능
+                            curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = -0.03; // ""
+                        }   
+                    }
+                }
+            }
+
 
             if (isCtrlPushed)
             {
@@ -2837,15 +2876,35 @@ namespace AtoIndicator.View.EachStockHistory
             if (cPressed >= 49 && cPressed <= 53)
             {
                 if (cPressed == 49)
+                {
+                    if (isShiftPushed)
+                        curEa.manualReserve.reserveArr[0].isBuyReserved = true;
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.UP_RESERVE;
+                }
                 else if (cPressed == 50)
+                {
+                    if (isShiftPushed)
+                        curEa.manualReserve.reserveArr[1].isBuyReserved = true;
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.DOWN_RESERVE;
+                }
                 else if (cPressed == 51)
+                {
+                    if (isShiftPushed)
+                        curEa.manualReserve.reserveArr[2].isBuyReserved = true;
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.BOX_UP_RESERVE;
+                }
                 else if (cPressed == 52)
+                {
+                    if (isShiftPushed)
+                        curEa.manualReserve.reserveArr[3].isBuyReserved = true;
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.NO_FLOOR_UP;
+                }
                 else if (cPressed == 53)
+                {
+                    if (isShiftPushed)
+                        curEa.manualReserve.reserveArr[4].isBuyReserved = true;
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.YES_FLOOR_UP;
+                }
 
             }
 
@@ -2863,6 +2922,8 @@ namespace AtoIndicator.View.EachStockHistory
                     isPreciselyCheck = true;
                 }
             }
+
+
 
             if (cPressed == 17) // ctrl
                 isCtrlPushed = true;
