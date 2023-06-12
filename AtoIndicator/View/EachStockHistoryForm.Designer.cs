@@ -48,7 +48,6 @@ namespace AtoIndicator.View.EachStockHistory
             this.showLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gapLabel = new System.Windows.Forms.Label();
             this.powerLabel = new System.Windows.Forms.Label();
-            this.reserveLabel = new System.Windows.Forms.Label();
             this.expansionLabel = new System.Windows.Forms.Label();
             this.paperBlockFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.buyModeLabel = new System.Windows.Forms.Label();
@@ -147,7 +146,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.curLocLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.curLocLabel.AutoSize = true;
             this.curLocLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.curLocLabel.Location = new System.Drawing.Point(922, 431);
+            this.curLocLabel.Location = new System.Drawing.Point(922, 317);
             this.curLocLabel.Name = "curLocLabel";
             this.curLocLabel.Size = new System.Drawing.Size(8, 17);
             this.curLocLabel.TabIndex = 8;
@@ -170,7 +169,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.메뉴ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1344, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(1344, 28);
             this.menuStrip1.TabIndex = 13;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -180,7 +179,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.showVarToolStripMenuItem,
             this.showLogToolStripMenuItem});
             this.메뉴ToolStripMenuItem.Name = "메뉴ToolStripMenuItem";
-            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 26);
+            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
             this.메뉴ToolStripMenuItem.Text = "메뉴";
             // 
             // showVarToolStripMenuItem
@@ -200,7 +199,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.gapLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.gapLabel.AutoSize = true;
             this.gapLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.gapLabel.Location = new System.Drawing.Point(922, 399);
+            this.gapLabel.Location = new System.Drawing.Point(921, 285);
             this.gapLabel.Name = "gapLabel";
             this.gapLabel.Size = new System.Drawing.Size(8, 17);
             this.gapLabel.TabIndex = 17;
@@ -211,29 +210,18 @@ namespace AtoIndicator.View.EachStockHistory
             this.powerLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.powerLabel.AutoSize = true;
             this.powerLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.powerLabel.Location = new System.Drawing.Point(922, 368);
+            this.powerLabel.Location = new System.Drawing.Point(922, 257);
             this.powerLabel.Name = "powerLabel";
             this.powerLabel.Size = new System.Drawing.Size(8, 17);
             this.powerLabel.TabIndex = 18;
             this.powerLabel.Text = "\r\n";
-            // 
-            // reserveLabel
-            // 
-            this.reserveLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.reserveLabel.AutoSize = true;
-            this.reserveLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.reserveLabel.Location = new System.Drawing.Point(921, 330);
-            this.reserveLabel.Name = "reserveLabel";
-            this.reserveLabel.Size = new System.Drawing.Size(8, 17);
-            this.reserveLabel.TabIndex = 19;
-            this.reserveLabel.Text = "\r\n";
             // 
             // expansionLabel
             // 
             this.expansionLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.expansionLabel.AutoSize = true;
             this.expansionLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.expansionLabel.Location = new System.Drawing.Point(921, 297);
+            this.expansionLabel.Location = new System.Drawing.Point(921, 231);
             this.expansionLabel.Name = "expansionLabel";
             this.expansionLabel.Size = new System.Drawing.Size(8, 17);
             this.expansionLabel.TabIndex = 20;
@@ -251,20 +239,20 @@ namespace AtoIndicator.View.EachStockHistory
             // buyModeLabel
             // 
             this.buyModeLabel.AutoSize = true;
-            this.buyModeLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.buyModeLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.buyModeLabel.Location = new System.Drawing.Point(112, 16);
             this.buyModeLabel.Name = "buyModeLabel";
-            this.buyModeLabel.Size = new System.Drawing.Size(55, 17);
+            this.buyModeLabel.Size = new System.Drawing.Size(52, 14);
             this.buyModeLabel.TabIndex = 22;
             this.buyModeLabel.Text = "buy : ";
             // 
             // wheelLabel
             // 
             this.wheelLabel.AutoSize = true;
-            this.wheelLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.wheelLabel.Location = new System.Drawing.Point(272, 16);
+            this.wheelLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.wheelLabel.Location = new System.Drawing.Point(240, 16);
             this.wheelLabel.Name = "wheelLabel";
-            this.wheelLabel.Size = new System.Drawing.Size(80, 17);
+            this.wheelLabel.Size = new System.Drawing.Size(76, 14);
             this.wheelLabel.TabIndex = 23;
             this.wheelLabel.Text = "wheel : 0";
             // 
@@ -273,7 +261,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.curLocPowerLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.curLocPowerLabel.AutoSize = true;
             this.curLocPowerLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.curLocPowerLabel.Location = new System.Drawing.Point(921, 458);
+            this.curLocPowerLabel.Location = new System.Drawing.Point(921, 347);
             this.curLocPowerLabel.Name = "curLocPowerLabel";
             this.curLocPowerLabel.Size = new System.Drawing.Size(8, 17);
             this.curLocPowerLabel.TabIndex = 24;
@@ -325,50 +313,50 @@ namespace AtoIndicator.View.EachStockHistory
             // isAllBuyedLabel
             // 
             this.isAllBuyedLabel.AutoSize = true;
-            this.isAllBuyedLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.isAllBuyedLabel.Location = new System.Drawing.Point(391, 16);
+            this.isAllBuyedLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.isAllBuyedLabel.Location = new System.Drawing.Point(354, 15);
             this.isAllBuyedLabel.Name = "isAllBuyedLabel";
-            this.isAllBuyedLabel.Size = new System.Drawing.Size(89, 17);
+            this.isAllBuyedLabel.Size = new System.Drawing.Size(79, 14);
             this.isAllBuyedLabel.TabIndex = 26;
             this.isAllBuyedLabel.Text = "총매수 : 0";
             // 
             // isSellingLabel
             // 
             this.isSellingLabel.AutoSize = true;
-            this.isSellingLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.isSellingLabel.Location = new System.Drawing.Point(503, 16);
+            this.isSellingLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.isSellingLabel.Location = new System.Drawing.Point(474, 16);
             this.isSellingLabel.Name = "isSellingLabel";
-            this.isSellingLabel.Size = new System.Drawing.Size(89, 17);
+            this.isSellingLabel.Size = new System.Drawing.Size(79, 14);
             this.isSellingLabel.TabIndex = 27;
             this.isSellingLabel.Text = "매도중 : 0";
             // 
             // isAllSelledLabel
             // 
             this.isAllSelledLabel.AutoSize = true;
-            this.isAllSelledLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.isAllSelledLabel.Location = new System.Drawing.Point(618, 15);
+            this.isAllSelledLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.isAllSelledLabel.Location = new System.Drawing.Point(593, 15);
             this.isAllSelledLabel.Name = "isAllSelledLabel";
-            this.isAllSelledLabel.Size = new System.Drawing.Size(107, 17);
+            this.isAllSelledLabel.Size = new System.Drawing.Size(94, 14);
             this.isAllSelledLabel.TabIndex = 28;
             this.isAllSelledLabel.Text = "매도완료 : 0";
             // 
             // restVolumeLabel
             // 
             this.restVolumeLabel.AutoSize = true;
-            this.restVolumeLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.restVolumeLabel.Location = new System.Drawing.Point(743, 16);
+            this.restVolumeLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.restVolumeLabel.Location = new System.Drawing.Point(718, 16);
             this.restVolumeLabel.Name = "restVolumeLabel";
-            this.restVolumeLabel.Size = new System.Drawing.Size(71, 17);
+            this.restVolumeLabel.Size = new System.Drawing.Size(64, 14);
             this.restVolumeLabel.TabIndex = 29;
             this.restVolumeLabel.Text = "잔량 : 0";
             // 
             // depositLabel
             // 
             this.depositLabel.AutoSize = true;
-            this.depositLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.depositLabel.Location = new System.Drawing.Point(859, 15);
+            this.depositLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.depositLabel.Location = new System.Drawing.Point(829, 15);
             this.depositLabel.Name = "depositLabel";
-            this.depositLabel.Size = new System.Drawing.Size(89, 17);
+            this.depositLabel.Size = new System.Drawing.Size(79, 14);
             this.depositLabel.TabIndex = 30;
             this.depositLabel.Text = "예수금 : 0";
             // 
@@ -388,7 +376,6 @@ namespace AtoIndicator.View.EachStockHistory
             this.Controls.Add(this.buyModeLabel);
             this.Controls.Add(this.curLocLabel);
             this.Controls.Add(this.expansionLabel);
-            this.Controls.Add(this.reserveLabel);
             this.Controls.Add(this.powerLabel);
             this.Controls.Add(this.gapLabel);
             this.Controls.Add(this.totalClockLabel);
@@ -422,7 +409,6 @@ namespace AtoIndicator.View.EachStockHistory
         private System.Windows.Forms.ToolStripMenuItem showLogToolStripMenuItem;
         private System.Windows.Forms.Label gapLabel;
         private System.Windows.Forms.Label powerLabel;
-        private System.Windows.Forms.Label reserveLabel;
         private System.Windows.Forms.Label expansionLabel;
         private System.Windows.Forms.FlowLayoutPanel paperBlockFlowLayoutPanel;
         private System.Windows.Forms.Label buyModeLabel;

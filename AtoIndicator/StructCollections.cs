@@ -18,10 +18,6 @@ namespace AtoIndicator
             public bool isChosen2;
 
             public ManualReservation manualReserve;
-            public List<(int, double)> manualCrushList;
-            public List<(int, double)> manualBottomList;
-            public List<(int, double)> manualBoxUpList;
-            public List<(int, double)> manualBoxDownList;
 
             
 
@@ -224,10 +220,6 @@ namespace AtoIndicator
 
                 eventMgr = new EventManager();
                 manualReserve = new ManualReservation();
-                manualCrushList = new List<(int, double)>();
-                manualBottomList = new List<(int, double)>();
-                manualBoxUpList = new List<(int, double)>();
-                manualBoxDownList = new List<(int, double)>();
 
                 unhandledBuyOrderIdList = new List<string>();
                 unhandledSellOrderIdList = new List<string>();
@@ -935,27 +927,44 @@ namespace AtoIndicator
         }
         public class ManualReservation
         {
-            public bool isReserveSelected3;
-            public bool isReserveSelected4;
-            public bool isReserveSelected5;
-            public bool isReserveSelected6;
-
-            public bool isChosen3;
-            public bool isChosen4;
-            public bool isChosen5;
-            public bool isChosen6;
-
-
-            public int nReserveCheckVersion;
-            public int nReserveCheckTime;
-            public double fReserveCheckPrice;
-            public double fReserveCheckPrice2;
+            public ReservationPoint[] reserveArr;
+            public ReserveEnum eCurReserve;
 
             public ManualReservation()
             {
+                eCurReserve = ReserveEnum.NONE_RESERVE;
+                reserveArr = new ReservationPoint[5]; // 포인트가 5개
+            }
+            public void ClearAll()
+            {
+                for (int i = 0; i < 5; i++)
+                    reserveArr[i].Clear();
             }
         }
 
+        public struct ReservationPoint
+        {
+            public bool isBuyReserved;
+            public bool isSelected; 
+            public bool isChosen1;
+            public bool isChosen2;
+            public int nSelectedTime;
+            public double fCritLine1;
+            public double fCritLine2;
+            public int nChosenTime;
+
+            public void Clear()
+            {
+                isBuyReserved = false;
+                isSelected = false;
+                isChosen1 = false;
+                isChosen2 = false;
+                nSelectedTime = 0;
+                fCritLine1 = 0;
+                fCritLine2 = 0;
+                nChosenTime = 0;
+            }
+        }
         // ============================================
         // 타임라인 변수( 개인구조체 현황 기록용 )
         // ============================================

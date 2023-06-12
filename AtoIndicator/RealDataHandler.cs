@@ -139,10 +139,15 @@ namespace AtoIndicator
         public const int PAPER_BUY_SIGNAL = 10;
         public const int PAPER_SELL_SIGNAL = 11;
 
-        public const int NONE_RESERVE = 0;
-        public const int UP_RESERVE = 1;
-        public const int DOWN_RESERVE = 2;
-        public const int BOX_RESERVE = 3;
+        public enum ReserveEnum
+        {
+            NONE_RESERVE,
+            UP_RESERVE,
+            DOWN_RESERVE,
+            BOX_UP_RESERVE,
+            NO_FLOOR_UP,
+            YES_FLOOR_UP,
+        }
 
         public const string SEND_ORDER_ERROR_CHECK_PREFIX = "둥둥둥";
 
@@ -1501,7 +1506,7 @@ namespace AtoIndicator
                                                 PrintLog($"{nSharedTime} : {curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName}  오류번호 : {nCancelReqResult} 손매수취소신청 전송 실패!!", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
                                             }
                                         }
-                                    } 
+                                    }
                                 }
                                 else if (curSlot.sHogaGb.Equals(PENDING_ORDER))
                                 {
@@ -1513,7 +1518,7 @@ namespace AtoIndicator
 
                                 if (curSlot.sHogaGb.Equals(MARKET_ORDER))
                                 {
-                                    if (ea[curSlot.nEaIdx].unhandledSellOrderIdList.Contains(curSlot.sOrgOrderId)) 
+                                    if (ea[curSlot.nEaIdx].unhandledSellOrderIdList.Contains(curSlot.sOrgOrderId))
                                     {
                                         PrintLog($"{nSharedTime} : {curSlot.sCode} {ea[curSlot.nEaIdx].sCodeName}  {curSlot.sDescription} 손매도취소신청 전송", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
 
@@ -1614,16 +1619,16 @@ namespace AtoIndicator
                                                     switch (newSlot.eTradeMethod)
                                                     {
                                                         case TradeMethodCategory.RisingMethod:
-                                                            newSlot.fTargetPer = GetNextCeiling( newSlot.nCurLineIdx);
-                                                            newSlot.fBottomPer = GetNextFloor( newSlot.nCurLineIdx, TradeMethodCategory.RisingMethod);
+                                                            newSlot.fTargetPer = GetNextCeiling(newSlot.nCurLineIdx);
+                                                            newSlot.fBottomPer = GetNextFloor(newSlot.nCurLineIdx, TradeMethodCategory.RisingMethod);
                                                             break;
                                                         case TradeMethodCategory.ScalpingMethod:
-                                                            newSlot.fTargetPer = GetNextCeiling( newSlot.nCurLineIdx);
-                                                            newSlot.fBottomPer = GetNextFloor( newSlot.nCurLineIdx, TradeMethodCategory.ScalpingMethod);
+                                                            newSlot.fTargetPer = GetNextCeiling(newSlot.nCurLineIdx);
+                                                            newSlot.fBottomPer = GetNextFloor(newSlot.nCurLineIdx, TradeMethodCategory.ScalpingMethod);
                                                             break;
                                                         case TradeMethodCategory.BottomUpMethod:
-                                                            newSlot.fTargetPer = GetNextCeiling( newSlot.nCurLineIdx);
-                                                            newSlot.fBottomPer = GetNextFloor( newSlot.nCurLineIdx, TradeMethodCategory.BottomUpMethod);
+                                                            newSlot.fTargetPer = GetNextCeiling(newSlot.nCurLineIdx);
+                                                            newSlot.fBottomPer = GetNextFloor(newSlot.nCurLineIdx, TradeMethodCategory.BottomUpMethod);
                                                             break;
                                                         case TradeMethodCategory.FixedMethod:
                                                             newSlot.fTargetPer = curSlot.fTargetPercent;
@@ -2528,44 +2533,58 @@ namespace AtoIndicator
                         ea[nCurIdx].nRealDataIdxVi = ea[nCurIdx].timeLines1m.nRealDataIdx;
 
 
-                    #region 실시간 manual crush 테스트
+                    #region 실시간 manual crush 테스트(예약)
                     {
-                        if (ea[nCurIdx].manualReserve.nReserveCheckVersion != NONE_RESERVE) // 예약이 있다는소리
+                        if (ea[nCurIdx].manualReserve.reserveArr[0].isSelected && !ea[nCurIdx].manualReserve.reserveArr[0].isChosen1) 
                         {
-                            if (ea[nCurIdx].manualReserve.nReserveCheckVersion == UP_RESERVE) // 이상
+                            if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[0].fCritLine1)
                             {
-                                if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.fReserveCheckPrice)
-                                {
-                                    ea[nCurIdx].manualReserve.isChosen3 = true;
-                                    ea[nCurIdx].manualCrushList.Add((nSharedTime, ea[nCurIdx].manualReserve.fReserveCheckPrice));
-                                    ClearReservation(nCurIdx);
-                                }
-                            }
-                            else if (ea[nCurIdx].manualReserve.nReserveCheckVersion == DOWN_RESERVE) // 이하
-                            {
-                                if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.fReserveCheckPrice)
-                                {
-                                    ea[nCurIdx].manualReserve.isChosen4 = true;
-                                    ea[nCurIdx].manualBottomList.Add((nSharedTime, ea[nCurIdx].manualReserve.fReserveCheckPrice));
-                                    ClearReservation(nCurIdx);
-                                }
-                            }
-                            else if (ea[nCurIdx].manualReserve.nReserveCheckVersion == BOX_RESERVE)
-                            {
-                                if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.fReserveCheckPrice) // 지지선으로 올라가는 중
-                                {
-                                    ea[nCurIdx].manualReserve.isChosen5 = true;
-                                    ea[nCurIdx].manualBoxUpList.Add((nSharedTime, ea[nCurIdx].manualReserve.fReserveCheckPrice));
-                                    ClearReservation(nCurIdx);
-                                }
-                                else if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.fReserveCheckPrice2) // 저항선보다 더 내려감
-                                {
-                                    ea[nCurIdx].manualReserve.isChosen6 = true;
-                                    ea[nCurIdx].manualBoxDownList.Add((nSharedTime, ea[nCurIdx].manualReserve.fReserveCheckPrice2));
-                                    ClearReservation(nCurIdx);
-                                }
+                                ea[nCurIdx].manualReserve.reserveArr[0].isChosen1 = true;
                             }
                         }
+                        else if (ea[nCurIdx].manualReserve.reserveArr[1].isSelected && !ea[nCurIdx].manualReserve.reserveArr[1].isChosen1) 
+                        {
+                            if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.reserveArr[1].fCritLine1)
+                            {
+                                ea[nCurIdx].manualReserve.reserveArr[1].isChosen1 = true;
+                            }
+                        }
+                        else if (ea[nCurIdx].manualReserve.reserveArr[2].isSelected && ! (ea[nCurIdx].manualReserve.reserveArr[2].isChosen1 || ea[nCurIdx].manualReserve.reserveArr[2].isChosen2))
+                        {
+                            if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine2) 
+                            {
+                                ea[nCurIdx].manualReserve.reserveArr[2].isChosen2 = true;
+                            }
+                            if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine1) 
+                            {
+                                ea[nCurIdx].manualReserve.reserveArr[2].isChosen1 = true;
+                            }
+                        }
+                        else if (ea[nCurIdx].manualReserve.reserveArr[3].isSelected && !ea[nCurIdx].manualReserve.reserveArr[3].isChosen1 && !ea[nCurIdx].manualReserve.reserveArr[3].isChosen2)
+                        {
+                            if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.reserveArr[3].fCritLine1)
+                            {
+                                ea[nCurIdx].manualReserve.reserveArr[3].isChosen1 = true;
+                            }
+
+                            if (!ea[nCurIdx].manualReserve.reserveArr[3].isChosen1 && ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[3].fCritLine2)
+                            {
+                                ea[nCurIdx].manualReserve.reserveArr[3].isChosen2 = true;
+                            }
+                        }
+                        else if (ea[nCurIdx].manualReserve.reserveArr[4].isSelected && !ea[nCurIdx].manualReserve.reserveArr[4].isChosen2)
+                        {
+                            if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.reserveArr[4].fCritLine1)
+                            {
+                                ea[nCurIdx].manualReserve.reserveArr[4].isChosen1 = true;
+                            }
+                            
+                            if (ea[nCurIdx].manualReserve.reserveArr[4].isChosen1 && ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[4].fCritLine2) 
+                            {
+                                ea[nCurIdx].manualReserve.reserveArr[4].isChosen2 = true;
+                            }
+                        }
+
                     }
                     #endregion
 

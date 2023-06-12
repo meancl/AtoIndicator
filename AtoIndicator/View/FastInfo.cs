@@ -161,31 +161,6 @@ namespace AtoIndicator.View
                     else
                         registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} W창 등록해제됨";
                 }
-
-
-                if (cUp == 'E' && mainForm.ea[nEaIdxChosen].manualReserve.isChosen3)
-                {
-                    mainForm.ea[nEaIdxChosen].manualReserve.isChosen3 = false;
-                    mainForm.ea[nEaIdxChosen].manualReserve.isReserveSelected3 = false;
-                    registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} E창 등록해제됨";
-                }
-
-                if (cUp == 'R' && mainForm.ea[nEaIdxChosen].manualReserve.isChosen4)
-                {
-                    mainForm.ea[nEaIdxChosen].manualReserve.isChosen4 = false;
-                    mainForm.ea[nEaIdxChosen].manualReserve.isReserveSelected4 = false;
-                    registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} R창 등록해제됨";
-                }
-
-                if ((cUp == 'D' || cUp == 'F') && (mainForm.ea[nEaIdxChosen].manualReserve.isChosen5 || mainForm.ea[nEaIdxChosen].manualReserve.isChosen6))
-                {
-                    mainForm.ea[nEaIdxChosen].manualReserve.isChosen5 = false;
-                    mainForm.ea[nEaIdxChosen].manualReserve.isReserveSelected5 = false;
-                    mainForm.ea[nEaIdxChosen].manualReserve.isChosen6 = false;
-                    mainForm.ea[nEaIdxChosen].manualReserve.isReserveSelected6 = false;
-                    registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} D and F창 등록해제됨";
-                }
-
             }
         }
 
@@ -412,18 +387,25 @@ namespace AtoIndicator.View
                     ShowIndicator();
                 }
 
-                if(cUp == 'D')
+                if(cUp == 'S')
                 {
                     CheckReserve();
                     isRZ = true;
                     nRZNum = 5;
                     ShowIndicator();
                 }
+                if (cUp == 'D')
+                {
+                    CheckReserve();
+                    isRZ = true;
+                    nRZNum = 6;
+                    ShowIndicator();
+                }
                 if (cUp == 'F')
                 {
                     CheckReserve();
                     isRZ = true;
-                    nRZNum = 5;
+                    nRZNum = 7;
                     ShowIndicator();
                 }
             }
@@ -1421,11 +1403,15 @@ namespace AtoIndicator.View
                                 else if (nRZNum == 2)
                                     isReserveShow = mainForm.ea[i].isChosen2;
                                 else if (nRZNum == 3)
-                                    isReserveShow = mainForm.ea[i].manualReserve.isChosen3;
+                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[0].isChosen1;
                                 else if (nRZNum == 4)
-                                    isReserveShow = mainForm.ea[i].manualReserve.isChosen4;
+                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[1].isChosen1;
                                 else if (nRZNum == 5)
-                                    isReserveShow = mainForm.ea[i].manualReserve.isChosen5 || mainForm.ea[i].manualReserve.isChosen6;
+                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[2].isChosen1 || mainForm.ea[i].manualReserve.reserveArr[2].isChosen2;
+                                else if (nRZNum == 6)
+                                    isReserveShow = !mainForm.ea[i].manualReserve.reserveArr[3].isChosen1 && mainForm.ea[i].manualReserve.reserveArr[3].isChosen2;
+                                else if (nRZNum == 7)
+                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[4].isChosen2;
                             }
                             else // 에러
                             {
@@ -1495,14 +1481,22 @@ namespace AtoIndicator.View
                                     listViewItem.SubItems[restIdx].BackColor = Color.Green;
                                 else if (mainForm.ea[i].isChosen2 && (restIdx == 2 || restIdx == 3))
                                     listViewItem.SubItems[restIdx].BackColor = Color.Orange;
-                                else if ((mainForm.ea[i].manualReserve.isReserveSelected3 && restIdx == 4) || (mainForm.ea[i].manualReserve.isChosen3 && restIdx == 5))
+                                else if ((mainForm.ea[i].manualReserve.reserveArr[0].isSelected && restIdx == 4) || (mainForm.ea[i].manualReserve.reserveArr[0].isChosen1 && restIdx == 5))
                                     listViewItem.SubItems[restIdx].BackColor = Color.BlueViolet;
-                                else if ((mainForm.ea[i].manualReserve.isReserveSelected4 && restIdx == 6) || (mainForm.ea[i].manualReserve.isChosen4 && restIdx == 7))
+                                else if ((mainForm.ea[i].manualReserve.reserveArr[1].isSelected && restIdx == 6) || (mainForm.ea[i].manualReserve.reserveArr[1].isChosen1 && restIdx == 7))
                                     listViewItem.SubItems[restIdx].BackColor = Color.Gold;
-                                else if ((mainForm.ea[i].manualReserve.isReserveSelected5 && restIdx == 8) || (mainForm.ea[i].manualReserve.isChosen5 && restIdx == 9))
+                                else if ((mainForm.ea[i].manualReserve.reserveArr[2].isSelected && restIdx == 8) || 
+                                        (mainForm.ea[i].manualReserve.reserveArr[2].isChosen1 && restIdx == 9) || 
+                                        (mainForm.ea[i].manualReserve.reserveArr[2].isChosen2 && restIdx == 10))
                                     listViewItem.SubItems[restIdx].BackColor = Color.Magenta;
-                                else if ((mainForm.ea[i].manualReserve.isReserveSelected6 && restIdx == 10) || (mainForm.ea[i].manualReserve.isChosen6 && restIdx == 11))
-                                    listViewItem.SubItems[restIdx].BackColor = Color.YellowGreen;
+                                else if ((mainForm.ea[i].manualReserve.reserveArr[3].isSelected && restIdx == 11) || 
+                                        (mainForm.ea[i].manualReserve.reserveArr[3].isChosen1 && restIdx == 12) ||
+                                        (mainForm.ea[i].manualReserve.reserveArr[3].isChosen2 && restIdx == 13))
+                                    listViewItem.SubItems[restIdx].BackColor = Color.DarkGray;
+                                else if ((mainForm.ea[i].manualReserve.reserveArr[4].isSelected && restIdx == 14) ||
+                                        (mainForm.ea[i].manualReserve.reserveArr[4].isChosen1 && restIdx == 15) ||
+                                        (mainForm.ea[i].manualReserve.reserveArr[4].isChosen2 && restIdx == 16))
+                                    listViewItem.SubItems[restIdx].BackColor = Color.Purple;
                                 else
                                     listViewItem.SubItems[restIdx].BackColor = myColor;
                             }

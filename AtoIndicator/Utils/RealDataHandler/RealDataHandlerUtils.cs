@@ -674,14 +674,7 @@ namespace AtoIndicator
             return lHeavyCount;
         }
 
-        public void ClearReservation(int nEaIdx)
-        {
-            ea[nEaIdx].manualReserve.fReserveCheckPrice = 0;
-            ea[nEaIdx].manualReserve.fReserveCheckPrice2 = 0;
-            ea[nEaIdx].manualReserve.nReserveCheckVersion = NONE_RESERVE;
-            ea[nEaIdx].manualReserve.nReserveCheckTime = 0;
-        }
-
+    
 
         // 머신러닝에 사용할 변수를 
         #region GetParameters
