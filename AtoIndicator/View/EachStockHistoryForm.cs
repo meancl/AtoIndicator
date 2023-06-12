@@ -70,10 +70,13 @@ namespace AtoIndicator.View.EachStockHistory
         public MainForm.StrategyNames strategyNames;
 
         public ArrowControl arrowControl;
-        public Dictionary<(int, int), List<string>> toCancelDict = new Dictionary<(int, int), List<string>>(); // key : (매매예약번호 , 가격) ,  value : list<주문번호>
+        public Dictionary<(int, int), List<PrevCancel>> toCancelDict = new Dictionary<(int, int), List<PrevCancel>>(); // key : (매매예약번호 , 가격) ,  value : list<주문번호>
         public const int BUY_RESERVE = 0;
         public const int SELL_RESERVE = 1;
 
+        public bool isTargetChoice;
+        public double fTargetPriceTouch;
+        public double fBottomPriceTouch;
         #endregion
 
         #region 이전 어노테이션 같은위치일 시 삭제용
@@ -126,7 +129,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.ActiveControl = historyChart;
             this.DoubleBuffered = true;
 
-            mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler = CancelEventHandler;
+            mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler += CancelEventHandler;
 
             totalClockLabel.Text = "현재시간 : " + mainForm.nSharedTime;
 
@@ -352,7 +355,7 @@ namespace AtoIndicator.View.EachStockHistory
 
         public void FormClosedHandler(Object sender, FormClosedEventArgs e)
         {
-            mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler = null;
+            mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler -= CancelEventHandler;
             timer.Enabled = false;
             this.Dispose();
         }
@@ -1928,42 +1931,75 @@ namespace AtoIndicator.View.EachStockHistory
 
                     if (curEa.manualReserve.reserveArr[0].isSelected && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.UP_RESERVE)
                     {
-                        reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[0].fCritLine1);
-                        if (reservationY1 > 0)
+                        if (curEa.manualReserve.reserveArr[0].fCritLine1 > 0)
+                        {
+                            reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[0].fCritLine1);
                             gpHorizontal.DrawLine(new Pen(Color.BlueViolet, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                        }
                     }
                     else if (curEa.manualReserve.reserveArr[1].isSelected && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.DOWN_RESERVE)
                     {
-                        reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[1].fCritLine1);
-                        if (reservationY1 > 0)
+                        if (curEa.manualReserve.reserveArr[1].fCritLine1 > 0)
+                        {
+                            reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[1].fCritLine1);
                             gpHorizontal.DrawLine(new Pen(Color.Gold, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                        }
                     }
                     else if (curEa.manualReserve.reserveArr[2].fCritLine1 > 0 && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.BOX_UP_RESERVE)
                     {
-                        reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[2].fCritLine1);
-                        if (reservationY1 > 0)
+                        if (curEa.manualReserve.reserveArr[2].fCritLine1 > 0)
+                        {
+                            reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[2].fCritLine1);
                             gpHorizontal.DrawLine(new Pen(Color.Magenta, 3), reservationX1, reservationY1, reservationX2, reservationY1);
-                        reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[2].fCritLine2);
-                        if (reservationY1 > 0)
+                        }
+
+                        if (curEa.manualReserve.reserveArr[2].fCritLine2 > 0)
+                        {
+                            reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[2].fCritLine2);
                             gpHorizontal.DrawLine(new Pen(Color.Magenta, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                        }
                     }
                     else if (curEa.manualReserve.reserveArr[3].fCritLine1 > 0 && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.NO_FLOOR_UP)
                     {
-                        reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[3].fCritLine1);
-                        if (reservationY1 > 0)
+                        if (curEa.manualReserve.reserveArr[3].fCritLine1 > 0)
+                        {
+                            reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[3].fCritLine1);
                             gpHorizontal.DrawLine(new Pen(Color.DarkGray, 3), reservationX1, reservationY1, reservationX2, reservationY1);
-                        reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[3].fCritLine2);
-                        if (reservationY1 > 0)
+                        }
+
+                        if (curEa.manualReserve.reserveArr[3].fCritLine2 > 0)
+                        {
+                            reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[3].fCritLine2);
                             gpHorizontal.DrawLine(new Pen(Color.DarkGray, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                        }
                     }
                     else if (curEa.manualReserve.reserveArr[4].fCritLine1 > 0 && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.YES_FLOOR_UP)
                     {
-                        reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[4].fCritLine1);
-                        if (reservationY1 > 0)
+                        if (curEa.manualReserve.reserveArr[4].fCritLine1 > 0)
+                        {
+                            reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[4].fCritLine1);
                             gpHorizontal.DrawLine(new Pen(Color.Purple, 3), reservationX1, reservationY1, reservationX2, reservationY1);
-                        reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[4].fCritLine2);
-                        if (reservationY1 > 0)
+                        }
+                        if (curEa.manualReserve.reserveArr[4].fCritLine2 > 0)
+                        {
+                            reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[4].fCritLine2);
                             gpHorizontal.DrawLine(new Pen(Color.Purple, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                        }
+                    }
+
+                    if (isTargetChoice)
+                    {
+                        if (fBottomPriceTouch > 0)
+                        {
+                            reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(fBottomPriceTouch);
+                            gpHorizontal.DrawLine(new Pen(Color.Black, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                        }
+
+                        if (fTargetPriceTouch > 0)
+                        {
+                            reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(fTargetPriceTouch);
+                            gpHorizontal.DrawLine(new Pen(Color.Black, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                        }
                     }
                 }
                 catch
@@ -2497,6 +2533,26 @@ namespace AtoIndicator.View.EachStockHistory
                                     }
                                 }
                             }
+                            else // 0으로 설정 가능
+                            {
+                                if (isTargetChoice)
+                                {
+                                    if (fBottomPriceTouch == 0)
+                                    {
+                                        fBottomPriceTouch = yCoord;
+                                    }
+                                    else
+                                    {
+                                        fTargetPriceTouch = yCoord;
+                                        if (fBottomPriceTouch > fTargetPriceTouch)
+                                        {
+                                            double tmpVal = fBottomPriceTouch;
+                                            fBottomPriceTouch = fTargetPriceTouch;
+                                            fTargetPriceTouch = tmpVal;
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -2808,37 +2864,67 @@ namespace AtoIndicator.View.EachStockHistory
 
             if (cUp >= 54 && cUp <= 57)
             {
-                curEa = mainForm.ea[nCurIdx];
-                for (int i = 0; i < curEa.myTradeManager.arrBuyedSlots.Count; i++)
+                if (isSpacePushed)
                 {
-                    if( !curEa.myTradeManager.arrBuyedSlots[i].isAllSelled && !curEa.myTradeManager.arrBuyedSlots[i].isSelling)
+                    curEa = mainForm.ea[nCurIdx];
+                    for (int i = 0; i < curEa.myTradeManager.arrBuyedSlots.Count; i++)
                     {
-                        curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx = 0;
+                        if (!curEa.myTradeManager.arrBuyedSlots[i].isAllSelled && !curEa.myTradeManager.arrBuyedSlots[i].isSelling)
+                        {
+                            curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx = 0;
 
-                        if (cUp == 54)
-                        {
-                            curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.RisingMethod;
-                            curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
-                            curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
+                            if (cUp == 54) // 6
+                            {
+                                curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.RisingMethod;
+                                curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
+                                curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
+                            }
+                            else if (cUp == 55) // 7
+                            {
+                                curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.BottomUpMethod;
+                                curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
+                                curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
+                            }
+                            else if (cUp == 56) // 8
+                            {
+                                curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.ScalpingMethod;
+                                curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
+                                curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
+                            }
+                            else if (cUp == 57) // 9
+                            {
+                                curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.FixedMethod;
+                                if (fBottomPriceTouch != 0 && fTargetPriceTouch != 0)
+                                {
+                                    curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = (fTargetPriceTouch - curEa.myTradeManager.arrBuyedSlots[i].nBuyPrice) / curEa.myTradeManager.arrBuyedSlots[i].nBuyPrice;
+                                    curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = (fBottomPriceTouch - curEa.myTradeManager.arrBuyedSlots[i].nBuyPrice) / curEa.myTradeManager.arrBuyedSlots[i].nBuyPrice;
+                                }
+                                else
+                                {
+                                    curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = 0.025; // 다시 설정 가능
+                                    curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = -0.03; // ""
+                                }
+                            }
                         }
-                        else if (cUp == 55)
+                    }
+                }
+                else
+                {
+                    if (cUp == 57) // 9
+                    {
+                        isTargetChoice = false;
+                        if (fTargetPriceTouch == 0) // 두번째 타겟이 입력 안됐으면 초기화
                         {
-                            curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.BottomUpMethod;
-                            curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
-                            curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
+                            fBottomPriceTouch = 0;
+                            fTargetPriceTouch = 0;
                         }
-                        else if (cUp == 56)
+
+                        if (isCtrlPushed) // 초기화
                         {
-                            curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.ScalpingMethod;
-                            curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
-                            curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
+                            fBottomPriceTouch = 0;
+                            fTargetPriceTouch = 0;
                         }
-                        else if (cUp == 57)
-                        {
-                            curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.FixedMethod;
-                            curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = 0.025; // 다시 설정 가능
-                            curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = -0.03; // ""
-                        }   
+
                     }
                 }
             }
@@ -2906,6 +2992,10 @@ namespace AtoIndicator.View.EachStockHistory
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.YES_FLOOR_UP;
                 }
 
+            }
+            if (cPressed == 57) // 9
+            {
+                isTargetChoice = true;
             }
 
             if (cPressed == 'C') // 오토 바운더리
@@ -3091,33 +3181,29 @@ namespace AtoIndicator.View.EachStockHistory
                         if (!mainForm.buyCancelingByOrderIdDict.ContainsKey(sOrderId))
                         {
                             MainForm.BuyedSlot slot = mainForm.slotByOrderIdDict[sOrderId];
-
+                            PrevCancel cancelInfo;
+                            cancelInfo.sPrevOrderId = sOrderId;
+                            cancelInfo.sAccumMsg = "";
                             arrowControl = new ArrowControl((int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Maximum), (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(slot.nOrderPrice), isBuy: true, le: OnTradeCancelArrowClicked);
 
                             if (toCancelDict.ContainsKey((BUY_RESERVE, slot.nOrderPrice)))
                             {
-                                var beforeList = toCancelDict[(BUY_RESERVE, slot.nOrderPrice)];
+                                List<PrevCancel> beforeList = toCancelDict[(BUY_RESERVE, slot.nOrderPrice)];
                                 int beforeCnt = beforeList.Count;
-                                MainForm.BuyedSlot beforeSlot;
 
                                 arrowControl.ArrowColor = GetArrowStepColor(beforeCnt + 1);
-
-                                string beforeTooltip = $"===================== 대기물량 : {beforeCnt}개 ====================={NEW_LINE}{NEW_LINE}";
-                                for (int beforeIdx = 0; beforeIdx < beforeCnt; beforeIdx++)
-                                {
-                                    beforeSlot = mainForm.slotByOrderIdDict[beforeList[beforeIdx]];
-                                    beforeTooltip += $"{beforeIdx}번째 물량 : {beforeSlot.nOrderVolume - beforeSlot.nCurVolume}{NEW_LINE}";
-                                }
-                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매수주문--------------{NEW_LINE} 물량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}" + beforeTooltip);
+                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매수주문--------------{NEW_LINE} 물량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}===================== 대기물량: {beforeCnt}개 ====================={NEW_LINE}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}");
+                                cancelInfo.sAccumMsg += $"물량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}";
                             }
                             else
                             {
                                 arrowControl.ArrowColor = GetArrowStepColor(1);
                                 new ToolTip().SetToolTip(arrowControl, $"-----------------현재매수주문--------------{NEW_LINE} 물량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}");
-                                toCancelDict[(BUY_RESERVE, slot.nOrderPrice)] = new List<string>();
+                                toCancelDict[(BUY_RESERVE, slot.nOrderPrice)] = new List<PrevCancel>();
+                                cancelInfo.sAccumMsg += $"물량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}";
                             }
 
-                            toCancelDict[(BUY_RESERVE, slot.nOrderPrice)].Add(sOrderId);
+                            toCancelDict[(BUY_RESERVE, slot.nOrderPrice)].Add(cancelInfo);
                             arrowControl.Name = $"^ B {sOrderId}";
                             arrowList.Add(arrowControl);
                         }
@@ -3130,51 +3216,31 @@ namespace AtoIndicator.View.EachStockHistory
                         if (!mainForm.sellCancelingByOrderIdDict.ContainsKey(sOrderId))
                         {
                             MainForm.BuyedSlot slot = mainForm.slotByOrderIdDict[sOrderId];
-
                             if (slot == null) // 손매도 경우
                                 slot = mainForm.virtualSellSlotByOrderIdDict[sOrderId];
-
+                            PrevCancel cancelInfo;
+                            cancelInfo.sPrevOrderId = sOrderId;
+                            cancelInfo.sAccumMsg = "";
                             arrowControl = new ArrowControl((int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Minimum - 1), (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(slot.nOrderPrice), isBuy: false, le: OnTradeCancelArrowClicked);
 
-                            bool isMore = toCancelDict.ContainsKey((SELL_RESERVE, slot.nOrderPrice));
-
-                            if (isMore)
+                            if (toCancelDict.ContainsKey((SELL_RESERVE, slot.nOrderPrice)))
                             {
-                                var beforeList = toCancelDict[(SELL_RESERVE, slot.nOrderPrice)];
+                                List<PrevCancel> beforeList = toCancelDict[(SELL_RESERVE, slot.nOrderPrice)];
                                 int beforeCnt = beforeList.Count;
-                                MainForm.BuyedSlot beforeSlot;
-                                arrowControl.ArrowColor = GetArrowStepColor(beforeCnt + 1);
 
-                                string beforeTooltip = $"===================== 대기물량 : {beforeCnt}개 ====================={NEW_LINE}{NEW_LINE}";
-                                for (int beforeIdx = 0; beforeIdx < beforeCnt; beforeIdx++)
-                                {
-                                    beforeSlot = mainForm.slotByOrderIdDict[beforeList[beforeIdx]];
-                                    if (beforeSlot != null)
-                                        beforeTooltip += $"{beforeIdx}번째 물량 : {beforeSlot.nCurVolume}{NEW_LINE}";
-                                    else
-                                    {
-                                        int sellVersion = mainForm.sellVersionByOrderIdDict[beforeList[beforeIdx]];
-                                        int nSellRestVolume = 0;
-                                        for (int ns = 0; ns < curEa.myTradeManager.arrBuyedSlots.Count; ns++)
-                                        {
-                                            if (curEa.myTradeManager.arrBuyedSlots[ns].nTotalSellCheckVersion == sellVersion && !curEa.myTradeManager.arrBuyedSlots[ns].isAllSelled)
-                                            {
-                                                nSellRestVolume += curEa.myTradeManager.arrBuyedSlots[ns].nCurVolume;
-                                            }
-                                        }
-                                        beforeTooltip += $"{beforeIdx}번째 {sellVersion}그룹 물량 : {nSellRestVolume}{NEW_LINE}";
-                                    }
-                                }
-                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {slot.nSellRequestTime} 가격 : {slot.nOrderPrice} 물량 : {slot.nOrderVolume}{NEW_LINE}" + beforeTooltip);
+                                arrowControl.ArrowColor = GetArrowStepColor(beforeCnt + 1);
+                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {slot.nSellRequestTime} 가격 : {slot.nOrderPrice} 물량 : {slot.nOrderVolume}{NEW_LINE}===================== 대기물량 : {beforeCnt}개 ====================={NEW_LINE}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}");
+                                cancelInfo.sAccumMsg = $"-----------------현재매도주문--------------{NEW_LINE}시간 : {slot.nSellRequestTime} 가격 : {slot.nOrderPrice} 물량 : {slot.nOrderVolume}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}";
                             }
                             else
                             {
                                 arrowControl.ArrowColor = GetArrowStepColor(1);
                                 new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {slot.nSellRequestTime} 가격 : {slot.nOrderPrice} 물량 : {slot.nOrderVolume}{NEW_LINE}");
-                                toCancelDict[(SELL_RESERVE, slot.nOrderPrice)] = new List<string>();
+                                toCancelDict[(SELL_RESERVE, slot.nOrderPrice)] = new List<PrevCancel>();
+                                cancelInfo.sAccumMsg = $"-----------------현재매도주문--------------{NEW_LINE}시간 : {slot.nSellRequestTime} 가격 : {slot.nOrderPrice} 물량 : {slot.nOrderVolume}{NEW_LINE}";
                             }
 
-                            toCancelDict[(SELL_RESERVE, slot.nOrderPrice)].Add(sOrderId);
+                            toCancelDict[(SELL_RESERVE, slot.nOrderPrice)].Add(cancelInfo);
                             arrowControl.Name = $"^ S {sOrderId}";
                             arrowList.Add(arrowControl);
 
@@ -3199,6 +3265,12 @@ namespace AtoIndicator.View.EachStockHistory
                 historyChart.Invoke(new MethodInvoker(RefreshCancelConfirm));
             else
                 RefreshCancelConfirm();
+        }
+
+        public struct PrevCancel
+        {
+            public string sPrevOrderId;
+            public string sAccumMsg;
         }
 
         public Color GetArrowStepColor(int n)

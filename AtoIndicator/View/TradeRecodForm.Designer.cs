@@ -30,130 +30,32 @@ namespace AtoIndicator.View.TradeRecod
         private void InitializeComponent()
         {
             this.tradeRecordListView = new System.Windows.Forms.ListView();
-            this.sGubunTag = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.sCode = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.sCodeName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.nTradingNum = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.nTradeNum = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.nFakeBuyNum = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.nFakeAssistantNum = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.nFakeResistNum = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.nPriceUpNum = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.nPriceDownNum = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.isTradeStatus = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.fBuyPrice = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.nCurFb = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.fEverageProfit = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.fTotalPrice = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.fCurPower = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.fCurPowerWithOutGap = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.todayTotalResultTextBox = new System.Windows.Forms.TextBox();
             this.totalClockLabel = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.메뉴ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statisticToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.수동매도ctrlSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.realTradeListView = new System.Windows.Forms.ListView();
             this.menuStrip1.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tradeRecordListView
             // 
-            this.tradeRecordListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tradeRecordListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.sGubunTag,
-            this.sCode,
-            this.sCodeName,
-            this.nTradingNum,
-            this.nTradeNum,
-            this.nFakeBuyNum,
-            this.nFakeAssistantNum,
-            this.nFakeResistNum,
-            this.nPriceUpNum,
-            this.nPriceDownNum,
-            this.isTradeStatus,
-            this.fBuyPrice,
-            this.nCurFb,
-            this.fEverageProfit,
-            this.fTotalPrice,
-            this.fCurPower,
-            this.fCurPowerWithOutGap});
+            this.tradeRecordListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tradeRecordListView.FullRowSelect = true;
             this.tradeRecordListView.HideSelection = false;
-            this.tradeRecordListView.Location = new System.Drawing.Point(12, 39);
+            this.tradeRecordListView.Location = new System.Drawing.Point(3, 3);
             this.tradeRecordListView.Name = "tradeRecordListView";
-            this.tradeRecordListView.Size = new System.Drawing.Size(1157, 481);
+            this.tradeRecordListView.Size = new System.Drawing.Size(1165, 473);
             this.tradeRecordListView.TabIndex = 0;
             this.tradeRecordListView.UseCompatibleStateImageBehavior = false;
-            // 
-            // sGubunTag
-            // 
-            this.sGubunTag.Text = "장구분";
-            // 
-            // sCode
-            // 
-            this.sCode.Text = "종목코드";
-            // 
-            // sCodeName
-            // 
-            this.sCodeName.Text = "종목명";
-            // 
-            // nTradingNum
-            // 
-            this.nTradingNum.Text = "매매중";
-            // 
-            // nTradeNum
-            // 
-            this.nTradeNum.Text = "실매매";
-            // 
-            // nFakeBuyNum
-            // 
-            this.nFakeBuyNum.Text = "가짜매수";
-            // 
-            // nFakeAssistantNum
-            // 
-            this.nFakeAssistantNum.Text = "가짜보조";
-            // 
-            // nFakeResistNum
-            // 
-            this.nFakeResistNum.Text = "가짜저항";
-            // 
-            // nPriceUpNum
-            // 
-            this.nPriceUpNum.Text = "가격업";
-            // 
-            // nPriceDownNum
-            // 
-            this.nPriceDownNum.Text = "가격다운";
-            // 
-            // isTradeStatus
-            // 
-            this.isTradeStatus.Text = "매매상태";
-            // 
-            // fBuyPrice
-            // 
-            this.fBuyPrice.Text = "매수가";
-            // 
-            // nCurFb
-            // 
-            this.nCurFb.Text = "현재가";
-            // 
-            // fEverageProfit
-            // 
-            this.fEverageProfit.Text = "평균이익(백분율)";
-            // 
-            // fTotalPrice
-            // 
-            this.fTotalPrice.Text = "총구매가격(백만원)";
-            // 
-            // fCurPower
-            // 
-            this.fCurPower.Text = "당일기세";
-            // 
-            // fCurPowerWithOutGap
-            // 
-            this.fCurPowerWithOutGap.Text = "갭제외";
             // 
             // todayTotalResultTextBox
             // 
@@ -200,24 +102,67 @@ namespace AtoIndicator.View.TradeRecod
             // statisticToolStripMenuItem
             // 
             this.statisticToolStripMenuItem.Name = "statisticToolStripMenuItem";
-            this.statisticToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.statisticToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.statisticToolStripMenuItem.Text = "전략현황기록( R )";
             // 
             // 수동매도ctrlSToolStripMenuItem
             // 
             this.수동매도ctrlSToolStripMenuItem.Enabled = false;
             this.수동매도ctrlSToolStripMenuItem.Name = "수동매도ctrlSToolStripMenuItem";
-            this.수동매도ctrlSToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.수동매도ctrlSToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.수동매도ctrlSToolStripMenuItem.Text = "수동매도(ctrl + S)";
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tabControl1.Location = new System.Drawing.Point(0, 24);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(1179, 505);
+            this.tabControl1.TabIndex = 9;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.tradeRecordListView);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(1171, 479);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "모의매매";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.realTradeListView);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(341, 272);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "실매매";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // realTradeListView
+            // 
+            this.realTradeListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.realTradeListView.HideSelection = false;
+            this.realTradeListView.Location = new System.Drawing.Point(3, 3);
+            this.realTradeListView.Name = "realTradeListView";
+            this.realTradeListView.Size = new System.Drawing.Size(335, 266);
+            this.realTradeListView.TabIndex = 0;
+            this.realTradeListView.UseCompatibleStateImageBehavior = false;
             // 
             // TradeRecodForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1179, 645);
+            this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.totalClockLabel);
             this.Controls.Add(this.todayTotalResultTextBox);
-            this.Controls.Add(this.tradeRecordListView);
             this.Controls.Add(this.menuStrip1);
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
@@ -225,6 +170,9 @@ namespace AtoIndicator.View.TradeRecod
             this.Text = "TradeRecodForm";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -233,28 +181,15 @@ namespace AtoIndicator.View.TradeRecod
         #endregion
 
         private System.Windows.Forms.ListView tradeRecordListView;
-        private System.Windows.Forms.ColumnHeader sCode;
-        private System.Windows.Forms.ColumnHeader sCodeName;
-        private System.Windows.Forms.ColumnHeader isTradeStatus;
-        private System.Windows.Forms.ColumnHeader nTradingNum;
-        private System.Windows.Forms.ColumnHeader nTradeNum;
-        private System.Windows.Forms.ColumnHeader nCurFb;
-        private System.Windows.Forms.ColumnHeader fEverageProfit;
-        private System.Windows.Forms.ColumnHeader fTotalPrice;
-        private System.Windows.Forms.ColumnHeader sGubunTag;
-        private System.Windows.Forms.ColumnHeader fBuyPrice;
         private System.Windows.Forms.TextBox todayTotalResultTextBox;
         private System.Windows.Forms.Label totalClockLabel;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem 메뉴ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem statisticToolStripMenuItem;
-        private System.Windows.Forms.ColumnHeader nFakeBuyNum;
-        private System.Windows.Forms.ColumnHeader nFakeResistNum;
         private System.Windows.Forms.ToolStripMenuItem 수동매도ctrlSToolStripMenuItem;
-        private System.Windows.Forms.ColumnHeader nFakeAssistantNum;
-        private System.Windows.Forms.ColumnHeader fCurPower;
-        private System.Windows.Forms.ColumnHeader fCurPowerWithOutGap;
-        private System.Windows.Forms.ColumnHeader nPriceUpNum;
-        private System.Windows.Forms.ColumnHeader nPriceDownNum;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.ListView realTradeListView;
     }
 }

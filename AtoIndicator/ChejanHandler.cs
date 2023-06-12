@@ -124,7 +124,7 @@ namespace AtoIndicator
                                         break;
                                     case TradeMethodCategory.FixedMethod:
                                         slot.fTargetPer = 0.015;
-                                        slot.fBottomPer = -0.025;
+                                        slot.fBottomPer = -0.02;
                                         break;
                                     default:
                                         break;
