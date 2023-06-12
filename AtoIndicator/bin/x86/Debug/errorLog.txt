@@ -328,3 +328,23 @@
    위치: System.Windows.Forms.Application.Run(Form mainForm)
    위치: AtoIndicator.Program.Main() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\Program.cs:줄 70
 
+2023-06-12 오전 10:11:41 ## Msg : 개체 참조가 개체의 인스턴스로 설정되지 않았습니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.GetLinearPosition(Double axisValue)
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.GetPosition(Double axisValue)
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.ValueToPixelPosition(Double axisValue)
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.<CancelEventHandler>g__RefreshCancelConfirm|134_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 3023
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.CancelEventHandler(Object sender, EventArgs e) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 3115
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.SetChartViewRange(Int32 viewMin, Int32 viewMax, Int32 max, Int32 min, String chartName) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 461
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.<UpdateMinuteHistoryData>g__voidDelegate|64_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 1285
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.UpdateMinuteHistoryData() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 1292
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.<ResetMinuteChart>g__voidDelegate|63_0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 526
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.ResetMinuteChart() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 532
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm..ctor(MainForm parentForm, Int32 nCallIdx, Nullable`1 specificStrategy) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 158
+   위치: AtoIndicator.MainForm.<>c__DisplayClass367_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\WinFormHandler.cs:줄 368
+   위치: System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   위치: System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   위치: System.Threading.ThreadHelper.ThreadStart()
+

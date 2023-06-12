@@ -209,6 +209,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MyControl\ArrowControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MyControl\ArrowControl.Designer.cs">
+      <DependentUpon>ArrowControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ChejanHandler.cs">
       <SubType>Form</SubType>
     </Compile>

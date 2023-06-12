@@ -58,6 +58,11 @@ namespace AtoIndicator.View.EachStockHistory
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.realBlockFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.isAllBuyedLabel = new System.Windows.Forms.Label();
+            this.isSellingLabel = new System.Windows.Forms.Label();
+            this.isAllSelledLabel = new System.Windows.Forms.Label();
+            this.restVolumeLabel = new System.Windows.Forms.Label();
+            this.depositLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.historyChart)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -257,7 +262,7 @@ namespace AtoIndicator.View.EachStockHistory
             // 
             this.wheelLabel.AutoSize = true;
             this.wheelLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.wheelLabel.Location = new System.Drawing.Point(300, 16);
+            this.wheelLabel.Location = new System.Drawing.Point(272, 16);
             this.wheelLabel.Name = "wheelLabel";
             this.wheelLabel.Size = new System.Drawing.Size(80, 17);
             this.wheelLabel.TabIndex = 23;
@@ -317,11 +322,66 @@ namespace AtoIndicator.View.EachStockHistory
             this.realBlockFlowLayoutPanel.Size = new System.Drawing.Size(231, 709);
             this.realBlockFlowLayoutPanel.TabIndex = 0;
             // 
+            // isAllBuyedLabel
+            // 
+            this.isAllBuyedLabel.AutoSize = true;
+            this.isAllBuyedLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.isAllBuyedLabel.Location = new System.Drawing.Point(391, 16);
+            this.isAllBuyedLabel.Name = "isAllBuyedLabel";
+            this.isAllBuyedLabel.Size = new System.Drawing.Size(89, 17);
+            this.isAllBuyedLabel.TabIndex = 26;
+            this.isAllBuyedLabel.Text = "총매수 : 0";
+            // 
+            // isSellingLabel
+            // 
+            this.isSellingLabel.AutoSize = true;
+            this.isSellingLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.isSellingLabel.Location = new System.Drawing.Point(503, 16);
+            this.isSellingLabel.Name = "isSellingLabel";
+            this.isSellingLabel.Size = new System.Drawing.Size(89, 17);
+            this.isSellingLabel.TabIndex = 27;
+            this.isSellingLabel.Text = "매도중 : 0";
+            // 
+            // isAllSelledLabel
+            // 
+            this.isAllSelledLabel.AutoSize = true;
+            this.isAllSelledLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.isAllSelledLabel.Location = new System.Drawing.Point(618, 15);
+            this.isAllSelledLabel.Name = "isAllSelledLabel";
+            this.isAllSelledLabel.Size = new System.Drawing.Size(107, 17);
+            this.isAllSelledLabel.TabIndex = 28;
+            this.isAllSelledLabel.Text = "매도완료 : 0";
+            // 
+            // restVolumeLabel
+            // 
+            this.restVolumeLabel.AutoSize = true;
+            this.restVolumeLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.restVolumeLabel.Location = new System.Drawing.Point(743, 16);
+            this.restVolumeLabel.Name = "restVolumeLabel";
+            this.restVolumeLabel.Size = new System.Drawing.Size(71, 17);
+            this.restVolumeLabel.TabIndex = 29;
+            this.restVolumeLabel.Text = "잔량 : 0";
+            // 
+            // depositLabel
+            // 
+            this.depositLabel.AutoSize = true;
+            this.depositLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.depositLabel.Location = new System.Drawing.Point(859, 15);
+            this.depositLabel.Name = "depositLabel";
+            this.depositLabel.Size = new System.Drawing.Size(89, 17);
+            this.depositLabel.TabIndex = 30;
+            this.depositLabel.Text = "예수금 : 0";
+            // 
             // EachStockHistoryForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1344, 828);
+            this.Controls.Add(this.depositLabel);
+            this.Controls.Add(this.restVolumeLabel);
+            this.Controls.Add(this.isAllSelledLabel);
+            this.Controls.Add(this.isSellingLabel);
+            this.Controls.Add(this.isAllBuyedLabel);
             this.Controls.Add(this.curLocPowerLabel);
             this.Controls.Add(this.moveLabel);
             this.Controls.Add(this.wheelLabel);
@@ -372,5 +432,10 @@ namespace AtoIndicator.View.EachStockHistory
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.FlowLayoutPanel realBlockFlowLayoutPanel;
+        private System.Windows.Forms.Label isAllBuyedLabel;
+        private System.Windows.Forms.Label isSellingLabel;
+        private System.Windows.Forms.Label isAllSelledLabel;
+        private System.Windows.Forms.Label restVolumeLabel;
+        private System.Windows.Forms.Label depositLabel;
     }
 }

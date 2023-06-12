@@ -75,6 +75,7 @@ namespace AtoIndicator.View.EachStrategy
             this.KeyDown += KeyDownHandler;
             this.Text = $"{strategyIdx}번 전략 결과화면";
             this.FormClosed += FormClosedHandler;
+            this.DoubleBuffered = true;
             eachStrategyListView.MouseDoubleClick += EachStrategyDoubleClick;
             eachStrategyListView.MouseClick += EachStrategyMouseClick;
             eachStrategyListView.ColumnClick += ColumnClick;

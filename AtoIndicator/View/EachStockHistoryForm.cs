@@ -7,6 +7,7 @@ using static AtoIndicator.KiwoomLib.TimeLib;
 using static AtoIndicator.KiwoomLib.PricingLib;
 using static AtoIndicator.Utils.Comparer;
 using AtoIndicator.View.ScrollableMsgBox;
+using AtoIndicator.MyControl;
 
 namespace AtoIndicator.View.EachStockHistory
 {
@@ -66,6 +67,12 @@ namespace AtoIndicator.View.EachStockHistory
 
         public MainForm.PResult pResult;
         public MainForm.StrategyNames strategyNames;
+
+        public ArrowControl arrowControl;
+        public Dictionary<(int, int), List<string>> toCancelDict = new Dictionary<(int, int), List<string>>(); // key : (매매예약번호 , 가격) ,  value : list<주문번호>
+        public const int BUY_RESERVE = 0;
+        public const int SELL_RESERVE = 1;
+
         #endregion
 
         #region 이전 어노테이션 같은위치일 시 삭제용
@@ -116,6 +123,9 @@ namespace AtoIndicator.View.EachStockHistory
             curEa = mainForm.ea[nCurIdx]; // 해당 개인구조체 설정            
             this.Text = curEa.sCode + " - " + curEa.sCodeName;
             this.ActiveControl = historyChart;
+            this.DoubleBuffered = true;
+
+            mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler = CancelEventHandler;
 
             totalClockLabel.Text = "현재시간 : " + mainForm.nSharedTime;
 
@@ -142,7 +152,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.KeyDown += KeyDownHandler;
             this.KeyUp += KeyUpHandler;
             this.FormClosed += FormClosedHandler;
-
+            this.Resize += CancelEventHandler;
             this.MouseWheel += MouseWheelEventHandler;
             nSpecificStrategyIdx = specificStrategy;
 
@@ -188,7 +198,12 @@ namespace AtoIndicator.View.EachStockHistory
 
 
                             if (curEa.paperBuyStrategy.paperTradeSlot[i].nBuyedVolume > 0) // 체결이 일부라도 됐으면
-                                newRd.Text = sSpecificBling + i.ToString() + "번째";
+                            {
+                                if (curEa.paperBuyStrategy.paperTradeSlot[i].isAllSelled)
+                                    newRd.Text = sSpecificBling + i.ToString() + "번째(매매완료)";
+                                else
+                                    newRd.Text = sSpecificBling + i.ToString() + "번째";
+                            }
                             else
                                 newRd.Text = sSpecificBling + i.ToString() + "번째(매수취소)";
 
@@ -268,7 +283,10 @@ namespace AtoIndicator.View.EachStockHistory
                     {
                         newRd = new RadioButton();
 
-                        newRd.Text = i.ToString() + "번째";
+                        if (curEa.myTradeManager.arrBuyedSlots[i].isAllSelled)
+                            newRd.Text = i.ToString() + "번째(매매완료)";
+                        else
+                            newRd.Text = i.ToString() + "번째";
                         newRd.Name = i.ToString();
 
                         newRd.CheckedChanged += delegate (Object oo, EventArgs ee)
@@ -333,6 +351,7 @@ namespace AtoIndicator.View.EachStockHistory
 
         public void FormClosedHandler(Object sender, FormClosedEventArgs e)
         {
+            mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler = null;
             timer.Enabled = false;
             this.Dispose();
         }
@@ -346,10 +365,17 @@ namespace AtoIndicator.View.EachStockHistory
 
                 if (totalClockLabel.InvokeRequired)
                 {
-                    totalClockLabel.Invoke(new MethodInvoker(delegate { totalClockLabel.Text = "현재시간 : " + mainForm.nSharedTime; }));
+                    totalClockLabel.Invoke(new MethodInvoker(delegate
+                    {
+                        totalClockLabel.Text = "현재시간 : " + mainForm.nSharedTime;
+                        depositLabel.Text = $"예수금 : {mainForm.nCurDepositCalc}";
+                    }));
                 }
                 else
+                {
                     totalClockLabel.Text = "현재시간 : " + mainForm.nSharedTime;
+                    depositLabel.Text = $"예수금 : {mainForm.nCurDepositCalc}";
+                }
 
                 if (historyChart.InvokeRequired)
                     historyChart.Invoke(new MethodInvoker(delegate { historyChart.Annotations.Clear(); }));
@@ -439,6 +465,8 @@ namespace AtoIndicator.View.EachStockHistory
 
                     }
                 }
+
+                // mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler?.Invoke(this, EventArgs.Empty);
             }
 
 
@@ -518,11 +546,8 @@ namespace AtoIndicator.View.EachStockHistory
         {
             void voidDelegate()
             {
-                //for (int i = historyChart.Annotations.Count - 1; i >= 0; i--) // 삭제가 돼도 실시간으로 바뀐다.
-                //{
-                //    if (historyChart.Annotations[i].Name[0] == 'P' || historyChart.Annotations[i].Name[0] == 'F') // 실매수와 페이크
-                //        historyChart.Annotations.RemoveAt(i);
-                //}
+
+                // 어노테이션 초기화
                 historyChart.Annotations.Clear();
 
                 int nTimeNow;
@@ -1199,7 +1224,7 @@ namespace AtoIndicator.View.EachStockHistory
                                 sRealSellMessage += "[복제본]";
 
                             sRealSellMessage +=
-                                $"매도시간 : {curEa.myTradeManager.arrBuyedSlots[sellId].nDeathTime}  총손익금 : {(curEa.myTradeManager.arrBuyedSlots[sellId].nDeathPrice - curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice) * curEa.myTradeManager.arrBuyedSlots[sellId].nTotalSelledVolume}(원)  손익률 : {Math.Round(((double)(curEa.myTradeManager.arrBuyedSlots[sellId].nDeathPrice - curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice) / curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice - MainForm.REAL_STOCK_COMMISSION ) * 100 , 2)}(%)\n" +
+                                $"매도시간 : {curEa.myTradeManager.arrBuyedSlots[sellId].nDeathTime}  총손익금 : {(curEa.myTradeManager.arrBuyedSlots[sellId].nDeathPrice - curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice) * curEa.myTradeManager.arrBuyedSlots[sellId].nTotalSelledVolume}(원)  손익률 : {Math.Round(((double)(curEa.myTradeManager.arrBuyedSlots[sellId].nDeathPrice - curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice) / curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice - MainForm.REAL_STOCK_COMMISSION) * 100, 2)}(%)\n" +
                                 $"매도블록ID : {sellId}  주문가격(수량) : {curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice}(원)({curEa.myTradeManager.arrBuyedSlots[sellId].nOrderVolume}),  매도가격(수량) : {curEa.myTradeManager.arrBuyedSlots[sellId].nDeathPrice}(원)({curEa.myTradeManager.arrBuyedSlots[sellId].nTotalSelledVolume})\n" +
                                 "매도설명 : " + curEa.myTradeManager.arrBuyedSlots[sellId].sSellDescription + "\n\n";
 
@@ -1261,6 +1286,9 @@ namespace AtoIndicator.View.EachStockHistory
                         }// END ---- 다 팔렸다면
                     }//END ---- REAL SELL ARROW
                     realDictionary.Clear(); // 실매도 어노테이션 설정후 클리어
+
+
+
 
                     SetChartViewRange(0, nLastMinuteIdx + 2, curEa.nFs, curEa.nFs, "TotalArea");
                 } // END ---- if (curEa.timeLines1m.nRealDataIdx > 0)
@@ -1840,7 +1868,10 @@ namespace AtoIndicator.View.EachStockHistory
             gapLabel.Text = $"현재갭 : {Math.Round(curEa.fStartGap, 3)}";
             curLocLabel.Text = $"현재좌표 : {xCoord} {yCoord}";
             curLocPowerLabel.Text = $"커서파워 : {Math.Round((double)(yCoord - curEa.nYesterdayEndPrice) / curEa.nYesterdayEndPrice, 3)}";
-            
+            isAllSelledLabel.Text = $"매도완료 : {curEa.myTradeManager.nTotalSelled}"; 
+            isSellingLabel.Text = $"매도중 : {curEa.myTradeManager.nTotalSelling}"; 
+            isAllBuyedLabel.Text = $"총매수 : {curEa.myTradeManager.nTotalBuyed}"; 
+            restVolumeLabel.Text = $"잔량 : {curEa.myTradeManager.nTotalBuyed - (curEa.myTradeManager.nTotalSelling + curEa.myTradeManager.nTotalSelled)}"; 
 
             if (isRightPressed || isPreciselyCheck)
             {
@@ -2351,7 +2382,7 @@ namespace AtoIndicator.View.EachStockHistory
                         mainForm.RequestHandBuy(nCurIdx, movingPrice, nMouseWheel);
                     };
                 }
-                else if(eBuyMode == TRADE_MODE.SELL_MODE)
+                else if (eBuyMode == TRADE_MODE.SELL_MODE)
                 {
                     double yCoord = historyChart.ChartAreas["TotalArea"].AxisY.PixelPositionToValue(e.Y);
                     if (double.IsNaN(yCoord))
@@ -2504,8 +2535,8 @@ namespace AtoIndicator.View.EachStockHistory
         #endregion
 
         public TRADE_MODE eBuyMode = TRADE_MODE.NONE_MODE;
-        public const int NONE_MODE = 0; 
-        public const int BUY_MODE = 1; 
+        public const int NONE_MODE = 0;
+        public const int BUY_MODE = 1;
         public const int SELL_MODE = 2;
         public enum TRADE_MODE
         {
@@ -2534,6 +2565,7 @@ namespace AtoIndicator.View.EachStockHistory
                 fMaxPlus += 0.025;
                 expansionLabel.Text = $"{Math.Round(fMaxPlus, 3)}, {Math.Round(fMinPlus, 3)}";
                 SetChartViewRange(0, curEa.timeLines1m.nRealDataIdx + 2, curEa.nFs, curEa.nFs, "TotalArea");
+                mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler?.Invoke(this, EventArgs.Empty);
             }
 
             if (cUp == 40) // 아래쪽 화살표
@@ -2541,6 +2573,7 @@ namespace AtoIndicator.View.EachStockHistory
                 fMinPlus += 0.025;
                 expansionLabel.Text = $"{Math.Round(fMaxPlus, 3)}, {Math.Round(fMinPlus, 3)}";
                 SetChartViewRange(0, curEa.timeLines1m.nRealDataIdx + 2, curEa.nFs, curEa.nFs, "TotalArea");
+                mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler?.Invoke(this, EventArgs.Empty);
             }
 
             if (cUp == 37) // 왼쪽 화살표
@@ -2549,6 +2582,7 @@ namespace AtoIndicator.View.EachStockHistory
                 fMinPlus = 0;
                 expansionLabel.Text = $"{Math.Round(fMaxPlus, 3)}, {Math.Round(fMinPlus, 3)}";
                 SetChartViewRange(0, curEa.timeLines1m.nRealDataIdx + 2, curEa.nFs, curEa.nFs, "TotalArea");
+                mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler?.Invoke(this, EventArgs.Empty);
             }
             if (cUp == 39) // 오른쪽 화살표
             {
@@ -2595,7 +2629,9 @@ namespace AtoIndicator.View.EachStockHistory
 
 
             if (cUp == 27) // esc
+            {
                 this.Close();
+            }
 
             if (cUp == 17) // ctrl
             {
@@ -2950,11 +2986,193 @@ namespace AtoIndicator.View.EachStockHistory
             {
                 nMouseWheel++;
             }
-            else if(e.Delta < 0)
+            else if (e.Delta < 0)
             {
                 nMouseWheel--;
             }
             wheelLabel.Text = $"wheel : {nMouseWheel}";
+        }
+
+        public void OnTradeCancelArrowClicked(object sender, EventArgs e)
+        {
+            string[] sArrArrowName = ((ArrowControl)sender).Name.Split();
+
+            if (sArrArrowName[1].Equals("B"))
+                mainForm.RequestHandBuyCancel(nCurIdx, sArrArrowName[2]);
+            else if (sArrArrowName[1].Equals("S"))
+                mainForm.RequestHandSellCancel(nCurIdx, sArrArrowName[2]);
+
+            mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void CancelEventHandler(object sender, EventArgs e)
+        {
+            void RefreshCancelConfirm()
+            {
+                curEa = mainForm.ea[nCurIdx];
+
+                if (historyChart.Series["MinuteStick"].Points.Count > 0)
+                {
+                    // ======================================예약대기 출력===============================================
+                    // 준비물 초기화
+                    for (int i = 0; i < historyChart.Controls.Count; i++)
+                    {
+                        if (historyChart.Controls[i].Name != null && historyChart.Controls[i].Name[0] == '^')
+                            historyChart.Controls.RemoveAt(i--);
+                    }
+                    toCancelDict.Clear();
+
+                    List<ArrowControl> arrowList = new List<ArrowControl>();
+
+                    // 매수예약
+                    for (int buyCancel = 0; buyCancel < curEa.unhandledBuyOrderIdList.Count; buyCancel++)
+                    {
+                        string sOrderId = curEa.unhandledBuyOrderIdList[buyCancel];
+
+                        if (!mainForm.buyCancelingByOrderIdDict.ContainsKey(sOrderId))
+                        {
+                            MainForm.BuyedSlot slot = mainForm.slotByOrderIdDict[sOrderId];
+
+                            arrowControl = new ArrowControl((int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Maximum), (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(slot.nOrderPrice), isBuy: true, le: OnTradeCancelArrowClicked);
+
+                            if (toCancelDict.ContainsKey((BUY_RESERVE, slot.nOrderPrice)))
+                            {
+                                var beforeList = toCancelDict[(BUY_RESERVE, slot.nOrderPrice)];
+                                int beforeCnt = beforeList.Count;
+                                MainForm.BuyedSlot beforeSlot;
+
+                                arrowControl.ArrowColor = GetArrowStepColor(beforeCnt + 1);
+
+                                string beforeTooltip = $"===================== 대기물량 : {beforeCnt}개 ====================={NEW_LINE}{NEW_LINE}";
+                                for (int beforeIdx = 0; beforeIdx < beforeCnt; beforeIdx++)
+                                {
+                                    beforeSlot = mainForm.slotByOrderIdDict[beforeList[beforeIdx]];
+                                    beforeTooltip += $"{beforeIdx}번째 물량 : {beforeSlot.nOrderVolume - beforeSlot.nCurVolume}{NEW_LINE}";
+                                }
+                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매수주문--------------{NEW_LINE} 물량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}" + beforeTooltip);
+                            }
+                            else
+                            {
+                                arrowControl.ArrowColor = GetArrowStepColor(1);
+                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매수주문--------------{NEW_LINE} 물량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}");
+                                toCancelDict[(BUY_RESERVE, slot.nOrderPrice)] = new List<string>();
+                            }
+
+                            toCancelDict[(BUY_RESERVE, slot.nOrderPrice)].Add(sOrderId);
+                            arrowControl.Name = $"^ B {sOrderId}";
+                            arrowList.Add(arrowControl);
+                        }
+                    }
+
+                    // 매도예약
+                    for (int sellCancel = 0; sellCancel < curEa.unhandledSellOrderIdList.Count; sellCancel++)
+                    {
+                        string sOrderId = curEa.unhandledSellOrderIdList[sellCancel];
+                        if (!mainForm.sellCancelingByOrderIdDict.ContainsKey(sOrderId))
+                        {
+                            MainForm.BuyedSlot slot = mainForm.slotByOrderIdDict[sOrderId];
+
+                            if (slot == null) // 손매도 경우
+                                slot = mainForm.virtualSellSlotByOrderIdDict[sOrderId];
+                            
+                            arrowControl = new ArrowControl((int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Minimum - 1), (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(slot.nOrderPrice), isBuy: false, le: OnTradeCancelArrowClicked);
+
+                            bool isMore = toCancelDict.ContainsKey((SELL_RESERVE, slot.nOrderPrice));
+
+                            if (isMore)
+                            {
+                                var beforeList = toCancelDict[(SELL_RESERVE, slot.nOrderPrice)];
+                                int beforeCnt = beforeList.Count;
+                                MainForm.BuyedSlot beforeSlot;
+                                arrowControl.ArrowColor = GetArrowStepColor(beforeCnt + 1);
+
+                                string beforeTooltip = $"===================== 대기물량 : {beforeCnt}개 ====================={NEW_LINE}{NEW_LINE}";
+                                for (int beforeIdx = 0; beforeIdx < beforeCnt; beforeIdx++)
+                                {
+                                    beforeSlot = mainForm.slotByOrderIdDict[beforeList[beforeIdx]];
+                                    if (beforeSlot != null)
+                                        beforeTooltip += $"{beforeIdx}번째 물량 : {beforeSlot.nCurVolume}{NEW_LINE}";
+                                    else
+                                    {
+                                        int sellVersion = mainForm.sellVersionByOrderIdDict[beforeList[beforeIdx]];
+                                        int nSellRestVolume = 0;
+                                        for (int ns = 0; ns < curEa.myTradeManager.arrBuyedSlots.Count; ns++)
+                                        {
+                                            if (curEa.myTradeManager.arrBuyedSlots[ns].nTotalSellCheckVersion == sellVersion && !curEa.myTradeManager.arrBuyedSlots[ns].isAllSelled)
+                                            {
+                                                nSellRestVolume += curEa.myTradeManager.arrBuyedSlots[ns].nCurVolume;
+                                            }
+                                        }
+                                        beforeTooltip += $"{beforeIdx}번째 {sellVersion}그룹 물량 : {nSellRestVolume}{NEW_LINE}";
+                                    }
+                                }
+                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {slot.nSellRequestTime} 가격 : {slot.nOrderPrice} 물량 : {slot.nOrderVolume}{NEW_LINE}" + beforeTooltip);
+                            }
+                            else
+                            {
+                                arrowControl.ArrowColor = GetArrowStepColor(1);
+                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {slot.nSellRequestTime} 가격 : {slot.nOrderPrice} 물량 : {slot.nOrderVolume}{NEW_LINE}");
+                                toCancelDict[(SELL_RESERVE, slot.nOrderPrice)] = new List<string>();
+                            }
+
+                            toCancelDict[(SELL_RESERVE, slot.nOrderPrice)].Add(sOrderId);
+                            arrowControl.Name = $"^ S {sOrderId}";
+                            arrowList.Add(arrowControl);
+
+                            
+                        }
+
+                    }
+
+                    for (int i = arrowList.Count - 1; i >= 0; i--)
+                        historyChart.Controls.Add(arrowList[i]); // 컨트롤은 먼저 들어간것이 가장 나중에 그려진다.
+
+                    //==============================================================================================================
+                }
+
+                isAllSelledLabel.Text = $"매도완료 : {curEa.myTradeManager.nTotalSelled}";
+                isSellingLabel.Text = $"매도중 : {curEa.myTradeManager.nTotalSelling}";
+                isAllBuyedLabel.Text = $"총매수 : {curEa.myTradeManager.nTotalBuyed}";
+                restVolumeLabel.Text = $"잔량 : {curEa.myTradeManager.nTotalBuyed - (curEa.myTradeManager.nTotalSelling + curEa.myTradeManager.nTotalSelled)}";
+            }
+
+            if (historyChart.InvokeRequired)
+                historyChart.Invoke(new MethodInvoker(RefreshCancelConfirm));
+            else
+                RefreshCancelConfirm();
+        }
+
+        public Color GetArrowStepColor(int n)
+        {
+            Color retC;
+            switch (n)
+            {
+                case 1:
+                    retC = Color.Red;
+                    break;
+                case 2:
+                    retC = Color.Orange;
+                    break;
+                case 3:
+                    retC = Color.Yellow;
+                    break;
+                case 4:
+                    retC = Color.Green;
+                    break;
+                case 5:
+                    retC = Color.Blue;
+                    break;
+                case 6:
+                    retC = Color.Navy;
+                    break;
+                case 7:
+                    retC = Color.Purple;
+                    break;
+                default:
+                    retC = Color.Black;
+                    break;
+            }
+            return retC;
         }
     }
     #endregion

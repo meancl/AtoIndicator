@@ -1372,7 +1372,7 @@ namespace AtoIndicator
                                         {
                                             isSendOrder = true;
                                             ea[curSlot.nEaIdx].myTradeManager.nBuyReqCnt++; // 구매횟수 증가
-                                            nCurDepositCalc -= nNumToBuy * nEstimatedPrice + ea[curSlot.nEaIdx].feeMgr.GetRoughFee(nNumToBuy * nEstimatedPrice);
+                                            // nCurDepositCalc -= nNumToBuy * nEstimatedPrice + ea[curSlot.nEaIdx].feeMgr.GetRoughFee(nNumToBuy * nEstimatedPrice);
                                             PrintLog($"{nSharedTime}, {curSlot.sCode}  {ea[curSlot.nEaIdx].sCodeName} 화면번호 : {sBuyScrNo} {curSlot.nOrderPrice}, {nNumToBuy} 지정가 매수신청 전송 성공", curSlot.nEaIdx);
                                         }
                                         else // 요청이 실패했다는것
@@ -1547,6 +1547,7 @@ namespace AtoIndicator
                                             }
                                             else // 전송이 실패하면
                                             {
+                                                sellCancelingByOrderIdDict.Remove(curSlot.sOrgOrderId);
                                                 PrintLog($"{nSharedTime} : {curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName}  오류번호 : {nCancelReqResult} 손매도취소신청 전송 실패!!", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
                                             }
                                         }
@@ -1613,16 +1614,16 @@ namespace AtoIndicator
                                                     switch (newSlot.eTradeMethod)
                                                     {
                                                         case TradeMethodCategory.RisingMethod:
-                                                            newSlot.fTargetPer = GetNextCeiling(ref newSlot.nCurLineIdx);
-                                                            newSlot.fBottomPer = GetNextFloor(ref newSlot.nCurLineIdx, TradeMethodCategory.RisingMethod);
+                                                            newSlot.fTargetPer = GetNextCeiling( newSlot.nCurLineIdx);
+                                                            newSlot.fBottomPer = GetNextFloor( newSlot.nCurLineIdx, TradeMethodCategory.RisingMethod);
                                                             break;
                                                         case TradeMethodCategory.ScalpingMethod:
-                                                            newSlot.fTargetPer = GetNextCeiling(ref newSlot.nCurLineIdx);
-                                                            newSlot.fBottomPer = GetNextFloor(ref newSlot.nCurLineIdx, TradeMethodCategory.ScalpingMethod);
+                                                            newSlot.fTargetPer = GetNextCeiling( newSlot.nCurLineIdx);
+                                                            newSlot.fBottomPer = GetNextFloor( newSlot.nCurLineIdx, TradeMethodCategory.ScalpingMethod);
                                                             break;
                                                         case TradeMethodCategory.BottomUpMethod:
-                                                            newSlot.fTargetPer = GetNextCeiling(ref newSlot.nCurLineIdx);
-                                                            newSlot.fBottomPer = GetNextFloor(ref newSlot.nCurLineIdx, TradeMethodCategory.BottomUpMethod);
+                                                            newSlot.fTargetPer = GetNextCeiling( newSlot.nCurLineIdx);
+                                                            newSlot.fBottomPer = GetNextFloor( newSlot.nCurLineIdx, TradeMethodCategory.BottomUpMethod);
                                                             break;
                                                         case TradeMethodCategory.FixedMethod:
                                                             newSlot.fTargetPer = curSlot.fTargetPercent;
@@ -1760,7 +1761,7 @@ namespace AtoIndicator
                             {
                                 if (curSlot.sHogaGb.Equals(MARKET_ORDER))
                                 {
-                                    BuyedSlot slot = slotDict[curSlot.sOrgOrderId];
+                                    BuyedSlot slot = slotByOrderIdDict[curSlot.sOrgOrderId];
 
                                     if (!slot.isAllBuyed) // 그와중에 매수가 완료되면 매수취소는 삭제된다.
                                     {
@@ -1796,7 +1797,7 @@ namespace AtoIndicator
                                             }
                                             else // 전송이 실패하면
                                             {
-                                                slot.isCanceling = false; // 이래야지 매수취소를 다시 신청할 수 있다.
+                                                buyCancelingByOrderIdDict.Remove(curSlot.sOrgOrderId);
                                                 PrintLog($"{nSharedTime} : {curSlot.sCode}  {curSlot.nBuyedSlotIdx}번째 {ea[curSlot.nEaIdx].sCodeName}  오류번호 : {nCancelReqResult} 매수취소신청 전송 실패!!", curSlot.nEaIdx, curSlot.nBuyedSlotIdx);
                                             }
                                         }
@@ -4827,15 +4828,15 @@ namespace AtoIndicator
                         {
                             string sOrderId = ea[nCurIdx].unhandledBuyOrderIdList[unIdx];
 
-                            if (!slotDict.ContainsKey(sOrderId)) // 주문번호가 없다면 삭제
+                            if (!slotByOrderIdDict.ContainsKey(sOrderId)) // 주문번호가 없다면 삭제
                             {
                                 ea[nCurIdx].unhandledBuyOrderIdList.RemoveAt(unIdx--);
                                 continue;
                             }
 
-                            BuyedSlot slot = slotDict[sOrderId];
+                            BuyedSlot slot = slotByOrderIdDict[sOrderId];
 
-                            if (!slot.isBuyByHand && slot.isResponsed && !slot.isCanceling) // 취소 가능하다면
+                            if (!slot.isBuyByHand && slot.isResponsed && !buyCancelingByOrderIdDict.ContainsKey(sOrderId)) // 취소 가능하다면
                             {
                                 // nFb를 기준으로 지정상한가를 만드니 일정시간동안은 가격이 더 높았어도 버틸 예정
                                 if (SubTimeToTimeAndSec(nSharedTime, slot.nRequestTime) >= BUY_CANCEL_ACCESS_SEC)

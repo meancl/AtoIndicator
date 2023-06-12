@@ -317,9 +317,9 @@ namespace AtoIndicator
                 {
                     while (frame.paperTradeSlot[i].fPowerWithFee >= frame.paperTradeSlot[i].fTargetPer)
                     {
-                        frame.paperTradeSlot[i].nCurLineIdx++;
-                        frame.paperTradeSlot[i].fTargetPer = GetNextCeiling(ref frame.paperTradeSlot[i].nCurLineIdx); // something higher
-                        frame.paperTradeSlot[i].fBottomPer = GetNextFloor(ref frame.paperTradeSlot[i].nCurLineIdx, TradeMethodCategory.RisingMethod); // something higher
+                        frame.paperTradeSlot[i].nCurLineIdx = RaiseStepUp(frame.paperTradeSlot[i].nCurLineIdx);
+                        frame.paperTradeSlot[i].fTargetPer = GetNextCeiling(frame.paperTradeSlot[i].nCurLineIdx); // something higher
+                        frame.paperTradeSlot[i].fBottomPer = GetNextFloor(frame.paperTradeSlot[i].nCurLineIdx, TradeMethodCategory.RisingMethod); // something higher
                     }
 
                     if (frame.paperTradeSlot[i].isRespiteSignal)  // 상승선을 터치했으니 이전 유예정보를 초기화한다
@@ -356,9 +356,9 @@ namespace AtoIndicator
                 {
                     while (frame.paperTradeSlot[i].fPowerWithFee >= frame.paperTradeSlot[i].fTargetPer)
                     {
-                        frame.paperTradeSlot[i].nCurLineIdx++;
-                        frame.paperTradeSlot[i].fTargetPer = GetNextCeiling(ref frame.paperTradeSlot[i].nCurLineIdx); // something higher
-                        frame.paperTradeSlot[i].fBottomPer = GetNextFloor(ref frame.paperTradeSlot[i].nCurLineIdx, TradeMethodCategory.BottomUpMethod); // something higher
+                        frame.paperTradeSlot[i].nCurLineIdx= RaiseStepUp(frame.paperTradeSlot[i].nCurLineIdx);
+                        frame.paperTradeSlot[i].fTargetPer = GetNextCeiling(frame.paperTradeSlot[i].nCurLineIdx); // something higher
+                        frame.paperTradeSlot[i].fBottomPer = GetNextFloor(frame.paperTradeSlot[i].nCurLineIdx, TradeMethodCategory.BottomUpMethod); // something higher
                     }
 
                     frame.paperTradeSlot[i].nLastTouchLineTime = nSharedTime;
@@ -396,9 +396,9 @@ namespace AtoIndicator
                 {
                     while (frame.paperTradeSlot[i].fPowerWithFee >= frame.paperTradeSlot[i].fTargetPer)
                     {
-                        frame.paperTradeSlot[i].nCurLineIdx++;
-                        frame.paperTradeSlot[i].fTargetPer = GetNextCeiling(ref frame.paperTradeSlot[i].nCurLineIdx); // something higher
-                        frame.paperTradeSlot[i].fBottomPer = GetNextFloor(ref frame.paperTradeSlot[i].nCurLineIdx, TradeMethodCategory.ScalpingMethod); // something higher
+                        frame.paperTradeSlot[i].nCurLineIdx = RaiseStepUp(frame.paperTradeSlot[i].nCurLineIdx);
+                        frame.paperTradeSlot[i].fTargetPer = GetNextCeiling(frame.paperTradeSlot[i].nCurLineIdx); // something higher
+                        frame.paperTradeSlot[i].fBottomPer = GetNextFloor(frame.paperTradeSlot[i].nCurLineIdx, TradeMethodCategory.ScalpingMethod); // something higher
                     }
 
                     frame.paperTradeSlot[i].nLastTouchLineTime = nSharedTime;
@@ -458,8 +458,8 @@ namespace AtoIndicator
                 frame.paperTradeSlot[frame.nStrategyNum].nCanceledVolume = 0;
                 frame.paperTradeSlot[frame.nStrategyNum].nRqCount = ea[nEaIdx].nChegyulCnt;
                 frame.paperTradeSlot[frame.nStrategyNum].methodCategory = methodCategory;
-                frame.paperTradeSlot[frame.nStrategyNum].fTargetPer = GetNextCeiling(ref frame.paperTradeSlot[frame.nStrategyNum].nCurLineIdx);
-                frame.paperTradeSlot[frame.nStrategyNum].fBottomPer = GetNextFloor(ref frame.paperTradeSlot[frame.nStrategyNum].nCurLineIdx, frame.paperTradeSlot[frame.nStrategyNum].methodCategory);
+                frame.paperTradeSlot[frame.nStrategyNum].fTargetPer = GetNextCeiling(frame.paperTradeSlot[frame.nStrategyNum].nCurLineIdx);
+                frame.paperTradeSlot[frame.nStrategyNum].fBottomPer = GetNextFloor(frame.paperTradeSlot[frame.nStrategyNum].nCurLineIdx, frame.paperTradeSlot[frame.nStrategyNum].methodCategory);
                 frame.paperTradeSlot[frame.nStrategyNum].sFixedMsg = ea[nEaIdx].GetInfoString();
                 frame.paperTradeSlot[frame.nStrategyNum].nSequence = frame.arrStrategy[nPaperBuyStrategyNum] + 1;
                 frame.paperTradeSlot[frame.nStrategyNum].nLastTouchLineTime = nSharedTime;
@@ -830,15 +830,15 @@ namespace AtoIndicator
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyVolume = holdingsArray[nUndisposalIdx].nNumPossibleToSell;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBirthTime = nFirstTime;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nLastTouchLineTime = nFirstTime;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyMinuteIdx = BRUSH;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyMinuteIdx = BRUSH - 1 ;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyEndTime = nFirstTime;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].sBuyDescription = $"미처분 매매블록{NEW_LINE}";
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].sBuyScrNo = null;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].sSellScrNo = null;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].eTradeMethod = TradeMethodCategory.RisingMethod;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurLineIdx = 0;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].fTargetPer = GetNextCeiling(ref ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurLineIdx);
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].fBottomPer = GetNextFloor(ref ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurLineIdx, ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].eTradeMethod);
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].fTargetPer = GetNextCeiling(ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurLineIdx);
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].fBottomPer = GetNextFloor(ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurLineIdx, ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].eTradeMethod);
                         PrintLog($"미처분 매매블록화 성공  체결가 : {holdingsArray[nUndisposalIdx].nBuyedPrice}  체결량 : {holdingsArray[nUndisposalIdx].nHoldingQty}  매매가능 : { holdingsArray[nUndisposalIdx].nNumPossibleToSell}", nCurIdx, nSlotIdx, false);
 
                         ea[nCurIdx].myTradeManager.nTotalBuyed += ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurVolume;

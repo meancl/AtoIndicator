@@ -23,6 +23,8 @@ namespace AtoIndicator
             public List<(int, double)> manualBoxUpList;
             public List<(int, double)> manualBoxDownList;
 
+            
+
             // ----------------------------------
             // 공용 변수
             // ----------------------------------
@@ -68,6 +70,7 @@ namespace AtoIndicator
             public RankSystem rankSystem;             // 랭킹데이터 변수
             public SequenceStrategy sequenceStrategy; // 순차적전략 변수
             public FeeManager feeMgr;                 // 세금, 수수료 관련 변수
+            public EventManager eventMgr;
 
             // ----------------------------------
             // 기본정보 변수
@@ -219,6 +222,7 @@ namespace AtoIndicator
                 timeLines1m.Init();
                 fakeStrategyMgr.Init();
 
+                eventMgr = new EventManager();
                 manualReserve = new ManualReservation();
                 manualCrushList = new List<(int, double)>();
                 manualBottomList = new List<(int, double)>();
@@ -512,6 +516,16 @@ namespace AtoIndicator
                 return sMessage;
             }
         }
+
+        public class EventManager
+        {
+            public EventHandler cancelEachStockFormEventHandler;
+
+            public EventManager()
+            {
+                cancelEachStockFormEventHandler = null;
+            }
+        }
         // ============================================
         // AI서비스 웨이터 큐에 저장하기 위한 구조체변수
         // ============================================
@@ -656,7 +670,6 @@ namespace AtoIndicator
             public bool isSelling; // 매도 중 시그널
             public bool isAllSelled; // 매도 종료(모두 팔림)
             public bool isAllBuyed; // 매수완료 시그널 ( 같은 매매블럭에 추매를 했을때 다 사졌나를 확인하기 위한 변수 ) 
-            public bool isCanceling; // 현재 매수에서 매수취소가 나왔으면 더이상의 현재의 거래에서 매수취소요청을 금지하기 위한 변수
             public bool isResponsed; // 응답을 받았는 지
 
 
@@ -683,7 +696,6 @@ namespace AtoIndicator
             public bool isRespiteSignal; // 유예중인지 확인변수
             public int nRespiteFirstTime; // 해당 유예의 첫시간
             public int nRespitePrevUpdateTime; // 해당 유예의 이전업데이트 시간
-            public double fRespiteCriticalLine; // 유예 한계선
             public int nEachRespiteCount; // 독립적인 유예 횟수
             public int nPreemptionPrevUpdateTime; // 선점 최신업데이트 시간
             public int nLastTouchLineTime; // 상승선을 건드린 마지막 시간
@@ -730,7 +742,6 @@ namespace AtoIndicator
                 newSlot.isSelling = isSelling;
                 newSlot.isAllSelled = isAllSelled;
                 newSlot.isAllBuyed = isAllBuyed;
-                newSlot.isCanceling = isCanceling;
                 newSlot.isResponsed = isResponsed;
                 
                 newSlot.eTradeMethod = eTradeMethod;
@@ -758,7 +769,6 @@ namespace AtoIndicator
                 newSlot.isRespiteSignal = isRespiteSignal;
                 newSlot.nRespiteFirstTime = nRespiteFirstTime;
                 newSlot.nRespitePrevUpdateTime = nRespitePrevUpdateTime;
-                newSlot.fRespiteCriticalLine = fRespiteCriticalLine;
                 newSlot.nEachRespiteCount = nEachRespiteCount;
                 newSlot.nPreemptionPrevUpdateTime = nPreemptionPrevUpdateTime;
                 newSlot.nLastTouchLineTime = nLastTouchLineTime;
