@@ -305,7 +305,7 @@ namespace AtoIndicator
 
                                 for (int disposal = 0; disposal < ea[nCurIdx].myTradeManager.arrBuyedSlots.Count && tmpCurOrderVolume > 0; disposal++)
                                 {
-                                    if (!ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].isAllSelled && !ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].isSelling && ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nCurVolume > 0)
+                                    if (ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nCurVolume > 0 && !ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].isSelling)
                                     {
                                         int disposalVolume = ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nCurVolume > tmpCurOrderVolume ? tmpCurOrderVolume : ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nCurVolume;
 
@@ -323,6 +323,10 @@ namespace AtoIndicator
 
                                         PrintLog($"[손매도접수] {nSharedTime} : {ea[nCurIdx].sCode}  {ea[nCurIdx].sCodeName} 버전 : {ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nTotalSellCheckVersion} {disposal}블록 {disposalVolume}주 접수", nCurIdx, disposal);
                                     }
+                                }
+                                if(tmpCurOrderVolume > 0)
+                                {
+
                                 }
 
                                 slot.nSellRequestTime = nSharedTime;
@@ -397,7 +401,7 @@ namespace AtoIndicator
                                 ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].nCurVolume = 0;
                                 ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].nSellMinuteIdx = nTimeLineIdx;
                                 ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].isAllSelled = true;
-                                ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].nTotalSellCheckVersion = 0;
+                                //ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].nTotalSellCheckVersion = 0;
                                 ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].sCurOrgOrderId = null;
                                 ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].isSelling = false;
                                 ea[nCurIdx].myTradeManager.arrBuyedSlots[specificIdx].nDeathTime = nSharedTime;
@@ -420,7 +424,7 @@ namespace AtoIndicator
 
                             for (int disposal = 0; disposal < ea[nCurIdx].myTradeManager.arrBuyedSlots.Count && tmpCurOkTradeVolume > 0; disposal++)
                             {
-                                if (!ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].isAllSelled && ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nTotalSellCheckVersion == sellVersion)
+                                if (ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nCurVolume > 0 && ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nTotalSellCheckVersion == sellVersion)
                                 {
                                     int disposalVolume = ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nCurVolume > tmpCurOkTradeVolume ? tmpCurOkTradeVolume : ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nCurVolume;
 
@@ -435,7 +439,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nCurVolume = 0;
                                         ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nSellMinuteIdx = nTimeLineIdx;
                                         ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].isAllSelled = true;
-                                        ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nTotalSellCheckVersion = 0;
+                                        //ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nTotalSellCheckVersion = 0;
                                         ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].sCurOrgOrderId = null;
                                         ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].isSelling = false;
                                         ea[nCurIdx].myTradeManager.arrBuyedSlots[disposal].nDeathTime = nSharedTime;
@@ -450,6 +454,10 @@ namespace AtoIndicator
 
                                     tmpCurOkTradeVolume -= disposalVolume;
                                 }
+                            }
+                            if(tmpCurOkTradeVolume > 0)
+                            {
+
                             }
 
                         }
@@ -502,10 +510,10 @@ namespace AtoIndicator
         {
             for (int disposal = 0; disposal < ea[nEaIdx].myTradeManager.arrBuyedSlots.Count; disposal++)
             {
-                if (!ea[nEaIdx].myTradeManager.arrBuyedSlots[disposal].isAllSelled && ea[nEaIdx].myTradeManager.arrBuyedSlots[disposal].nTotalSellCheckVersion == sellVersion)
+                if (ea[nEaIdx].myTradeManager.arrBuyedSlots[disposal].nCurVolume > 0  && ea[nEaIdx].myTradeManager.arrBuyedSlots[disposal].nTotalSellCheckVersion == sellVersion)
                 {
                     ea[nEaIdx].myTradeManager.arrBuyedSlots[disposal].isSelling = false;
-                    ea[nEaIdx].myTradeManager.arrBuyedSlots[disposal].nTotalSellCheckVersion = 0;
+                    //ea[nEaIdx].myTradeManager.arrBuyedSlots[disposal].nTotalSellCheckVersion = 0;
                     ea[nEaIdx].myTradeManager.arrBuyedSlots[disposal].sCurOrgOrderId = null;
                     PrintLog($"[매도취소] {nSharedTime} : {ea[nEaIdx].sCode}  {ea[nEaIdx].sCodeName} {disposal}블록 {ea[nEaIdx].myTradeManager.arrBuyedSlots[disposal].nCurVolume}주 취소", nEaIdx, disposal);
                 }
@@ -526,8 +534,10 @@ namespace AtoIndicator
             newSlot.nBuyedSlotId = ea[nEaIdx].myTradeManager.arrBuyedSlots.Count;
             ea[nEaIdx].myTradeManager.arrBuyedSlots.Add(newSlot);
 
-            mySlot.sEachLog.Append($"원본에서 ( 블록 : {mySlot.nBuyedSlotId} 현재 : {mySlot.nCurVolume} )와 분리개체 ( 블록 : {newSlot.nBuyedSlotId} 현재 : {newSlot.nCurVolume} )으로 분리 완료");
-            newSlot.sEachLog.Append($"( 블록 : {mySlot.nBuyedSlotId} 현재 : {mySlot.nCurVolume} )와 분리개체 ( 블록 : {newSlot.nBuyedSlotId} 현재 : {newSlot.nCurVolume} )으로 분리 완료");
+            //newSlot.nTotalSellCheckVersion = 0;
+
+            mySlot.sEachLog.Append($"원본에서 ( 블록 : {mySlot.nBuyedSlotId} 현재 : {mySlot.nCurVolume} )와 분리개체 ( 블록 : {newSlot.nBuyedSlotId} 현재 : {newSlot.nCurVolume} )으로 분리 완료{NEW_LINE}");
+            newSlot.sEachLog.Append($"( 블록 : {mySlot.nBuyedSlotId} 현재 : {mySlot.nCurVolume} )와 분리개체 ( 블록 : {newSlot.nBuyedSlotId} 현재 : {newSlot.nCurVolume} )으로 분리 완료{NEW_LINE}");
             PrintLog($"{nSharedTime} {ea[nEaIdx].sCode} {ea[nEaIdx].sCodeName} {newSlot.nBuyedSlotId}블록 분리  {newSlot.nCurVolume}(주)");
         }
 

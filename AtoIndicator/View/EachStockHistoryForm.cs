@@ -931,7 +931,7 @@ namespace AtoIndicator.View.EachStockHistory
                             if (nSpecificStrategyIdx != null && curEa.paperBuyStrategy.arrSpecificStrategy[p] != nSpecificStrategyIdx) // 특정한 전략만 보여주게 설정했다면
                                 continue; // 특정전략인덱스가 아니면 건너뛴다.
 
-                            if (nCurRealBuyedId != -1 && p != nCurRealBuyedId)
+                            if (nCurPaperBuyedId != -1 && p != nCurPaperBuyedId)
                                 continue;
 
                             if (!curEa.paperBuyStrategy.paperTradeSlot[p].isAllSelled)

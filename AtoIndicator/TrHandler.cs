@@ -384,7 +384,9 @@ namespace AtoIndicator
                                     else // 손매도
                                     {
                                         PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nEaReq].sCode}  종목명 : {ea[nEaReq].sCodeName} e화면번호 : {e.sScrNo}  손매도가 비정상처리됐습니다.", nEaReq);
-                                        ResetGroupSellingBack(nEaReq, sellVersionByScrNoDict[e.sScrNo]);
+                                        if(sellVersionByScrNoDict.ContainsKey(e.sScrNo))
+                                            ResetGroupSellingBack(nEaReq, sellVersionByScrNoDict[e.sScrNo]);
+                                        sellVersionByScrNoDict.Remove(e.sScrNo);
                                         ShutOffScreen(e.sScrNo);
                                     }
                                 }

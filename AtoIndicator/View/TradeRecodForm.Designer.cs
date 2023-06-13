@@ -148,6 +148,7 @@ namespace AtoIndicator.View.TradeRecod
             // realTradeListView
             // 
             this.realTradeListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.realTradeListView.FullRowSelect = true;
             this.realTradeListView.HideSelection = false;
             this.realTradeListView.Location = new System.Drawing.Point(3, 3);
             this.realTradeListView.Name = "realTradeListView";
