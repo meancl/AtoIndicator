@@ -813,7 +813,7 @@ namespace AtoIndicator
                     {
                         int nCurIdx = eachStockDict[holdingsArray[nUndisposalIdx].sCode.Trim()];
                         int nSlotIdx = ea[nCurIdx].myTradeManager.arrBuyedSlots.Count;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots.Add(new BuyedSlot());
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots.Add(new BuyedSlot(nCurIdx));
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyedSlotId = nSlotIdx;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyedSumPrice = holdingsArray[nUndisposalIdx].nNumPossibleToSell * holdingsArray[nUndisposalIdx].nBuyedPrice;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].isAllBuyed = true;

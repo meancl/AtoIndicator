@@ -374,6 +374,7 @@ namespace AtoIndicator
                                             PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nEaReq].sCode}  종목명 : {ea[nEaReq].sCodeName} 블록 : {slot.nBuyedSlotId} e화면번호 : {e.sScrNo}  매도가 비정상처리됐습니다.", nEaReq, slot.nBuyedSlotId);
                                             ea[nEaReq].myTradeManager.nSellReqCnt--;
                                             slot.isSelling = false;
+                                            slot.isSellStarted = false;
                                             slot.nSellErrorCount++;
                                             slot.nSellErrorLastTime = nSharedTime;
                                             ShutOffScreen(e.sScrNo);
@@ -384,10 +385,12 @@ namespace AtoIndicator
                                     else // 손매도
                                     {
                                         PrintLog($"시간 : {nSharedTime}  종목코드 : {ea[nEaReq].sCode}  종목명 : {ea[nEaReq].sCodeName} e화면번호 : {e.sScrNo}  손매도가 비정상처리됐습니다.", nEaReq);
-                                        if(sellVersionByScrNoDict.ContainsKey(e.sScrNo))
-                                            ResetGroupSellingBack(nEaReq, sellVersionByScrNoDict[e.sScrNo]);
-                                        sellVersionByScrNoDict.Remove(e.sScrNo);
-                                        ShutOffScreen(e.sScrNo);
+                                        if (virtualSellBlockByScrNoDict.ContainsKey(e.sScrNo))
+                                        {
+                                            ResetGroupSellingBack(virtualSellBlockByScrNoDict[e.sScrNo]);
+                                            virtualSellBlockByScrNoDict.Remove(e.sScrNo);
+                                            ShutOffScreen(e.sScrNo);
+                                        }
                                     }
                                 }
                                 // ShutOffScreen(e.sScrNo); // 주식주문 해당화면번호 꺼줍니다.

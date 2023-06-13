@@ -1605,7 +1605,7 @@ namespace AtoIndicator
                                                 {
                                                     #region 매매블록 준비
 
-                                                    BuyedSlot newSlot = new BuyedSlot();
+                                                    BuyedSlot newSlot = new BuyedSlot(curSlot.nEaIdx);
                                                     newSlot.nRequestTime = curSlot.nRqTime;
                                                     newSlot.nOriginOrderPrice = curSlot.nOrderPrice; // 주문요청금액 설정
                                                     newSlot.nOrderPrice = nEstimatedPrice; // 지정상한가 설정
@@ -1766,7 +1766,7 @@ namespace AtoIndicator
                             {
                                 if (curSlot.sHogaGb.Equals(MARKET_ORDER))
                                 {
-                                    BuyedSlot slot = slotByOrderIdDict[curSlot.sOrgOrderId];
+                                    BuyedSlot slot = buySlotByOrderIdDict[curSlot.sOrgOrderId];
 
                                     if (!slot.isAllBuyed) // 그와중에 매수가 완료되면 매수취소는 삭제된다.
                                     {
@@ -4872,13 +4872,13 @@ namespace AtoIndicator
                         {
                             string sOrderId = ea[nCurIdx].unhandledBuyOrderIdList[unIdx];
 
-                            if (!slotByOrderIdDict.ContainsKey(sOrderId)) // 주문번호가 없다면 삭제
+                            if (!buySlotByOrderIdDict.ContainsKey(sOrderId)) // 주문번호가 없다면 삭제
                             {
                                 ea[nCurIdx].unhandledBuyOrderIdList.RemoveAt(unIdx--);
                                 continue;
                             }
 
-                            BuyedSlot slot = slotByOrderIdDict[sOrderId];
+                            BuyedSlot slot = buySlotByOrderIdDict[sOrderId];
 
                             if (!slot.isBuyByHand && slot.isResponsed && !buyCancelingByOrderIdDict.ContainsKey(sOrderId)) // 취소 가능하다면
                             {

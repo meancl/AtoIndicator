@@ -615,8 +615,6 @@ namespace AtoIndicator
             public int nTotalSelled;
             public int nTotalSelling;
 
-            public int nLastSellCheckVersion;
-
             public BuyedManager()
             {
                 arrBuyedSlots = new List<BuyedSlot>();
@@ -631,7 +629,7 @@ namespace AtoIndicator
         // ============================================
         public class BuyedSlot //TODAY
         {
-
+            public int nEaIdx;
             public int nBuyedSlotId; // 매매블록 아이디 인덱스// 추가??
             public int nBuyPrice; // 구매한 가격
             public int nBuyVolume; // 구매한 주식수
@@ -663,7 +661,7 @@ namespace AtoIndicator
             public bool isAllSelled; // 매도 종료(모두 팔림)
             public bool isAllBuyed; // 매수완료 시그널 ( 같은 매매블럭에 추매를 했을때 다 사졌나를 확인하기 위한 변수 ) 
             public bool isResponsed; // 응답을 받았는 지
-
+            public bool isSellStarted;
 
             public TradeMethodCategory eTradeMethod; // 
             public double fTargetPer; // 얼마에 익절할거야
@@ -695,18 +693,18 @@ namespace AtoIndicator
             // 매도 관리용
             public int nSellErrorLastTime;
             public int nSellErrorCount;
-            public int nTotalSellCheckVersion;
 
             public MaOverN maOverN;
 
-            public BuyedSlot()
+            public BuyedSlot(int nCurIdx)
             {
                 sEachLog = new StringBuilder();
+                nEaIdx = nCurIdx;
             }
 
             public BuyedSlot DeepCopy()
             {
-                BuyedSlot newSlot = new BuyedSlot();
+                BuyedSlot newSlot = new BuyedSlot(nEaIdx);
 
                 newSlot.nBuyedSlotId = nBuyedSlotId;
                 newSlot.nBuyPrice = nBuyPrice;
@@ -735,7 +733,8 @@ namespace AtoIndicator
                 newSlot.isAllSelled = isAllSelled;
                 newSlot.isAllBuyed = isAllBuyed;
                 newSlot.isResponsed = isResponsed;
-                
+                newSlot.isSellStarted = isSellStarted;
+
                 newSlot.eTradeMethod = eTradeMethod;
                 newSlot.fTargetPer = fTargetPer;
                 newSlot.fBottomPer = fBottomPer;
@@ -768,7 +767,6 @@ namespace AtoIndicator
                 // 매도 관리용
                 newSlot.nSellErrorLastTime = nSellErrorLastTime;
                 newSlot.nSellErrorCount = nSellErrorCount;
-                newSlot.nTotalSellCheckVersion = nTotalSellCheckVersion;
 
                 newSlot.maOverN = maOverN;
 

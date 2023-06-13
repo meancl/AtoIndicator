@@ -3180,7 +3180,7 @@ namespace AtoIndicator.View.EachStockHistory
 
                         if (!mainForm.buyCancelingByOrderIdDict.ContainsKey(sOrderId))
                         {
-                            MainForm.BuyedSlot slot = mainForm.slotByOrderIdDict[sOrderId];
+                            MainForm.BuyedSlot slot = mainForm.buySlotByOrderIdDict[sOrderId];
                             PrevCancel cancelInfo;
                             cancelInfo.sPrevOrderId = sOrderId;
                             cancelInfo.sAccumMsg = "";
@@ -3215,32 +3215,30 @@ namespace AtoIndicator.View.EachStockHistory
                         string sOrderId = curEa.unhandledSellOrderIdList[sellCancel];
                         if (!mainForm.sellCancelingByOrderIdDict.ContainsKey(sOrderId))
                         {
-                            MainForm.BuyedSlot slot = mainForm.slotByOrderIdDict[sOrderId];
-                            if (slot == null) // 손매도 경우
-                                slot = mainForm.virtualSellSlotByOrderIdDict[sOrderId];
+                            MainForm.VirtualSellBlock virtualSellBlock = mainForm.virtualSellBlockByOrderIdDict[sOrderId];
                             PrevCancel cancelInfo;
                             cancelInfo.sPrevOrderId = sOrderId;
                             cancelInfo.sAccumMsg = "";
-                            arrowControl = new ArrowControl((int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Minimum - 1), (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(slot.nOrderPrice), isBuy: false, le: OnTradeCancelArrowClicked);
+                            arrowControl = new ArrowControl((int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Minimum - 1), (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(virtualSellBlock.nOrderPrice), isBuy: false, le: OnTradeCancelArrowClicked);
 
-                            if (toCancelDict.ContainsKey((SELL_RESERVE, slot.nOrderPrice)))
+                            if (toCancelDict.ContainsKey((SELL_RESERVE, virtualSellBlock.nOrderPrice)))
                             {
-                                List<PrevCancel> beforeList = toCancelDict[(SELL_RESERVE, slot.nOrderPrice)];
+                                List<PrevCancel> beforeList = toCancelDict[(SELL_RESERVE, virtualSellBlock.nOrderPrice)];
                                 int beforeCnt = beforeList.Count;
 
                                 arrowControl.ArrowColor = GetArrowStepColor(beforeCnt + 1);
-                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {slot.nSellRequestTime} 가격 : {slot.nOrderPrice} 물량 : {slot.nOrderVolume}{NEW_LINE}===================== 대기물량 : {beforeCnt}개 ====================={NEW_LINE}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}");
-                                cancelInfo.sAccumMsg = $"-----------------현재매도주문--------------{NEW_LINE}시간 : {slot.nSellRequestTime} 가격 : {slot.nOrderPrice} 물량 : {slot.nOrderVolume}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}";
+                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume}{NEW_LINE}===================== 대기물량 : {beforeCnt}개 ====================={NEW_LINE}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}");
+                                cancelInfo.sAccumMsg = $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}";
                             }
                             else
                             {
                                 arrowControl.ArrowColor = GetArrowStepColor(1);
-                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {slot.nSellRequestTime} 가격 : {slot.nOrderPrice} 물량 : {slot.nOrderVolume}{NEW_LINE}");
-                                toCancelDict[(SELL_RESERVE, slot.nOrderPrice)] = new List<PrevCancel>();
-                                cancelInfo.sAccumMsg = $"-----------------현재매도주문--------------{NEW_LINE}시간 : {slot.nSellRequestTime} 가격 : {slot.nOrderPrice} 물량 : {slot.nOrderVolume}{NEW_LINE}";
+                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume}{NEW_LINE}");
+                                toCancelDict[(SELL_RESERVE, virtualSellBlock.nOrderPrice)] = new List<PrevCancel>();
+                                cancelInfo.sAccumMsg = $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume}{NEW_LINE}";
                             }
 
-                            toCancelDict[(SELL_RESERVE, slot.nOrderPrice)].Add(cancelInfo);
+                            toCancelDict[(SELL_RESERVE, virtualSellBlock.nOrderPrice)].Add(cancelInfo);
                             arrowControl.Name = $"^ S {sOrderId}";
                             arrowList.Add(arrowControl);
 

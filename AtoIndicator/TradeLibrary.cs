@@ -163,7 +163,7 @@
                     }
                     break;
                 case BUY_CANCEL:
-                    BuyedSlot slot = slotByOrderIdDict[sOrgOrderId];
+                    BuyedSlot slot = buySlotByOrderIdDict[sOrgOrderId];
                     buyCancelingByOrderIdDict[sOrgOrderId] = slot.nBuyedSlotId;
                     slot.nDeathTime = nSharedTime; // 매수취소가 일부 혹은 전량 실패해도 매도하면서 nDeathTime이 덮어지니 괜찮다.
                     slot.nDeathPrice = ea[nEaIdx].nFs;
