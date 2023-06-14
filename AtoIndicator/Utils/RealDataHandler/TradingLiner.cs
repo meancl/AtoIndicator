@@ -380,12 +380,12 @@ namespace AtoIndicator
             {
                 int priceToOrder;
                 if (nRequestPrice <= 0)
-                    priceToOrder = ea[nCurIdx].nFb + GetIntegratedMarketGap(ea[nCurIdx].nFb);
+                    priceToOrder = GetPriceFewSteps(ea[nCurIdx].nFb, 2);
                 else
                     priceToOrder = nRequestPrice;
 
 
-                SetAndServeCurSlot(false, NEW_BUY, nCurIdx, ea[nCurIdx].sCode, PENDING_ORDER, priceToOrder, nQty, "신규매수", "", "기계매수");
+                SetAndServeCurSlot(false, NEW_BUY, nCurIdx, ea[nCurIdx].sCode, PENDING_ORDER, priceToOrder, nQty, "신규매수", "", "기계매수", eTradeMethod:TradeMethodCategory.RisingMethod);
 
 
                 PrintLog($"시간 : {nSharedTime}, 종목코드 : {ea[nCurIdx].sCode} 종목명 : {ea[nCurIdx].sCodeName}, 매수가 : {priceToOrder} 손매수신청", nCurIdx);

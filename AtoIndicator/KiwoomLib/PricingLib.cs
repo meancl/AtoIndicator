@@ -72,6 +72,17 @@ namespace AtoIndicator.KiwoomLib
                 gap = 1000;
             return gap;
         }
+
+
+        public static int GetPriceFewSteps(int price, int steps=1)
+        {
+            int retPrice = price;
+            for (int i = 0; i < steps; i++)
+                retPrice += GetIntegratedMarketGap(retPrice);
+
+            return retPrice;
+        }
+
         /// <summary>
         /// 마켓을 첫번째인자로 받아 해당마켓의 현재가 기준 가격틱의 차이를 반환해준다.
         /// </summary>

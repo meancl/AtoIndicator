@@ -2507,7 +2507,7 @@ namespace AtoIndicator.View.EachStockHistory
                             }
                             mainForm.RequestHandSell(nCurIdx, movingPrice, nMouseWheel);
                         }
-                        else
+                        else // 특정 블럭이 선택돼있다면
                         {
                             if (!curEa.myTradeManager.arrBuyedSlots[nCurRealBuyedId].isAllSelled &&
                                     !curEa.myTradeManager.arrBuyedSlots[nCurRealBuyedId].isSelling &&
