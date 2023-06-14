@@ -662,6 +662,8 @@ namespace AtoIndicator
             public bool isAllBuyed; // 매수완료 시그널 ( 같은 매매블럭에 추매를 했을때 다 사졌나를 확인하기 위한 변수 ) 
             public bool isResponsed; // 응답을 받았는 지
             public bool isSellStarted;
+            public int nSellCancelReserveTime;
+            public bool isSellCancelReserved;
 
             public TradeMethodCategory eTradeMethod; // 
             public double fTargetPer; // 얼마에 익절할거야
@@ -734,6 +736,8 @@ namespace AtoIndicator
                 newSlot.isAllBuyed = isAllBuyed;
                 newSlot.isResponsed = isResponsed;
                 newSlot.isSellStarted = isSellStarted;
+                newSlot.isSellCancelReserved = isSellCancelReserved;
+                newSlot.nSellCancelReserveTime = nSellCancelReserveTime;
 
                 newSlot.eTradeMethod = eTradeMethod;
                 newSlot.fTargetPer = fTargetPer;

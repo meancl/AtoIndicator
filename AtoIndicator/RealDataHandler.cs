@@ -4814,6 +4814,19 @@ namespace AtoIndicator
                             {
                                 if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].isAllBuyed) // 구매가 완료됐다면( 매수취소로 전량 매수취소인경우 또한 기록함)
                                 {
+
+                                    // 매도 취소
+                                    if(ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].isSellCancelReserved &&
+                                        SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nSellCancelReserveTime) >= 15
+                                      )
+                                    {
+                                        ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].isSellCancelReserved = false;
+                                        ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nSellCancelReserveTime = 0;
+                                        ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].isSelling = false;
+                                        ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].isSellStarted = false;
+                                        PrintLog($"[그룹핑 대기후 종료] {nSharedTime} : {ea[nCurIdx].sCode}  {ea[nCurIdx].sCodeName} {checkSellIterIdx}블록 {ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCurVolume} 잔량", nCurIdx, checkSellIterIdx);
+                                    }
+
                                     // START ---- 기록영역
                                     // 매매가 종료됐어도 기록은 함
 

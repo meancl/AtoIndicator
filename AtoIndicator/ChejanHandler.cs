@@ -532,13 +532,24 @@ namespace AtoIndicator
         #endregion
 
         // 매도취소됐을때 isSelling 푸는 메서드
-        public void ResetGroupSellingBack(VirtualSellBlock groupMembers)
+        public void ResetGroupSellingBack(VirtualSellBlock groupMembers, bool isDelayed = false)
         {
             foreach (var member in groupMembers.slotList)
             {
-                member.isSelling = false;
-                member.isSellStarted = false;
-                PrintLog($"[그룹핑 종료] {nSharedTime} : {ea[member.nEaIdx].sCode}  {ea[member.nEaIdx].sCodeName} {member.nBuyedSlotId}블록 {ea[member.nEaIdx].myTradeManager.arrBuyedSlots[member.nBuyedSlotId].nCurVolume} 잔량", member.nEaIdx, member.nBuyedSlotId);
+                if (isDelayed)
+                {
+                    member.isSellCancelReserved = true;
+                    member.nSellCancelReserveTime = nSharedTime;
+                    member.nSellErrorCount++;
+                    member.nSellErrorLastTime = nSharedTime;
+                    PrintLog($"[그룹핑 종료대기] {nSharedTime} : {ea[member.nEaIdx].sCode}  {ea[member.nEaIdx].sCodeName} {member.nBuyedSlotId}블록 {ea[member.nEaIdx].myTradeManager.arrBuyedSlots[member.nBuyedSlotId].nCurVolume} 잔량", member.nEaIdx, member.nBuyedSlotId);
+                }
+                else
+                {
+                    member.isSelling = false;
+                    member.isSellStarted = false;
+                    PrintLog($"[그룹핑 종료] {nSharedTime} : {ea[member.nEaIdx].sCode}  {ea[member.nEaIdx].sCodeName} {member.nBuyedSlotId}블록 {ea[member.nEaIdx].myTradeManager.arrBuyedSlots[member.nBuyedSlotId].nCurVolume} 잔량", member.nEaIdx, member.nBuyedSlotId);
+                }
             }
         }
 
