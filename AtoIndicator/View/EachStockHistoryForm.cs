@@ -1940,6 +1940,9 @@ namespace AtoIndicator.View.EachStockHistory
 
                     float reservationY1;
 
+                    string sReserveMsg; 
+                    string sReserveChosenMsg; 
+
                     if (prevgpHorizontalCount != historyChart.Series["MinuteStick"].Points.Count)
                     {
                         prevgpHorizontalCount = historyChart.Series["MinuteStick"].Points.Count;
@@ -1952,7 +1955,14 @@ namespace AtoIndicator.View.EachStockHistory
                         {
                             reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[0].fCritLine1);
                             gpHorizontal.DrawLine(new Pen(Color.BlueViolet, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+
                         }
+                        sReserveMsg = (curEa.manualReserve.reserveArr[0].isBuyReserved) ? "이상 매수예약 : Yes" : "이상 매수예약 : No";
+                        if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
+                            realBuyReserveLabel.Text = sReserveMsg;
+                        sReserveChosenMsg = (curEa.manualReserve.reserveArr[0].isChosen1) ? "이상 채택 : Yes" : "이상 채택 : No";
+                        if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
+                            reserveChosenLabel.Text = sReserveChosenMsg;
                     }
                     else if (curEa.manualReserve.reserveArr[1].isSelected && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.DOWN_RESERVE)
                     {
@@ -1960,7 +1970,15 @@ namespace AtoIndicator.View.EachStockHistory
                         {
                             reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[1].fCritLine1);
                             gpHorizontal.DrawLine(new Pen(Color.Gold, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+
                         }
+
+                        sReserveMsg = (curEa.manualReserve.reserveArr[1].isBuyReserved) ? "이하 매수예약 : Yes" : "이하 매수예약 : No";
+                        if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
+                            realBuyReserveLabel.Text = sReserveMsg;
+                        sReserveChosenMsg = (curEa.manualReserve.reserveArr[1].isChosen1) ? "이하 채택 : Yes" : "이하 채택 : No";
+                        if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
+                            reserveChosenLabel.Text = sReserveChosenMsg;
                     }
                     else if (curEa.manualReserve.reserveArr[2].fCritLine1 > 0 && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.BOX_UP_RESERVE)
                     {
@@ -1975,6 +1993,14 @@ namespace AtoIndicator.View.EachStockHistory
                             reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[2].fCritLine2);
                             gpHorizontal.DrawLine(new Pen(Color.Magenta, 3), reservationX1, reservationY1, reservationX2, reservationY1);
                         }
+
+                        sReserveMsg = (curEa.manualReserve.reserveArr[2].isBuyReserved) ? "박스 매수예약 : Yes" : "박스 매수예약 : No";
+                        if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
+                            realBuyReserveLabel.Text = sReserveMsg;
+
+                        sReserveChosenMsg = (curEa.manualReserve.reserveArr[2].isChosen2) ? "박스 채택 : Yes" : "박스 채택 : No";
+                        if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
+                            reserveChosenLabel.Text = sReserveChosenMsg;
                     }
                     else if (curEa.manualReserve.reserveArr[3].fCritLine1 > 0 && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.NO_FLOOR_UP)
                     {
@@ -1988,7 +2014,15 @@ namespace AtoIndicator.View.EachStockHistory
                         {
                             reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[3].fCritLine2);
                             gpHorizontal.DrawLine(new Pen(Color.DarkGray, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+               
                         }
+
+                        sReserveMsg = (curEa.manualReserve.reserveArr[3].isBuyReserved) ? "점프 매수예약 : Yes" : "점프 매수예약 : No";
+                        if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
+                            realBuyReserveLabel.Text = sReserveMsg;
+                        sReserveChosenMsg = (curEa.manualReserve.reserveArr[3].isChosen2) ? "점프 채택 : Yes" : "점프 채택 : No";
+                        if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
+                            reserveChosenLabel.Text = sReserveChosenMsg;
                     }
                     else if (curEa.manualReserve.reserveArr[4].fCritLine1 > 0 && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.YES_FLOOR_UP)
                     {
@@ -2002,6 +2036,14 @@ namespace AtoIndicator.View.EachStockHistory
                             reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[4].fCritLine2);
                             gpHorizontal.DrawLine(new Pen(Color.Purple, 3), reservationX1, reservationY1, reservationX2, reservationY1);
                         }
+
+
+                        sReserveMsg = (curEa.manualReserve.reserveArr[4].isBuyReserved) ? "돌파 매수예약 : Yes" : "돌파 매수예약 : No";
+                        if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
+                            realBuyReserveLabel.Text = sReserveMsg;
+                        sReserveChosenMsg = (curEa.manualReserve.reserveArr[4].isChosen2) ? "돌파 채택 : Yes" : "돌파 채택 : No";
+                        if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
+                            reserveChosenLabel.Text = sReserveChosenMsg;
                     }
 
                     if (isTargetChoice)
@@ -2854,22 +2896,32 @@ namespace AtoIndicator.View.EachStockHistory
                     if (cUp == 49)
                     {
                         curEa.manualReserve.reserveArr[0].Clear();
+                        realBuyReserveLabel.Text = "이상예약 취소";
+                        reserveChosenLabel.Text = "";
                     }
                     if (cUp == 50)
                     {
                         curEa.manualReserve.reserveArr[1].Clear();
+                        realBuyReserveLabel.Text = "이하예약 취소";
+                        reserveChosenLabel.Text = "";
                     }
                     if (cUp == 51)
                     {
                         curEa.manualReserve.reserveArr[2].Clear();
+                        realBuyReserveLabel.Text = "박스권예약 취소";
+                        reserveChosenLabel.Text = "";
                     }
                     if (cUp == 52)
                     {
                         curEa.manualReserve.reserveArr[3].Clear();
+                        realBuyReserveLabel.Text = "점프예약 취소";
+                        reserveChosenLabel.Text = "";
                     }
                     if (cUp == 53)
                     {
                         curEa.manualReserve.reserveArr[4].Clear();
+                        realBuyReserveLabel.Text = "돌파예약 취소";
+                        reserveChosenLabel.Text = "";
                     }
                 }
                 else
@@ -3013,31 +3065,31 @@ namespace AtoIndicator.View.EachStockHistory
             {
                 if (cPressed == 49)
                 {
-                    if (isShiftPushed)
+                    if (isShiftPushed && !curEa.manualReserve.reserveArr[0].isChosen1)
                         curEa.manualReserve.reserveArr[0].isBuyReserved = true;
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.UP_RESERVE;
                 }
                 else if (cPressed == 50)
                 {
-                    if (isShiftPushed)
+                    if (isShiftPushed && !curEa.manualReserve.reserveArr[1].isChosen1)
                         curEa.manualReserve.reserveArr[1].isBuyReserved = true;
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.DOWN_RESERVE;
                 }
                 else if (cPressed == 51)
                 {
-                    if (isShiftPushed)
+                    if (isShiftPushed && !curEa.manualReserve.reserveArr[2].isChosen2)
                         curEa.manualReserve.reserveArr[2].isBuyReserved = true;
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.BOX_UP_RESERVE;
                 }
                 else if (cPressed == 52)
                 {
-                    if (isShiftPushed)
+                    if (isShiftPushed && !curEa.manualReserve.reserveArr[3].isChosen2)
                         curEa.manualReserve.reserveArr[3].isBuyReserved = true;
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.NO_FLOOR_UP;
                 }
                 else if (cPressed == 53)
                 {
-                    if (isShiftPushed)
+                    if (isShiftPushed && !curEa.manualReserve.reserveArr[4].isChosen2)
                         curEa.manualReserve.reserveArr[4].isBuyReserved = true;
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.YES_FLOOR_UP;
                 }
