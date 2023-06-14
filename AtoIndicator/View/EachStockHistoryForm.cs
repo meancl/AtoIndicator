@@ -1940,8 +1940,8 @@ namespace AtoIndicator.View.EachStockHistory
 
                     float reservationY1;
 
-                    string sReserveMsg; 
-                    string sReserveChosenMsg; 
+                    string sReserveMsg;
+                    string sReserveChosenMsg;
 
                     if (prevgpHorizontalCount != historyChart.Series["MinuteStick"].Points.Count)
                     {
@@ -2014,7 +2014,7 @@ namespace AtoIndicator.View.EachStockHistory
                         {
                             reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[3].fCritLine2);
                             gpHorizontal.DrawLine(new Pen(Color.DarkGray, 3), reservationX1, reservationY1, reservationX2, reservationY1);
-               
+
                         }
 
                         sReserveMsg = (curEa.manualReserve.reserveArr[3].isBuyReserved) ? "점프 매수예약 : Yes" : "점프 매수예약 : No";
@@ -2457,6 +2457,7 @@ namespace AtoIndicator.View.EachStockHistory
             {
                 if (eBuyMode == TRADE_MODE.BUY_MODE)
                 {
+                    curEa = mainForm.ea[nCurIdx];
                     double yCoord = historyChart.ChartAreas["TotalArea"].AxisY.PixelPositionToValue(e.Y);
                     if (double.IsNaN(yCoord))
                         yCoord = 0;
@@ -2487,22 +2488,36 @@ namespace AtoIndicator.View.EachStockHistory
                         yCoord = 0;
                     else
                     {
-                        int movingPrice = curEa.nFb;
-                        int targetPrice = (int)yCoord;
-
-                        if (movingPrice > targetPrice)
+                        if (nCurRealBuyedId == -1)
                         {
-                            while (movingPrice > targetPrice)
-                                movingPrice -= GetIntegratedMarketGap(movingPrice);
+                            int movingPrice = curEa.nFb;
+                            int targetPrice = (int)yCoord;
 
+                            if (movingPrice > targetPrice)
+                            {
+                                while (movingPrice > targetPrice)
+                                    movingPrice -= GetIntegratedMarketGap(movingPrice);
+
+                            }
+                            else if (movingPrice < targetPrice)
+                            {
+                                while (movingPrice < targetPrice)
+                                    movingPrice += GetIntegratedMarketGap(movingPrice);
+                                movingPrice -= GetIntegratedMarketGap(movingPrice); // 한칸 아래서 팔거야
+                            }
+                            mainForm.RequestHandSell(nCurIdx, movingPrice, nMouseWheel);
                         }
-                        else if (movingPrice < targetPrice)
+                        else
                         {
-                            while (movingPrice < targetPrice)
-                                movingPrice += GetIntegratedMarketGap(movingPrice);
-                            movingPrice -= GetIntegratedMarketGap(movingPrice); // 한칸 아래서 팔거야
+                            if (!curEa.myTradeManager.arrBuyedSlots[nCurRealBuyedId].isAllSelled &&
+                                    !curEa.myTradeManager.arrBuyedSlots[nCurRealBuyedId].isSelling &&
+                                    curEa.myTradeManager.arrBuyedSlots[nCurRealBuyedId].nCurVolume > 0)
+                            {
+                                mainForm.RequestHandBlockSell(nCurIdx, nCurRealBuyedId);
+                            }
+                            else
+                                mainForm.PrintLog("블럭 손매도 불가", nCurIdx, nCurRealBuyedId);
                         }
-                        mainForm.RequestHandSell(nCurIdx, movingPrice, nMouseWheel);
                     }
                 }
                 else

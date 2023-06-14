@@ -674,6 +674,8 @@ namespace AtoIndicator
             // 경과 확인용
             public double fPower; // 현재 순수 손익율
             public double fPowerWithFee; // 세금 수수료 포함 손익율
+            public double fMaxPowerWithFee; 
+            public double fMinPowerWithFee; 
             public int nCurLineIdx; // 현재 익절선과 손절선의 인덱스
 
             public bool isCopied;

@@ -397,5 +397,22 @@ namespace AtoIndicator
         }
         #endregion
 
+
+        #region RequestHandBlockSell
+        public void RequestHandBlockSell(int nCurIdx, int nBlockIdx)
+        {
+            try
+            {
+                SetAndServeCurSlot(false, NEW_SELL, nCurIdx, ea[nCurIdx].sCode, MARKET_ORDER, 0, ea[nCurIdx].myTradeManager.arrBuyedSlots[nBlockIdx].nCurVolume, "매도", "", "블럭 손매도" , nBuyedSlotIdx: nBlockIdx);
+                
+                PrintLog($"시간 : {nSharedTime}, 종목코드 : {ea[nCurIdx].sCode} 종목명 : {ea[nCurIdx].sCodeName}, 블럭 : {nBlockIdx} 블럭 손매도 신청", nCurIdx);
+            }
+            catch (Exception ex)
+            {
+                PrintLog($"블럭 손매도 체크 중 오류 발생 {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName}", nCurIdx);
+            }
+        }
+        #endregion
+
     }
 }
