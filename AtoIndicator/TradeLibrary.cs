@@ -126,8 +126,8 @@
         // =========================================
         public void SetAndServeCurSlot(bool isByHand, int nOrderType, int nEaIdx, string sCode, string sHogaGb,
                                         int nOrderPrice, int nQty, string sRQName, string sOrgOrderId, string sDescription,
-                                        int nBuyedSlotIdx = 0, int nSequence = 0, double fRequestRatio = NORMAL_TRADE_RATIO, int nStrategyIdx = 0,
-                                        double fCeil = 0.02, double fFloor = -0.025, TradeMethodCategory eTradeMethod = TradeMethodCategory.None
+                                        int nBuyedSlotIdx = 0, double fRequestRatio = NORMAL_TRADE_RATIO, 
+                                        TradeMethodCategory eTradeMethod = TradeMethodCategory.RisingMethod
                                         )
         {
             // 공용
@@ -143,17 +143,14 @@
             curSlot.sDescription = sDescription;
 
             curSlot.nRqTime = nSharedTime;
-            curSlot.eTradeMethod = eTradeMethod;
+            
 
 
             switch (nOrderType)
             {
                 case NEW_BUY:
                     curSlot.fRequestRatio = fRequestRatio;
-                    curSlot.nStrategyIdx = nStrategyIdx;
-                    curSlot.nSequence = nSequence;
-                    curSlot.fTargetPercent = fCeil;
-                    curSlot.fBottomPercent = fFloor;
+                    curSlot.eTradeMethod = eTradeMethod;
                     break;
                 case NEW_SELL:
                     if (!isByHand)

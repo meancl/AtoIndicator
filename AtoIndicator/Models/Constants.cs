@@ -37,7 +37,7 @@
         #endif
 
         public const int EYES_CLOSE_NUM = 4; // 현재가에서 EYES_CLOSE_NUM 스텝만큼 가격을 올려 지정가에 두기 위한 스텝 변수 *시장가매수는 해당종목의 상한가 기준이기에 풀매수가 안되기 때문에 지정가로 하는거.
-        public const double NORMAL_TRADE_RATIO = 0.3;
+        public const double NORMAL_TRADE_RATIO = 0.04;
         #endregion
 
         #region 시간

@@ -1411,7 +1411,7 @@ namespace AtoIndicator
                                     }
                                     else // 보유금액이 없거나 가격이 너무 올라버린 경우
                                     {
-                                        PrintLog($"{nSharedTime} 전략 : {curSlot.nStrategyIdx} {curSlot.sCode}  {ea[curSlot.nEaIdx].sCodeName} 보유금액이 없거나 가격이 너무 올라서 매수가 불가합니다.", curSlot.nEaIdx);
+                                        PrintLog($"{nSharedTime} {curSlot.sCode}  {ea[curSlot.nEaIdx].sCodeName} 보유금액이 없거나 가격이 너무 올라서 매수가 불가합니다.", curSlot.nEaIdx);
                                     }
 
                                 }
@@ -1631,8 +1631,8 @@ namespace AtoIndicator
                                                             newSlot.fBottomPer = GetNextFloor(newSlot.nCurLineIdx, TradeMethodCategory.BottomUpMethod);
                                                             break;
                                                         case TradeMethodCategory.FixedMethod:
-                                                            newSlot.fTargetPer = curSlot.fTargetPercent;
-                                                            newSlot.fBottomPer = curSlot.fBottomPercent;
+                                                            newSlot.fTargetPer = DEFAULT_FIXED_CEILING;
+                                                            newSlot.fBottomPer = DEFAULT_FIXED_BOTTOM;
                                                             break;
                                                         default:
                                                             break;
@@ -1684,7 +1684,7 @@ namespace AtoIndicator
                                         }
                                         else // 보유금액이 없거나 가격이 너무 올라버린 경우
                                         {
-                                            PrintLog($"{nSharedTime} 전략 : {curSlot.nStrategyIdx} {curSlot.sCode}  {ea[curSlot.nEaIdx].sCodeName} 보유금액이 없거나 가격이 너무 올라서 매수가 불가합니다.", curSlot.nEaIdx);
+                                            PrintLog($"{nSharedTime} {curSlot.sCode}  {ea[curSlot.nEaIdx].sCodeName} 보유금액이 없거나 가격이 너무 올라서 매수가 불가합니다.", curSlot.nEaIdx);
                                         }
                                     }
                                     else // 요청이 10초나 지연된 경우
@@ -4862,10 +4862,10 @@ namespace AtoIndicator
                                             fYield -= REAL_STOCK_COMMISSION; // 거래세와 거래수수료 차감
                                             ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee = fYield; // 수수료 포함 손익율
 
-                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee < ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fMaxPowerWithFee)
+                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee > ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fMaxPowerWithFee)
                                                 ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fMaxPowerWithFee = ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee;
 
-                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee > ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fMinPowerWithFee)
+                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee < ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fMinPowerWithFee)
                                                 ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fMinPowerWithFee = ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee;
 
 

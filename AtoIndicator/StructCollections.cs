@@ -538,11 +538,8 @@ namespace AtoIndicator
             // 공용 인자들
             // ----------------------------------
             public int nRqTime; // 주문요청시간
-            public double fTargetPercent; // 익절 퍼센트 
-            public double fBottomPercent; // 손절 퍼센트 
             public int nEaIdx; // 개인구조체인덱스
             public TradeMethodCategory eTradeMethod; // true면 단계별 상승매매, false면 익절,손절 일괄매매
-            public int nStrategyIdx; // 전략 인덱스
 
             public string sDescription;
 
@@ -550,7 +547,6 @@ namespace AtoIndicator
             // 매수 인자들
             // ----------------------------------
             public double fRequestRatio; // 매수신청시 최대매수가 기준 비율 
-            public int nSequence; // 추매용 확인 인덱스( 몇번째 추매인 지 : 2번부터가 추매1번 )
 
             // ----------------------------------
             // 매도 인자들
