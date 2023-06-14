@@ -28,6 +28,10 @@ namespace AtoIndicator
 
         public const double VIRTUAL_STOCK_BUY_COMMISION = VIRTUAL_STOCK_FEE;
         public const double VIRTUAL_STOCK_SELL_COMMISION = VIRTUAL_STOCK_FEE + STOCK_TAX;
+
+        public const double DEFAULT_FIXED_CEILING = 0.015;
+        public const double DEFAULT_FIXED_BOTTOM = -0.02;
+
         #endregion
 
         public Dictionary<string, int> sellRemainCheckByOrderIdDict = new Dictionary<string, int>(); // 남은 매도를 확인하기 위한 딕셔너리
@@ -36,9 +40,7 @@ namespace AtoIndicator
         public Dictionary<string, VirtualSellBlock> virtualSellBlockByOrderIdDict = new Dictionary<string, VirtualSellBlock>();
         public Dictionary<string, VirtualSellBlock> virtualSellBlockByScrNoDict = new Dictionary<string, VirtualSellBlock>();
         
-           
-
-
+        
         public Dictionary<string, int> buyCancelingByOrderIdDict = new Dictionary<string, int>(); // 매수취소중 딕셔너리
         public Dictionary<string, int> sellCancelingByOrderIdDict = new Dictionary<string, int>(); // 매도취소중 딕셔너리
 
@@ -133,12 +135,13 @@ namespace AtoIndicator
                                 slot.nRequestTime = nSharedTime;
                                 slot.nOriginOrderPrice = nOrderPrice; // 주문요청금액 설정
                                 slot.nOrderPrice = slot.nOriginOrderPrice; // 지정상한가 설정
-                                slot.eTradeMethod = TradeMethodCategory.FixedMethod; // 매매방법 설정
+                                slot.eTradeMethod = ea[nCurIdx].myTradeManager.eDefaultTradeCategory; // 매매방법 설정
                                 slot.nOrderVolume = nOrderVolume;
                                 slot.fTradeRatio = 1;
                                 slot.sBuyDescription = "손매수";
                                 slot.isBuying = true;
                                 slot.isBuyByHand = true;
+                                slot.nCurLineIdx = 0;
 
                                 switch (slot.eTradeMethod)
                                 {
@@ -155,8 +158,8 @@ namespace AtoIndicator
                                         slot.fBottomPer = GetNextFloor(slot.nCurLineIdx, TradeMethodCategory.BottomUpMethod);
                                         break;
                                     case TradeMethodCategory.FixedMethod:
-                                        slot.fTargetPer = 0.015;
-                                        slot.fBottomPer = -0.02;
+                                        slot.fTargetPer = DEFAULT_FIXED_CEILING;
+                                        slot.fBottomPer = DEFAULT_FIXED_BOTTOM;
                                         break;
                                     default:
                                         break;

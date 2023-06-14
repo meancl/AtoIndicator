@@ -615,8 +615,10 @@ namespace AtoIndicator
             public int nTotalSelled;
             public int nTotalSelling;
 
+            public TradeMethodCategory eDefaultTradeCategory;
             public BuyedManager()
             {
+                eDefaultTradeCategory = TradeMethodCategory.RisingMethod;
                 arrBuyedSlots = new List<BuyedSlot>();
                 sTotalLog = new StringBuilder();
             }

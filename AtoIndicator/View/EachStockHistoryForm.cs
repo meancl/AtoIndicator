@@ -312,6 +312,12 @@ namespace AtoIndicator.View.EachStockHistory
                             if (nBReal == RADIO_BUTTON_CHECKED)
                             {
                                 nCurRealBuyedId = int.Parse(r.Name); // 체크된 매매블록의 인덱스
+
+                                // 체크됐을때는?
+                                if (curEa.myTradeManager.arrBuyedSlots[nCurRealBuyedId].eTradeMethod != MainForm.TradeMethodCategory.FixedMethod)
+                                    tradeMethodLabel.Text = $"{nCurRealBuyedId}번 매매기법 : {curEa.myTradeManager.arrBuyedSlots[nCurRealBuyedId].eTradeMethod}";
+                                else
+                                    tradeMethodLabel.Text = $"{nCurRealBuyedId}번 매매기법 : {curEa.myTradeManager.arrBuyedSlots[nCurRealBuyedId].eTradeMethod} ({Math.Round(curEa.myTradeManager.arrBuyedSlots[nCurRealBuyedId].fTargetPer, 3)}, {Math.Round(curEa.myTradeManager.arrBuyedSlots[nCurRealBuyedId].fBottomPer, 3)})";
                             }
                             nBReal = RADIO_BUTTON_CHECKED;
 
@@ -327,10 +333,14 @@ namespace AtoIndicator.View.EachStockHistory
                                 checkedRd.Checked = false;
                                 nCurRealBuyedId = -1;
                                 nBReal = RADIO_BUTTON_CHECKED;
+
+                                // 체크 해제됐을때는??
+                                tradeMethodLabel.Text = $"전체 매매기법 : {curEa.myTradeManager.eDefaultTradeCategory}";
                             }
                             else
                                 nBReal = RADIO_BUTTON_REMOVAL;
 
+                            this.ActiveControl = historyChart;
                             updateDelegate();
                         };
 
@@ -1201,6 +1211,9 @@ namespace AtoIndicator.View.EachStockHistory
                             arrowBuy.BackColor = Color.HotPink;
                             arrowBuy.LineColor = Color.Black;
 
+                            if (nBuyAnnotationIdx >= historyChart.Series["MinuteStick"].Points.Count)
+                                nBuyAnnotationIdx = historyChart.Series["MinuteStick"].Points.Count - 1;
+
                             arrowBuy.SetAnchor(historyChart.Series["MinuteStick"].Points[nBuyAnnotationIdx]);
                             arrowBuy.AnchorY = historyChart.Series["MinuteStick"].Points[nBuyAnnotationIdx].YValues[1]; // 고.저.시종
                             arrowBuy.Name = "M" + nNumInjector;
@@ -1282,6 +1295,10 @@ namespace AtoIndicator.View.EachStockHistory
                             realDictionary[nSellAnnotaionIdx].nLastAnnotationLoc = nNumInjector; // 최근 인덱스정보 삽입
                             arrowSell.BackColor = Color.LightSkyBlue;
                             arrowSell.LineColor = Color.Black;
+
+                            if (nSellAnnotaionIdx >= historyChart.Series["MinuteStick"].Points.Count)
+                                nSellAnnotaionIdx = historyChart.Series["MinuteStick"].Points.Count - 1;
+
                             arrowSell.SetAnchor(historyChart.Series["MinuteStick"].Points[nSellAnnotaionIdx]);
                             arrowSell.AnchorY = historyChart.Series["MinuteStick"].Points[nSellAnnotaionIdx].YValues[1]; // 고.저.시종
 
@@ -2621,7 +2638,7 @@ namespace AtoIndicator.View.EachStockHistory
             if (cUp == 38) // 위쪽 화살표
             {
                 fMaxPlus += 0.025;
-                expansionLabel.Text = $"{Math.Round(fMaxPlus, 3)}, {Math.Round(fMinPlus, 3)}";
+                expansionLabel.Text = $"확장 : {Math.Round(fMaxPlus, 3)}, {Math.Round(fMinPlus, 3)}";
                 SetChartViewRange(0, curEa.timeLines1m.nRealDataIdx + 2, curEa.nFs, curEa.nFs, "TotalArea");
                 mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler?.Invoke(this, EventArgs.Empty);
             }
@@ -2629,7 +2646,7 @@ namespace AtoIndicator.View.EachStockHistory
             if (cUp == 40) // 아래쪽 화살표
             {
                 fMinPlus += 0.025;
-                expansionLabel.Text = $"{Math.Round(fMaxPlus, 3)}, {Math.Round(fMinPlus, 3)}";
+                expansionLabel.Text = $"확장 : {Math.Round(fMaxPlus, 3)}, {Math.Round(fMinPlus, 3)}";
                 SetChartViewRange(0, curEa.timeLines1m.nRealDataIdx + 2, curEa.nFs, curEa.nFs, "TotalArea");
                 mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler?.Invoke(this, EventArgs.Empty);
             }
@@ -2638,7 +2655,7 @@ namespace AtoIndicator.View.EachStockHistory
             {
                 fMaxPlus = 0;
                 fMinPlus = 0;
-                expansionLabel.Text = $"{Math.Round(fMaxPlus, 3)}, {Math.Round(fMinPlus, 3)}";
+                expansionLabel.Text = $"확장 : {Math.Round(fMaxPlus, 3)}, {Math.Round(fMinPlus, 3)}";
                 SetChartViewRange(0, curEa.timeLines1m.nRealDataIdx + 2, curEa.nFs, curEa.nFs, "TotalArea");
                 mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler?.Invoke(this, EventArgs.Empty);
             }
@@ -2690,6 +2707,7 @@ namespace AtoIndicator.View.EachStockHistory
 
             if (cUp == 17) // ctrl
             {
+                ctrlLabel.Text = "ctrl : No";
                 isCtrlPushed = false;
                 //isRealBuyLinePressed = false;
                 //isFakeBuyLinePressed = false;
@@ -2701,11 +2719,15 @@ namespace AtoIndicator.View.EachStockHistory
 
             if (cUp == 32) // space
             {
+                spaceLabel.Text = "space : No";
                 isSpacePushed = false;
             }
 
             if (cUp == 16) // shift
+            {
+                shiftLabel.Text = "shift : No";
                 isShiftPushed = false;
+            }
 
             if (cUp == 'U') // update
             {
@@ -2862,7 +2884,7 @@ namespace AtoIndicator.View.EachStockHistory
                 curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.NONE_RESERVE;
             }
 
-            if (cUp >= 54 && cUp <= 57)
+            if ((cUp >= 54 && cUp <= 57) || (cUp == 48))
             {
                 if (isSpacePushed)
                 {
@@ -2871,25 +2893,44 @@ namespace AtoIndicator.View.EachStockHistory
                     {
                         if (!curEa.myTradeManager.arrBuyedSlots[i].isAllSelled && !curEa.myTradeManager.arrBuyedSlots[i].isSelling)
                         {
+                            if (nCurRealBuyedId != -1 && nCurRealBuyedId != i)
+                                continue;
                             curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx = 0;
 
-                            if (cUp == 54) // 6
+
+
+                            if (cUp == 48)
                             {
-                                curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.RisingMethod;
-                                curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
-                                curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
+                                curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.None;
+                            }
+                            else if (cUp == 54) // 6
+                            {
+                                if (curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod != MainForm.TradeMethodCategory.RisingMethod)
+                                {
+                                    curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.RisingMethod;
+                                    curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
+                                    curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
+                                }
                             }
                             else if (cUp == 55) // 7
                             {
-                                curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.BottomUpMethod;
-                                curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
-                                curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
+                                if (curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod != MainForm.TradeMethodCategory.BottomUpMethod)
+                                {
+                                    curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.BottomUpMethod;
+                                    curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
+                                    curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
+                                }
+
                             }
                             else if (cUp == 56) // 8
                             {
-                                curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.ScalpingMethod;
-                                curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
-                                curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
+                                if (curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod != MainForm.TradeMethodCategory.ScalpingMethod)
+                                {
+                                    curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.ScalpingMethod;
+                                    curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
+                                    curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
+                                }
+
                             }
                             else if (cUp == 57) // 9
                             {
@@ -2901,11 +2942,20 @@ namespace AtoIndicator.View.EachStockHistory
                                 }
                                 else
                                 {
-                                    curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = 0.025; // 다시 설정 가능
-                                    curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = -0.03; // ""
+                                    curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = MainForm.DEFAULT_FIXED_CEILING;
+                                    curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = MainForm.DEFAULT_FIXED_BOTTOM;
                                 }
+
                             }
+
+
+                            if (nCurRealBuyedId == -1) // 공용 (그냥 반복해서 삽입)
+                                curEa.myTradeManager.eDefaultTradeCategory = curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod;
+
+                            tradeMethodLabel.Text = $"전체 매매기법({(nCurRealBuyedId != -1 ? i.ToString() : "")}): {curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod}";
                         }
+                        else
+                            tradeMethodLabel.Text = "전체 매매기법 : 변경불가";
                     }
                 }
                 else
@@ -3016,13 +3066,22 @@ namespace AtoIndicator.View.EachStockHistory
 
 
             if (cPressed == 17) // ctrl
+            {
+                ctrlLabel.Text = "ctrl : Yes";
                 isCtrlPushed = true;
+            }
 
             if (cPressed == 16) // shift
+            {
+                shiftLabel.Text = "shift : Yes";
                 isShiftPushed = true;
+            }
 
             if (cPressed == 32) // space 
+            {
+                spaceLabel.Text = "space : Yes";
                 isSpacePushed = true;
+            }
 
             //if(isCtrlPushed)
             //{
@@ -3100,7 +3159,6 @@ namespace AtoIndicator.View.EachStockHistory
         //public bool isRealBuyLinePressed;
         public bool isPreciselyCheck;
         public string sOwnerPressed = "";
-
 
         public void DeepClean()
         {

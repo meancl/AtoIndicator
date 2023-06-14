@@ -260,6 +260,10 @@ namespace AtoIndicator
                 }
 
             } // END---- 고정형 매매
+            else // None
+            {
+
+            }
 
             if (ea[nCurIdx].fPower >= 0.29)
             {
