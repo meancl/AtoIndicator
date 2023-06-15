@@ -4862,12 +4862,6 @@ namespace AtoIndicator
                                             fYield -= REAL_STOCK_COMMISSION; // 거래세와 거래수수료 차감
                                             ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee = fYield; // 수수료 포함 손익율
 
-                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee > ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fMaxPowerWithFee)
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fMaxPowerWithFee = ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee;
-
-                                            if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee < ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fMinPowerWithFee)
-                                                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fMinPowerWithFee = ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee;
-
 
                                             //////////////////////////////////////////////////////////////////////////////////
                                             /////  가격변동, 시간변동, 가격가속도, 시간가속도, 호가속도, 체결속도, 체결량, 호가매수매도대비, vi_cnt  등등 고려해서 ( 가능성을 봐야함 .. ) 

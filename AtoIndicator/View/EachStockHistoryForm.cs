@@ -312,7 +312,7 @@ namespace AtoIndicator.View.EachStockHistory
                             if (nBReal == RADIO_BUTTON_CHECKED)
                             {
                                 nCurRealBuyedId = int.Parse(r.Name); // 체크된 매매블록의 인덱스
-
+                                curEa.myTradeManager.nAppliedShowingRealBuyedId = nCurRealBuyedId;
                                 // 체크됐을때는?
                                 if (curEa.myTradeManager.arrBuyedSlots[nCurRealBuyedId].eTradeMethod != MainForm.TradeMethodCategory.FixedMethod)
                                     tradeMethodLabel.Text = $"{nCurRealBuyedId}번 매매기법 : {curEa.myTradeManager.arrBuyedSlots[nCurRealBuyedId].eTradeMethod}";
@@ -332,6 +332,7 @@ namespace AtoIndicator.View.EachStockHistory
                                 RadioButton checkedRd = (RadioButton)oo;
                                 checkedRd.Checked = false;
                                 nCurRealBuyedId = -1;
+                                curEa.myTradeManager.nAppliedShowingRealBuyedId = -1;
                                 nBReal = RADIO_BUTTON_CHECKED;
 
                                 // 체크 해제됐을때는??
@@ -406,8 +407,10 @@ namespace AtoIndicator.View.EachStockHistory
                         setPaperRadioDelegate();
                 }
 
-                if (curEa.myTradeManager.arrBuyedSlots.Count > nPrevRealRadioCnt)
+                if (curEa.myTradeManager.arrBuyedSlots.Count > nPrevRealRadioCnt || curEa.myTradeManager.isRealBuyChangeNeeded)
                 {
+                    curEa.myTradeManager.isRealBuyChangeNeeded = false;
+
                     if (realBlockFlowLayoutPanel.InvokeRequired)
                     {
                         realBlockFlowLayoutPanel.Invoke(new MethodInvoker(setRealRadioDelegate));
@@ -1880,8 +1883,8 @@ namespace AtoIndicator.View.EachStockHistory
             isAllBuyedLabel.Text = $"총매수 : {curEa.myTradeManager.nTotalBuyed}";
             restVolumeLabel.Text = $"잔량 : {curEa.myTradeManager.nTotalBuyed - (curEa.myTradeManager.nTotalSelling + curEa.myTradeManager.nTotalSelled)}";
 
-            if (nCurRealBuyedId != -1)
-                curMyProfitLabel.Text = $"{nCurRealBuyedId}번째 블록 : {Math.Round(curEa.myTradeManager.arrBuyedSlots[nCurRealBuyedId].fPowerWithFee * 100, 2)}(%)";
+            if (curEa.myTradeManager.nAppliedShowingRealBuyedId != -1)
+                curMyProfitLabel.Text = $"{curEa.myTradeManager.nAppliedShowingRealBuyedId}번째 블록 : {Math.Round(curEa.myTradeManager.arrBuyedSlots[curEa.myTradeManager.nAppliedShowingRealBuyedId].fPowerWithFee * 100, 2)}(%)";
             else
             {
                 if(!curMyProfitLabel.Text.Equals(""))

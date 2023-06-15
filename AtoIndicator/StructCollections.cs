@@ -607,6 +607,9 @@ namespace AtoIndicator
             public int nSellReqCnt; // 현재 종목의 매도신청카운트 
             public bool isOrderStatus; // 현재 매매중인 지 확인하는 변수;
 
+            public bool isRealBuyChangeNeeded = false; // 체잔에서 하나의 매수, 매도가 끝났을때 ( eachForm에서 갱신을 위해서 )
+            public int nAppliedShowingRealBuyedId = -1;
+
             public int nTotalBuyed;
             public int nTotalSelled;
             public int nTotalSelling;
@@ -670,8 +673,6 @@ namespace AtoIndicator
             // 경과 확인용
             public double fPower; // 현재 순수 손익율
             public double fPowerWithFee; // 세금 수수료 포함 손익율
-            public double fMaxPowerWithFee; 
-            public double fMinPowerWithFee; 
             public int nCurLineIdx; // 현재 익절선과 손절선의 인덱스
 
             public bool isCopied;
@@ -697,6 +698,12 @@ namespace AtoIndicator
             public int nSellErrorCount;
 
             public MaOverN maOverN;
+
+            // >=== 가격변화 체크용
+            public int nCheckLineIdx = MIDDLE_STEP; 
+            public double fCheckCeilingPer = 0; 
+            public double fCheckBottomPer = -0.0025; 
+            // <=== 
 
             public BuyedSlot(int nCurIdx)
             {
@@ -773,6 +780,9 @@ namespace AtoIndicator
                 newSlot.nSellErrorCount = nSellErrorCount;
 
                 newSlot.maOverN = maOverN;
+                newSlot.nCheckLineIdx = nCheckLineIdx;
+                newSlot.fCheckCeilingPer = fCheckCeilingPer;
+                newSlot.fCheckBottomPer = fCheckBottomPer;
 
                 return newSlot;
         }

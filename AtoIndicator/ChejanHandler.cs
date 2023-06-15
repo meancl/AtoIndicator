@@ -206,6 +206,8 @@ namespace AtoIndicator
                                 if (ea[nCurIdx].myTradeManager.nBuyReqCnt > 0)
                                     ea[nCurIdx].myTradeManager.nBuyReqCnt--; // 매수요청 카운트 감소
                                 ea[nCurIdx].myTradeManager.isOrderStatus = false; // 매매중 off
+                                ea[nCurIdx].myTradeManager.isRealBuyChangeNeeded = true;
+                                
                                 slot.nBirthTime = nSharedTime;
                                 slot.nBirthPrice = slot.nBuyPrice;
                                 slot.nLastTouchLineTime = nSharedTime;
@@ -220,6 +222,8 @@ namespace AtoIndicator
                                 slot.nBuyMinuteIdx = nTimeLineIdx;
 
                                 slot.nBuyedSlotId = ea[nCurIdx].myTradeManager.arrBuyedSlots.Count;
+                                ea[nCurIdx].myTradeManager.nAppliedShowingRealBuyedId = slot.nBuyedSlotId;
+
                                 ea[nCurIdx].myTradeManager.arrBuyedSlots.Add(slot);
 
                                 ShutOffScreen(sScrNo);
@@ -261,6 +265,8 @@ namespace AtoIndicator
                             if (ea[nCurIdx].myTradeManager.nBuyReqCnt > 0)
                                 ea[nCurIdx].myTradeManager.nBuyReqCnt--; // 매수요청 카운트 감소
                             ea[nCurIdx].myTradeManager.isOrderStatus = false; // 매매중 off
+                            ea[nCurIdx].myTradeManager.isRealBuyChangeNeeded = true;
+                            
 
                             slot.nBirthTime = nSharedTime;
 
@@ -270,6 +276,8 @@ namespace AtoIndicator
                             slot.nBuyMinuteIdx = nTimeLineIdx;
 
                             slot.nBuyedSlotId = ea[nCurIdx].myTradeManager.arrBuyedSlots.Count;
+                            ea[nCurIdx].myTradeManager.nAppliedShowingRealBuyedId = slot.nBuyedSlotId;
+
                             ea[nCurIdx].myTradeManager.arrBuyedSlots.Add(slot);
 
                             ShutOffScreen(sScrNo); // 매수체결완료 해당화면번호 꺼줍니다.
@@ -476,6 +484,7 @@ namespace AtoIndicator
                                         member.nDeathPrice = member.nTotalSelledPrice / member.nTotalSelledVolume;
                                         ea[nCurIdx].myTradeManager.nSellReqCnt--;
                                         ea[nCurIdx].myTradeManager.isOrderStatus = false;
+                                        ea[nCurIdx].myTradeManager.isRealBuyChangeNeeded = true;
 
                                         PrintLog($"[{sMsg}] {nSharedTime} : {ea[nCurIdx].sCode}  {ea[nCurIdx].sCodeName} {member.nBuyedSlotId}블록 매도 체결완료, 매도가 : {member.nDeathPrice} 손익 : {((double)(member.nDeathPrice - member.nBuyPrice) / member.nBuyPrice - REAL_STOCK_COMMISSION) * 100}", nCurIdx, member.nBuyedSlotId);
                                     }

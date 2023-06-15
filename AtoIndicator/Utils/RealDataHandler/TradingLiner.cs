@@ -36,6 +36,26 @@ namespace AtoIndicator
 
             sSharedSellDescription.Clear();
 
+
+            // <=== 공통적으로 가격 움직임 체크가 가능하다
+            if(ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee > ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fCheckCeilingPer)
+            {
+                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCheckLineIdx = RaiseStepUp(ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCheckLineIdx);
+                var nextFullStep = GetMovedFullStep(ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCheckLineIdx);
+                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fCheckCeilingPer = nextFullStep.Item1;
+                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fCheckBottomPer = nextFullStep.Item2;
+            }
+            else if(ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee < ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fCheckBottomPer)
+            {
+                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCheckLineIdx = PullStepDown(ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCheckLineIdx);
+                var nextFullStep = GetMovedFullStep(ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCheckLineIdx);
+                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fCheckCeilingPer = nextFullStep.Item1;
+                ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fCheckBottomPer = nextFullStep.Item2;
+            }
+            // >===
+
+
+
             if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].eTradeMethod == TradeMethodCategory.RisingMethod) // 단계별 매매기법
             {
                 // ---------------------------------------------------------
