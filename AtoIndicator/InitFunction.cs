@@ -42,10 +42,8 @@ namespace AtoIndicator
         public Dictionary<(int, string), int> strategyNameDict = new Dictionary<(int, string), int>(); // {(시그널타입, "전략명") : DB내 전략번호}
 
 
-        public MMF mmf;
-#if AI
-        mmf = new MMF(); // 공유메모리를 위한 인스턴스
-#endif
+        public MMF mmf = null;
+
 
         // ============================================
         // 마지막 편집일 : 2023-04-20
@@ -62,6 +60,10 @@ namespace AtoIndicator
             // 모니터링 DB 종목 로드 작업
             using (var dbContext = new myDbContext())
             {
+#if AI
+                mmf = new MMF(); // 공유메모리를 위한 인스턴스
+#endif
+
                 dbContext.Database.EnsureCreated();
 
                 int minusDay;
