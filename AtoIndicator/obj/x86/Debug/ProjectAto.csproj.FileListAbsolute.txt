@@ -110,9 +110,6 @@ C:\Users\MJ\source\repos\AtoTrader\AtoTrader\bin\x86\Debug\LdaNative.dll
 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\bin\x86\Debug\CpuMathNative.dll
 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\bin\x86\Debug\onnxruntime.dll
 C:\Users\MJ\source\repos\AtoTrader\AtoTrader\obj\x86\Debug\AtoTrader.View.FastInfo.resources
-C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\LdaNative.dll
-C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\CpuMathNative.dll
-C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\onnxruntime.dll
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\AtoIndicator.exe.config
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\AtoIndicator.exe
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\AtoIndicator.pdb
@@ -221,4 +218,7 @@ C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AtoIndicator.Vi
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AtoIndicator.View.StatisticResult.StatisticResultForm.resources
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AtoIndicator.View.TextLog.TextLogForm.resources
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AtoIndicator.View.TradeRecod.TradeRecodForm.resources
-C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\ProjectAto.csprojAssemblyReference.cache
+C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\ProjectAto.csproj.AssemblyReference.cache
+C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\LdaNative.dll
+C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\CpuMathNative.dll
+C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\onnxruntime.dll

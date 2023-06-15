@@ -1880,6 +1880,15 @@ namespace AtoIndicator.View.EachStockHistory
             isAllBuyedLabel.Text = $"총매수 : {curEa.myTradeManager.nTotalBuyed}";
             restVolumeLabel.Text = $"잔량 : {curEa.myTradeManager.nTotalBuyed - (curEa.myTradeManager.nTotalSelling + curEa.myTradeManager.nTotalSelled)}";
 
+            if (nCurRealBuyedId != -1)
+                curMyProfitLabel.Text = $"{nCurRealBuyedId}번째 블록 : {Math.Round(curEa.myTradeManager.arrBuyedSlots[nCurRealBuyedId].fPowerWithFee * 100, 2)}(%)";
+            else
+            {
+                if(!curMyProfitLabel.Text.Equals(""))
+                    curMyProfitLabel.Text = "";
+            }
+
+
             if (isRightPressed || isPreciselyCheck)
             {
                 moveLabel.Text = $"{cPressed}\n{nPressed}\n{sOwnerPressed}\n( {x1}, {y1} )\n( {x2}, {y2} )\n";

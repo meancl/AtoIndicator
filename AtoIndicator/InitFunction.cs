@@ -42,8 +42,9 @@ namespace AtoIndicator
         public Dictionary<(int, string), int> strategyNameDict = new Dictionary<(int, string), int>(); // {(시그널타입, "전략명") : DB내 전략번호}
 
 
+        public MMF mmf;
 #if AI
-        public MMF mmf = new MMF(); // 공유메모리를 위한 인스턴스
+        mmf = new MMF(); // 공유메모리를 위한 인스턴스
 #endif
 
         // ============================================
