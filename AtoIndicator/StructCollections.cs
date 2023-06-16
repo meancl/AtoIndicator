@@ -700,6 +700,9 @@ namespace AtoIndicator
             public MaOverN maOverN;
 
             // >=== 가격변화 체크용
+            public int nMaxCheckLineIdx = MIDDLE_STEP;
+            public int nMinCheckLineIdx = MIDDLE_STEP;
+
             public int nCheckLineIdx = MIDDLE_STEP; 
             public double fCheckCeilingPer = 0; 
             public double fCheckBottomPer = -0.0025; 
@@ -780,6 +783,8 @@ namespace AtoIndicator
                 newSlot.nSellErrorCount = nSellErrorCount;
 
                 newSlot.maOverN = maOverN;
+                newSlot.nMaxCheckLineIdx = nMaxCheckLineIdx;
+                newSlot.nMinCheckLineIdx = nMinCheckLineIdx;
                 newSlot.nCheckLineIdx = nCheckLineIdx;
                 newSlot.fCheckCeilingPer = fCheckCeilingPer;
                 newSlot.fCheckBottomPer = fCheckBottomPer;

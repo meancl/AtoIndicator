@@ -1314,11 +1314,16 @@ namespace AtoIndicator.View.EachStockHistory
 
 
                     if (curEa.myTradeManager.nAppliedShowingRealBuyedId != -1)
+                    {
                         curMyProfitLabel.Text = $"{curEa.myTradeManager.nAppliedShowingRealBuyedId}번째 블록 : {Math.Round(curEa.myTradeManager.arrBuyedSlots[curEa.myTradeManager.nAppliedShowingRealBuyedId].fPowerWithFee * 100, 2)}(%)";
+                        curCheckLineIdxLabel.Text = $"블록 체크라인 : {(curEa.myTradeManager.arrBuyedSlots[curEa.myTradeManager.nAppliedShowingRealBuyedId].nCheckLineIdx - MainForm.MIDDLE_STEP > 0 ? "+": "")}{curEa.myTradeManager.arrBuyedSlots[curEa.myTradeManager.nAppliedShowingRealBuyedId].nCheckLineIdx - MainForm.MIDDLE_STEP} ({curEa.myTradeManager.arrBuyedSlots[curEa.myTradeManager.nAppliedShowingRealBuyedId].nMaxCheckLineIdx - MainForm.MIDDLE_STEP} , {curEa.myTradeManager.arrBuyedSlots[curEa.myTradeManager.nAppliedShowingRealBuyedId].nMinCheckLineIdx - MainForm.MIDDLE_STEP})";
+                    }
                     else
                     {
                         if (!curMyProfitLabel.Text.Equals(""))
                             curMyProfitLabel.Text = "";
+                        if (!curCheckLineIdxLabel.Text.Equals(""))
+                            curCheckLineIdxLabel.Text = "";
                     }
 
                     powerLabel.Text = $"현재파워 : {Math.Round(curEa.fPower, 3)}";

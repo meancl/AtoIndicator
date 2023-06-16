@@ -44,6 +44,9 @@ namespace AtoIndicator
                 var nextFullStep = GetMovedFullStep(ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCheckLineIdx);
                 ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fCheckCeilingPer = nextFullStep.Item1;
                 ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fCheckBottomPer = nextFullStep.Item2;
+
+                if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCheckLineIdx > ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nMaxCheckLineIdx)
+                    ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nMaxCheckLineIdx = ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCheckLineIdx;
             }
             else if(ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee < ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fCheckBottomPer)
             {
@@ -51,6 +54,9 @@ namespace AtoIndicator
                 var nextFullStep = GetMovedFullStep(ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCheckLineIdx);
                 ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fCheckCeilingPer = nextFullStep.Item1;
                 ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fCheckBottomPer = nextFullStep.Item2;
+
+                if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCheckLineIdx < ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nMinCheckLineIdx)
+                    ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nMinCheckLineIdx = ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nCheckLineIdx;
             }
             // >===
 
