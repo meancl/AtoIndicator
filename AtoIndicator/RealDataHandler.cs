@@ -30,7 +30,7 @@ namespace AtoIndicator
         public TradeRequestSlot curSlot; // 임시로 사용하능한 매매요청, 매매컨트롤러 변수 // real
         public AIResponseSlot aiSlot;
 
-
+        public bool isHoldingsConfirm = false;
         public bool isMarketStart; // true면 장중, false면 장시작전,장마감후 // real
         public int nSharedTime; // 모든 종목들이 공유하는 현재시간( 주식체결 실시간 데이터만 기록, 호가잔량 실시간은 시간이 정렬돼있지 않음 ) // real
 
@@ -212,6 +212,7 @@ namespace AtoIndicator
                 {
                     PrintLog("장중");
                     isMarketStart = true;
+                    isMarketLabel.Text = $"장시작 : {isMarketStart}";
                     isBuyDeny = false;
                     dFirstForPaper = DateTime.UtcNow;
                     dtBeforeOrderTime = DateTime.UtcNow;
@@ -233,6 +234,7 @@ namespace AtoIndicator
                     {
                         PrintLog("장종료");
                         isMarketStart = false;
+                        isMarketLabel.Text = $"장시작 : {isMarketStart}";
                         RequestHoldings(0);
                         RequestTradeResult(0);
                         PutTradeResultAsync();

@@ -1670,7 +1670,11 @@ namespace AtoIndicator.View
         public void MouseClickHandler(Object sender, EventArgs e)
         {
             if (listView1.FocusedItem != null)
+            {
                 nChosenStockCode = mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()];
+                if(timerCheckBox.Checked)
+                    CallThreadEachStockHistoryForm(mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()]);
+            }
         }
 
 

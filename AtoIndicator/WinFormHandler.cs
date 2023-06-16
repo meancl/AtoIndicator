@@ -236,6 +236,7 @@ namespace AtoIndicator
             if (isComplete)
             {
                 isMarketStart = false;
+                isMarketLabel.Text = $"장시작 : {isMarketStart}";
                 PrintLog("강제 장종료 완료");
             }
             else
@@ -283,7 +284,7 @@ namespace AtoIndicator
                         BlockizeUndisposal();
                     }
                     isMarketStart = true;
-
+                    isMarketLabel.Text = $"장시작 : {isMarketStart}";
                     if (nPrevBoardUpdateTime == 0) // 이전업데이트 시간이 초기화되지 않았다면 
                     {
                         nPrevBoardUpdateTime = nFirstTime; // 장초반시간으로 업데이트한다.

@@ -247,6 +247,11 @@ namespace AtoIndicator
                     ShutOffScreen(sHoldingsTRSrc); // 계좌평가잔고내역요청 해당화면번호 꺼줍니다.
 
                     isRequestHoldingsUsing = false;
+                    if (!isHoldingsConfirm)
+                    {
+                        isHoldingsConfirm = true;
+                        isHoldingsLabel.Text = $"잔고확인 : {isHoldingsConfirm}";
+                    }
                 }
             } // END ---- e.sRQName.Equals("계좌평가잔고내역요청")
             #endregion

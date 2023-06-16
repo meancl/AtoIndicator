@@ -410,7 +410,8 @@ namespace AtoIndicator.View.EachStockHistory
                 if (curEa.myTradeManager.arrBuyedSlots.Count > nPrevRealRadioCnt || curEa.myTradeManager.isRealBuyChangeNeeded)
                 {
                     curEa.myTradeManager.isRealBuyChangeNeeded = false;
-
+                    nCurRealBuyedId = -1;
+                    nBReal = RADIO_BUTTON_CHECKED;
                     if (realBlockFlowLayoutPanel.InvokeRequired)
                     {
                         realBlockFlowLayoutPanel.Invoke(new MethodInvoker(setRealRadioDelegate));
@@ -1312,6 +1313,20 @@ namespace AtoIndicator.View.EachStockHistory
                     realDictionary.Clear(); // 실매도 어노테이션 설정후 클리어
 
 
+                    if (curEa.myTradeManager.nAppliedShowingRealBuyedId != -1)
+                        curMyProfitLabel.Text = $"{curEa.myTradeManager.nAppliedShowingRealBuyedId}번째 블록 : {Math.Round(curEa.myTradeManager.arrBuyedSlots[curEa.myTradeManager.nAppliedShowingRealBuyedId].fPowerWithFee * 100, 2)}(%)";
+                    else
+                    {
+                        if (!curMyProfitLabel.Text.Equals(""))
+                            curMyProfitLabel.Text = "";
+                    }
+
+                    powerLabel.Text = $"현재파워 : {Math.Round(curEa.fPower, 3)}";
+                    curSpeedLabel.Text = $"속도 : {Math.Round(curEa.speedStatus.fCur, 2)}";
+                    curPriceMoveLabel.Text = $"무빙 : {Math.Round(curEa.priceMoveStatus.fCur, 2)}";
+                    curTradePriceLabel.Text = $"대금 : {Math.Round(curEa.tradeStatus.fCur, 2)}";
+                    curHogaRatioLabel.Text = $"호가비 : {Math.Round(curEa.hogaRatioStatus.fCur, 2)}";
+                    curHitNumLabel.Text = $"히트 : {curEa.fakeStrategyMgr.nCurHitNum}";
 
 
                     SetChartViewRange(0, nLastMinuteIdx + 2, curEa.nFs, curEa.nFs, "TotalArea");
@@ -1874,7 +1889,7 @@ namespace AtoIndicator.View.EachStockHistory
             yCoord = Math.Round(yCoord, 3);
 
 
-            powerLabel.Text = $"현재파워 : {Math.Round(curEa.fPower, 3)}";
+            
             gapLabel.Text = $"현재갭 : {Math.Round(curEa.fStartGap, 3)}";
             curLocLabel.Text = $"현재좌표 : {xCoord} {yCoord}";
             curLocPowerLabel.Text = $"커서파워 : {Math.Round((double)(yCoord - curEa.nYesterdayEndPrice) / curEa.nYesterdayEndPrice, 3)}";
@@ -1883,13 +1898,6 @@ namespace AtoIndicator.View.EachStockHistory
             isAllBuyedLabel.Text = $"총매수 : {curEa.myTradeManager.nTotalBuyed}";
             restVolumeLabel.Text = $"잔량 : {curEa.myTradeManager.nTotalBuyed - (curEa.myTradeManager.nTotalSelling + curEa.myTradeManager.nTotalSelled)}";
 
-            if (curEa.myTradeManager.nAppliedShowingRealBuyedId != -1)
-                curMyProfitLabel.Text = $"{curEa.myTradeManager.nAppliedShowingRealBuyedId}번째 블록 : {Math.Round(curEa.myTradeManager.arrBuyedSlots[curEa.myTradeManager.nAppliedShowingRealBuyedId].fPowerWithFee * 100, 2)}(%)";
-            else
-            {
-                if(!curMyProfitLabel.Text.Equals(""))
-                    curMyProfitLabel.Text = "";
-            }
 
 
             if (isRightPressed || isPreciselyCheck)
@@ -2834,7 +2842,6 @@ namespace AtoIndicator.View.EachStockHistory
             if (cUp == 'W') // 실매도
             {
                 isPaperSellArrowVisible = !isPaperSellArrowVisible;
-                isSellArrowVisible = !isSellArrowVisible;
                 UpdateMinuteHistoryData();
             }
 
@@ -3016,8 +3023,8 @@ namespace AtoIndicator.View.EachStockHistory
                                 curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.FixedMethod;
                                 if (fBottomPriceTouch != 0 && fTargetPriceTouch != 0)
                                 {
-                                    curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = (fTargetPriceTouch - curEa.myTradeManager.arrBuyedSlots[i].nBuyPrice) / curEa.myTradeManager.arrBuyedSlots[i].nBuyPrice;
-                                    curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = (fBottomPriceTouch - curEa.myTradeManager.arrBuyedSlots[i].nBuyPrice) / curEa.myTradeManager.arrBuyedSlots[i].nBuyPrice;
+                                    curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = (fTargetPriceTouch - curEa.myTradeManager.arrBuyedSlots[i].nBuyPrice) / curEa.myTradeManager.arrBuyedSlots[i].nBuyPrice - MainForm.REAL_STOCK_COMMISSION;
+                                    curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = (fBottomPriceTouch - curEa.myTradeManager.arrBuyedSlots[i].nBuyPrice) / curEa.myTradeManager.arrBuyedSlots[i].nBuyPrice - MainForm.REAL_STOCK_COMMISSION;
                                 }
                                 else
                                 {
@@ -3090,6 +3097,8 @@ namespace AtoIndicator.View.EachStockHistory
 
             if (cPressed >= 49 && cPressed <= 53)
             {
+                ClearBuyMode();
+
                 if (cPressed == 49)
                 {
                     if (isShiftPushed && !curEa.manualReserve.reserveArr[0].isChosen1)
@@ -3124,6 +3133,7 @@ namespace AtoIndicator.View.EachStockHistory
             }
             if (cPressed == 57) // 9
             {
+                ClearBuyMode();
                 isTargetChoice = true;
             }
 
@@ -3203,6 +3213,12 @@ namespace AtoIndicator.View.EachStockHistory
         }
 
         #endregion
+
+        public void ClearBuyMode()
+        {
+            eBuyMode = TRADE_MODE.NONE_MODE;
+            buyModeLabel.Text = $"buy : {eBuyMode}";
+        }
 
         public void ReverseAllArrowVisible()
         {
@@ -3310,6 +3326,8 @@ namespace AtoIndicator.View.EachStockHistory
 
                     List<ArrowControl> arrowList = new List<ArrowControl>();
 
+                    if (double.IsNaN(historyChart.ChartAreas["TotalArea"].AxisX.Maximum)) // 매수취소애로우 놓을 수 없음
+                        return;
                     // 매수예약
                     for (int buyCancel = 0; buyCancel < curEa.unhandledBuyOrderIdList.Count; buyCancel++)
                     {
@@ -3329,13 +3347,13 @@ namespace AtoIndicator.View.EachStockHistory
                                 int beforeCnt = beforeList.Count;
 
                                 arrowControl.ArrowColor = GetArrowStepColor(beforeCnt + 1);
-                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매수주문--------------{NEW_LINE} 물량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}===================== 대기물량: {beforeCnt}개 ====================={NEW_LINE}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}");
+                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매수주문--------------{NEW_LINE} 물량 : {slot.nOrderVolume} 잔량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}===================== 대기물량: {beforeCnt}개 ====================={NEW_LINE}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}");
                                 cancelInfo.sAccumMsg += $"물량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}";
                             }
                             else
                             {
                                 arrowControl.ArrowColor = GetArrowStepColor(1);
-                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매수주문--------------{NEW_LINE} 물량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}");
+                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매수주문--------------{NEW_LINE} 물량 : {slot.nOrderVolume} 잔량 : {slot.nOrderVolume - slot.nCurVolume} 가격 : {slot.nOrderPrice}{NEW_LINE}");
                                 toCancelDict[(BUY_RESERVE, slot.nOrderPrice)] = new List<PrevCancel>();
                                 cancelInfo.sAccumMsg += $"물량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}";
                             }
@@ -3346,6 +3364,8 @@ namespace AtoIndicator.View.EachStockHistory
                         }
                     }
 
+                    if (double.IsNaN(historyChart.ChartAreas["TotalArea"].AxisX.Minimum)) // 매수취소애로우 놓을 수 없음
+                        return;
                     // 매도예약
                     for (int sellCancel = 0; sellCancel < curEa.unhandledSellOrderIdList.Count; sellCancel++)
                     {
@@ -3364,13 +3384,13 @@ namespace AtoIndicator.View.EachStockHistory
                                 int beforeCnt = beforeList.Count;
 
                                 arrowControl.ArrowColor = GetArrowStepColor(beforeCnt + 1);
-                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume}{NEW_LINE}===================== 대기물량 : {beforeCnt}개 ====================={NEW_LINE}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}");
+                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume} 잔량 : {virtualSellBlock.nOrderVolume - virtualSellBlock.nProcessedVolume}{NEW_LINE}===================== 대기물량 : {beforeCnt}개 ====================={NEW_LINE}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}");
                                 cancelInfo.sAccumMsg = $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}";
                             }
                             else
                             {
                                 arrowControl.ArrowColor = GetArrowStepColor(1);
-                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume}{NEW_LINE}");
+                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume} 잔량 : {virtualSellBlock.nOrderVolume - virtualSellBlock.nProcessedVolume}{NEW_LINE}");
                                 toCancelDict[(SELL_RESERVE, virtualSellBlock.nOrderPrice)] = new List<PrevCancel>();
                                 cancelInfo.sAccumMsg = $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume}{NEW_LINE}";
                             }

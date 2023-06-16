@@ -29,15 +29,15 @@ namespace AtoIndicator.View.EachStockHistory
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series9 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series10 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series11 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series12 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series13 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series14 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.historyChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.totalClockLabel = new System.Windows.Forms.Label();
             this.curLocLabel = new System.Windows.Forms.Label();
@@ -69,6 +69,11 @@ namespace AtoIndicator.View.EachStockHistory
             this.realBuyReserveLabel = new System.Windows.Forms.Label();
             this.reserveChosenLabel = new System.Windows.Forms.Label();
             this.curMyProfitLabel = new System.Windows.Forms.Label();
+            this.curSpeedLabel = new System.Windows.Forms.Label();
+            this.curHogaRatioLabel = new System.Windows.Forms.Label();
+            this.curHitNumLabel = new System.Windows.Forms.Label();
+            this.curPriceMoveLabel = new System.Windows.Forms.Label();
+            this.curTradePriceLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.historyChart)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -81,60 +86,60 @@ namespace AtoIndicator.View.EachStockHistory
             this.historyChart.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            chartArea2.CursorX.IsUserSelectionEnabled = true;
-            chartArea2.Name = "TotalArea";
-            this.historyChart.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.historyChart.Legends.Add(legend2);
+            chartArea1.CursorX.IsUserSelectionEnabled = true;
+            chartArea1.Name = "TotalArea";
+            this.historyChart.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.historyChart.Legends.Add(legend1);
             this.historyChart.Location = new System.Drawing.Point(14, 114);
             this.historyChart.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.historyChart.Name = "historyChart";
-            series8.ChartArea = "TotalArea";
-            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
-            series8.Legend = "Legend1";
-            series8.Name = "MinuteStick";
-            series8.YValuesPerPoint = 4;
-            series9.ChartArea = "TotalArea";
-            series9.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series9.Color = System.Drawing.Color.Red;
-            series9.Legend = "Legend1";
-            series9.Name = "Ma20m";
-            series10.ChartArea = "TotalArea";
-            series10.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series10.Color = System.Drawing.Color.Purple;
-            series10.Legend = "Legend1";
-            series10.Name = "Ma1h";
-            series11.ChartArea = "TotalArea";
-            series11.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series11.Color = System.Drawing.Color.DarkOrange;
-            series11.Legend = "Legend1";
-            series11.Name = "Ma2h";
-            series12.ChartArea = "TotalArea";
-            series12.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series12.Color = System.Drawing.Color.RoyalBlue;
-            series12.Enabled = false;
-            series12.Legend = "Legend1";
-            series12.Name = "Ma20mGap";
-            series13.ChartArea = "TotalArea";
-            series13.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series13.Color = System.Drawing.Color.LimeGreen;
-            series13.Enabled = false;
-            series13.Legend = "Legend1";
-            series13.Name = "Ma1hGap";
-            series14.ChartArea = "TotalArea";
-            series14.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series14.Color = System.Drawing.Color.Navy;
-            series14.Enabled = false;
-            series14.Legend = "Legend1";
-            series14.Name = "Ma2hGap";
-            this.historyChart.Series.Add(series8);
-            this.historyChart.Series.Add(series9);
-            this.historyChart.Series.Add(series10);
-            this.historyChart.Series.Add(series11);
-            this.historyChart.Series.Add(series12);
-            this.historyChart.Series.Add(series13);
-            this.historyChart.Series.Add(series14);
-            this.historyChart.Size = new System.Drawing.Size(1091, 824);
+            series1.ChartArea = "TotalArea";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
+            series1.Legend = "Legend1";
+            series1.Name = "MinuteStick";
+            series1.YValuesPerPoint = 4;
+            series2.ChartArea = "TotalArea";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series2.Color = System.Drawing.Color.Red;
+            series2.Legend = "Legend1";
+            series2.Name = "Ma20m";
+            series3.ChartArea = "TotalArea";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Color = System.Drawing.Color.Purple;
+            series3.Legend = "Legend1";
+            series3.Name = "Ma1h";
+            series4.ChartArea = "TotalArea";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series4.Color = System.Drawing.Color.DarkOrange;
+            series4.Legend = "Legend1";
+            series4.Name = "Ma2h";
+            series5.ChartArea = "TotalArea";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series5.Color = System.Drawing.Color.RoyalBlue;
+            series5.Enabled = false;
+            series5.Legend = "Legend1";
+            series5.Name = "Ma20mGap";
+            series6.ChartArea = "TotalArea";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series6.Color = System.Drawing.Color.LimeGreen;
+            series6.Enabled = false;
+            series6.Legend = "Legend1";
+            series6.Name = "Ma1hGap";
+            series7.ChartArea = "TotalArea";
+            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series7.Color = System.Drawing.Color.Navy;
+            series7.Enabled = false;
+            series7.Legend = "Legend1";
+            series7.Name = "Ma2hGap";
+            this.historyChart.Series.Add(series1);
+            this.historyChart.Series.Add(series2);
+            this.historyChart.Series.Add(series3);
+            this.historyChart.Series.Add(series4);
+            this.historyChart.Series.Add(series5);
+            this.historyChart.Series.Add(series6);
+            this.historyChart.Series.Add(series7);
+            this.historyChart.Size = new System.Drawing.Size(997, 511);
             this.historyChart.TabIndex = 2;
             this.historyChart.Text = "chart1";
             // 
@@ -143,7 +148,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.totalClockLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.totalClockLabel.AutoSize = true;
             this.totalClockLabel.Font = new System.Drawing.Font("굴림", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.totalClockLabel.Location = new System.Drawing.Point(1138, 9);
+            this.totalClockLabel.Location = new System.Drawing.Point(1044, 9);
             this.totalClockLabel.Name = "totalClockLabel";
             this.totalClockLabel.Size = new System.Drawing.Size(0, 24);
             this.totalClockLabel.TabIndex = 3;
@@ -153,7 +158,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.curLocLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.curLocLabel.AutoSize = true;
             this.curLocLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.curLocLabel.Location = new System.Drawing.Point(946, 390);
+            this.curLocLabel.Location = new System.Drawing.Point(852, 390);
             this.curLocLabel.Name = "curLocLabel";
             this.curLocLabel.Size = new System.Drawing.Size(8, 17);
             this.curLocLabel.TabIndex = 8;
@@ -163,7 +168,7 @@ namespace AtoIndicator.View.EachStockHistory
             // 
             this.moveLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.moveLabel.AutoSize = true;
-            this.moveLabel.Location = new System.Drawing.Point(947, 499);
+            this.moveLabel.Location = new System.Drawing.Point(853, 499);
             this.moveLabel.Name = "moveLabel";
             this.moveLabel.Size = new System.Drawing.Size(7, 15);
             this.moveLabel.TabIndex = 11;
@@ -176,8 +181,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.메뉴ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(6, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1368, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1274, 30);
             this.menuStrip1.TabIndex = 13;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -187,7 +191,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.showVarToolStripMenuItem,
             this.showLogToolStripMenuItem});
             this.메뉴ToolStripMenuItem.Name = "메뉴ToolStripMenuItem";
-            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
+            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 26);
             this.메뉴ToolStripMenuItem.Text = "메뉴";
             // 
             // showVarToolStripMenuItem
@@ -207,7 +211,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.gapLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.gapLabel.AutoSize = true;
             this.gapLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.gapLabel.Location = new System.Drawing.Point(946, 352);
+            this.gapLabel.Location = new System.Drawing.Point(852, 352);
             this.gapLabel.Name = "gapLabel";
             this.gapLabel.Size = new System.Drawing.Size(8, 17);
             this.gapLabel.TabIndex = 17;
@@ -218,7 +222,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.powerLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.powerLabel.AutoSize = true;
             this.powerLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.powerLabel.Location = new System.Drawing.Point(946, 314);
+            this.powerLabel.Location = new System.Drawing.Point(852, 314);
             this.powerLabel.Name = "powerLabel";
             this.powerLabel.Size = new System.Drawing.Size(8, 17);
             this.powerLabel.TabIndex = 18;
@@ -241,7 +245,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.paperBlockFlowLayoutPanel.Location = new System.Drawing.Point(3, 2);
             this.paperBlockFlowLayoutPanel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.paperBlockFlowLayoutPanel.Name = "paperBlockFlowLayoutPanel";
-            this.paperBlockFlowLayoutPanel.Size = new System.Drawing.Size(231, 791);
+            this.paperBlockFlowLayoutPanel.Size = new System.Drawing.Size(231, 478);
             this.paperBlockFlowLayoutPanel.TabIndex = 0;
             // 
             // buyModeLabel
@@ -269,7 +273,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.curLocPowerLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.curLocPowerLabel.AutoSize = true;
             this.curLocPowerLabel.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.curLocPowerLabel.Location = new System.Drawing.Point(946, 424);
+            this.curLocPowerLabel.Location = new System.Drawing.Point(852, 424);
             this.curLocPowerLabel.Name = "curLocPowerLabel";
             this.curLocPowerLabel.Size = new System.Drawing.Size(8, 17);
             this.curLocPowerLabel.TabIndex = 24;
@@ -281,11 +285,11 @@ namespace AtoIndicator.View.EachStockHistory
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(1111, 114);
+            this.tabControl1.Location = new System.Drawing.Point(1017, 114);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(245, 824);
+            this.tabControl1.Size = new System.Drawing.Size(245, 511);
             this.tabControl1.TabIndex = 25;
             // 
             // tabPage1
@@ -295,7 +299,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.tabPage1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tabPage1.Size = new System.Drawing.Size(237, 795);
+            this.tabPage1.Size = new System.Drawing.Size(237, 482);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "모의매매";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -384,6 +388,7 @@ namespace AtoIndicator.View.EachStockHistory
             // 
             // ctrlLabel
             // 
+            this.ctrlLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ctrlLabel.AutoSize = true;
             this.ctrlLabel.Font = new System.Drawing.Font("굴림", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.ctrlLabel.Location = new System.Drawing.Point(714, 85);
@@ -394,6 +399,7 @@ namespace AtoIndicator.View.EachStockHistory
             // 
             // shiftLabel
             // 
+            this.shiftLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.shiftLabel.AutoSize = true;
             this.shiftLabel.Font = new System.Drawing.Font("굴림", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.shiftLabel.Location = new System.Drawing.Point(802, 85);
@@ -404,6 +410,7 @@ namespace AtoIndicator.View.EachStockHistory
             // 
             // spaceLabel
             // 
+            this.spaceLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.spaceLabel.AutoSize = true;
             this.spaceLabel.Font = new System.Drawing.Font("굴림", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.spaceLabel.Location = new System.Drawing.Point(895, 85);
@@ -436,17 +443,77 @@ namespace AtoIndicator.View.EachStockHistory
             // 
             this.curMyProfitLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.curMyProfitLabel.AutoSize = true;
-            this.curMyProfitLabel.Location = new System.Drawing.Point(947, 460);
+            this.curMyProfitLabel.Location = new System.Drawing.Point(853, 460);
             this.curMyProfitLabel.Name = "curMyProfitLabel";
             this.curMyProfitLabel.Size = new System.Drawing.Size(7, 15);
             this.curMyProfitLabel.TabIndex = 37;
             this.curMyProfitLabel.Text = "\r\n";
             // 
+            // curSpeedLabel
+            // 
+            this.curSpeedLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.curSpeedLabel.AutoSize = true;
+            this.curSpeedLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.curSpeedLabel.Location = new System.Drawing.Point(626, 51);
+            this.curSpeedLabel.Name = "curSpeedLabel";
+            this.curSpeedLabel.Size = new System.Drawing.Size(64, 14);
+            this.curSpeedLabel.TabIndex = 38;
+            this.curSpeedLabel.Text = "속도 : 0";
+            // 
+            // curHogaRatioLabel
+            // 
+            this.curHogaRatioLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.curHogaRatioLabel.AutoSize = true;
+            this.curHogaRatioLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.curHogaRatioLabel.Location = new System.Drawing.Point(734, 50);
+            this.curHogaRatioLabel.Name = "curHogaRatioLabel";
+            this.curHogaRatioLabel.Size = new System.Drawing.Size(79, 14);
+            this.curHogaRatioLabel.TabIndex = 39;
+            this.curHogaRatioLabel.Text = "호가비 : 0";
+            // 
+            // curHitNumLabel
+            // 
+            this.curHitNumLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.curHitNumLabel.AutoSize = true;
+            this.curHitNumLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.curHitNumLabel.Location = new System.Drawing.Point(1061, 51);
+            this.curHitNumLabel.Name = "curHitNumLabel";
+            this.curHitNumLabel.Size = new System.Drawing.Size(64, 14);
+            this.curHitNumLabel.TabIndex = 40;
+            this.curHitNumLabel.Text = "히트 : 0";
+            // 
+            // curPriceMoveLabel
+            // 
+            this.curPriceMoveLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.curPriceMoveLabel.AutoSize = true;
+            this.curPriceMoveLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.curPriceMoveLabel.Location = new System.Drawing.Point(852, 50);
+            this.curPriceMoveLabel.Name = "curPriceMoveLabel";
+            this.curPriceMoveLabel.Size = new System.Drawing.Size(64, 14);
+            this.curPriceMoveLabel.TabIndex = 41;
+            this.curPriceMoveLabel.Text = "무빙 : 0";
+            // 
+            // curTradePriceLabel
+            // 
+            this.curTradePriceLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.curTradePriceLabel.AutoSize = true;
+            this.curTradePriceLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.curTradePriceLabel.Location = new System.Drawing.Point(957, 50);
+            this.curTradePriceLabel.Name = "curTradePriceLabel";
+            this.curTradePriceLabel.Size = new System.Drawing.Size(64, 14);
+            this.curTradePriceLabel.TabIndex = 42;
+            this.curTradePriceLabel.Text = "대금 : 0";
+            // 
             // EachStockHistoryForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1368, 966);
+            this.ClientSize = new System.Drawing.Size(1274, 653);
+            this.Controls.Add(this.curTradePriceLabel);
+            this.Controls.Add(this.curPriceMoveLabel);
+            this.Controls.Add(this.curHitNumLabel);
+            this.Controls.Add(this.curHogaRatioLabel);
+            this.Controls.Add(this.curSpeedLabel);
             this.Controls.Add(this.curMyProfitLabel);
             this.Controls.Add(this.reserveChosenLabel);
             this.Controls.Add(this.realBuyReserveLabel);
@@ -519,5 +586,10 @@ namespace AtoIndicator.View.EachStockHistory
         private System.Windows.Forms.Label realBuyReserveLabel;
         private System.Windows.Forms.Label reserveChosenLabel;
         private System.Windows.Forms.Label curMyProfitLabel;
+        private System.Windows.Forms.Label curSpeedLabel;
+        private System.Windows.Forms.Label curHogaRatioLabel;
+        private System.Windows.Forms.Label curHitNumLabel;
+        private System.Windows.Forms.Label curPriceMoveLabel;
+        private System.Windows.Forms.Label curTradePriceLabel;
     }
 }

@@ -65,6 +65,8 @@
             this.configStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logTxtBx = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.isMarketLabel = new System.Windows.Forms.Label();
+            this.isHoldingsLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).BeginInit();
             this.manualGroupBox.SuspendLayout();
@@ -272,7 +274,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1312, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1312, 30);
             this.menuStrip1.TabIndex = 23;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -288,7 +290,7 @@
             this.realTimeLogStripMenuItem,
             this.configStripMenuItem});
             this.메뉴ToolStripMenuItem.Name = "메뉴ToolStripMenuItem";
-            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
+            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 26);
             this.메뉴ToolStripMenuItem.Text = "메뉴";
             // 
             // 수동매수ToolStripMenuItem
@@ -400,11 +402,33 @@
             this.panel1.Size = new System.Drawing.Size(909, 595);
             this.panel1.TabIndex = 24;
             // 
+            // isMarketLabel
+            // 
+            this.isMarketLabel.AutoSize = true;
+            this.isMarketLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.isMarketLabel.Location = new System.Drawing.Point(181, 21);
+            this.isMarketLabel.Name = "isMarketLabel";
+            this.isMarketLabel.Size = new System.Drawing.Size(106, 14);
+            this.isMarketLabel.TabIndex = 25;
+            this.isMarketLabel.Text = "장시작 : false";
+            // 
+            // isHoldingsLabel
+            // 
+            this.isHoldingsLabel.AutoSize = true;
+            this.isHoldingsLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.isHoldingsLabel.Location = new System.Drawing.Point(181, 42);
+            this.isHoldingsLabel.Name = "isHoldingsLabel";
+            this.isHoldingsLabel.Size = new System.Drawing.Size(121, 14);
+            this.isHoldingsLabel.TabIndex = 26;
+            this.isHoldingsLabel.Text = "잔고확인 : false";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1312, 666);
+            this.Controls.Add(this.isHoldingsLabel);
+            this.Controls.Add(this.isMarketLabel);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.manualGroupBox);
             this.Controls.Add(this.totalClockLabel);
@@ -468,6 +492,8 @@
         private System.Windows.Forms.ToolStripMenuItem offMarketToolStripMenuItem;
         private System.Windows.Forms.TextBox logTxtBx;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label isMarketLabel;
+        private System.Windows.Forms.Label isHoldingsLabel;
     }
 }
 

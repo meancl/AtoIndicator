@@ -65,6 +65,7 @@ namespace AtoIndicator
             public int nOrderPrice;
             public int nOrderVolume;
             public int nOrderTime;
+            public int nProcessedVolume;
 
             public VirtualSellBlock()
             {
@@ -469,7 +470,7 @@ namespace AtoIndicator
                                     member.nCurVolume -= disposalVolume;
                                     member.nTotalSelledVolume += disposalVolume; // 처분갯수 증가
                                     member.nTotalSelledPrice += disposalVolume * nCurOkTradePrice; // 처분총가격 증가 
-
+                                    virtualSellBlock.nProcessedVolume += disposalVolume;
 
                                     if (member.nCurVolume <= 0)
                                     {
