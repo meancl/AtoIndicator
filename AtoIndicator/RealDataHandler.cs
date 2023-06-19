@@ -1353,7 +1353,7 @@ namespace AtoIndicator
                                     int nNumToBuy = (int)(nCurDepositCalc / (nEstimatedPrice * (1 + STOCK_FEE))); // 현재 예수금으로 살 수 있을 만큼
                                     int nMaxNumToBuy; // 최대매수가능금액으로 살 수 있을 만큼 
 
-                                    if (curSlot.nQty == 0)
+                                    if (curSlot.nQty <= 0)
                                         nMaxNumToBuy = (int)(STANDARD_BUY_PRICE * curSlot.fRequestRatio) / nEstimatedPrice;
                                     else
                                         nMaxNumToBuy = curSlot.nQty;
@@ -1579,7 +1579,7 @@ namespace AtoIndicator
                                         int nNumToBuy = (int)(nCurDepositCalc / (nEstimatedPrice * (1 + STOCK_FEE))); // 현재 예수금으로 살 수 있을 만큼
                                         int nMaxNumToBuy; // 최대매수가능금액으로 살 수 있을 만큼 
 
-                                        if (curSlot.nQty == 0)
+                                        if (curSlot.nQty <= 0)
                                             nMaxNumToBuy = (int)(STANDARD_BUY_PRICE * curSlot.fRequestRatio) / nEstimatedPrice;
                                         else
                                             nMaxNumToBuy = curSlot.nQty;

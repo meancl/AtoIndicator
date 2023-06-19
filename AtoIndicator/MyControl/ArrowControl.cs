@@ -47,7 +47,7 @@ namespace AtoIndicator.MyControl
                 this.LeftArrowClicked += le;
             if (re != null)
                 this.RightArrowClicked += re;
-            Location = new Point(x, y);
+            Location = new Point(x, y - (int)(15 * fSize));
 
             SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             BackColor = Color.Transparent;
@@ -94,7 +94,7 @@ namespace AtoIndicator.MyControl
                         new PointF((!isBuy?30:20) * fSizeScale, (20) *fSizeScale),
                         new PointF((!isBuy?10:40) * fSizeScale, (20) *fSizeScale),
                 };
-                e.Graphics.DrawPolygon(new Pen(Color.DeepPink), arrowPointsLine);
+                e.Graphics.DrawPolygon(new Pen(Color.Green), arrowPointsLine);
             }
 
         }

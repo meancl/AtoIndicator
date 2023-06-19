@@ -2522,13 +2522,12 @@ namespace AtoIndicator.View.EachStockHistory
                             {
                                 while (movingPrice > targetPrice)
                                     movingPrice -= GetIntegratedMarketGap(movingPrice);
-
+                                movingPrice += GetIntegratedMarketGap(movingPrice);
                             }
                             else if (movingPrice < targetPrice)
                             {
                                 while (movingPrice < targetPrice)
                                     movingPrice += GetIntegratedMarketGap(movingPrice);
-                                movingPrice -= GetIntegratedMarketGap(movingPrice); // 한칸 아래서 팔거야
                             }
                             mainForm.RequestHandSell(nCurIdx, movingPrice, nMouseWheel);
                         }
