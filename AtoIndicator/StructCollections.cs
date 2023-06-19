@@ -208,6 +208,9 @@ namespace AtoIndicator
             public int nTodayMaxTime;
             public double fTodayMaxPower;
 
+            public int nTodayBottomPrice;
+            public int nTodayBottomTime;
+            public double fTodayBottomPower;
 
 
             public void Init()
@@ -686,12 +689,6 @@ namespace AtoIndicator
             public int nDeathTime; // 소멸시간
             public int nDeathPrice; // 소멸가격
 
-            public bool isRespiteSignal; // 유예중인지 확인변수
-            public int nRespiteFirstTime; // 해당 유예의 첫시간
-            public int nRespitePrevUpdateTime; // 해당 유예의 이전업데이트 시간
-            public int nEachRespiteCount; // 독립적인 유예 횟수
-            public int nPreemptionPrevUpdateTime; // 선점 최신업데이트 시간
-            public int nLastTouchLineTime; // 상승선을 건드린 마지막 시간
 
             // 매도 관리용
             public int nSellErrorLastTime;
@@ -770,13 +767,6 @@ namespace AtoIndicator
                 newSlot.nBirthPrice = nBirthPrice;
                 newSlot.nDeathTime = nDeathTime;
                 newSlot.nDeathPrice = nDeathPrice;
-
-                newSlot.isRespiteSignal = isRespiteSignal;
-                newSlot.nRespiteFirstTime = nRespiteFirstTime;
-                newSlot.nRespitePrevUpdateTime = nRespitePrevUpdateTime;
-                newSlot.nEachRespiteCount = nEachRespiteCount;
-                newSlot.nPreemptionPrevUpdateTime = nPreemptionPrevUpdateTime;
-                newSlot.nLastTouchLineTime = nLastTouchLineTime;
 
                 // 매도 관리용
                 newSlot.nSellErrorLastTime = nSellErrorLastTime;
@@ -1439,22 +1429,11 @@ namespace AtoIndicator
             public int nSellEndTimeLineIdx;
             public string sSellDescription;
 
-
-            public int nPreemptionPrevUpdateTime;
-
-            public int nLastTouchLineTime;
-
             public int nCurLineIdx;
             public double fTargetPer;
             public double fBottomPer;
             public double fPowerWithFee;
             public double fPower;
-
-            public bool isRespiteSignal;
-            public int nRespitePrevUpdateTime;
-            public int nRespiteFirstTime;
-            public int nEachRespiteCount;
-            public double fRespiteCriticalLine;
 
             public string sFixedMsg;
             public int nSequence;

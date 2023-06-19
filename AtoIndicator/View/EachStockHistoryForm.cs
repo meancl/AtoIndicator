@@ -2985,9 +2985,20 @@ namespace AtoIndicator.View.EachStockHistory
                         {
                             if (nCurRealBuyedId != -1 && nCurRealBuyedId != i)
                                 continue;
-                            curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx = 0;
 
+                            void ResetCheckLinesBeforeApply()
+                            {
+                                if (isCtrlPushed)
+                                {
+                                    curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx = 0;
 
+                                    curEa.myTradeManager.arrBuyedSlots[i].nCheckLineIdx = MainForm.MIDDLE_STEP;
+                                    curEa.myTradeManager.arrBuyedSlots[i].nMinCheckLineIdx = MainForm.MIDDLE_STEP;
+                                    curEa.myTradeManager.arrBuyedSlots[i].nMaxCheckLineIdx = MainForm.MIDDLE_STEP;
+                                    curEa.myTradeManager.arrBuyedSlots[i].fCheckCeilingPer = 0;
+                                    curEa.myTradeManager.arrBuyedSlots[i].fCheckBottomPer = -0.0025;
+                                }
+                            }
 
                             if (cUp == 48)
                             {
@@ -2995,8 +3006,10 @@ namespace AtoIndicator.View.EachStockHistory
                             }
                             else if (cUp == 54) // 6
                             {
-                                if (curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod != MainForm.TradeMethodCategory.RisingMethod)
+                                if (curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod != MainForm.TradeMethodCategory.RisingMethod || isCtrlPushed)
                                 {
+                                    ResetCheckLinesBeforeApply();
+
                                     curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.RisingMethod;
                                     curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
                                     curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
@@ -3004,8 +3017,10 @@ namespace AtoIndicator.View.EachStockHistory
                             }
                             else if (cUp == 55) // 7
                             {
-                                if (curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod != MainForm.TradeMethodCategory.BottomUpMethod)
+                                if (curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod != MainForm.TradeMethodCategory.BottomUpMethod || isCtrlPushed)
                                 {
+                                    ResetCheckLinesBeforeApply();
+
                                     curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.BottomUpMethod;
                                     curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
                                     curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
@@ -3014,8 +3029,10 @@ namespace AtoIndicator.View.EachStockHistory
                             }
                             else if (cUp == 56) // 8
                             {
-                                if (curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod != MainForm.TradeMethodCategory.ScalpingMethod)
+                                if (curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod != MainForm.TradeMethodCategory.ScalpingMethod || isCtrlPushed)
                                 {
+                                    ResetCheckLinesBeforeApply();
+
                                     curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.ScalpingMethod;
                                     curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetNextCeiling(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx);
                                     curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetNextFloor(curEa.myTradeManager.arrBuyedSlots[i].nCurLineIdx, curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod);
@@ -3024,6 +3041,8 @@ namespace AtoIndicator.View.EachStockHistory
                             }
                             else if (cUp == 57) // 9
                             {
+                                ResetCheckLinesBeforeApply();
+
                                 curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.FixedMethod;
                                 if (fBottomPriceTouch != 0 && fTargetPriceTouch != 0)
                                 {
@@ -3042,7 +3061,10 @@ namespace AtoIndicator.View.EachStockHistory
                             if (nCurRealBuyedId == -1) // 공용 (그냥 반복해서 삽입)
                                 curEa.myTradeManager.eDefaultTradeCategory = curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod;
 
-                            tradeMethodLabel.Text = $"전체 매매기법({(nCurRealBuyedId != -1 ? i.ToString() : "")}): {curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod}";
+                            if (nCurRealBuyedId == -1)
+                                tradeMethodLabel.Text = $"전체 매매기법 : {curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod}";
+                            else
+                                tradeMethodLabel.Text = $"{nCurRealBuyedId}번째 매매기법 : {curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod}";
                         }
                         else
                             tradeMethodLabel.Text = "전체 매매기법 : 변경불가";

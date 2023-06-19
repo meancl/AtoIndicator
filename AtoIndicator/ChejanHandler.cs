@@ -211,7 +211,6 @@ namespace AtoIndicator
                                 
                                 slot.nBirthTime = nSharedTime;
                                 slot.nBirthPrice = slot.nBuyPrice;
-                                slot.nLastTouchLineTime = nSharedTime;
 
 
                                 // rough 수수료
@@ -272,7 +271,6 @@ namespace AtoIndicator
                             slot.nBirthTime = nSharedTime;
 
                             slot.nBirthPrice = slot.nBuyPrice;
-                            slot.nLastTouchLineTime = nSharedTime;
 
                             slot.nBuyMinuteIdx = nTimeLineIdx;
 

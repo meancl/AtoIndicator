@@ -219,100 +219,14 @@ namespace AtoIndicator
             // ----------------------------------------------------------
             if (frame.paperTradeSlot[i].methodCategory == TradeMethodCategory.RisingMethod)
             {
-                if (SubTimeToTimeAndSec(nSharedTime, frame.paperTradeSlot[i].nBuyEndTime) >= PREEMPTION_ACCESS_SEC)  //선점의 영역, 일정시간동안 접근불가
                 {
-                    // PREEMPTION_UPDATE_SEC 마다 검사할 부분
-                    if (SubTimeToTimeAndSec(nSharedTime, frame.paperTradeSlot[i].nPreemptionPrevUpdateTime) >= PREEMPTION_UPDATE_SEC)
-                    {
-                        frame.paperTradeSlot[i].nPreemptionPrevUpdateTime = nSharedTime;
-                        // TODO.
-                    }
-
-                    // 매 tick마다 검사할 부분
-                    {
-
-                        if (SubTimeToTimeAndSec(nSharedTime, frame.paperTradeSlot[i].nLastTouchLineTime) >= LIMIT_STAY_SEC) // 미터치시간이 제한시간을 넘겼을때
-                        {
-                            if (ea[nCurIdx].timeLines1m.fHourMedianAngle < 0) // 한시간 각도가 음수라면
-                            {
-                                sbPaperSellDescription.Append($"선점 - 제한 미터치시간 넘기고 각도 음수임{NEW_LINE}");
-                                isSell = true;
-                            }
-                            if (SubTimeToTimeAndSec(nSharedTime, frame.paperTradeSlot[i].nLastTouchLineTime) >= END_STAY_SEC)
-                            {
-                                sbPaperSellDescription.Append($"선점 - 마지막 제한 미터치시간 넘음{NEW_LINE}");
-                                isSell = true;
-                            }
-                        }
-
-                        // 기본선점내용(분할 기준: nCurLineIdx) --> 이쯤하면 더 안오르겠다
-                        {
-
-                        }
-                    } // END ---- 매 틱마다
-                } // END ---- 선점의 영역
-
+                }
 
                 if (frame.paperTradeSlot[i].fPowerWithFee <= frame.paperTradeSlot[i].fBottomPer) // 처분라인
                 {
-                    if ((SubTimeToTimeAndSec(nSharedTime, frame.paperTradeSlot[i].nBuyEndTime) > RESPITE_ACCESS_SEC && (
-                            (ea[nCurIdx].maOverN.nUpCntMa2h > 0) || // 1. 120평선이 뚫린 상황
-                            (ea[nCurIdx].maOverN.fCurMa1h <= ea[nCurIdx].maOverN.fCurMa2h) || // 4. 1시간평선 <= 2시간평선
-                            (ea[nCurIdx].timeLines1m.fDAngle <= -25) || // 5. D각도가 25도 떨어짐
-                            (ea[nCurIdx].timeLines1m.fHourMedianAngle <= -10)) // 6. 한시간 추세가 -10도 이하인경우
-                          ) ||
-                          frame.paperTradeSlot[i].nCurLineIdx <= 1 // 한칸 이하밖에 못올라간 경우
-                       ) // 무조건 팔아야하는 조건들 ( 유예취소사항에 속한다면 )
-                    {
-                        if (frame.paperTradeSlot[i].nCurLineIdx <= 1)
-                        {
-                            sbPaperSellDescription.Append($"유예 0단  ");
-                        }
-                        if (ea[nCurIdx].maOverN.nUpCntMa2h > 0)
-                        {
-                            sbPaperSellDescription.Append($"유예 1단  ");
-                        }
-                        if (ea[nCurIdx].maOverN.fCurMa1h <= ea[nCurIdx].maOverN.fCurMa2h)
-                        {
-                            sbPaperSellDescription.Append($"유예 4단  ");
-                        }
-                        if (ea[nCurIdx].timeLines1m.fDAngle <= -25)
-                        {
-                            sbPaperSellDescription.Append($"유예 5단  ");
-                        }
-                        if (ea[nCurIdx].timeLines1m.fHourMedianAngle <= -10)
-                        {
-                            sbPaperSellDescription.Append($"유예 6단  ");
-                        }
-
-                        sbPaperSellDescription.Append($"{NEW_LINE}##유예 불가##{NEW_LINE}");
-                        isSell = true;
-                    } // END ---- 유예취소사항에 속한다면
-                    else // 유예가능하다면 --> 다시 오를 수 있겠다
-                    {
-                        if (!frame.paperTradeSlot[i].isRespiteSignal) // 유예중이 아니라면
-                        {
-                            frame.paperTradeSlot[i].isRespiteSignal = true; // 유예시그널 on
-                            frame.paperTradeSlot[i].nRespitePrevUpdateTime = nSharedTime; // 유예이전업데이트시간 on
-                            frame.paperTradeSlot[i].fRespiteCriticalLine = frame.paperTradeSlot[i].fPowerWithFee - RESPITE_CRITICAL_PADDING; // 새로운 유예 첫 손절선 등록
-                            if (frame.paperTradeSlot[i].nRespiteFirstTime == 0)// 이전 유예가 끝났다면
-                            {
-                                frame.paperTradeSlot[i].nRespiteFirstTime = nSharedTime; // 새로운 유예 첫시간을 등록 
-                                frame.paperTradeSlot[i].nEachRespiteCount++; // 독립적인 유예의 카운트 등록
-                            }
-                        }// END----유예중이 아니라면
-                        else // 유예중이라면
-                        {
-                            if (frame.paperTradeSlot[i].fPowerWithFee < frame.paperTradeSlot[i].fRespiteCriticalLine ||
-                                SubTimeToTimeAndSec(nSharedTime, frame.paperTradeSlot[i].nRespitePrevUpdateTime) >= RESPITE_LIMIT_SEC // 유예를 10분동안하고 있다니
-                                )
-                            { // 잘못봤었네 팔아야지
-                                sbPaperSellDescription.Append($"유예 - 유예 중에 제한선 넘음.{NEW_LINE}");
-                                isSell = true;
-                            }
-                        }// END----유예중이라면
-                    } // END ---- 유예가능하다면
-                } // END ---- 처분라인
+                    isSell = true;
+                    sbPaperSellDescription.Append($"라이징 매도{NEW_LINE}");
+                }
                 else if (frame.paperTradeSlot[i].fPowerWithFee >= frame.paperTradeSlot[i].fTargetPer) // 상승라인
                 {
                     while (frame.paperTradeSlot[i].fPowerWithFee >= frame.paperTradeSlot[i].fTargetPer)
@@ -322,14 +236,6 @@ namespace AtoIndicator
                         frame.paperTradeSlot[i].fBottomPer = GetNextFloor(frame.paperTradeSlot[i].nCurLineIdx, TradeMethodCategory.RisingMethod); // something higher
                     }
 
-                    if (frame.paperTradeSlot[i].isRespiteSignal)  // 상승선을 터치했으니 이전 유예정보를 초기화한다
-                    {
-                        frame.paperTradeSlot[i].isRespiteSignal = false;
-                        frame.paperTradeSlot[i].fRespiteCriticalLine = RESPITE_INIT;
-                        frame.paperTradeSlot[i].nRespiteFirstTime = 0;
-                    }
-
-                    frame.paperTradeSlot[i].nLastTouchLineTime = nSharedTime;
 
                     if (isSell) // 단계는 상승했는데 팔린다는 건 이상하니 
                     {
@@ -338,7 +244,6 @@ namespace AtoIndicator
 
 
                 } // END---- 상승라인
-
 
             }
             else if (frame.paperTradeSlot[i].methodCategory == TradeMethodCategory.BottomUpMethod)
@@ -361,7 +266,6 @@ namespace AtoIndicator
                         frame.paperTradeSlot[i].fBottomPer = GetNextFloor(frame.paperTradeSlot[i].nCurLineIdx, TradeMethodCategory.BottomUpMethod); // something higher
                     }
 
-                    frame.paperTradeSlot[i].nLastTouchLineTime = nSharedTime;
                     if (isSell) // 단계는 상승했는데 팔린다는 건 이상하니 
                     {
                         isSell = false;
@@ -401,12 +305,15 @@ namespace AtoIndicator
                         frame.paperTradeSlot[i].fBottomPer = GetNextFloor(frame.paperTradeSlot[i].nCurLineIdx, TradeMethodCategory.ScalpingMethod); // something higher
                     }
 
-                    frame.paperTradeSlot[i].nLastTouchLineTime = nSharedTime;
                     if (isSell) // 단계는 상승했는데 팔린다는 건 이상하니 
                     {
                         isSell = false;
                     }
                 }
+            }
+            else // None
+            {
+
             }
 
             // 매도 결정
@@ -462,7 +369,6 @@ namespace AtoIndicator
                 frame.paperTradeSlot[frame.nStrategyNum].fBottomPer = GetNextFloor(frame.paperTradeSlot[frame.nStrategyNum].nCurLineIdx, frame.paperTradeSlot[frame.nStrategyNum].methodCategory);
                 frame.paperTradeSlot[frame.nStrategyNum].sFixedMsg = ea[nEaIdx].GetInfoString();
                 frame.paperTradeSlot[frame.nStrategyNum].nSequence = frame.arrStrategy[nPaperBuyStrategyNum] + 1;
-                frame.paperTradeSlot[frame.nStrategyNum].nLastTouchLineTime = nSharedTime;
 
                 strategyHistoryList[nPaperBuyStrategyNum].Add(new StrategyHistory(nEaIdx, frame.nStrategyNum)); // 전략리스트 인덱스에 맞게 삽입
                 totalTradeHistoryList.Add(new StrategyHistory(nEaIdx, frame.nStrategyNum)); // 전체 매매리스트
@@ -822,7 +728,6 @@ namespace AtoIndicator
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurVolume = holdingsArray[nUndisposalIdx].nNumPossibleToSell;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyVolume = holdingsArray[nUndisposalIdx].nNumPossibleToSell;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBirthTime = nFirstTime;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nLastTouchLineTime = nFirstTime;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyMinuteIdx = BRUSH - 1 ;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyEndTime = nFirstTime;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].sBuyDescription = $"미처분 매매블록{NEW_LINE}";

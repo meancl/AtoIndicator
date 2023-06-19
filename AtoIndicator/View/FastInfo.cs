@@ -1285,8 +1285,8 @@ namespace AtoIndicator.View
                             nPass += ((isTMIN1 ? double.Parse(sTMIN1) <= mainForm.ea[i].fTodayMinPower : true) &&
                                 (isTMIN2 ? mainForm.ea[i].fTodayMinPower <= double.Parse(sTMIN2) : true)) ? 1 : 0;
                         if (isTMD1 || isTMD2)
-                            nPass += ((isTMD1 ? double.Parse(sTMD1) <= mainForm.ea[i].fTodayMaxPower - mainForm.ea[i].fTodayMinPower : true) &&
-                                (isTMD2 ? mainForm.ea[i].fTodayMaxPower - mainForm.ea[i].fTodayMinPower <= double.Parse(sTMD2) : true)) ? 1 : 0;
+                            nPass += ((isTMD1 ? double.Parse(sTMD1) <= mainForm.ea[i].fTodayMaxPower - mainForm.ea[i].fTodayBottomPower : true) &&
+                                (isTMD2 ? mainForm.ea[i].fTodayMaxPower - mainForm.ea[i].fTodayBottomPower <= double.Parse(sTMD2) : true)) ? 1 : 0;
                         if (isAI5T1 || isAI5T2)
                             nPass += ((isAI5T1 ? int.Parse(sAI5T1) <= mainForm.ea[i].fakeStrategyMgr.nAI5Time : true) &&
                               (isAI5T2 ? mainForm.ea[i].fakeStrategyMgr.nAI5Time <= int.Parse(sAI5T2) : true)) ? 1 : 0;

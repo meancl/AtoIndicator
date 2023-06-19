@@ -105,15 +105,7 @@ namespace AtoIndicator
         // ------------------------------------------------------
         // 대응영역 상수
         // ------------------------------------------------------
-        public const int PREEMPTION_ACCESS_SEC = 120;
-        public const int RESPITE_ACCESS_SEC = 20;
-        public const int PREEMPTION_UPDATE_SEC = 10;
-        public const int RESPITE_UPDATE_SEC = 10;
-        public const int RESPITE_LIMIT_SEC = 600;
-        public const double RESPITE_INIT = -100;
-        public const double RESPITE_CRITICAL_PADDING = 0.015;
-        public const int LIMIT_STAY_SEC = 1800; // 제한 미터치시간이 30분
-        public const int END_STAY_SEC = 5400; // 마지막 제한 미터치시간이 1시간 30분
+
         public string NEW_LINE = Environment.NewLine;
         public const int UNDISPOSAL_STRATEGY_IDX = -1;
 
@@ -2183,6 +2175,17 @@ namespace AtoIndicator
                         ea[nCurIdx].nTodayMaxPrice = ea[nCurIdx].nFs;
                         ea[nCurIdx].nTodayMaxTime = nSharedTime;
                         ea[nCurIdx].fTodayMaxPower = ea[nCurIdx].fPower;
+
+                        ea[nCurIdx].nTodayBottomPrice = ea[nCurIdx].nTodayMaxPrice;
+                        ea[nCurIdx].nTodayBottomTime = ea[nCurIdx].nTodayMaxTime;
+                        ea[nCurIdx].fTodayBottomPower = ea[nCurIdx].fTodayMaxPower;
+                    }
+                    // 오늘 고점 후 저점
+                    else if(ea[nCurIdx].nTodayBottomPrice > ea[nCurIdx].nFs)
+                    {
+                        ea[nCurIdx].nTodayBottomPrice = ea[nCurIdx].nFs;
+                        ea[nCurIdx].nTodayBottomTime = nSharedTime;
+                        ea[nCurIdx].fTodayBottomPower = ea[nCurIdx].fPower;
                     }
 
                     #region 순위 선정용 변수 세팅
