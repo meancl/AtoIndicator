@@ -2495,6 +2495,38 @@ namespace AtoIndicator
                             ea[nCurIdx].fakeStrategyMgr.nCurHitType++;
                         if (ea[nCurIdx].fakeDownStrategy.nHitNum > 0) // 페이크 다운
                             ea[nCurIdx].fakeStrategyMgr.nCurHitType++;
+
+                        if(ea[nCurIdx].fakeStrategyMgr.nCurHitType >= 2 && ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 5)
+                        {
+                            if(!ea[nCurIdx].fakeStrategyMgr.hitDict25.ContainsKey(nTimeLineIdx)) // 없다면
+                            {
+                                ea[nCurIdx].fakeStrategyMgr.hitDict25[nTimeLineIdx] = ea[nCurIdx].nFs;
+                            }
+                        }
+
+                        if (ea[nCurIdx].fakeStrategyMgr.nCurHitType >= 3 && ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 8)
+                        {
+                            if (!ea[nCurIdx].fakeStrategyMgr.hitDict38.ContainsKey(nTimeLineIdx)) // 없다면
+                            {
+                                ea[nCurIdx].fakeStrategyMgr.hitDict38[nTimeLineIdx] = ea[nCurIdx].nFs;
+                            }
+                        }
+
+                        if (ea[nCurIdx].fakeStrategyMgr.nCurHitType >= 3 && ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 12)
+                        {
+                            if (!ea[nCurIdx].fakeStrategyMgr.hitDict312.ContainsKey(nTimeLineIdx)) // 없다면
+                            {
+                                ea[nCurIdx].fakeStrategyMgr.hitDict312[nTimeLineIdx] = ea[nCurIdx].nFs;
+                            }
+                        }
+
+                        if (ea[nCurIdx].fakeStrategyMgr.nCurHitType >= 4 && ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 10)
+                        {
+                            if (!ea[nCurIdx].fakeStrategyMgr.hitDict410.ContainsKey(nTimeLineIdx)) // 없다면
+                            {
+                                ea[nCurIdx].fakeStrategyMgr.hitDict410[nTimeLineIdx] = ea[nCurIdx].nFs;
+                            }
+                        }
                     }
 
                     #region HIT 초기화

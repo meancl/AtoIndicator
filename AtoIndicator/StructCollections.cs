@@ -617,6 +617,7 @@ namespace AtoIndicator
             public int nTotalSelled;
             public int nTotalSelling;
 
+
             public TradeMethodCategory eDefaultTradeCategory;
             public BuyedManager()
             {
@@ -1319,6 +1320,10 @@ namespace AtoIndicator
             public int nHit8Num;
             public int nHit10Num;
 
+            public Dictionary<int, int> hitDict25;
+            public Dictionary<int, int> hitDict38;
+            public Dictionary<int, int> hitDict312;
+            public Dictionary<int, int> hitDict410;
 
             public int nFakeBuyMinuteAreaNum;
             public int nFakeResistMinuteAreaNum;
@@ -1359,6 +1364,11 @@ namespace AtoIndicator
 
             public void Init()
             {
+                hitDict25 = new Dictionary<int, int>();
+                hitDict38 = new Dictionary<int, int>();
+                hitDict312 = new Dictionary<int, int>();
+                hitDict410 = new Dictionary<int, int>();
+
                 listFakeHistoryPiece = new List<FakeHistoryPiece>();
                 fd = new List<FakeDBRecordInfo>();
             }
