@@ -28,6 +28,13 @@ namespace AtoIndicator
         // ============================================
         private void Button_Click(object sender, EventArgs e)
         {
+            if (sender.Equals(checkChartButton))
+                ViewManualEachStock();
+        } // End ---- 버튼클릭 핸들러
+
+
+        public void ViewManualEachStock()
+        {
             string sCodeTxt = sCodeToBuyTextBox.Text.Trim();
             bool isCorrect = false;
             int nCurIdx = -1;
@@ -46,19 +53,16 @@ namespace AtoIndicator
                 }
                 catch
                 {
-                }   
+                }
             }
 
-            if (sender.Equals(checkChartButton))
+            if (isCorrect)
             {
-                if (isCorrect)
-                {
-                    CallThreadEachStockHistoryForm(nCurIdx);
-                }
-                else
-                    MessageBox.Show("입력오류거나 해당종목이 리스트에 없습니다.");
+                CallThreadEachStockHistoryForm(nCurIdx);
             }
-        } // End ---- 버튼클릭 핸들러
+            else
+                MessageBox.Show("입력오류거나 해당종목이 리스트에 없습니다.");
+        }
 
         public bool isCtrlPushed = false;
         public bool isShiftPushed = false;
@@ -82,134 +86,141 @@ namespace AtoIndicator
                     PrintLog("수동매수창 은닉 완료");
                 }
             }
-            
-            if (manualGroupBox.Visible)
-                return;
 
-            if (cUp == 16)
-                isShiftPushed = false;
-            if (cUp == 17)
-                isCtrlPushed = false;
-            if (cUp == 'G')
+
+
+            if (!manualGroupBox.Visible) // 수동매수창 은닉상태
             {
-                ShowConfiguration();
-            }
-            if (cUp == 'D') // 예수금확인
-            {
-                RequestDeposit();
-            }
-            if (cUp == 'H') // 보유종목확인
-            {
-                RequestHoldings(0);
-            }
-            if (cUp == 'T')
-            {
-                #region ONNX 실전 TEST
+                if (cUp == 16)
+                    isShiftPushed = false;
+                if (cUp == 17)
+                    isCtrlPushed = false;
+                if (cUp == 'G')
+                {
+                    ShowConfiguration();
+                }
+                if (cUp == 'D') // 예수금확인
+                {
+                    RequestDeposit();
+                }
+                if (cUp == 'H') // 보유종목확인
+                {
+                    RequestHoldings(0);
+                }
+                if (cUp == 'T')
+                {
+                    #region ONNX 실전 TEST
 #if AI
-                //double test_val = 10;
-                //var testData = new double[] {
-                //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
-                //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
-                //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
-                //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
-                //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
-                //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
-                //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
-                //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
-                //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
-                //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
-                //    test_val, test_val
-                //};
-                //var nMMFNum = mmf.RequestAIService(sCode: ea[0].sCode, nRqTime: nSharedTime, nRqType: EVERY_SIGNAL, inputData: testData);
-                //if (nMMFNum == -1)
-                //{
-                //    PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
-                //    return;
-                //}
+                    //double test_val = 10;
+                    //var testData = new double[] {
+                    //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
+                    //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
+                    //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
+                    //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
+                    //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
+                    //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
+                    //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
+                    //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
+                    //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
+                    //    test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val, test_val,
+                    //    test_val, test_val
+                    //};
+                    //var nMMFNum = mmf.RequestAIService(sCode: ea[0].sCode, nRqTime: nSharedTime, nRqType: EVERY_SIGNAL, inputData: testData);
+                    //if (nMMFNum == -1)
+                    //{
+                    //    PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
+                    //    return;
+                    //}
 
-                // PutTradeResultAsync();
+                    // PutTradeResultAsync();
 
-                //RequestThisRealBuy(-30, isAIUse: true);
+                    //RequestThisRealBuy(-30, isAIUse: true);
 
-                // RequestSellAI(1);
-                //var nMMFNum = mmf.RequestAIService(sCode:"005930", nRqTime: 90013, nRqType:0, inputData:testData);
-                // mmf.CallEvent();
-                //DateTime curTime = DateTime.UtcNow;
+                    // RequestSellAI(1);
+                    //var nMMFNum = mmf.RequestAIService(sCode:"005930", nRqTime: 90013, nRqType:0, inputData:testData);
+                    // mmf.CallEvent();
+                    //DateTime curTime = DateTime.UtcNow;
 
-                //mmf.FetchTargets();
-                //int a;
-                //while (true)
-                //{
-                //    DateTime newTime = DateTime.UtcNow;
-                //    if (mmf.checkingComeArray[0])
-                //    {
-                //        a = 3;
-                //        TurnOffMMFSlot(0);
-                //        break;
-                //    }
-                //    mmf.FetchTargets();
-                //}
+                    //mmf.FetchTargets();
+                    //int a;
+                    //while (true)
+                    //{
+                    //    DateTime newTime = DateTime.UtcNow;
+                    //    if (mmf.checkingComeArray[0])
+                    //    {
+                    //        a = 3;
+                    //        TurnOffMMFSlot(0);
+                    //        break;
+                    //    }
+                    //    mmf.FetchTargets();
+                    //}
 #endif
-                #endregion
-            }
-            if (cUp == 'R') // 현황기록
-            {
-                //TradeRecodForm tradeRecordForm = new TradeRecodForm(this);
-                //tradeRecordForm.Show();
-                CallThreadTradeRecordForm();
-            }
-            if (cUp == 'L')
-            {
-                CallThreadTextLogForm();
-            }
-            if (cUp == 'I')
-            {
-                CallThreadFastInfo();
-            }
-
-            if (isShiftPushed && isCtrlPushed)
-            {
-                if (cUp == 27) // esc
-                {
-                    StoreLog();
-                    this.Close();
+                    #endregion
                 }
-            }
-
-            if (cUp == 'W')
-            {
-                if (isPrintLogBox)
+                if (cUp == 'R') // 현황기록
                 {
-                    PrintLog("화면출력을 종료합니다.");
-                    isPrintLogBox = false;
+                    //TradeRecodForm tradeRecordForm = new TradeRecodForm(this);
+                    //tradeRecordForm.Show();
+                    CallThreadTradeRecordForm();
                 }
-                else
+                if (cUp == 'L')
                 {
-                    isPrintLogBox = true;
-                    PrintLog("화면출력을 시작합니다.");
+                    CallThreadTextLogForm();
                 }
-            }
-
-            if (isCtrlPushed)
-            {
-
-
-                if (cUp == 'F') // 강제장시작
+                if (cUp == 'I')
                 {
-                    if (isShiftPushed)
-                        ForceMarketOn(false);
+                    CallThreadFastInfo();
+                }
+
+                if (isShiftPushed && isCtrlPushed)
+                {
+                    if (cUp == 27) // esc
+                    {
+                        StoreLog();
+                        this.Close();
+                    }
+                }
+
+                if (cUp == 'W')
+                {
+                    if (isPrintLogBox)
+                    {
+                        PrintLog("화면출력을 종료합니다.");
+                        isPrintLogBox = false;
+                    }
                     else
-                        ForceMarketOn();
+                    {
+                        isPrintLogBox = true;
+                        PrintLog("화면출력을 시작합니다.");
+                    }
                 }
-                if (cUp == 'S') // 강제장종료
+
+                if (isCtrlPushed)
                 {
-                    if (isShiftPushed)
-                        ForceMarketOff(true);
-                    else
-                        ForceMarketOff();
+
+
+                    if (cUp == 'F') // 강제장시작
+                    {
+                        if (isShiftPushed)
+                            ForceMarketOn(false);
+                        else
+                            ForceMarketOn();
+                    }
+                    if (cUp == 'S') // 강제장종료
+                    {
+                        if (isShiftPushed)
+                            ForceMarketOff(true);
+                        else
+                            ForceMarketOff();
+
+                    }
 
                 }
-
+            }
+            else // 수동매수창 출력상태
+            {
+                if(cUp == 13) // enter
+                    ViewManualEachStock();
             }
         }
         public void KeyDownHandler(Object sender, KeyEventArgs e)

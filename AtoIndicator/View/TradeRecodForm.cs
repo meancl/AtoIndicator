@@ -302,7 +302,7 @@ namespace AtoIndicator.View.TradeRecod
                         tmpInfo.sCode = tmpEa.sCode;
                         tmpInfo.sCodeName = tmpEa.sCodeName;
                         tmpInfo.nTradingNum = 0;
-                        tmpInfo.nTradeNum = tmpEa.paperBuyStrategy.nStrategyNum;
+                        tmpInfo.nTradeNum = 0;
                         tmpInfo.isTradeStatus = false;
                         tmpInfo.nCurFb = 0;
                         tmpInfo.fEverageProfit = 0;
@@ -320,6 +320,8 @@ namespace AtoIndicator.View.TradeRecod
 
                         if (tabControl1.SelectedIndex == 0)
                         {
+                            tmpInfo.nTradeNum = tmpEa.paperBuyStrategy.nStrategyNum;
+
                             for (int j = 0; j < tmpEa.paperBuyStrategy.nStrategyNum; j++)
                             {
                                 if (tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume == tmpEa.paperBuyStrategy.paperTradeSlot[j].nTargetRqVolume && tmpEa.paperBuyStrategy.paperTradeSlot[j].nBuyedVolume > 0) // 다 사졌으면
@@ -355,11 +357,12 @@ namespace AtoIndicator.View.TradeRecod
                         }
                         else
                         {
+                            tmpInfo.nTradeNum = tmpEa.myTradeManager.arrBuyedSlots.Count;
+
                             for (int j = 0; j < tmpEa.myTradeManager.arrBuyedSlots.Count; j++)
                             {
                                 if (tmpEa.myTradeManager.arrBuyedSlots[j].isAllBuyed) // 다 사졌으면
                                 {
-
                                     if (tmpEa.myTradeManager.arrBuyedSlots[j].isAllSelled) // 다 팔렸던거
                                     {
                                         fTotalPrice += tmpEa.myTradeManager.arrBuyedSlots[j].nTotalSelledPrice;

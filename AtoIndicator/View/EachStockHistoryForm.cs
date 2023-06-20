@@ -2801,6 +2801,13 @@ namespace AtoIndicator.View.EachStockHistory
             }
             if (cUp == 39) // 오른쪽 화살표
             {
+
+            }
+
+
+            if (cUp == 192) // `
+            {
+                isHitView = !isHitView;
             }
 
             if (cUp == 'O') // 각도기
@@ -2823,7 +2830,7 @@ namespace AtoIndicator.View.EachStockHistory
             {
                 ShowVariables();
             }
-            if (cUp == 'X') // 매매블럭
+            if (cUp == 'K') // 매매블럭
             {
                 new ScrollableMessageBox().ShowEachBlock(mainForm.ea[nCurIdx]);
             }
@@ -2847,7 +2854,7 @@ namespace AtoIndicator.View.EachStockHistory
 
             if (cUp == 17) // ctrl
             {
-                ctrlLabel.Text = "ctrl : No";
+                ctrlLabel.Text = "CTL : No";
                 isCtrlPushed = false;
                 //isRealBuyLinePressed = false;
                 //isFakeBuyLinePressed = false;
@@ -2859,14 +2866,23 @@ namespace AtoIndicator.View.EachStockHistory
 
             if (cUp == 32) // space
             {
-                spaceLabel.Text = "space : No";
+                spaceLabel.Text = "SPC : No";
                 isSpacePushed = false;
             }
 
             if (cUp == 16) // shift
             {
-                shiftLabel.Text = "shift : No";
+                shiftLabel.Text = "SHT : No";
                 isShiftPushed = false;
+            }
+
+            if (!isCtrlPushed)
+            {
+                if (cUp == 191) // enter
+                {
+                    questionLabel.Text = "QST : No";
+                    isQuestionPushed = true;
+                }
             }
 
             if (cUp == 'U') // update
@@ -2977,6 +2993,18 @@ namespace AtoIndicator.View.EachStockHistory
                     isFakeDownArrowVisible = !isFakeDownArrowVisible;
                     UpdateMinuteHistoryData();
                 }
+            }
+
+            if (cUp == 'Z') // 매수
+            {
+                isBuyArrowVisible = !isBuyArrowVisible;
+                UpdateMinuteHistoryData();
+            }
+
+            if(cUp == 'X') // 매도
+            {
+                isSellArrowVisible = !isSellArrowVisible;
+                UpdateMinuteHistoryData();
             }
 
             if (cUp == 'A')
@@ -3156,6 +3184,7 @@ namespace AtoIndicator.View.EachStockHistory
                 if (cUp == 191) // ?
                 {
                     curEa.manualReserve.ClearAll();
+                    realBuyReserveLabel.Text = "전체예약 취소";
                 }
             }
 
@@ -3165,6 +3194,7 @@ namespace AtoIndicator.View.EachStockHistory
         public bool isCtrlPushed = false;
         public bool isShiftPushed = false;
         public bool isSpacePushed = false;
+        public bool isQuestionPushed = false;
 
         public bool isHitView = true;
 
@@ -3242,21 +3272,28 @@ namespace AtoIndicator.View.EachStockHistory
 
             if (cPressed == 17) // ctrl
             {
-                ctrlLabel.Text = "ctrl : Yes";
+                ctrlLabel.Text = "CTL : Yes";
                 isCtrlPushed = true;
             }
 
             if (cPressed == 16) // shift
             {
-                shiftLabel.Text = "shift : Yes";
+                shiftLabel.Text = "SHT : Yes";
                 isShiftPushed = true;
             }
 
             if (cPressed == 32) // space 
             {
-                spaceLabel.Text = "space : Yes";
+                spaceLabel.Text = "SPC : Yes";
                 isSpacePushed = true;
-                isHitView = !isHitView;
+            }
+            if (!isCtrlPushed)
+            {
+                if (cPressed == 191) // enter 
+                {
+                    questionLabel.Text = "QST : Yes";
+                    isQuestionPushed = true;
+                }
             }
 
             //if(isCtrlPushed)
@@ -3341,6 +3378,7 @@ namespace AtoIndicator.View.EachStockHistory
         //public bool isRealBuyLinePressed;
         public bool isPreciselyCheck;
         public string sOwnerPressed = "";
+
 
         public void DeepClean()
         {
