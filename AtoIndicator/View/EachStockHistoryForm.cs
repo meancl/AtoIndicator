@@ -2881,7 +2881,7 @@ namespace AtoIndicator.View.EachStockHistory
                 if (cUp == 191) // enter
                 {
                     questionLabel.Text = "QST : No";
-                    isQuestionPushed = true;
+                    isQuestionPushed = false;
                 }
             }
 
