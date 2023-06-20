@@ -275,11 +275,11 @@ namespace AtoIndicator.View
             // 
             this.groupBox2.Controls.Add(this.listView1);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(452, 0);
+            this.groupBox2.Location = new System.Drawing.Point(467, 0);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox2.Size = new System.Drawing.Size(1262, 1035);
+            this.groupBox2.Size = new System.Drawing.Size(1247, 1035);
             this.groupBox2.TabIndex = 20;
             this.groupBox2.TabStop = false;
             // 
@@ -291,7 +291,7 @@ namespace AtoIndicator.View
             this.listView1.Location = new System.Drawing.Point(3, 22);
             this.listView1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(1256, 1009);
+            this.listView1.Size = new System.Drawing.Size(1241, 1009);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             // 
@@ -581,7 +581,7 @@ namespace AtoIndicator.View
             this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox1.Size = new System.Drawing.Size(452, 1035);
+            this.groupBox1.Size = new System.Drawing.Size(467, 1035);
             this.groupBox1.TabIndex = 19;
             this.groupBox1.TabStop = false;
             // 

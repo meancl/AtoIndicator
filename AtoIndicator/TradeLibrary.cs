@@ -192,7 +192,7 @@
         public void SetAndServeCurSlot(bool isByHand, int nOrderType, int nEaIdx, string sCode, string sHogaGb,
                                         int nOrderPrice, int nQty, string sRQName, string sOrgOrderId, string sDescription,
                                         int nBuyedSlotIdx = 0, double fRequestRatio = NORMAL_TRADE_RATIO, 
-                                        TradeMethodCategory eTradeMethod = TradeMethodCategory.RisingMethod
+                                        TradeMethodCategory eTradeMethod = TradeMethodCategory.FixedMethod
                                         )
         {
             // 공용

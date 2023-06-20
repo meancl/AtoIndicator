@@ -104,7 +104,7 @@ namespace AtoIndicator.View
 
             tooltip7.SetToolTip(write1Btn, "실매수 10 실매수분포 2 공유분포 5");
             tooltip8.SetToolTip(write2Btn, "실매수분포 2 페이크매수분포3 공유분포 5");
-            tooltip9.SetToolTip(write3Btn, "히트38 1회 이상");
+            tooltip9.SetToolTip(write3Btn, "히트38");
             tooltip10.SetToolTip(write4Btn, "페이크 매수 30");
             tooltip11.SetToolTip(write5Btn, "AI 점수 10점");
 
@@ -1609,7 +1609,8 @@ namespace AtoIndicator.View
             }
             else if (sender.Equals(write3Btn))
             {
-                tHIT81.Text = "1";
+                tCURFT1.Text = "3";
+                tCURFC1.Text = "8";
             }
             else if (sender.Equals(write4Btn))
             {

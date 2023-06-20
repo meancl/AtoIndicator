@@ -274,7 +274,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1312, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(1312, 28);
             this.menuStrip1.TabIndex = 23;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -290,7 +290,7 @@
             this.realTimeLogStripMenuItem,
             this.configStripMenuItem});
             this.메뉴ToolStripMenuItem.Name = "메뉴ToolStripMenuItem";
-            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 26);
+            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
             this.메뉴ToolStripMenuItem.Text = "메뉴";
             // 
             // 수동매수ToolStripMenuItem
@@ -406,7 +406,7 @@
             // 
             this.isMarketLabel.AutoSize = true;
             this.isMarketLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.isMarketLabel.Location = new System.Drawing.Point(181, 21);
+            this.isMarketLabel.Location = new System.Drawing.Point(17, 341);
             this.isMarketLabel.Name = "isMarketLabel";
             this.isMarketLabel.Size = new System.Drawing.Size(106, 14);
             this.isMarketLabel.TabIndex = 25;
@@ -416,7 +416,7 @@
             // 
             this.isHoldingsLabel.AutoSize = true;
             this.isHoldingsLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.isHoldingsLabel.Location = new System.Drawing.Point(181, 42);
+            this.isHoldingsLabel.Location = new System.Drawing.Point(230, 341);
             this.isHoldingsLabel.Name = "isHoldingsLabel";
             this.isHoldingsLabel.Size = new System.Drawing.Size(121, 14);
             this.isHoldingsLabel.TabIndex = 26;

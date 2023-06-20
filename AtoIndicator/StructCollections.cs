@@ -621,7 +621,7 @@ namespace AtoIndicator
             public TradeMethodCategory eDefaultTradeCategory;
             public BuyedManager()
             {
-                eDefaultTradeCategory = TradeMethodCategory.RisingMethod;
+                eDefaultTradeCategory = TradeMethodCategory.FixedMethod;
                 arrBuyedSlots = new List<BuyedSlot>();
                 sTotalLog = new StringBuilder();
             }
@@ -1300,7 +1300,6 @@ namespace AtoIndicator
 
         public struct FakeStrategyManager
         {
-            public int nFakePrevTimeLineIdx;
             public int nSharedPrevMinuteIdx;
             public int nSharedMinuteLocationCount;
 

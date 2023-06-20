@@ -1132,6 +1132,35 @@ namespace AtoIndicator
                         } // END ---- 전고점 
                         #endregion
 
+                        #region HIT 초기화
+                        // 페이크매수/매도 히트횟수 초기화(*동일분봉동안 가지는 히트횟수)
+                        {
+                            if (ea[nCurIdx].fakeStrategyMgr.nCurHitType >= 3)
+                            {
+                                if (ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 5)
+                                {
+                                    ea[nCurIdx].fakeStrategyMgr.nHit5Num++;
+                                    if (ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 8)
+                                    {
+                                        ea[nCurIdx].fakeStrategyMgr.nHit8Num++;
+                                        if (ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 10)
+                                        {
+                                            ea[nCurIdx].fakeStrategyMgr.nHit10Num++;
+                                        }
+                                    }
+                                }
+                            }
+
+                            // 초기화
+                            ea[nCurIdx].paperBuyStrategy.nHitNum = 0;
+                            ea[nCurIdx].fakeBuyStrategy.nHitNum = 0;
+                            ea[nCurIdx].fakeResistStrategy.nHitNum = 0;
+                            ea[nCurIdx].fakeAssistantStrategy.nHitNum = 0;
+                            ea[nCurIdx].fakeVolatilityStrategy.nHitNum = 0;
+                            ea[nCurIdx].fakeDownStrategy.nHitNum = 0;
+                        }
+                        #endregion
+
                         #region Sequence Strategy
                         { // START ---- 분봉 Sequence Strategy 분기문
 
@@ -2181,7 +2210,7 @@ namespace AtoIndicator
                         ea[nCurIdx].fTodayBottomPower = ea[nCurIdx].fTodayMaxPower;
                     }
                     // 오늘 고점 후 저점
-                    else if(ea[nCurIdx].nTodayBottomPrice > ea[nCurIdx].nFs)
+                    else if (ea[nCurIdx].nTodayBottomPrice > ea[nCurIdx].nFs)
                     {
                         ea[nCurIdx].nTodayBottomPrice = ea[nCurIdx].nFs;
                         ea[nCurIdx].nTodayBottomTime = nSharedTime;
@@ -2471,14 +2500,14 @@ namespace AtoIndicator
                     }
                     #endregion
 
+                    #region HIT 관리
                     {
-
                         int nTotalHitNum = ea[nCurIdx].paperBuyStrategy.nHitNum
-                                            + ea[nCurIdx].fakeBuyStrategy.nHitNum
-                                            + ea[nCurIdx].fakeResistStrategy.nHitNum
-                                            + ea[nCurIdx].fakeAssistantStrategy.nHitNum
-                                            + ea[nCurIdx].fakeVolatilityStrategy.nHitNum
-                                            + ea[nCurIdx].fakeDownStrategy.nHitNum;
+                                          + ea[nCurIdx].fakeBuyStrategy.nHitNum
+                                          + ea[nCurIdx].fakeResistStrategy.nHitNum
+                                          + ea[nCurIdx].fakeAssistantStrategy.nHitNum
+                                          + ea[nCurIdx].fakeVolatilityStrategy.nHitNum
+                                          + ea[nCurIdx].fakeDownStrategy.nHitNum;
                         // 초기화 전 데이터 관리
                         ea[nCurIdx].fakeStrategyMgr.nCurHitNum = nTotalHitNum;
                         ea[nCurIdx].fakeStrategyMgr.nCurHitType = 0;
@@ -2496,9 +2525,9 @@ namespace AtoIndicator
                         if (ea[nCurIdx].fakeDownStrategy.nHitNum > 0) // 페이크 다운
                             ea[nCurIdx].fakeStrategyMgr.nCurHitType++;
 
-                        if(ea[nCurIdx].fakeStrategyMgr.nCurHitType >= 2 && ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 5)
+                        if (ea[nCurIdx].fakeStrategyMgr.nCurHitType >= 2 && ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 5)
                         {
-                            if(!ea[nCurIdx].fakeStrategyMgr.hitDict25.ContainsKey(nTimeLineIdx)) // 없다면
+                            if (!ea[nCurIdx].fakeStrategyMgr.hitDict25.ContainsKey(nTimeLineIdx)) // 없다면
                             {
                                 ea[nCurIdx].fakeStrategyMgr.hitDict25[nTimeLineIdx] = ea[nCurIdx].nFs;
                             }
@@ -2528,36 +2557,6 @@ namespace AtoIndicator
                             }
                         }
                     }
-
-                    #region HIT 초기화
-                    // 페이크매수/매도 히트횟수 초기화(*동일분봉동안 가지는 히트횟수)
-                    if (nTimeLineIdx != ea[nCurIdx].fakeStrategyMgr.nFakePrevTimeLineIdx)
-                    {
-                        if (ea[nCurIdx].fakeStrategyMgr.nCurHitType >= 3)
-                        {
-                            if (ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 5)
-                            {
-                                ea[nCurIdx].fakeStrategyMgr.nHit5Num++;
-                                if (ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 8)
-                                {
-                                    ea[nCurIdx].fakeStrategyMgr.nHit8Num++;
-                                    if (ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 10)
-                                    {
-                                        ea[nCurIdx].fakeStrategyMgr.nHit10Num++;
-                                    }
-                                }
-                            }
-                        }
-
-                        // 초기화
-                        ea[nCurIdx].fakeStrategyMgr.nFakePrevTimeLineIdx = nTimeLineIdx;
-                        ea[nCurIdx].paperBuyStrategy.nHitNum = 0;
-                        ea[nCurIdx].fakeBuyStrategy.nHitNum = 0;
-                        ea[nCurIdx].fakeResistStrategy.nHitNum = 0;
-                        ea[nCurIdx].fakeAssistantStrategy.nHitNum = 0;
-                        ea[nCurIdx].fakeVolatilityStrategy.nHitNum = 0;
-                        ea[nCurIdx].fakeDownStrategy.nHitNum = 0;
-                    }
                     #endregion
 
                     if (ea[nCurIdx].isViGauge)
@@ -2572,11 +2571,11 @@ namespace AtoIndicator
 
                     #region 실시간 manual crush 테스트(예약)
                     {
-                        if (ea[nCurIdx].manualReserve.reserveArr[0].isSelected && !ea[nCurIdx].manualReserve.reserveArr[0].isChosen1) 
+                        if (ea[nCurIdx].manualReserve.reserveArr[0].isSelected && !ea[nCurIdx].manualReserve.reserveArr[0].isChosen1)
                         {
                             if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[0].fCritLine1)
                             {
-                                if(ea[nCurIdx].manualReserve.reserveArr[0].isBuyReserved)
+                                if (ea[nCurIdx].manualReserve.reserveArr[0].isBuyReserved)
                                 {
                                     ea[nCurIdx].manualReserve.reserveArr[0].isBuyReserved = false;
                                     RequestMachineBuy(nCurIdx);
@@ -2584,7 +2583,7 @@ namespace AtoIndicator
                                 ea[nCurIdx].manualReserve.reserveArr[0].isChosen1 = true;
                             }
                         }
-                        else if (ea[nCurIdx].manualReserve.reserveArr[1].isSelected && !ea[nCurIdx].manualReserve.reserveArr[1].isChosen1) 
+                        else if (ea[nCurIdx].manualReserve.reserveArr[1].isSelected && !ea[nCurIdx].manualReserve.reserveArr[1].isChosen1)
                         {
                             if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.reserveArr[1].fCritLine1)
                             {
@@ -2596,9 +2595,9 @@ namespace AtoIndicator
                                 ea[nCurIdx].manualReserve.reserveArr[1].isChosen1 = true;
                             }
                         }
-                        else if (ea[nCurIdx].manualReserve.reserveArr[2].isSelected && ! (ea[nCurIdx].manualReserve.reserveArr[2].isChosen1 || ea[nCurIdx].manualReserve.reserveArr[2].isChosen2))
+                        else if (ea[nCurIdx].manualReserve.reserveArr[2].isSelected && !(ea[nCurIdx].manualReserve.reserveArr[2].isChosen1 || ea[nCurIdx].manualReserve.reserveArr[2].isChosen2))
                         {
-                            if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine2) 
+                            if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine2)
                             {
                                 if (ea[nCurIdx].manualReserve.reserveArr[2].isBuyReserved)
                                 {
@@ -2607,7 +2606,7 @@ namespace AtoIndicator
                                 }
                                 ea[nCurIdx].manualReserve.reserveArr[2].isChosen2 = true;
                             }
-                            if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine1) 
+                            if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine1)
                             {
                                 ea[nCurIdx].manualReserve.reserveArr[2].isChosen1 = true;
                             }
@@ -2635,8 +2634,8 @@ namespace AtoIndicator
                             {
                                 ea[nCurIdx].manualReserve.reserveArr[4].isChosen1 = true;
                             }
-                            
-                            if (ea[nCurIdx].manualReserve.reserveArr[4].isChosen1 && ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[4].fCritLine2) 
+
+                            if (ea[nCurIdx].manualReserve.reserveArr[4].isChosen1 && ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[4].fCritLine2)
                             {
                                 if (ea[nCurIdx].manualReserve.reserveArr[4].isBuyReserved)
                                 {
@@ -4853,7 +4852,7 @@ namespace AtoIndicator
                                 {
 
                                     // 매도 취소
-                                    if(ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].isSellCancelReserved &&
+                                    if (ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].isSellCancelReserved &&
                                         SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nSellCancelReserveTime) >= 15
                                       )
                                     {
