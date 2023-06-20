@@ -1332,7 +1332,10 @@ namespace AtoIndicator.View.EachStockHistory
                     curTradePriceLabel.Text = $"대금 : {Math.Round(curEa.tradeStatus.fCur, 2)}";
                     curHogaRatioLabel.Text = $"호가비 : {Math.Round(curEa.hogaRatioStatus.fCur, 2)}";
                     curHitNumLabel.Text = $"히트 : {curEa.fakeStrategyMgr.nCurHitNum}";
-
+                    if (curEa.isViMode)
+                        isViLabel.Text = "VI";
+                    else
+                        isViLabel.Text = "";
 
                     SetChartViewRange(0, nLastMinuteIdx + 2, curEa.nFs, curEa.nFs, "TotalArea");
                 } // END ---- if (curEa.timeLines1m.nRealDataIdx > 0)

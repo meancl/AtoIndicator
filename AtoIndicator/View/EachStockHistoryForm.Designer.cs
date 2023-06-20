@@ -75,6 +75,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.curPriceMoveLabel = new System.Windows.Forms.Label();
             this.curTradePriceLabel = new System.Windows.Forms.Label();
             this.curCheckLineIdxLabel = new System.Windows.Forms.Label();
+            this.isViLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.historyChart)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -182,7 +183,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.메뉴ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1274, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1274, 30);
             this.menuStrip1.TabIndex = 13;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -192,7 +193,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.showVarToolStripMenuItem,
             this.showLogToolStripMenuItem});
             this.메뉴ToolStripMenuItem.Name = "메뉴ToolStripMenuItem";
-            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
+            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 26);
             this.메뉴ToolStripMenuItem.Text = "메뉴";
             // 
             // showVarToolStripMenuItem
@@ -515,11 +516,22 @@ namespace AtoIndicator.View.EachStockHistory
             this.curCheckLineIdxLabel.TabIndex = 43;
             this.curCheckLineIdxLabel.Text = "\r\n";
             // 
+            // isViLabel
+            // 
+            this.isViLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.isViLabel.AutoSize = true;
+            this.isViLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.isViLabel.Location = new System.Drawing.Point(1160, 50);
+            this.isViLabel.Name = "isViLabel";
+            this.isViLabel.Size = new System.Drawing.Size(0, 14);
+            this.isViLabel.TabIndex = 44;
+            // 
             // EachStockHistoryForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1274, 653);
+            this.Controls.Add(this.isViLabel);
             this.Controls.Add(this.curCheckLineIdxLabel);
             this.Controls.Add(this.curTradePriceLabel);
             this.Controls.Add(this.curPriceMoveLabel);
@@ -604,5 +616,6 @@ namespace AtoIndicator.View.EachStockHistory
         private System.Windows.Forms.Label curPriceMoveLabel;
         private System.Windows.Forms.Label curTradePriceLabel;
         private System.Windows.Forms.Label curCheckLineIdxLabel;
+        private System.Windows.Forms.Label isViLabel;
     }
 }
