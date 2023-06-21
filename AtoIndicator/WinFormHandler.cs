@@ -343,10 +343,6 @@ namespace AtoIndicator
                 manualGroupBox.Visible = false;
                 PrintLog("수동매수창 은닉 완료");
             }
-            else if (menuItem.Name.Equals("todayResultStripMenuItem"))
-            {
-                RequestTradeResult(0);
-            }
             else if (menuItem.Name.Equals("realTimeLogStripMenuItem"))
             {
                 CallThreadTextLogForm();

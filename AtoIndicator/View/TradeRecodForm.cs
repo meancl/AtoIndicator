@@ -256,7 +256,6 @@ namespace AtoIndicator.View.TradeRecod
                     int nTotalVolume;
                     double fTotalPrice, fTotalBuyPrice;
                     double fFs, fBuyFs;
-                    const double REAL_STOCK_COMMISSION = MainForm.REAL_STOCK_COMMISSION;
                     List<ListViewItem> listViewItems = new List<ListViewItem>();
 
 
@@ -365,9 +364,9 @@ namespace AtoIndicator.View.TradeRecod
                                 {
                                     if (tmpEa.myTradeManager.arrBuyedSlots[j].isAllSelled) // 다 팔렸던거
                                     {
-                                        fTotalPrice += tmpEa.myTradeManager.arrBuyedSlots[j].nTotalSelledPrice;
-                                        nTotalVolume += tmpEa.myTradeManager.arrBuyedSlots[j].nTotalSelledVolume;
-                                        nTodayTotalDisposalSell += tmpEa.myTradeManager.arrBuyedSlots[j].nTotalSelledPrice;
+                                        fTotalPrice += tmpEa.myTradeManager.arrBuyedSlots[j].nSelledSumPrice;
+                                        nTotalVolume += tmpEa.myTradeManager.arrBuyedSlots[j].nSellVolume;
+                                        nTodayTotalDisposalSell += tmpEa.myTradeManager.arrBuyedSlots[j].nSelledSumPrice;
                                     }
                                     else // 매매중
                                     {
@@ -404,7 +403,7 @@ namespace AtoIndicator.View.TradeRecod
 
                             tmpInfo.fBuyPrice = fBuyFs;
                             tmpInfo.nCurFb = tmpEa.nFb;
-                            tmpInfo.fEverageProfit = ((fFs - fBuyFs) / fBuyFs - REAL_STOCK_COMMISSION) * 100;
+                            tmpInfo.fEverageProfit = mainForm.GetProfitPercent((int)fBuyFs, (int)fFs, MainForm.KOSDAQ_ID);
                             tmpInfo.fTotalPrice = fTotalBuyPrice / MainForm.MILLION;
 
                             ListViewItem listViewItem = new ListViewItem(tmpInfo.GetStringArray());
@@ -449,8 +448,7 @@ namespace AtoIndicator.View.TradeRecod
                     }
 
                     int nTodayProfit = nTodayTotalDisposalSell - nTodayTotalDisposalBuy;
-                    int nTodayProfitWithRealFee = (int)(nTodayTotalDisposalSell * (1 - MainForm.PAPER_STOCK_COMMISSION) - nTodayTotalDisposalBuy);
-                    int nTodayProfitWithVirtualFree = (int)(nTodayTotalDisposalSell * (1 - MainForm.VIRTUAL_STOCK_COMMISSION) - nTodayTotalDisposalBuy);
+                    int nTodayProfitWithRealFee = mainForm.GetProfitPrice(nTodayTotalDisposalBuy, nTodayTotalDisposalSell, MainForm.KOSDAQ_ID);
 
                     VoidDelegator tmpDelegator = delegate
                     {
@@ -466,7 +464,6 @@ namespace AtoIndicator.View.TradeRecod
                         todayTotalResultTextBox.AppendText($" 오늘자 매도금액 : {((double)nTodayTotalDisposalSell / MainForm.MILLION)}(백만원){NEW_LINE}");
                         todayTotalResultTextBox.AppendText($" 오늘자 총손익금 : {((double)nTodayProfit / MainForm.MILLION)}(백만원){NEW_LINE}");
                         todayTotalResultTextBox.AppendText($" 오늘자 총손익금(실제 수수료) : {((double)nTodayProfitWithRealFee / MainForm.MILLION)}(백만원){NEW_LINE}");
-                        todayTotalResultTextBox.AppendText($" 오늘자 총손익금(가상 수수료) : {((double)nTodayProfitWithVirtualFree / MainForm.MILLION)}(백만원){NEW_LINE}");
                     };
 
                     if (todayTotalResultTextBox.InvokeRequired)

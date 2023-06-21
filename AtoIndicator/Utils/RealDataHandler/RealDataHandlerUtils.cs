@@ -429,7 +429,7 @@ namespace AtoIndicator
         #endregion
 
         #region CalcFakeHistory 
-        public PResult CalcFakeHistory(int nEaIdx, int? nStartLineIdx=null, int? nEndLineIdx=null)
+        public PResult CalcFakeHistory(int nEaIdx, int? nStartLineIdx = null, int? nEndLineIdx = null)
         {
             ea[nEaIdx].fakeStrategyMgr.nFakeBuyNum = 0;
             ea[nEaIdx].fakeStrategyMgr.nFakeResistNum = 0;
@@ -516,7 +516,7 @@ namespace AtoIndicator
                         ea[nEaIdx].fakeStrategyMgr.nFakeDownMinuteAreaNum++;
                     }
                 }
-                else if(ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTypeFakeTrading == PAPER_BUY_SIGNAL)
+                else if (ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTypeFakeTrading == PAPER_BUY_SIGNAL)
                 {
                     ea[nEaIdx].fakeStrategyMgr.nPaperBuyNum++;
 
@@ -794,6 +794,59 @@ namespace AtoIndicator
             }
         }
         #endregion
+
+        public int GetProfitPrice(int nStartPrice, int nEndPrice, int nMarketType)
+        {
+
+            // 수수료 + 제세금 구하기
+            int nStartPriceFee;
+            int nEndPriceFee;
+            int nEndPriceTax;
+
+            nStartPriceFee = ((int)((nStartPrice * KIWOOM_STOCK_FEE) / 10) * 10); // 10원 미만 절사
+            nEndPriceFee = ((int)((nEndPrice * KIWOOM_STOCK_FEE) / 10) * 10); // 10원 미만 절사
+
+
+            if (nMarketType == KOSPI_ID)
+            {
+                int nEndPriceTax1 = (int)(nEndPrice * KOSPI_STOCK_TAX1);
+                int nEndPriceTax2 = (int)(nEndPrice * KOSPI_STOCK_TAX2);
+
+                nEndPriceTax = nEndPriceTax1 + nEndPriceTax2;
+            }
+            else
+            {
+                nEndPriceTax = (int)(nEndPrice * KOSDAQ_STOCK_TAX);
+            }
+
+            return nEndPrice - (nStartPrice + nEndPriceTax + nEndPriceFee + nStartPriceFee);
+        }
+
+        public double GetProfitPercent(int nStartPrice, int nEndPrice, int nMarketType)
+        {
+            // 수수료 + 제세금 구하기
+            int nStartPriceFee;
+            int nEndPriceFee;
+            int nEndPriceTax;
+
+            nStartPriceFee = ((int)((nStartPrice * KIWOOM_STOCK_FEE) / 10) * 10); // 10원 미만 절사
+            nEndPriceFee = ((int)((nEndPrice * KIWOOM_STOCK_FEE) / 10) * 10); // 10원 미만 절사
+
+
+            if (nMarketType == KOSPI_ID)
+            {
+                int nEndPriceTax1 = (int)(nEndPrice * KOSPI_STOCK_TAX1);
+                int nEndPriceTax2 = (int)(nEndPrice * KOSPI_STOCK_TAX2);
+
+                nEndPriceTax = nEndPriceTax1 + nEndPriceTax2;
+            }
+            else
+            {
+                nEndPriceTax = (int)(nEndPrice * KOSDAQ_STOCK_TAX);
+            }
+
+            return (double)(nEndPrice - (nStartPrice + nEndPriceTax + nEndPriceFee + nStartPriceFee)) / nStartPrice * 100;
+        }
 
     }
 }

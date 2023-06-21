@@ -92,7 +92,7 @@ namespace AtoIndicator
                 axKHOpenAPI1.SetInputValue("계좌번호", sAccountNum);
                 axKHOpenAPI1.SetInputValue("비밀번호", "");
                 axKHOpenAPI1.SetInputValue("비밀번호입력매체구분", "00");
-                axKHOpenAPI1.SetInputValue("조회구분", "2");
+                axKHOpenAPI1.SetInputValue("조회구분", "3");
                 int nTrResult = axKHOpenAPI1.CommRqData("예수금상세현황요청", "opw00001", 0, sRequestDepositTrSrc);
                 if (nTrResult != OP_ERR_NONE) // 오류 발생
                 {
@@ -108,66 +108,6 @@ namespace AtoIndicator
         }
         #endregion
 
-        #region RequestTradeResult
-        // ============================================
-        // 당일실현손익상세요청 TR요청메소드
-        // ============================================
-        public int nTodayResultTRIdx;
-        public int nTodayResultTRCount;
-        public string sTodayResultTRSrc;
-        public bool isRequestTradeResultUsing;
-        public int nC;
-        string sPrevCode = "";
-        string sPrevCodeName = "";
-        int nTotalTradeVolume = 0; // 전체체결량
-        double fTotalBuyPrice = 0; // 전체매수가
-        double fTotalSellPrice = 0; // 전체체결가
-        public StringBuilder todayResultSb = new StringBuilder();
-        private void RequestTradeResult(int nPrevNext)
-        {
-            // 진입조건
-            // 처음(0)이면 not using이어야하고
-            // 중복(2)이면 using이어야 함
-            if ((nPrevNext == 0) == (!isRequestTradeResultUsing) || isCtrlPushed)
-            {
-                if (nPrevNext == 0)
-                {
-                    isRequestTradeResultUsing = true;
-                    nTodayResultTRIdx = 0;
-                    nTodayResultTRCount = 0;
-                    sTodayResultTRSrc = GetScreenNum();
-                }
-                axKHOpenAPI1.SetInputValue("계좌번호", sAccountNum);
-                axKHOpenAPI1.SetInputValue("비밀번호", "");
-                axKHOpenAPI1.SetInputValue("종목코드", "");
-                int nTrResult = axKHOpenAPI1.CommRqData("당일실현손익상세요청", "opt10077", nPrevNext, sTodayResultTRSrc);
-                if (nTrResult == OP_ERR_NONE)
-                {
-                    if (nPrevNext == 0)
-                        todayResultSb.Clear();
-                }
-                else if (nTrResult == OP_ERR_OVERFLOW1 || nTrResult == OP_ERR_OVERFLOW2 || nTrResult == OP_ERR_OVERFLOW3)
-                {
-                    Task.Run(() =>
-                    {
-                        Thread.Sleep(1200);
-                        RequestTradeResult(2);
-                    });
-                }
-                else
-                {
-                    isRequestTradeResultUsing = false;
-                    ShutOffScreen(sTodayResultTRSrc);
-                    PrintLog($"당일실현손익상세요청 TR이 비정상처리됐습니다.");
-                }
-
-            }
-            else
-            {
-                PrintLog($"당일실현손익상세요청 TR이 사용중입니다.");
-            }
-        }
-        #endregion
 
         #region ReceiveMsg 핸들러
         public void OnReceiveMsgHandler(object sender, AxKHOpenAPILib._DKHOpenAPIEvents_OnReceiveMsgEvent e)
@@ -190,7 +130,7 @@ namespace AtoIndicator
             #region RequestDeposit
             if (e.sRQName.Equals("예수금상세현황요청"))
             {
-                nCurDeposit = Math.Abs(int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRecordName, 0, "예수금")));
+                nCurDeposit = Math.Abs(int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRecordName, 0, "d+2출금가능금액")));
                 if (nCurDepositCalc == 0)
                 {
                     nCurDepositCalc = nCurDeposit;
@@ -255,79 +195,6 @@ namespace AtoIndicator
                 }
             } // END ---- e.sRQName.Equals("계좌평가잔고내역요청")
             #endregion
-            #region RequestTradeResult
-            else if (e.sRQName.Equals("당일실현손익상세요청"))
-            {
-                if (nTodayResultTRIdx == 0)
-                {
-                    int nTodayResult = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRecordName, 0, "당일실현손익"));
-                    todayResultSb.Append($"==============================================================================================================================={NEW_LINE}");
-                    todayResultSb.Append($"=====================================================     당일실현손익상세     ===================================================={NEW_LINE}");
-                    todayResultSb.Append($"당일실현손익 : {nTodayResult}(원){NEW_LINE}");
-                    nC = 1; // 몇번째 종목인지
-                }
-
-
-                int rows = axKHOpenAPI1.GetRepeatCnt(e.sTrCode, e.sRecordName);
-                nTodayResultTRCount += rows;
-
-                string sCode;
-                string sCodeName;
-                int nTradeVolume;
-                double fBuyPrice;
-                double fTradePrice;
-                double fYield;
-
-
-                for (int todayProfitIdx = 0; nTodayResultTRIdx < nTodayResultTRCount; todayProfitIdx++, nTodayResultTRIdx++)
-                {
-                    sCode = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRecordName, todayProfitIdx, "종목코드").Trim().Substring(1);
-                    sCodeName = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRecordName, todayProfitIdx, "종목명").Trim();
-                    fYield = double.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRecordName, todayProfitIdx, "손익율")); // 이건 흠... 안써
-                    nTradeVolume = Math.Abs(int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRecordName, todayProfitIdx, "체결량")));
-                    fBuyPrice = Math.Abs(double.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRecordName, todayProfitIdx, "매입단가")));
-                    fTradePrice = Math.Abs(double.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRecordName, todayProfitIdx, "체결가")));
-
-                    if (!sPrevCode.Equals(sCode)) // 같지 않다면
-                    {
-                        if (sPrevCode.Equals("")) // 초기화된 상태라면
-                        {
-                            // 할게 없다   
-                        }
-                        else // 종목이 변경됐다면
-                        {
-                            // 이전까지의 종목의 당일실현손익을 출력한다.
-                            todayResultSb.Append($"{nC++}번째 종목명 : {sPrevCodeName}, 종목코드 : {sPrevCode}, 거래량 : {nTotalTradeVolume}, 매수단가 : {Math.Round(fTotalBuyPrice / nTotalTradeVolume, 2)}, 매도단가 : {Math.Round(fTotalSellPrice / nTotalTradeVolume, 2)}, 손익율 : {Math.Round(((fTotalSellPrice - fTotalBuyPrice) / fTotalBuyPrice - REAL_STOCK_COMMISSION) * 100, 2)}(%), 투입금액 : {Math.Round(fTotalBuyPrice / MILLION, 2)}(백만원){NEW_LINE}");
-                        }
-                        // 전체변수들을 초기화한다.
-                        sPrevCode = sCode;
-                        sPrevCodeName = sCodeName;
-                        nTotalTradeVolume = nTradeVolume;
-                        fTotalBuyPrice = fBuyPrice * nTradeVolume;
-                        fTotalSellPrice = fTradePrice * nTradeVolume;
-                    }
-                    else // 같다면
-                    {
-                        // 값을 계속 더해준다.
-                        nTotalTradeVolume += nTradeVolume;
-                        fTotalBuyPrice += fBuyPrice * nTradeVolume;
-                        fTotalSellPrice += fTradePrice * nTradeVolume;
-                    }
-                }
-
-                if (e.sPrevNext.Equals("2"))
-                {
-                    RequestTradeResult(2);
-                }
-                else
-                {
-                    ShutOffScreen(sTodayResultTRSrc); // 당일실현손익상세요청 해당화면번호 꺼줍니다.
-                    isRequestTradeResultUsing = false;
-                    PrintLog(todayResultSb.ToString());
-                }
-
-            } // END ---- e.sRQName.Equals("당일실현손익상세요청")
-            #endregion
             else
             {
                 if (e.sRQName.Length > SEND_ORDER_ERROR_CHECK_PREFIX.Length)
@@ -360,7 +227,7 @@ namespace AtoIndicator
                                             ea[nEaReq].myTradeManager.nBuyReqCnt--;
                                             ShutOffScreen(e.sScrNo);
                                             slot.isBuyBanned = true;
-                                            nCurDepositCalc += slot.nOrderPrice * slot.nOrderVolume + ea[nEaReq].feeMgr.GetRoughFee(slot.nOrderPrice * slot.nOrderVolume);
+                                            nCurDepositCalc += slot.nOrderPrice * slot.nOrderVolume + ea[nEaReq].feeMgr.GetRoughBuyFee(slot.nOrderPrice, slot.nOrderVolume);
                                         }
                                         else
                                             PrintLog($"{nSharedTime} 화면번호 : {e.sScrNo} 종목명 : {ea[nEaReq].sCodeName} sRq : {e.sRQName} 이미 신규매수 비정상인데 다시 접근 에러");

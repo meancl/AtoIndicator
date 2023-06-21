@@ -970,7 +970,7 @@ namespace AtoIndicator.View.EachStockHistory
                                 else // 일부 매수취소 + 정상 매수
                                 {
                                     sPaperSellArrowToolTip +=
-                                         $"매도요청시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nSellRqTime}  체결시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndTime}  손익률 : {Math.Round(((double)(curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndPrice - curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedPrice) / curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedPrice - MainForm.PAPER_STOCK_COMMISSION) * 100, 2)} (%)\n" +
+                                         $"매도요청시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nSellRqTime}  체결시간 : {curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndTime}  손익률 : {Math.Round( mainForm.GetProfitPercent(curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedPrice * curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedVolume, curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndPrice * curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndVolume, curEa.nMarketGubun), 2)} (%)\n" +
                                          $"매도블록ID : {p}  주문가격(수량) : {curEa.paperBuyStrategy.paperTradeSlot[p].nSellRqPrice}(원)({curEa.paperBuyStrategy.paperTradeSlot[p].nSellRqVolume}),  매도가격(수량) : {curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndPrice}({curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndVolume})\n" +
                                          "매도설명 : " + curEa.paperBuyStrategy.paperTradeSlot[p].sSellDescription + "\n\n";
                                 }
@@ -1246,8 +1246,8 @@ namespace AtoIndicator.View.EachStockHistory
                                     sRealSellMessage += "[복제본]";
 
                                 sRealSellMessage +=
-                                    $"매도시간 : {curEa.myTradeManager.arrBuyedSlots[sellId].nDeathTime}  총손익금 : {(curEa.myTradeManager.arrBuyedSlots[sellId].nDeathPrice - curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice) * curEa.myTradeManager.arrBuyedSlots[sellId].nTotalSelledVolume}(원)  손익률 : {Math.Round(((double)(curEa.myTradeManager.arrBuyedSlots[sellId].nDeathPrice - curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice) / curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice - MainForm.REAL_STOCK_COMMISSION) * 100, 2)}(%)\n" +
-                                    $"매도블록ID : {sellId}  주문가격(수량) : {curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice}(원)({curEa.myTradeManager.arrBuyedSlots[sellId].nOrderVolume}),  매도가격(수량) : {curEa.myTradeManager.arrBuyedSlots[sellId].nDeathPrice}(원)({curEa.myTradeManager.arrBuyedSlots[sellId].nTotalSelledVolume})\n" +
+                                    $"매도시간 : {curEa.myTradeManager.arrBuyedSlots[sellId].nDeathTime}  총손익금 : {mainForm.GetProfitPrice(curEa.myTradeManager.arrBuyedSlots[sellId].nBuyedSumPrice, curEa.myTradeManager.arrBuyedSlots[sellId].nSelledSumPrice, curEa.nMarketGubun)} (원)  손익률 : {Math.Round(mainForm.GetProfitPercent(curEa.myTradeManager.arrBuyedSlots[sellId].nBuyedSumPrice, curEa.myTradeManager.arrBuyedSlots[sellId].nSelledSumPrice, curEa.nMarketGubun), 2)}(%)\n" +
+                                    $"매도블록ID : {sellId}  주문가격(수량) : {curEa.myTradeManager.arrBuyedSlots[sellId].nBuyPrice}(원)({curEa.myTradeManager.arrBuyedSlots[sellId].nOrderVolume}),  매도가격(수량) : {curEa.myTradeManager.arrBuyedSlots[sellId].nDeathPrice}(원)({curEa.myTradeManager.arrBuyedSlots[sellId].nSellVolume})\n" +
                                     "매도설명 : " + curEa.myTradeManager.arrBuyedSlots[sellId].sSellDescription + "\n\n";
 
 
@@ -2984,8 +2984,8 @@ namespace AtoIndicator.View.EachStockHistory
                                 curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.FixedMethod;
                                 if (fBottomPriceTouch != 0 && fTargetPriceTouch != 0)
                                 {
-                                    curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = (fTargetPriceTouch - curEa.myTradeManager.arrBuyedSlots[i].nBuyPrice) / curEa.myTradeManager.arrBuyedSlots[i].nBuyPrice - MainForm.REAL_STOCK_COMMISSION;
-                                    curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = (fBottomPriceTouch - curEa.myTradeManager.arrBuyedSlots[i].nBuyPrice) / curEa.myTradeManager.arrBuyedSlots[i].nBuyPrice - MainForm.REAL_STOCK_COMMISSION;
+                                    curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetProfitPercent(curEa.myTradeManager.arrBuyedSlots[i].nBuyedSumPrice, (int)(fTargetPriceTouch * curEa.myTradeManager.arrBuyedSlots[i].nBuyVolume), curEa.nMarketGubun) / 100;
+                                    curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetProfitPercent(curEa.myTradeManager.arrBuyedSlots[i].nBuyedSumPrice, (int)(fBottomPriceTouch * curEa.myTradeManager.arrBuyedSlots[i].nBuyVolume), curEa.nMarketGubun) / 100;
                                 }
                                 else
                                 {

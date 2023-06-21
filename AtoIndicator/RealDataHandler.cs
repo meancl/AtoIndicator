@@ -220,15 +220,12 @@ namespace AtoIndicator
                     if (sGubun.Equals("2")) // 장 종료 10분전 동시호가
                     {
                         PrintLog($"{sTimeRest} : 장종료전");
-                        RequestHoldings(0); // 장 끝나기 전 잔여종목 전량매도
                     }
                     else if (sGubun.Equals("4")) // 장 종료
                     {
                         PrintLog("장종료");
                         isMarketStart = false;
                         isMarketLabel.Text = $"장시작 : {isMarketStart}";
-                        RequestHoldings(0);
-                        RequestTradeResult(0);
                         PutTradeResultAsync();
                         PutChartResultAsync();
                     }
@@ -1373,7 +1370,7 @@ namespace AtoIndicator
 
                                     int nEstimatedPrice = curSlot.nOrderPrice; // 종목의 요청했던 최우선매도호가를 받아온다.
 
-                                    int nNumToBuy = (int)(nCurDepositCalc / (nEstimatedPrice * (1 + STOCK_FEE))); // 현재 예수금으로 살 수 있을 만큼
+                                    int nNumToBuy = (int)(nCurDepositCalc / (nEstimatedPrice * (1 + KIWOOM_STOCK_FEE))); // 현재 예수금으로 살 수 있을 만큼
                                     int nMaxNumToBuy; // 최대매수가능금액으로 살 수 있을 만큼 
 
                                     if (curSlot.nQty <= 0)
@@ -1599,7 +1596,7 @@ namespace AtoIndicator
                                     {
                                         int nEstimatedPrice = curSlot.nOrderPrice; // 종목의 요청했던 최우선매도호가를 받아온다.
 
-                                        int nNumToBuy = (int)(nCurDepositCalc / (nEstimatedPrice * (1 + STOCK_FEE))); // 현재 예수금으로 살 수 있을 만큼
+                                        int nNumToBuy = (int)(nCurDepositCalc / (nEstimatedPrice * (1 + KIWOOM_STOCK_FEE))); // 현재 예수금으로 살 수 있을 만큼
                                         int nMaxNumToBuy; // 최대매수가능금액으로 살 수 있을 만큼 
 
                                         if (curSlot.nQty <= 0)
@@ -1669,7 +1666,7 @@ namespace AtoIndicator
 
                                                     isSendOrder = true;
                                                     ea[curSlot.nEaIdx].myTradeManager.nBuyReqCnt++; // 구매횟수 증가
-                                                    nCurDepositCalc -= nNumToBuy * nEstimatedPrice + ea[curSlot.nEaIdx].feeMgr.GetRoughFee(nNumToBuy * nEstimatedPrice);
+                                                    nCurDepositCalc -= nNumToBuy * nEstimatedPrice + ea[curSlot.nEaIdx].feeMgr.GetRoughBuyFee(nEstimatedPrice, nNumToBuy);
                                                     PrintLog($"{nSharedTime}, {curSlot.sCode}  {ea[curSlot.nEaIdx].sCodeName} 화면번호 : {sBuyScrNo} 매매블록 : {nCurSlotIdx} {curSlot.nOrderPrice}, {nNumToBuy} 매수신청 전송 성공", curSlot.nEaIdx);
                                                 }
                                                 else // 요청이 실패했다는것
@@ -4745,11 +4742,7 @@ namespace AtoIndicator
                                         }
                                         else //  판매중도 판매완료도 아닌 상황
                                         {
-                                            int nBuyPrice = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedPrice; // 처음 초기화됐을때는 0인데 체결이 된 상태에서만 접근 가능하니 사졌을 때의 평균매입가
-                                            double fYield = (double)(ea[nCurIdx].nFb - nBuyPrice) / nBuyPrice; // 현재 최우선매수호가 와의 손익률을 구한다
-                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].fPower = fYield; // 수수료 미포함 손익율
-                                            fYield -= REAL_STOCK_COMMISSION;
-                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].fPowerWithFee = fYield; // 수수료 포함 손익율
+                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].fPowerWithFee = GetProfitPercent(ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedPrice * ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume , ea[nCurIdx].nFb * ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume, ea[nCurIdx].nMarketGubun)/ 100; // 수수료 포함 손익율
 
                                             SetThisPaperSell(ea[nCurIdx].paperBuyStrategy, nCurIdx, i);
                                         }
@@ -4896,14 +4889,7 @@ namespace AtoIndicator
                                             SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nSellErrorLastTime) >= ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nSellErrorCount / 2 + 1
                                           )
                                         {
-                                            int nBuyPrice;
-                                            double fYield;
-
-                                            nBuyPrice = ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyPrice; // 처음 초기화됐을때는 0인데 체결이 된 상태에서만 접근 가능하니 사졌을 때의 평균매입가
-                                            fYield = (double)(ea[nCurIdx].nFb - nBuyPrice) / nBuyPrice; // 현재 최우선매수호가 와의 손익률을 구한다
-                                            ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPower = fYield; // 수수료 미포함 손익율
-                                            fYield -= REAL_STOCK_COMMISSION; // 거래세와 거래수수료 차감
-                                            ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee = fYield; // 수수료 포함 손익율
+                                            ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].fPowerWithFee = GetProfitPercent(ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyedSumPrice, ea[nCurIdx].myTradeManager.arrBuyedSlots[checkSellIterIdx].nBuyVolume * ea[nCurIdx].nFb, ea[nCurIdx].nMarketGubun) / 100; // 수수료 포함 손익율
 
 
                                             //////////////////////////////////////////////////////////////////////////////////

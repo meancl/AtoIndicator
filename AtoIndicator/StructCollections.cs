@@ -221,6 +221,8 @@ namespace AtoIndicator
                 timeLines1m.Init();
                 fakeStrategyMgr.Init();
 
+                feeMgr = default;
+
                 eventMgr = new EventManager();
                 manualReserve = new ManualReservation();
 
@@ -657,8 +659,8 @@ namespace AtoIndicator
             public int nSellMinuteIdx; // 로그용 매매블록에서의 분당 매도시점 인덱스
 
             public int nBuyedSumPrice; // 매수한 가격
-            public int nTotalSelledVolume; // 처분한 갯수
-            public int nTotalSelledPrice; // 처분한 총 가격
+            public int nSellVolume; // 처분한 갯수
+            public int nSelledSumPrice; // 처분한 총 가격
 
             public string sCurOrgOrderId; // 원주문번호   default:""
             public bool isBuying; // 매수 중 시그널
@@ -675,7 +677,6 @@ namespace AtoIndicator
             public double fBottomPer; // 얼마에 손절할거야
 
             // 경과 확인용
-            public double fPower; // 현재 순수 손익율
             public double fPowerWithFee; // 세금 수수료 포함 손익율
             public int nCurLineIdx; // 현재 익절선과 손절선의 인덱스
 
@@ -735,8 +736,8 @@ namespace AtoIndicator
                 newSlot.nSellMinuteIdx = nSellMinuteIdx;
 
                 newSlot.nBuyedSumPrice = nBuyedSumPrice;
-                newSlot.nTotalSelledVolume = nTotalSelledVolume;
-                newSlot.nTotalSelledPrice = nTotalSelledPrice;
+                newSlot.nSellVolume = nSellVolume;
+                newSlot.nSelledSumPrice = nSelledSumPrice;
 
                 newSlot.isBuying = isBuying;
                 newSlot.isSelling = isSelling;
@@ -752,7 +753,6 @@ namespace AtoIndicator
                 newSlot.fBottomPer = fBottomPer;
 
                 // 경과 확인용
-                newSlot.fPower = fPower;
                 newSlot.fPowerWithFee = fPowerWithFee;
                 newSlot.nCurLineIdx = nCurLineIdx;
 
@@ -821,7 +821,7 @@ namespace AtoIndicator
                 {
                     nBottomPriceAfterBuy = nDownPrice;
                     nBottomTimeAfterBuy = nT;
-                    fBottomPowerWithFeeAfterBuy = (double)(nBottomPriceAfterBuy - nBuyedPrice) / nDenomPrice - REAL_STOCK_COMMISSION;
+                    fBottomPowerWithFeeAfterBuy = (double)(nBottomPriceAfterBuy - nBuyedPrice) / nDenomPrice - (KOSDAQ_STOCK_TAX + KIWOOM_STOCK_FEE * 2);
 
                     nTopPriceAfterBuy = nBottomPriceAfterBuy;
                     nTopTimeAfterBuy = nBottomTimeAfterBuy;
@@ -833,7 +833,7 @@ namespace AtoIndicator
                 {
                     nTopPriceAfterBuy = nUpPrice;
                     nTopTimeAfterBuy = nT;
-                    fTopPowerWithFeeAfterBuy = (double)(nTopPriceAfterBuy - nBuyedPrice) / nDenomPrice - REAL_STOCK_COMMISSION;
+                    fTopPowerWithFeeAfterBuy = (double)(nTopPriceAfterBuy - nBuyedPrice) / nDenomPrice - (KOSDAQ_STOCK_TAX + KIWOOM_STOCK_FEE * 2);
                 }
 
                 // 맥스
@@ -841,7 +841,7 @@ namespace AtoIndicator
                 {
                     nMaxPriceAfterBuy = nUpPrice;
                     nMaxTimeAfterBuy = nT;
-                    fMaxPowerWithFeeAfterBuy = (double)(nMaxPriceAfterBuy - nBuyedPrice) / nDenomPrice - REAL_STOCK_COMMISSION;
+                    fMaxPowerWithFeeAfterBuy = (double)(nMaxPriceAfterBuy - nBuyedPrice) / nDenomPrice - (KOSDAQ_STOCK_TAX + KIWOOM_STOCK_FEE * 2);
 
                     nBoundBottomPriceAfterBuy = nMaxPriceAfterBuy;
                     nBoundBottomTimeAfterBuy = nMaxTimeAfterBuy;
@@ -857,7 +857,7 @@ namespace AtoIndicator
                 {
                     nBoundBottomPriceAfterBuy = nDownPrice;
                     nBoundBottomTimeAfterBuy = nT;
-                    fBoundBottomPowerWithFeeAfterBuy = (double)(nBoundBottomPriceAfterBuy - nBuyedPrice) / nDenomPrice - REAL_STOCK_COMMISSION;
+                    fBoundBottomPowerWithFeeAfterBuy = (double)(nBoundBottomPriceAfterBuy - nBuyedPrice) / nDenomPrice - (KOSDAQ_STOCK_TAX + KIWOOM_STOCK_FEE * 2);
 
                     nBoundTopPriceAfterBuy = nBoundBottomPriceAfterBuy;
                     nBoundTopTimeAfterBuy = nBoundBottomTimeAfterBuy;
@@ -869,7 +869,7 @@ namespace AtoIndicator
                 {
                     nBoundTopPriceAfterBuy = nUpPrice;
                     nBoundTopTimeAfterBuy = nT;
-                    fBoundTopPowerWithFeeAfterBuy = (double)(nBoundTopPriceAfterBuy - nBuyedPrice) / nDenomPrice - REAL_STOCK_COMMISSION;
+                    fBoundTopPowerWithFeeAfterBuy = (double)(nBoundTopPriceAfterBuy - nBuyedPrice) / nDenomPrice - (KOSDAQ_STOCK_TAX + KIWOOM_STOCK_FEE * 2);
                 }
 
                 // 맥스 이전 저점
@@ -1445,7 +1445,6 @@ namespace AtoIndicator
             public double fTargetPer;
             public double fBottomPer;
             public double fPowerWithFee;
-            public double fPower;
 
             public string sFixedMsg;
             public int nSequence;
@@ -1650,26 +1649,103 @@ namespace AtoIndicator
         }
         public struct FeeManager
         {
+            
+            public double fTotalBuyFeeCutOff;
+            public double fTotalSellFeeCutOff;
+           
+         
+            public double fOnceSellTaxCutOff1;
+            public double fOnceSellTaxCutOff2;
 
+            
+            
             /*
-             * 당사 수수료 징수는 종목별 매수/매도를 기준으로 하며, 동일종목의 분할매매시는 매수별, 매도별 체결합계금액을 기준으로 산정합니다.
-             * 매매수수료는 10원 미만 절사이며, (ex. 3,000원 X 50주 = 150,000원 체결 시, 온라인 매체 매매수수료는 150,000원 X 0.015% = 22.5원 -> 20원 부과)
-             * 세금은 원 미만 절사 입니다. (ex. 2,050원 X 50주 = 102,500원 체결 시, 거래세는 102,500원 X 0.23%(코스닥) = 235.75원 -> 235원 부과)
+             세금은 코스피의 경우 거래세 , 특농세 각각 계산하고 원 절사하고 더함
+             코스닥의 경우 그냥 거래세만 곱하고 원 절사하고 더함
+             
+            수수료는 매수매도 각각 곱하고 각각 10원 절사
              */
 
-            /// 임시로 빼는 수수료
-            public int GetRoughFee(int nPrice)
+            public int GetBuyFee(int nPrice, int nVolume)
             {
-                double retFee = nPrice * STOCK_FEE; // 수수료를 소수점까지 구한다.
-                return (int)retFee; // 현 세금(원 미만 절사)
+                double buyFee;
+
+                buyFee = nPrice * nVolume * KIWOOM_STOCK_FEE; // 172.59
+                fTotalBuyFeeCutOff += buyFee % 10;  // 2.59
+                buyFee = buyFee - buyFee % 10;  // 172.59 - 2.59
+                buyFee += (int)fTotalBuyFeeCutOff / 10 * 10; // 
+                fTotalBuyFeeCutOff %= 10;
+
+                return (int)buyFee;
             }
 
-            // 매수할때 임시로 했던 금액 실제로 변경
-            public int GetRoughTax(int nPrice)
+            public int GetSellFee(int nPrice, int nVolume)
             {
-                double retTax = nPrice * STOCK_TAX; // 수수료를 소수점까지 구한다.
-                return (int)retTax; // 현 세금(원 미만 절사)
+                double sellFee;
+
+                sellFee = nPrice * nVolume * KIWOOM_STOCK_FEE; // 172.59
+                fTotalSellFeeCutOff += sellFee % 10;  // 2.59
+                sellFee = sellFee - sellFee % 10;  // 172.59 - 2.59
+                sellFee += (int)fTotalSellFeeCutOff / 10 * 10; // 
+                fTotalSellFeeCutOff %= 10;
+
+                return (int)sellFee;
             }
+
+
+            public int GetSellTax(int nPrice, int nVolume, int nMarketType)
+            {
+                double sellCommission;
+                
+                if (nMarketType == KOSPI_ID)
+                {
+                    double sellTax1;
+                    double sellTax2;
+                    
+                    sellTax1 = nPrice * nVolume * KOSPI_STOCK_TAX1; // 15.3
+                    fOnceSellTaxCutOff1 += sellTax1 - (int)sellTax1;  // 15.3 - 15 = 0.3
+                    sellTax1 = (int)sellTax1; // 15
+                    sellTax1 += (int)fOnceSellTaxCutOff1; // 
+                    fOnceSellTaxCutOff1 %= 1;
+
+                    sellTax2 = nPrice * nVolume * KOSPI_STOCK_TAX2;
+                    fOnceSellTaxCutOff2 += sellTax2 - (int)sellTax2;
+                    sellTax2 = (int)sellTax2;
+                    sellTax2 += (int)fOnceSellTaxCutOff2;
+                    fOnceSellTaxCutOff2 %= 1;
+
+                    sellCommission = sellTax1 + sellTax2;
+                }
+                else
+                {
+                    double sellTax1;
+
+                    sellTax1 = nPrice * nVolume * KOSDAQ_STOCK_TAX;
+                    fOnceSellTaxCutOff1 += sellTax1 - (int)sellTax1;
+                    sellTax1 = (int)sellTax1;
+                    sellTax1 += (int)fOnceSellTaxCutOff1;
+                    fOnceSellTaxCutOff1 %= 1;
+
+                    sellCommission = sellTax1;
+                }
+
+                return (int)sellCommission;
+            }
+
+            public void SetDoneSellOneSet()
+            {
+                fOnceSellTaxCutOff1 = 0;
+                fOnceSellTaxCutOff2 = 0;
+            }
+
+            /// 임시로 빼는 수수료
+            public int GetRoughBuyFee(int nPrice, int nVolume)
+            {
+                double EPSILON = 0.000001;
+                double retFee = nPrice  * nVolume * KIWOOM_STOCK_FEE; 
+                return (int)(retFee + ((retFee % 1 > EPSILON) ? 1 :0)); 
+            }
+
         }
 
         /// <summary>

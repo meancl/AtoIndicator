@@ -16,18 +16,11 @@ namespace AtoIndicator
         #endregion
 
         #region 상수
-        public const double STOCK_TAX = 0.0023; // 거래세 
-        public const double STOCK_FEE = 0.00015; // 증권 매매수수료
-        public const double VIRTUAL_STOCK_FEE = 0.0035; // 가상증권 매매수수료
-        public const double VIRTUAL_STOCK_COMMISSION = STOCK_TAX + VIRTUAL_STOCK_FEE * 2; // 최종 거래수수료 *현재 : 거래세 + 가상증권 매매수수료 *  2( 가상증권 매수수수료 + 가상증권매매수수료 )
-        public const double REAL_STOCK_COMMISSION = STOCK_TAX + STOCK_FEE * 2;
-        public const double PAPER_STOCK_COMMISSION = 0.004;
+        public const double KOSPI_STOCK_TAX1 = 0.0005; // 코스피 거래세
+        public const double KOSPI_STOCK_TAX2 = 0.0015; // 코스피 농특세
+        public const double KOSDAQ_STOCK_TAX = 0.002; // 코스닥 거래세
 
-        public const double REAL_STOCK_BUY_COMMISION = STOCK_FEE;
-        public const double REAL_STOCK_SELL_COMMISION = STOCK_FEE + STOCK_TAX;
-
-        public const double VIRTUAL_STOCK_BUY_COMMISION = VIRTUAL_STOCK_FEE;
-        public const double VIRTUAL_STOCK_SELL_COMMISION = VIRTUAL_STOCK_FEE + STOCK_TAX;
+        public const double KIWOOM_STOCK_FEE = 0.00015; // 증권 매매수수료
 
         public const double DEFAULT_FIXED_CEILING = 0.015;
         public const double DEFAULT_FIXED_BOTTOM = -0.02;
@@ -110,7 +103,8 @@ namespace AtoIndicator
                             if (buySlotByOrderIdDict.ContainsKey(sOrderId))
                             {
                                 BuyedSlot slot = buySlotByOrderIdDict[sOrderId];
-                                nCurDepositCalc += slot.nOrderPrice * slot.nOrderVolume + ea[nCurIdx].feeMgr.GetRoughFee(slot.nOrderPrice * slot.nOrderVolume);
+                                // 전량 매수취소의 경우 가격과 러프한 매수수수료를 다시 더해준다.
+                                nCurDepositCalc += slot.nOrderPrice * slot.nOrderVolume + ea[nCurIdx].feeMgr.GetRoughBuyFee(slot.nOrderPrice, slot.nOrderVolume); 
                             }
                             PrintLog($"{nSharedTime} {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName} {nOrderVolume}주 {nOrderPrice}가 전량매수취소 완료");
                             ShutOffScreen(sScrNo);
@@ -166,7 +160,8 @@ namespace AtoIndicator
                                         break;
                                 }
 
-                                nCurDepositCalc -= slot.nOrderPrice * slot.nOrderVolume + ea[nCurIdx].feeMgr.GetRoughFee(slot.nOrderPrice * slot.nOrderVolume);
+                                // 손매수접수의 경우, 주문금액과 러프한 수수료를 뺀다.
+                                nCurDepositCalc -= slot.nOrderPrice * slot.nOrderVolume + ea[nCurIdx].feeMgr.GetRoughBuyFee(slot.nOrderPrice , slot.nOrderVolume);
                             }
 
                             slot.nReceiptTime = nSharedTime;
@@ -213,10 +208,10 @@ namespace AtoIndicator
                                 slot.nBirthPrice = slot.nBuyPrice;
 
 
-                                // rough 수수료
+                                // 일부 매수취소의 경우 잔량의 대금을 더해주고 잔량만큼의 러프한 수수료를 더해준다.
                                 nCurDepositCalc += (slot.nOrderVolume - slot.nBuyVolume) * slot.nOrderPrice; // 차액 더하기
-                                nCurDepositCalc += ea[nCurIdx].feeMgr.GetRoughFee(slot.nOrderVolume * slot.nOrderPrice); //수수료 더하기
-                                nCurDepositCalc -= ea[nCurIdx].feeMgr.GetRoughFee(slot.nBuyedSumPrice);
+                                nCurDepositCalc += ea[nCurIdx].feeMgr.GetRoughBuyFee( slot.nOrderPrice, slot.nOrderVolume - slot.nBuyVolume); // 
+
 
                                 // 기록용
                                 slot.nBuyMinuteIdx = nTimeLineIdx;
@@ -239,8 +234,12 @@ namespace AtoIndicator
                         }
                         #endregion
                         #region 일반체결
-                        // 예수금에 지정상한가와 매입금액과의 차이만큼을 다시 복구시켜준다.
-                        nCurDepositCalc += (slot.nOrderPrice - nCurOkTradePrice) * nCurOkTradeVolume; // (추정매수가 - 실매수가) * 실매수량 더해준다, 오차만큼 더해준다. 
+                        // 일반체결의 경우 이전의 러프한 수수료만큼 더해주고 체결된 금액과 주문 금액 차를 체결수량만큼 더해주고
+                        // 체결 안된거는 러프한 주문상한가로 빼주고 체결된 부분에 대해서는 실제 매수수수료로 책정해서 빼준다.
+                        nCurDepositCalc += ea[nCurIdx].feeMgr.GetRoughBuyFee(slot.nOrderPrice, slot.nOrderVolume - slot.nBuyVolume); // 잔량만큼 다시 수수료를 복구해주고
+                        nCurDepositCalc += (slot.nOrderPrice - nCurOkTradePrice) * nCurOkTradeVolume;  // 차액만큼은 넣어주고
+                        nCurDepositCalc -= ea[nCurIdx].feeMgr.GetRoughBuyFee(slot.nOrderPrice, slot.nOrderVolume - (slot.nBuyVolume + nCurOkTradeVolume)); // 잔량만큼 다시 수수료를 빼주고
+                        nCurDepositCalc -= ea[nCurIdx].feeMgr.GetBuyFee(nCurOkTradePrice, nCurOkTradeVolume);
 
                         // 이것은 현재매수 구간이기 떄문에
                         // 해당레코드의 평균매입가와 매수수량을 조정하기 위한 과정이다
@@ -255,10 +254,6 @@ namespace AtoIndicator
                         #region 전량 체결
                         if (nNoTradeVolume == 0) // 매수 전량 체결됐다면
                         {
-                            // rough 수수료
-                            nCurDepositCalc += ea[nCurIdx].feeMgr.GetRoughFee(slot.nOrderPrice * slot.nOrderVolume); // 최대 수수료 다시 복구하고
-                            nCurDepositCalc -= ea[nCurIdx].feeMgr.GetRoughFee(slot.nBuyedSumPrice); // 매수한 만큼만 빼준다.
-
                             slot.isAllBuyed = true; // 해당종목의 매수레코드의 매수완료 on
                             slot.isBuying = false;
                             slot.nBuyEndTime = nSharedTime; // 주문체결완료 시간 설정
@@ -391,10 +386,6 @@ namespace AtoIndicator
                                         PrintLog($"{(isGoneBlocked ? "빼앗긴블럭" : "손매도접수")} {nSharedTime} : {ea[nCurIdx].sCode}  {ea[nCurIdx].sCodeName} {disposal}블록 {disposalVolume}주 접수", nCurIdx, disposal);
                                     }
                                 }
-                                if (tmpCurOrderVolume > 0) // 오류
-                                {
-
-                                }
                             }
 
                             ea[nCurIdx].myTradeManager.nTotalSelling += nOrderVolume;
@@ -435,7 +426,7 @@ namespace AtoIndicator
 
 
                         #region 매도 체결 처리
-                        nCurDepositCalc += nCurOkTradeVolume * nCurOkTradePrice - (ea[nCurIdx].feeMgr.GetRoughFee(nCurOkTradeVolume * nCurOkTradePrice) + ea[nCurIdx].feeMgr.GetRoughTax(nCurOkTradeVolume * nCurOkTradePrice)); // 세금 빼고 판만큼 더해주기
+                        nCurDepositCalc += nCurOkTradeVolume * nCurOkTradePrice - (ea[nCurIdx].feeMgr.GetSellFee(nCurOkTradePrice, nCurOkTradeVolume) + ea[nCurIdx].feeMgr.GetSellTax( nCurOkTradePrice, nCurOkTradeVolume, ea[nCurIdx].nMarketGubun)); // 세금 빼고 판만큼 더해주기
                         nTodayDisposalSellPrice += nCurOkTradeVolume * nCurOkTradePrice; // 오늘자 매도가격 증가
 
                         ea[nCurIdx].myTradeManager.nTotalSelling -= nCurOkTradeVolume;
@@ -466,8 +457,8 @@ namespace AtoIndicator
                                     int disposalVolume = member.nCurVolume > tmpCurOkTradeVolume ? tmpCurOkTradeVolume : member.nCurVolume;
 
                                     member.nCurVolume -= disposalVolume;
-                                    member.nTotalSelledVolume += disposalVolume; // 처분갯수 증가
-                                    member.nTotalSelledPrice += disposalVolume * nCurOkTradePrice; // 처분총가격 증가 
+                                    member.nSellVolume += disposalVolume; // 처분갯수 증가
+                                    member.nSelledSumPrice += disposalVolume * nCurOkTradePrice; // 처분총가격 증가 
                                     virtualSellBlock.nProcessedVolume += disposalVolume;
 
                                     if (member.nCurVolume <= 0)
@@ -480,12 +471,12 @@ namespace AtoIndicator
                                         member.isSelling = false;
                                         member.isSellStarted = false;
                                         member.nDeathTime = nSharedTime;
-                                        member.nDeathPrice = member.nTotalSelledPrice / member.nTotalSelledVolume;
+                                        member.nDeathPrice = member.nSelledSumPrice / member.nSellVolume;
                                         ea[nCurIdx].myTradeManager.nSellReqCnt--;
                                         ea[nCurIdx].myTradeManager.isOrderStatus = false;
                                         ea[nCurIdx].myTradeManager.isRealBuyChangeNeeded = true;
 
-                                        PrintLog($"[{sMsg}] {nSharedTime} : {ea[nCurIdx].sCode}  {ea[nCurIdx].sCodeName} {member.nBuyedSlotId}블록 매도 체결완료, 매도가 : {member.nDeathPrice} 손익 : {((double)(member.nDeathPrice - member.nBuyPrice) / member.nBuyPrice - REAL_STOCK_COMMISSION) * 100}", nCurIdx, member.nBuyedSlotId);
+                                        PrintLog($"[{sMsg}] {nSharedTime} : {ea[nCurIdx].sCode}  {ea[nCurIdx].sCodeName} {member.nBuyedSlotId}블록 매도 체결완료, 매도가 : {member.nDeathPrice} 손익 : {GetProfitPercent(member.nBuyedSumPrice, member.nSelledSumPrice, ea[nCurIdx].nMarketGubun)}", nCurIdx, member.nBuyedSlotId);
                                     }
                                     else
                                         PrintLog($"[{sMsg}] {nSharedTime} : {ea[nCurIdx].sCode}  {ea[nCurIdx].sCodeName} {member.nBuyedSlotId}블록 {disposalVolume}(주) {nCurOkTradePrice}(원) .. 잔량 : {nNoTradeVolume}(주)", nCurIdx, member.nBuyedSlotId);
@@ -493,17 +484,15 @@ namespace AtoIndicator
                                     tmpCurOkTradeVolume -= disposalVolume;
                                 }
                             }
-                            if (tmpCurOkTradeVolume > 0) // 오류
-                            {
-
-                            }
 
 
                         }
                         #endregion
 
-                        if (nNoTradeVolume == 0)
+                        if (nNoTradeVolume == 0) // 매도정상완료
                         {
+                            ea[nCurIdx].feeMgr.SetDoneSellOneSet();
+
                             virtualSellBlockByOrderIdDict.Remove(sOrderId);
                             virtualSellBlockByScrNoDict.Remove(sScrNo);
                             sellRemainCheckByOrderIdDict.Remove(sOrderId);

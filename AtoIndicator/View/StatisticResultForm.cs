@@ -128,7 +128,7 @@ namespace AtoIndicator.View.StatisticResult
                             }
                             else // 정상 매매종료
                             {
-                                curResultTracker.fProfit = (double)(curBuyedSlot.nSellEndPrice - curBuyedSlot.nBuyedPrice) / curBuyedSlot.nBuyedPrice - MainForm.PAPER_STOCK_COMMISSION;
+                                curResultTracker.fProfit = mainForm.GetProfitPercent(curBuyedSlot.nBuyedPrice * curBuyedSlot.nBuyedVolume, curBuyedSlot.nSellEndPrice * curBuyedSlot.nSellEndVolume, mainForm.ea[curStrategyHistory.nEaIdx].nMarketGubun) / 100;
                                 lEachSumBuyed += curBuyedSlot.nBuyedVolume * curBuyedSlot.nBuyedPrice;
                                 lEachStrategyProfit += (long)(curBuyedSlot.nBuyedVolume * curBuyedSlot.nBuyedPrice * curResultTracker.fProfit);
                                 statisticer.strategyResult[strategyNum].nTradedNum++;

@@ -108,7 +108,7 @@ namespace AtoIndicator.View.ScrollableMsgBox
                                 $"매도시간 : {curEa.paperBuyStrategy.paperTradeSlot[nCheck].nSellEndTime}{NEW_LINE}" +
                                 $"매도가 : {curEa.paperBuyStrategy.paperTradeSlot[nCheck].nSellEndPrice}{NEW_LINE}" +
                                 $"매매시간 : {SubTimeToTime(curEa.paperBuyStrategy.paperTradeSlot[nCheck].nSellEndTime, curEa.paperBuyStrategy.paperTradeSlot[nCheck].nBuyEndTime)}{NEW_LINE}" +
-                                $"매매결과 : {Math.Round(((double)(curEa.paperBuyStrategy.paperTradeSlot[nCheck].nSellEndPrice - curEa.paperBuyStrategy.paperTradeSlot[nCheck].nBuyedPrice) / curEa.paperBuyStrategy.paperTradeSlot[nCheck].nBuyedPrice - MainForm.PAPER_STOCK_COMMISSION) * 100, 2)}(%){NEW_LINE}";
+                                $"매매결과 : {Math.Round(((double)(curEa.paperBuyStrategy.paperTradeSlot[nCheck].nSellEndPrice - curEa.paperBuyStrategy.paperTradeSlot[nCheck].nBuyedPrice) / curEa.paperBuyStrategy.paperTradeSlot[nCheck].nBuyedPrice - (MainForm.KOSDAQ_STOCK_TAX + MainForm.KIWOOM_STOCK_FEE * 2)) * 100, 2)}(%){NEW_LINE}";
                         else
                             sMessage += $"전량 매수취소됐습니다.{NEW_LINE}";
 

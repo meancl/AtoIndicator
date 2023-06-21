@@ -127,7 +127,7 @@ namespace AtoIndicator.View.EachStrategy
                             }
                             else // 정상매매
                             {
-                                eachStrategyInfo.fProfit = (double)(buyedSlot.nSellEndPrice - buyedSlot.nBuyedPrice) / buyedSlot.nBuyedPrice - MainForm.PAPER_STOCK_COMMISSION;
+                                eachStrategyInfo.fProfit = mainForm.GetProfitPercent(buyedSlot.nBuyedPrice * buyedSlot.nBuyedVolume, buyedSlot.nSellEndPrice * buyedSlot.nSellEndVolume, curEa.nMarketGubun) / 100;
                             }
                         }
                         else
@@ -247,7 +247,7 @@ namespace AtoIndicator.View.EachStrategy
                             $"매도시간 : {buyedSlot.nSellEndTime}{NEW_LINE}" +
                             $"매도가 : {buyedSlot.nSellEndPrice}{NEW_LINE}" +
                             $"매매시간 : {SubTimeToTime(buyedSlot.nSellEndTime, buyedSlot.nBuyEndTime)}{NEW_LINE}" +
-                            $"매매결과 : {Math.Round(((double)(buyedSlot.nSellEndPrice - buyedSlot.nBuyedPrice) / buyedSlot.nBuyedPrice - MainForm.PAPER_STOCK_COMMISSION) * 100, 2)}(%){NEW_LINE}";
+                            $"매매결과 : {Math.Round(mainForm.GetProfitPercent(buyedSlot.nBuyedPrice * buyedSlot.nBuyedVolume, buyedSlot.nSellEndPrice * buyedSlot.nSellEndVolume, curEa.nMarketGubun), 2)}(%){NEW_LINE}";
                     else
                         choosedInfoTextBox.Text += $"전량 매수취소됐습니다.{NEW_LINE}";
 
