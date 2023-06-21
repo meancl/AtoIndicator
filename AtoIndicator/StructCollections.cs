@@ -621,7 +621,7 @@ namespace AtoIndicator
             public TradeMethodCategory eDefaultTradeCategory;
             public BuyedManager()
             {
-                eDefaultTradeCategory = TradeMethodCategory.FixedMethod;
+                eDefaultTradeCategory = TradeMethodCategory.RisingMethod;
                 arrBuyedSlots = new List<BuyedSlot>();
                 sTotalLog = new StringBuilder();
             }
@@ -1311,6 +1311,7 @@ namespace AtoIndicator
             public int nFakeAssistantNum;
             public int nFakeVolatilityNum;
             public int nFakeDownNum;
+            public int nPaperBuyNum;
 
             public int nCurHitNum;
             public int nCurHitType;
@@ -1329,6 +1330,7 @@ namespace AtoIndicator
             public int nFakeAssistantMinuteAreaNum;
             public int nFakeVolatilityMinuteAreaNum;
             public int nFakeDownMinuteAreaNum;
+            public int nPaperBuyMinuteAreaNum;
 
             public int nTotalFakeMinuteAreaNum;
             public int nTotalFakeCount;
@@ -1456,6 +1458,7 @@ namespace AtoIndicator
 
             // 임시용 
             public bool isOrderCheck;
+            public bool isPaperBuyChangeNeeded;
 
             #region 매매 정보
             public PaperTradeSlot[] paperTradeSlot;

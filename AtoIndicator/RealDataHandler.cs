@@ -1135,29 +1135,31 @@ namespace AtoIndicator
                         #region HIT 초기화
                         // 페이크매수/매도 히트횟수 초기화(*동일분봉동안 가지는 히트횟수)
                         {
-                            if (ea[nCurIdx].fakeStrategyMgr.nCurHitType >= 3)
+                            if (ea[i].fakeStrategyMgr.nCurHitType >= 3)
                             {
-                                if (ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 5)
+                                if (ea[i].fakeStrategyMgr.nCurHitNum >= 5)
                                 {
-                                    ea[nCurIdx].fakeStrategyMgr.nHit5Num++;
-                                    if (ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 8)
+                                    ea[i].fakeStrategyMgr.nHit5Num++;
+                                    if (ea[i].fakeStrategyMgr.nCurHitNum >= 8)
                                     {
-                                        ea[nCurIdx].fakeStrategyMgr.nHit8Num++;
-                                        if (ea[nCurIdx].fakeStrategyMgr.nCurHitNum >= 10)
+                                        ea[i].fakeStrategyMgr.nHit8Num++;
+                                        if (ea[i].fakeStrategyMgr.nCurHitNum >= 10)
                                         {
-                                            ea[nCurIdx].fakeStrategyMgr.nHit10Num++;
+                                            ea[i].fakeStrategyMgr.nHit10Num++;
                                         }
                                     }
                                 }
                             }
 
                             // 초기화
-                            ea[nCurIdx].paperBuyStrategy.nHitNum = 0;
-                            ea[nCurIdx].fakeBuyStrategy.nHitNum = 0;
-                            ea[nCurIdx].fakeResistStrategy.nHitNum = 0;
-                            ea[nCurIdx].fakeAssistantStrategy.nHitNum = 0;
-                            ea[nCurIdx].fakeVolatilityStrategy.nHitNum = 0;
-                            ea[nCurIdx].fakeDownStrategy.nHitNum = 0;
+                            ea[i].paperBuyStrategy.nHitNum = 0;
+                            ea[i].fakeBuyStrategy.nHitNum = 0;
+                            ea[i].fakeResistStrategy.nHitNum = 0;
+                            ea[i].fakeAssistantStrategy.nHitNum = 0;
+                            ea[i].fakeVolatilityStrategy.nHitNum = 0;
+                            ea[i].fakeDownStrategy.nHitNum = 0;
+                            ea[i].fakeStrategyMgr.nCurHitNum = 0;
+                            ea[i].fakeStrategyMgr.nCurHitType = 0;
                         }
                         #endregion
 
@@ -4723,6 +4725,7 @@ namespace AtoIndicator
                                                             ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTime = nSharedTime;
                                                             ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTimeLineIdx = nTimeLineIdx;
                                                             ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].isAllSelled = true;
+                                                            ea[nCurIdx].paperBuyStrategy.isPaperBuyChangeNeeded = true;
 
                                                         }
 
@@ -4735,7 +4738,7 @@ namespace AtoIndicator
                                                     ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTime = nSharedTime;
                                                     ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTimeLineIdx = nTimeLineIdx;
                                                     ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].isAllSelled = true;
-
+                                                    ea[nCurIdx].paperBuyStrategy.isPaperBuyChangeNeeded = true;
                                                 }
 
                                             }
@@ -4762,7 +4765,7 @@ namespace AtoIndicator
                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedPrice = Max(ea[nCurIdx].nFs, ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nOverPrice);
                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyEndTime = nSharedTime;
                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedTimeLineIdx = nTimeLineIdx;
-
+                                        ea[nCurIdx].paperBuyStrategy.isPaperBuyChangeNeeded = true;
 
                                         if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume == 0)
                                         {
@@ -4797,6 +4800,7 @@ namespace AtoIndicator
                                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nTargetRqVolume;
                                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyEndTime = nSharedTime;
                                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedTimeLineIdx = nTimeLineIdx;
+                                                        ea[nCurIdx].paperBuyStrategy.isPaperBuyChangeNeeded = true;
                                                     }
                                                 }
 
@@ -4808,6 +4812,7 @@ namespace AtoIndicator
                                                 ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nTargetRqVolume;
                                                 ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyEndTime = nSharedTime;
                                                 ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedTimeLineIdx = nTimeLineIdx;
+                                                ea[nCurIdx].paperBuyStrategy.isPaperBuyChangeNeeded = true;
                                             }
                                             else // 현재 체결대금보다 내 가격이 낮다면
                                             {
@@ -4818,6 +4823,8 @@ namespace AtoIndicator
                                                     ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedPrice = ea[nCurIdx].nFs;
                                                     ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyEndTime = nSharedTime;
                                                     ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedTimeLineIdx = nTimeLineIdx;
+
+                                                    ea[nCurIdx].paperBuyStrategy.isPaperBuyChangeNeeded = true;
 
                                                     // 남은 잔량만큼 매수취소
                                                     if (ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume == 0)

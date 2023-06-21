@@ -124,8 +124,6 @@ namespace AtoIndicator
             {
                 if (frame.nStrategyNum >= FAKE_BUY_MAX_NUM || frame.arrStrategy[nFakeBuyStrategyNum] > 5) // 한 전략당 6번제한
                     return false;
-
-
             }
 
             #region 공용 파트
@@ -190,14 +188,11 @@ namespace AtoIndicator
             #endregion
 
 
-            if (frame.nFakeType != PAPER_BUY_SIGNAL)
-            {
-                UpdateFakeHistory(nEaIdx);
-                AddFakeHistory(frame.nFakeType, nEaIdx, nFakeBuyStrategyNum);
-                CalcFakeHistory(nEaIdx);
 
-                UpFakeCount(nEaIdx, frame.nFakeType, nFakeBuyStrategyNum);
-            }
+            UpdateFakeHistory(nEaIdx);
+            AddFakeHistory(frame.nFakeType, nEaIdx, nFakeBuyStrategyNum);
+            CalcFakeHistory(nEaIdx);
+            UpFakeCount(nEaIdx, frame.nFakeType, nFakeBuyStrategyNum);
 
             return true;
         }
@@ -261,7 +256,7 @@ namespace AtoIndicator
                 {
                     while (frame.paperTradeSlot[i].fPowerWithFee >= frame.paperTradeSlot[i].fTargetPer)
                     {
-                        frame.paperTradeSlot[i].nCurLineIdx= RaiseStepUp(frame.paperTradeSlot[i].nCurLineIdx);
+                        frame.paperTradeSlot[i].nCurLineIdx = RaiseStepUp(frame.paperTradeSlot[i].nCurLineIdx);
                         frame.paperTradeSlot[i].fTargetPer = GetNextCeiling(frame.paperTradeSlot[i].nCurLineIdx); // something higher
                         frame.paperTradeSlot[i].fBottomPer = GetNextFloor(frame.paperTradeSlot[i].nCurLineIdx, TradeMethodCategory.BottomUpMethod); // something higher
                     }
@@ -359,7 +354,7 @@ namespace AtoIndicator
                     frame.paperTradeSlot[frame.nStrategyNum].nOverPrice += GetIntegratedMarketGap(frame.paperTradeSlot[frame.nStrategyNum].nOverPrice);
                 frame.paperTradeSlot[frame.nStrategyNum].nRqTime = nSharedTime;
                 frame.paperTradeSlot[frame.nStrategyNum].nRqVolume = nMaxNumToBuy;
-                frame.paperTradeSlot[frame.nStrategyNum].nRqTimeLineIdx= nTimeLineIdx;
+                frame.paperTradeSlot[frame.nStrategyNum].nRqTimeLineIdx = nTimeLineIdx;
                 frame.paperTradeSlot[frame.nStrategyNum].nTargetRqVolume = nMaxNumToBuy;
                 frame.paperTradeSlot[frame.nStrategyNum].nSellHogaVolume = ea[nEaIdx].nThreeSellHogaVolume / 3;
                 frame.paperTradeSlot[frame.nStrategyNum].nCanceledVolume = 0;
@@ -441,18 +436,26 @@ namespace AtoIndicator
             ea[nEaIdx].fakeStrategyMgr.nFakeResistNum = 0;
             ea[nEaIdx].fakeStrategyMgr.nFakeAssistantNum = 0;
             ea[nEaIdx].fakeStrategyMgr.nFakeVolatilityNum = 0;
+            ea[nEaIdx].fakeStrategyMgr.nFakeDownNum = 0;
+            ea[nEaIdx].fakeStrategyMgr.nPaperBuyNum = 0;
+
             ea[nEaIdx].fakeStrategyMgr.nFakeBuyMinuteAreaNum = 0;
             ea[nEaIdx].fakeStrategyMgr.nFakeResistMinuteAreaNum = 0;
             ea[nEaIdx].fakeStrategyMgr.nFakeAssistantMinuteAreaNum = 0;
-            ea[nEaIdx].fakeStrategyMgr.nTotalFakeMinuteAreaNum = 0;
             ea[nEaIdx].fakeStrategyMgr.nFakeVolatilityMinuteAreaNum = 0;
             ea[nEaIdx].fakeStrategyMgr.nFakeDownMinuteAreaNum = 0;
+            ea[nEaIdx].fakeStrategyMgr.nPaperBuyMinuteAreaNum = 0;
+
+            ea[nEaIdx].fakeStrategyMgr.nTotalFakeMinuteAreaNum = 0;
 
             int nPrevFakeBuyMinuteIdx = -1;
             int nPrevFakeResistMinuteIdx = -1;
             int nPrevFakeAssistantMinuteIdx = -1;
             int nPrevFakeVolatilityMinuteIdx = -1;
             int nPrevFakeDownMinuteIdx = -1;
+            int nPrevPaperBuyMinuteIdx = -1;
+
+
             int nPrevTotalFakeMinuteIdx = -1;
 
             for (int i = 0; i < ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece.Count; i++)
@@ -499,12 +502,22 @@ namespace AtoIndicator
                 }
                 else if (ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTypeFakeTrading == FAKE_DOWN_SIGNAL)
                 {
-                    ea[nEaIdx].fakeStrategyMgr.nFakeVolatilityNum++;
+                    ea[nEaIdx].fakeStrategyMgr.nFakeDownNum++;
 
                     if (nPrevFakeDownMinuteIdx == -1 || nPrevFakeDownMinuteIdx != ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx)
                     {
                         nPrevFakeDownMinuteIdx = ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx;
                         ea[nEaIdx].fakeStrategyMgr.nFakeDownMinuteAreaNum++;
+                    }
+                }
+                else if(ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTypeFakeTrading == PAPER_BUY_SIGNAL)
+                {
+                    ea[nEaIdx].fakeStrategyMgr.nFakeDownNum++;
+
+                    if (nPrevPaperBuyMinuteIdx == -1 || nPrevPaperBuyMinuteIdx != ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx)
+                    {
+                        nPrevPaperBuyMinuteIdx = ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx;
+                        ea[nEaIdx].fakeStrategyMgr.nPaperBuyMinuteAreaNum++;
                     }
                 }
 
@@ -580,7 +593,7 @@ namespace AtoIndicator
             return lHeavyCount;
         }
 
-    
+
 
         // 머신러닝에 사용할 변수를 
         #region GetParameters
@@ -728,7 +741,7 @@ namespace AtoIndicator
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nCurVolume = holdingsArray[nUndisposalIdx].nNumPossibleToSell;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyVolume = holdingsArray[nUndisposalIdx].nNumPossibleToSell;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBirthTime = nFirstTime;
-                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyMinuteIdx = BRUSH - 1 ;
+                        ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyMinuteIdx = BRUSH - 1;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].nBuyEndTime = nFirstTime;
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].sBuyDescription = $"미처분 매매블록{NEW_LINE}";
                         ea[nCurIdx].myTradeManager.arrBuyedSlots[nSlotIdx].sBuyScrNo = null;
@@ -743,7 +756,7 @@ namespace AtoIndicator
 
                         tmpSB.Append($"{nUndisposalIdx + 1}번째 미처분 매매블록 생성 : {nFirstTime}  {holdingsArray[nUndisposalIdx].sCode}  {holdingsArray[nUndisposalIdx].sCodeName}  {holdingsArray[nUndisposalIdx].nNumPossibleToSell} {holdingsArray[nUndisposalIdx].nBuyedPrice}{NEW_LINE}");
                     }
-                    
+
 
 
                 }

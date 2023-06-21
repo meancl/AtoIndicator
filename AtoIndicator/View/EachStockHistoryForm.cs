@@ -315,6 +315,8 @@ namespace AtoIndicator.View.EachStockHistory
                             {
                                 nCurRealBuyedId = int.Parse(r.Name); // 체크된 매매블록의 인덱스
                                 curEa.myTradeManager.nAppliedShowingRealBuyedId = nCurRealBuyedId;
+                                eBuyMode = TRADE_MODE.SELL_MODE;
+                                buyModeLabel.Text = $"buy : {eBuyMode}";
                                 // 체크됐을때는?
                                 if (curEa.myTradeManager.arrBuyedSlots[nCurRealBuyedId].eTradeMethod != MainForm.TradeMethodCategory.FixedMethod)
                                     tradeMethodLabel.Text = $"{nCurRealBuyedId}번 매매기법 : {curEa.myTradeManager.arrBuyedSlots[nCurRealBuyedId].eTradeMethod}";
@@ -336,6 +338,8 @@ namespace AtoIndicator.View.EachStockHistory
                                 nCurRealBuyedId = -1;
                                 curEa.myTradeManager.nAppliedShowingRealBuyedId = -1;
                                 nBReal = RADIO_BUTTON_CHECKED;
+                                eBuyMode = TRADE_MODE.NONE_MODE;
+                                buyModeLabel.Text = $"buy : {eBuyMode}";
 
                                 // 체크 해제됐을때는??
                                 tradeMethodLabel.Text = $"전체 매매기법 : {curEa.myTradeManager.eDefaultTradeCategory}";
@@ -399,8 +403,11 @@ namespace AtoIndicator.View.EachStockHistory
                 else
                     historyChart.Annotations.Clear();
 
-                if (curEa.paperBuyStrategy.nStrategyNum > nPrevPaperRadioCnt)
+                if (curEa.paperBuyStrategy.nStrategyNum > nPrevPaperRadioCnt || curEa.paperBuyStrategy.isPaperBuyChangeNeeded)
                 {
+                    curEa.paperBuyStrategy.isPaperBuyChangeNeeded = false;
+                    nCurPaperBuyedId = -1;
+                    nBPaper = RADIO_BUTTON_CHECKED;
                     if (paperBlockFlowLayoutPanel.InvokeRequired)
                     {
                         paperBlockFlowLayoutPanel.Invoke(new MethodInvoker(setPaperRadioDelegate));
@@ -856,7 +863,7 @@ namespace AtoIndicator.View.EachStockHistory
                                 arrowFakeAssistant.AnchorOffsetY = -1.5;
 
                                 sFakeAssistantArrowToolTip +=
-                              $"*중첩 : {nFakeAssistantOverlapCount + 1}( {p} )  가짜전략 : {curEa.fakeAssistantStrategy.arrSpecificStrategy[p]}  주문시간 : {curEa.fakeAssistantStrategy.arrBuyPrice[p]}  페이크보조가격 : {curEa.fakeAssistantStrategy.arrBuyPrice[p]}(원){NEW_LINE}" +
+                              $"*중첩 : {nFakeAssistantOverlapCount + 1}( {p} )  가짜전략 : {curEa.fakeAssistantStrategy.arrSpecificStrategy[p]}  주문시간 : {curEa.fakeAssistantStrategy.arrBuyTime[p]}  페이크보조가격 : {curEa.fakeAssistantStrategy.arrBuyPrice[p]}(원){NEW_LINE}" +
                               $"페이크명 : {strategyNames.arrFakeAssistantStrategyName[curEa.fakeAssistantStrategy.arrSpecificStrategy[p]]}{NEW_LINE}{NEW_LINE}";
 
                                 arrowFakeAssistant.ToolTip =
@@ -2808,6 +2815,7 @@ namespace AtoIndicator.View.EachStockHistory
             if (cUp == 192) // `
             {
                 isHitView = !isHitView;
+                UpdateMinuteHistoryData();
             }
 
             if (cUp == 'O') // 각도기
