@@ -1312,6 +1312,7 @@ namespace AtoIndicator
             public int nFakeVolatilityNum;
             public int nFakeDownNum;
             public int nPaperBuyNum;
+            public int nTotalArrowNum;
 
             public int nCurHitNum;
             public int nCurHitType;
@@ -1755,26 +1756,6 @@ namespace AtoIndicator
 
             public int nTotalStrategyNum;
             public int nTotalStrategyMinuteNum;
-
-
-            public void Init()
-            {
-                nFakeBuyStrategyNum = 0;
-                nFakeBuyStrategyMinuteNum = 0;
-                nFakeAssistantStrategyNum = 0;
-                nFakeAssistantStrategyMinuteNum = 0;
-                nFakeResistStrategyNum = 0;
-                nFakeResistStrategyMinuteNum = 0;
-                nFakeUpStrategyNum = 0;
-                nFakeUpStrategyMinuteNum = 0;
-                nFakeDownStrategyNum = 0;
-                nFakeDownStrategyMinuteNum = 0;
-                nPaperBuyStrategyNum = 0;
-                nPaperBuyStrategyMinuteNum = 0;
-
-                nTotalStrategyNum = 0;
-                nTotalStrategyMinuteNum = 0;
-            }
         }
 
         // 조건의 순서를 연결해 매수 타이밍을 잡으려함.

@@ -429,15 +429,15 @@ namespace AtoIndicator
         #endregion
 
         #region CalcFakeHistory 
-        public void CalcFakeHistory(int nEaIdx)
+        public PResult CalcFakeHistory(int nEaIdx, int? nStartLineIdx=null, int? nEndLineIdx=null)
         {
-
             ea[nEaIdx].fakeStrategyMgr.nFakeBuyNum = 0;
             ea[nEaIdx].fakeStrategyMgr.nFakeResistNum = 0;
             ea[nEaIdx].fakeStrategyMgr.nFakeAssistantNum = 0;
             ea[nEaIdx].fakeStrategyMgr.nFakeVolatilityNum = 0;
             ea[nEaIdx].fakeStrategyMgr.nFakeDownNum = 0;
             ea[nEaIdx].fakeStrategyMgr.nPaperBuyNum = 0;
+            ea[nEaIdx].fakeStrategyMgr.nTotalArrowNum = 0;
 
             ea[nEaIdx].fakeStrategyMgr.nFakeBuyMinuteAreaNum = 0;
             ea[nEaIdx].fakeStrategyMgr.nFakeResistMinuteAreaNum = 0;
@@ -460,6 +460,12 @@ namespace AtoIndicator
 
             for (int i = 0; i < ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece.Count; i++)
             {
+                if (nStartLineIdx != null && ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx < (int)nStartLineIdx)
+                    continue;
+
+                if (nEndLineIdx != null && ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx > (int)nEndLineIdx)
+                    continue;
+
                 if (ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTypeFakeTrading == FAKE_BUY_SIGNAL)
                 {
                     ea[nEaIdx].fakeStrategyMgr.nFakeBuyNum++;
@@ -512,7 +518,7 @@ namespace AtoIndicator
                 }
                 else if(ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTypeFakeTrading == PAPER_BUY_SIGNAL)
                 {
-                    ea[nEaIdx].fakeStrategyMgr.nFakeDownNum++;
+                    ea[nEaIdx].fakeStrategyMgr.nPaperBuyNum++;
 
                     if (nPrevPaperBuyMinuteIdx == -1 || nPrevPaperBuyMinuteIdx != ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx)
                     {
@@ -522,12 +528,31 @@ namespace AtoIndicator
                 }
 
                 // total min idx 부분
+                ea[nEaIdx].fakeStrategyMgr.nTotalArrowNum++;
                 if (nPrevTotalFakeMinuteIdx == -1 || nPrevTotalFakeMinuteIdx != ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx)
                 {
                     nPrevTotalFakeMinuteIdx = ea[nEaIdx].fakeStrategyMgr.listFakeHistoryPiece[i].nTimeLineIdx;
                     ea[nEaIdx].fakeStrategyMgr.nTotalFakeMinuteAreaNum++;
                 }
             }
+
+            PResult retPresult = default;
+            retPresult.nFakeBuyStrategyMinuteNum = ea[nEaIdx].fakeStrategyMgr.nFakeBuyMinuteAreaNum;
+            retPresult.nFakeBuyStrategyNum = ea[nEaIdx].fakeStrategyMgr.nFakeBuyNum;
+            retPresult.nFakeAssistantStrategyMinuteNum = ea[nEaIdx].fakeStrategyMgr.nFakeAssistantMinuteAreaNum;
+            retPresult.nFakeAssistantStrategyNum = ea[nEaIdx].fakeStrategyMgr.nFakeAssistantNum;
+            retPresult.nFakeResistStrategyMinuteNum = ea[nEaIdx].fakeStrategyMgr.nFakeResistMinuteAreaNum;
+            retPresult.nFakeResistStrategyNum = ea[nEaIdx].fakeStrategyMgr.nFakeResistNum;
+            retPresult.nFakeUpStrategyMinuteNum = ea[nEaIdx].fakeStrategyMgr.nFakeVolatilityMinuteAreaNum;
+            retPresult.nFakeUpStrategyNum = ea[nEaIdx].fakeStrategyMgr.nFakeVolatilityNum;
+            retPresult.nFakeDownStrategyMinuteNum = ea[nEaIdx].fakeStrategyMgr.nFakeDownMinuteAreaNum;
+            retPresult.nFakeDownStrategyNum = ea[nEaIdx].fakeStrategyMgr.nFakeDownNum;
+            retPresult.nPaperBuyStrategyMinuteNum = ea[nEaIdx].fakeStrategyMgr.nPaperBuyMinuteAreaNum;
+            retPresult.nPaperBuyStrategyNum = ea[nEaIdx].fakeStrategyMgr.nPaperBuyNum;
+            retPresult.nTotalStrategyMinuteNum = ea[nEaIdx].fakeStrategyMgr.nTotalFakeMinuteAreaNum;
+            retPresult.nTotalStrategyNum = ea[nEaIdx].fakeStrategyMgr.nTotalArrowNum;
+
+            return retPresult;
         }
         #endregion
 

@@ -1944,13 +1944,13 @@ namespace AtoIndicator.View.EachStockHistory
                             if (isMinuteVisible && CheckIsNormalChartYValue(nMinPositionY1, nMinPositionY2))
                                 gp.DrawLine(pPen, nMinPositionX1, nMinPositionY1, nMinPositionX2, nMinPositionY2);
                             moveLabel.Text += $"================== 분당 정보 ==================\n" +
-                                $"페이크매수 : {pResult.nFakeBuyStrategyNum} 분당 : {pResult.nFakeBuyStrategyMinuteNum}{NEW_LINE}" +
-                                $"페이크보조 : {pResult.nFakeAssistantStrategyNum} 분당 : {pResult.nFakeAssistantStrategyMinuteNum}{NEW_LINE}" +
-                                $"페이크저항 : {pResult.nFakeResistStrategyNum} 분당 : {pResult.nFakeResistStrategyMinuteNum}{NEW_LINE}" +
-                                $"페이크가격업 : {pResult.nFakeUpStrategyNum} 분당 : {pResult.nFakeUpStrategyMinuteNum}{NEW_LINE}" +
-                                $"페이크가격다운 : {pResult.nFakeDownStrategyNum} 분당 : {pResult.nFakeDownStrategyMinuteNum}{NEW_LINE}" +
-                                $"모의매수 : {pResult.nPaperBuyStrategyNum} 분당 : {pResult.nPaperBuyStrategyMinuteNum}{NEW_LINE}" +
-                                $"총 애로우 : {pResult.nTotalStrategyNum} 분당 : {pResult.nTotalStrategyMinuteNum}{NEW_LINE}{NEW_LINE}";
+                                $"페이크 매수 : ( {pResult.nFakeBuyStrategyNum}, 분당 : {pResult.nFakeBuyStrategyMinuteNum} ){NEW_LINE}" +
+                                $"페이크 보조 : ( {pResult.nFakeAssistantStrategyNum}, 분당 : {pResult.nFakeAssistantStrategyMinuteNum} ){NEW_LINE}" +
+                                $"페이크 저항 : ( {pResult.nFakeResistStrategyNum}, 분당 : {pResult.nFakeResistStrategyMinuteNum} ){NEW_LINE}" +
+                                $"가격 업 :      ( {pResult.nFakeUpStrategyNum}, 분당 : {pResult.nFakeUpStrategyMinuteNum} ){NEW_LINE}" +
+                                $"가격다운 :    ( {pResult.nFakeDownStrategyNum}, 분당 : {pResult.nFakeDownStrategyMinuteNum} ){NEW_LINE}" +
+                                $"모의매수 :    ( {pResult.nPaperBuyStrategyNum}, 분당 : {pResult.nPaperBuyStrategyMinuteNum} ){NEW_LINE}" +
+                                $"총 애로우 :   ( {pResult.nTotalStrategyNum}, 분당 : {pResult.nTotalStrategyMinuteNum} ){NEW_LINE}{NEW_LINE}";
 
                         }
                     }
@@ -2293,8 +2293,6 @@ namespace AtoIndicator.View.EachStockHistory
                                         GetCursorIdx(xCoord, nPadding, historyChart.Series["MinuteStick"].Points.Count, ref xMinIdx2);
                                     }
 
-                                    xMinIdx2++;
-                                    xMinIdx1++;
                                     if (xMinIdx1 > xMinIdx2)
                                     {
                                         Swap<int>(ref xMinIdx1, ref xMinIdx2);
@@ -2302,20 +2300,18 @@ namespace AtoIndicator.View.EachStockHistory
 
                                     // --------------------------------------------
                                     // 여기서 계산을 쫙 다 해놓을거임
-                                    nMinPositionX1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinIdx1);
-                                    nMinPositionY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 - 1].nLastFs);
-                                    nMinPositionX2 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinIdx2);
-                                    nMinPositionY2 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx2 - 1].nLastFs);
+                                    nMinPositionX1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinIdx1+1);
+                                    nMinPositionY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1].nLastFs);
+                                    nMinPositionX2 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinIdx2+1);
+                                    nMinPositionY2 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx2].nLastFs);
                                     if (isMinuteVisible && CheckIsNormalChartYValue(nMinPositionY1, nMinPositionY2))
                                         gp.DrawLine(pPen, nMinPositionX1, nMinPositionY1, nMinPositionX2, nMinPositionY2);
 
-
-                                    pResult.Init();
-                                    //mainForm.UpdateFakeHistory(nCurIdx, xMinIdx1, xMi)
+                                    pResult = mainForm.CalcFakeHistory(nCurIdx, xMinIdx1, xMinIdx2);
                                 }
                                 catch
                                 {
-
+                                    pResult = default;
                                 }
 
                             }
