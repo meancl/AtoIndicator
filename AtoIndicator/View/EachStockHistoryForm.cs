@@ -48,16 +48,7 @@ namespace AtoIndicator.View.EachStockHistory
         public int nMinPositionY1;
         public int nMinPositionX2;
         public int nMinPositionY2;
-        public int xMinLoc1;
-        public int xMinLoc2;
-
-        public int nBuyedPositionX1;
-        public int nBuyedPositionY1;
-        public int nBuyedPositionX2;
-        public int nBuyedPositionY2;
-        public int xBuyedLoc1;
-        public int xBuyedLoc2;
-
+  
         public bool isArrowGrouping = true;
 
         public System.Timers.Timer timer = new System.Timers.Timer(100); // 타이머 선택이유는 비동기기 떄문에 Windows.Forms.Timer는 크로스 쓰레드 문제가 없는대신 UI쓰레드에서 돌아감
@@ -1953,17 +1944,14 @@ namespace AtoIndicator.View.EachStockHistory
                             if (isMinuteVisible && CheckIsNormalChartYValue(nMinPositionY1, nMinPositionY2))
                                 gp.DrawLine(pPen, nMinPositionX1, nMinPositionY1, nMinPositionX2, nMinPositionY2);
                             moveLabel.Text += $"================== 분당 정보 ==================\n" +
-                                    $"R각도 => 저 : {Math.Round(pResult.rAngle.min, 1)}, 고 : {Math.Round(pResult.rAngle.max, 1)}, 평균 : {Math.Round(pResult.rAngle.everage, 1)}, 중위 : {Math.Round(pResult.rAngle.median, 1)}{NEW_LINE}" +
-                                    $"H각도 => 저 : {Math.Round(pResult.hAngle.min, 1)}, 고 : {Math.Round(pResult.hAngle.max, 1)}, 평균 : {Math.Round(pResult.hAngle.everage, 1)}, 중위 : {Math.Round(pResult.hAngle.median, 1)}{NEW_LINE}" +
-                                    $"D각도 => 저 : {Math.Round(pResult.dAngle.min, 1)}, 고 : {Math.Round(pResult.dAngle.max, 1)}, 평균 : {Math.Round(pResult.dAngle.everage, 1)}, 중위 : {Math.Round(pResult.dAngle.median, 1)}{NEW_LINE}" +
-                                    $"T각도 => 저 : {Math.Round(pResult.tAngle.min, 1)}, 고 : {Math.Round(pResult.tAngle.max, 1)}, 평균 : {Math.Round(pResult.tAngle.everage, 1)}, 중위 : {Math.Round(pResult.tAngle.median, 1)}{NEW_LINE}" +
+                                $"페이크매수 : {pResult.nFakeBuyStrategyNum} 분당 : {pResult.nFakeBuyStrategyMinuteNum}{NEW_LINE}" +
+                                $"페이크보조 : {pResult.nFakeAssistantStrategyNum} 분당 : {pResult.nFakeAssistantStrategyMinuteNum}{NEW_LINE}" +
+                                $"페이크저항 : {pResult.nFakeResistStrategyNum} 분당 : {pResult.nFakeResistStrategyMinuteNum}{NEW_LINE}" +
+                                $"페이크가격업 : {pResult.nFakeUpStrategyNum} 분당 : {pResult.nFakeUpStrategyMinuteNum}{NEW_LINE}" +
+                                $"페이크가격다운 : {pResult.nFakeDownStrategyNum} 분당 : {pResult.nFakeDownStrategyMinuteNum}{NEW_LINE}" +
+                                $"모의매수 : {pResult.nPaperBuyStrategyNum} 분당 : {pResult.nPaperBuyStrategyMinuteNum}{NEW_LINE}" +
+                                $"총 애로우 : {pResult.nTotalStrategyNum} 분당 : {pResult.nTotalStrategyMinuteNum}{NEW_LINE}{NEW_LINE}";
 
-                                    $"downFs > 20m : {pResult.isDownFs20m}{NEW_LINE}" +
-                                    $"downFs > 1h : {pResult.isDownFs1h}{NEW_LINE}" +
-                                    $"downFs > 2h : {pResult.isDownFs2h}{NEW_LINE}" +
-
-                                    $"1h > 2h : {pResult.is1h2h}{NEW_LINE}" +
-                                    $"20m > 1h : {pResult.is20m1h}{NEW_LINE}{NEW_LINE}";
                         }
                     }
                 }
@@ -2257,9 +2245,7 @@ namespace AtoIndicator.View.EachStockHistory
                             }
                             nPressed = 0;
                             x1 = y1 = x2 = y2 = 0;
-                            xMinIdx1 = xMinIdx2 = xBuyedIdx1 = xBuyedIdx2 = 0;
-                            xBuyedLoc1 = xBuyedLoc2 = xMinLoc1 = xMinLoc2 = 0;
-                            nBuyedPositionX1 = nBuyedPositionX2 = nBuyedPositionY1 = nBuyedPositionY2 = 0;
+                            xMinIdx1 = xMinIdx2 = 0;
                             nMinPositionX1 = nMinPositionX2 = nMinPositionY1 = nMinPositionY2 = 0;
                         }
 
@@ -2279,12 +2265,6 @@ namespace AtoIndicator.View.EachStockHistory
                                     GetCursorIdx(xCoord, nPadding, historyChart.Series["MinuteStick"].Points.Count, ref xMinIdx1);
                                 }
 
-                                xMinLoc1 = xMinIdx1 + nPadding;
-                                if (xMinIdx1 > 0)
-                                {
-                                    xMinIdx1--;
-                                    xMinLoc1--;
-                                }
                             }
                         }
                         else if (nPressed == 2) // 두번 눌렸을때
@@ -2305,163 +2285,39 @@ namespace AtoIndicator.View.EachStockHistory
 
                             if (isPreciselyCheck)
                             {
-                                double xCoord = historyChart.ChartAreas[sOwnerPressed].AxisX.PixelPositionToValue(e.X);
-                                if (isMinuteArea)
+                                try
                                 {
-                                    GetCursorIdx(xCoord, nPadding, historyChart.Series["MinuteStick"].Points.Count, ref xMinIdx2);
-                                }
-
-                                xMinLoc2 = xMinIdx2 + nPadding;
-                                if (xMinIdx2 > 0)
-                                {
-                                    xMinIdx2--;
-                                    xMinLoc2--;
-                                }
-
-                                if (xBuyedIdx1 > xBuyedIdx2)
-                                {
-                                    Swap<int>(ref xBuyedIdx1, ref xBuyedIdx2);
-                                    Swap<int>(ref xBuyedLoc1, ref xBuyedLoc2);
-                                }
-                                if (xMinIdx1 > xMinIdx2)
-                                {
-                                    Swap<int>(ref xMinIdx1, ref xMinIdx2);
-                                    Swap<int>(ref xMinLoc1, ref xMinLoc2);
-                                }
-
-                                // --------------------------------------------
-                                // 여기서 계산을 쫙 다 해놓을거임
-                                nMinPositionX1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinLoc1);
-                                nMinPositionY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1].nLastFs);
-                                nMinPositionX2 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinLoc2);
-                                nMinPositionY2 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx2].nLastFs);
-                                if (isMinuteVisible && CheckIsNormalChartYValue(nMinPositionY1, nMinPositionY2))
-                                    gp.DrawLine(pPen, nMinPositionX1, nMinPositionY1, nMinPositionX2, nMinPositionY2);
-
-
-                                pResult.Init();
-
-                                double[] fRAngleArr;
-                                double[] fHAngleArr;
-                                double[] fDAngleArr;
-                                double[] fTAngleArr;
-
-                                double fRSum = 0;
-                                double fHSum = 0;
-                                double fDSum = 0;
-                                double fTSum = 0;
-
-                                double fRMin = double.MaxValue;
-                                double fHMin = double.MaxValue;
-                                double fDMin = double.MaxValue;
-                                double fTMin = double.MaxValue;
-
-                                double fRMax = double.MinValue;
-                                double fHMax = double.MinValue;
-                                double fDMax = double.MinValue;
-                                double fTMax = double.MinValue;
-
-                                int nTotalCnt = 0;
-                                { // 분당영역은 일단 무조건 출력하게 돼있음
-
-                                    fRAngleArr = new double[xMinIdx2 - xMinIdx1 + 1];
-                                    fHAngleArr = new double[xMinIdx2 - xMinIdx1 + 1];
-                                    fDAngleArr = new double[xMinIdx2 - xMinIdx1 + 1];
-                                    fTAngleArr = new double[xMinIdx2 - xMinIdx1 + 1];
-                                    pResult.isDownFs20m = true;
-                                    pResult.isDownFs1h = true;
-                                    pResult.isDownFs2h = true;
-                                    pResult.is1h2h = true;
-                                    pResult.is20m1h = true;
-
-                                    for (int i = 0; i <= xMinIdx2 - xMinIdx1; i++)
+                                    double xCoord = historyChart.ChartAreas[sOwnerPressed].AxisX.PixelPositionToValue(e.X);
+                                    if (isMinuteArea)
                                     {
-                                        nTotalCnt++;
-                                        fRAngleArr[i] = mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].fRecentAngle;
-                                        fRSum += fRAngleArr[i];
-                                        if (fRAngleArr[i] > fRMax)
-                                            fRMax = fRAngleArr[i];
-                                        if (fRAngleArr[i] < fRMin)
-                                            fRMin = fRAngleArr[i];
-
-                                        fHAngleArr[i] = mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].fHourAngle;
-                                        fHSum += fHAngleArr[i];
-                                        if (fHAngleArr[i] > fHMax)
-                                            fHMax = fHAngleArr[i];
-                                        if (fHAngleArr[i] < fHMin)
-                                            fHMin = fHAngleArr[i];
-
-                                        fDAngleArr[i] = mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].fDAngle;
-                                        fDSum += fDAngleArr[i];
-                                        if (fDAngleArr[i] > fDMax)
-                                            fDMax = fDAngleArr[i];
-                                        if (fDAngleArr[i] < fDMin)
-                                            fDMin = fDAngleArr[i];
-
-                                        fTAngleArr[i] = mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].fMedianAngle;
-                                        fTSum += fTAngleArr[i];
-                                        if (fTAngleArr[i] > fTMax)
-                                            fTMax = fTAngleArr[i];
-                                        if (fTAngleArr[i] < fTMin)
-                                            fTMin = fTAngleArr[i];
-
-                                        if (mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].nDownTimeOverMa0 == 0)
-                                            pResult.isDownFs20m = false;
-                                        if (mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].nDownTimeOverMa1 == 0)
-                                            pResult.isDownFs1h = false;
-                                        if (mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].nDownTimeOverMa2 == 0)
-                                            pResult.isDownFs2h = false;
-                                        if (mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].fOverMa1 <= mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].fOverMa2)
-                                            pResult.is1h2h = false;
-                                        if (mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].fOverMa0 <= mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 + i].fOverMa1)
-                                            pResult.is20m1h = false;
+                                        GetCursorIdx(xCoord, nPadding, historyChart.Series["MinuteStick"].Points.Count, ref xMinIdx2);
                                     }
-                                    pResult.rAngle.min = fRMin;
-                                    pResult.hAngle.min = fHMin;
-                                    pResult.dAngle.min = fDMin;
-                                    pResult.tAngle.min = fTMin;
 
-                                    pResult.rAngle.max = fRMax;
-                                    pResult.hAngle.max = fHMax;
-                                    pResult.dAngle.max = fDMax;
-                                    pResult.tAngle.max = fTMax;
-
-                                    pResult.rAngle.everage = fRSum / nTotalCnt;
-                                    pResult.hAngle.everage = fHSum / nTotalCnt;
-                                    pResult.dAngle.everage = fDSum / nTotalCnt;
-                                    pResult.tAngle.everage = fTSum / nTotalCnt;
-
-                                    Array.Sort(fRAngleArr, (x, y) => x.CompareTo(y));
-                                    Array.Sort(fHAngleArr, (x, y) => x.CompareTo(y));
-                                    Array.Sort(fDAngleArr, (x, y) => x.CompareTo(y));
-                                    Array.Sort(fTAngleArr, (x, y) => x.CompareTo(y));
-
-                                    if (nTotalCnt % 2 == 0) // 짝수면
+                                    xMinIdx2++;
+                                    xMinIdx1++;
+                                    if (xMinIdx1 > xMinIdx2)
                                     {
-                                        int nRight = nTotalCnt / 2;
-                                        pResult.rAngle.median = (fRAngleArr[nRight - 1] + fRAngleArr[nRight]) / 2;
-                                        pResult.hAngle.median = (fHAngleArr[nRight - 1] + fHAngleArr[nRight]) / 2;
-                                        pResult.dAngle.median = (fDAngleArr[nRight - 1] + fDAngleArr[nRight]) / 2;
-                                        pResult.tAngle.median = (fTAngleArr[nRight - 1] + fTAngleArr[nRight]) / 2;
+                                        Swap<int>(ref xMinIdx1, ref xMinIdx2);
                                     }
-                                    else
-                                    {
-                                        if (nTotalCnt == 1) // 한개면
-                                        {
-                                            pResult.rAngle.median = fRAngleArr[0];
-                                            pResult.hAngle.median = fHAngleArr[0];
-                                            pResult.dAngle.median = fDAngleArr[0];
-                                            pResult.tAngle.median = fTAngleArr[0];
-                                        }
-                                        else
-                                        {
-                                            pResult.rAngle.median = fRAngleArr[nTotalCnt / 2];
-                                            pResult.hAngle.median = fHAngleArr[nTotalCnt / 2];
-                                            pResult.dAngle.median = fDAngleArr[nTotalCnt / 2];
-                                            pResult.tAngle.median = fTAngleArr[nTotalCnt / 2];
-                                        }
-                                    }
+
+                                    // --------------------------------------------
+                                    // 여기서 계산을 쫙 다 해놓을거임
+                                    nMinPositionX1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinIdx1);
+                                    nMinPositionY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1 - 1].nLastFs);
+                                    nMinPositionX2 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinIdx2);
+                                    nMinPositionY2 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx2 - 1].nLastFs);
+                                    if (isMinuteVisible && CheckIsNormalChartYValue(nMinPositionY1, nMinPositionY2))
+                                        gp.DrawLine(pPen, nMinPositionX1, nMinPositionY1, nMinPositionX2, nMinPositionY2);
+
+
+                                    pResult.Init();
+                                    //mainForm.UpdateFakeHistory(nCurIdx, xMinIdx1, xMi)
                                 }
+                                catch
+                                {
+
+                                }
+
                             }
                         }
                         else if (nPressed > 2)
@@ -2472,22 +2328,13 @@ namespace AtoIndicator.View.EachStockHistory
                             y1 = e.Y;
                             if (isPreciselyCheck)
                             {
-                                xMinIdx2 = xBuyedIdx2 = 0;
-                                xBuyedLoc2 = xMinLoc2 = 0;
-                                nBuyedPositionX2 = nBuyedPositionY2 = 0;
+                                xMinIdx2 = 0;
                                 nMinPositionX2 = nMinPositionY2 = 0;
 
                                 double xCoord = historyChart.ChartAreas[sOwnerPressed].AxisX.PixelPositionToValue(e.X);
                                 if (isMinuteArea)
                                 {
                                     GetCursorIdx(xCoord, nPadding, historyChart.Series["MinuteStick"].Points.Count, ref xMinIdx1);
-                                }
-
-                                xMinLoc1 = xMinIdx1 + nPadding;
-                                if (xMinIdx1 > 0)
-                                {
-                                    xMinIdx1--;
-                                    xMinLoc1--;
                                 }
                             }
                         }
@@ -3373,7 +3220,7 @@ namespace AtoIndicator.View.EachStockHistory
 
 
 
-        public int xMinIdx1, xMinIdx2, xBuyedIdx1, xBuyedIdx2;
+        public int xMinIdx1, xMinIdx2;
 
 
         public int nPressed;
@@ -3391,9 +3238,7 @@ namespace AtoIndicator.View.EachStockHistory
         public void DeepClean()
         {
             x1 = x2 = y1 = y2 = 0;
-            xMinIdx1 = xMinIdx2 = xBuyedIdx1 = xBuyedIdx2 = 0;
-            xBuyedLoc1 = xBuyedLoc2 = xMinLoc1 = xMinLoc2 = 0;
-            nBuyedPositionX1 = nBuyedPositionX2 = nBuyedPositionY1 = nBuyedPositionY2 = 0;
+            xMinIdx1 = xMinIdx2 = 0;
             nMinPositionX1 = nMinPositionX2 = nMinPositionY1 = nMinPositionY2 = 0;
             isRightPressed = false;
             isPreciselyCheck = false;

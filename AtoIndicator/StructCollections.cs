@@ -19,7 +19,7 @@ namespace AtoIndicator
 
             public ManualReservation manualReserve;
 
-            
+
 
             // ----------------------------------
             // 공용 변수
@@ -701,9 +701,9 @@ namespace AtoIndicator
             public int nMaxCheckLineIdx = MIDDLE_STEP;
             public int nMinCheckLineIdx = MIDDLE_STEP;
 
-            public int nCheckLineIdx = MIDDLE_STEP; 
-            public double fCheckCeilingPer = 0; 
-            public double fCheckBottomPer = -0.0025; 
+            public int nCheckLineIdx = MIDDLE_STEP;
+            public double fCheckCeilingPer = 0;
+            public double fCheckBottomPer = -0.0025;
             // <=== 
 
             public BuyedSlot(int nCurIdx)
@@ -781,7 +781,7 @@ namespace AtoIndicator
                 newSlot.fCheckBottomPer = fCheckBottomPer;
 
                 return newSlot;
-        }
+            }
 
         }
 
@@ -953,7 +953,7 @@ namespace AtoIndicator
         public struct ReservationPoint
         {
             public bool isBuyReserved;
-            public bool isSelected; 
+            public bool isSelected;
             public bool isChosen1;
             public bool isChosen2;
             public int nSelectedTime;
@@ -1740,81 +1740,40 @@ namespace AtoIndicator
         /// </summary>
         public struct PResult
         {
-            public StaticMember<double> rAngle;
-            public StaticMember<double> hAngle;
-            public StaticMember<double> dAngle;
-            public StaticMember<double> tAngle;
+            public int nFakeBuyStrategyNum;
+            public int nFakeBuyStrategyMinuteNum;
+            public int nFakeAssistantStrategyNum;
+            public int nFakeAssistantStrategyMinuteNum;
+            public int nFakeResistStrategyNum;
+            public int nFakeResistStrategyMinuteNum;
+            public int nFakeUpStrategyNum;
+            public int nFakeUpStrategyMinuteNum;
+            public int nFakeDownStrategyNum;
+            public int nFakeDownStrategyMinuteNum;
+            public int nPaperBuyStrategyNum;
+            public int nPaperBuyStrategyMinuteNum;
 
-            public StaticMember<double> rBAngle; // B(Buyed)각도 
-            public StaticMember<double> hBAngle;
-            public StaticMember<double> dBAngle;
-            public StaticMember<double> tBAngle;
+            public int nTotalStrategyNum;
+            public int nTotalStrategyMinuteNum;
 
-            public bool isDownFs20m;
-            public bool isDownFs1h;
-            public bool isDownFs2h;
-            public bool is1h2h;
-            public bool is20m1h;
-
-            public bool isBDownFs2m;
-            public bool isBDownFs10m;
-            public bool isBDownFs20m;
-            public bool isB2m10m;
-            public bool isB10m20m;
 
             public void Init()
             {
-                rAngle.min = 0;
-                rAngle.max = 0;
-                rAngle.everage = 0;
-                rAngle.median = 0;
+                nFakeBuyStrategyNum = 0;
+                nFakeBuyStrategyMinuteNum = 0;
+                nFakeAssistantStrategyNum = 0;
+                nFakeAssistantStrategyMinuteNum = 0;
+                nFakeResistStrategyNum = 0;
+                nFakeResistStrategyMinuteNum = 0;
+                nFakeUpStrategyNum = 0;
+                nFakeUpStrategyMinuteNum = 0;
+                nFakeDownStrategyNum = 0;
+                nFakeDownStrategyMinuteNum = 0;
+                nPaperBuyStrategyNum = 0;
+                nPaperBuyStrategyMinuteNum = 0;
 
-                hAngle.min = 0;
-                hAngle.max = 0;
-                hAngle.everage = 0;
-                hAngle.median = 0;
-
-                dAngle.min = 0;
-                dAngle.max = 0;
-                dAngle.everage = 0;
-                dAngle.median = 0;
-
-                tAngle.min = 0;
-                tAngle.max = 0;
-                tAngle.everage = 0;
-                tAngle.median = 0;
-
-                rBAngle.min = 0;
-                rBAngle.max = 0;
-                rBAngle.everage = 0;
-                rBAngle.median = 0;
-
-                hBAngle.min = 0;
-                hBAngle.max = 0;
-                hBAngle.everage = 0;
-                hBAngle.median = 0;
-
-                dBAngle.min = 0;
-                dBAngle.max = 0;
-                dBAngle.everage = 0;
-                dBAngle.median = 0;
-
-                tBAngle.min = 0;
-                tBAngle.max = 0;
-                tBAngle.everage = 0;
-                tBAngle.median = 0;
-
-                isDownFs20m = false;
-                isDownFs1h = false;
-                isDownFs2h = false;
-                is20m1h = false;
-                is1h2h = false;
-
-                isBDownFs2m = false;
-                isBDownFs10m = false;
-                isBDownFs20m = false;
-                isB2m10m = false;
-                isB10m20m = false;
+                nTotalStrategyNum = 0;
+                nTotalStrategyMinuteNum = 0;
             }
         }
 
