@@ -161,7 +161,7 @@ namespace AtoIndicator
         public const int FAKE_ASSISTANT_MAX_NUM = 200;
         public const int FAKE_VOLATILITY_MAX_NUM = 200;
         public const int FAKE_DOWN_MAX_NUM = 200;
-        public const int PAPER_TRADE_MAX_NUM = 50; // 최대 모의매수 
+        public const int PAPER_TRADE_MAX_NUM = 100; // 최대 모의매수 
 
         public const long SHT_PER_INIT = BILLION;
 

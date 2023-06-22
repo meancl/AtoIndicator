@@ -339,7 +339,7 @@ namespace AtoIndicator
             try
             {
 
-                if (frame.nStrategyNum >= PAPER_TRADE_MAX_NUM || frame.arrStrategy[nPaperBuyStrategyNum] > 2 || ea[nEaIdx].fPower > 0.27) // 한 전략당 3번제한(nExtraChance 미포함)
+                if (frame.nStrategyNum >= PAPER_TRADE_MAX_NUM || frame.arrStrategy[nPaperBuyStrategyNum] > 3 || ea[nEaIdx].fPower > 0.27) // 한 전략당 4번제한(nExtraChance 미포함)
                     return;
 
                 int nMaxNumToBuy = (int)(STANDARD_BUY_PRICE * NORMAL_TRADE_RATIO) / ea[nEaIdx].nFs; // 최대매수가능금액으로 살 수 있을 만큼 
