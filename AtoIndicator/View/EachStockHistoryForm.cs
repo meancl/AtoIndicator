@@ -355,9 +355,10 @@ namespace AtoIndicator.View.EachStockHistory
             setPaperRadioDelegate();
             setRealRadioDelegate();
 
+            mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler?.Invoke(this, EventArgs.Empty);
+
             gp = historyChart.CreateGraphics();
             gpHorizontal = historyChart.CreateGraphics();
-
         }
         #endregion
 

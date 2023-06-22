@@ -564,6 +564,8 @@ namespace AtoIndicator
             mySlot.nCurVolume = nSeperateNum;
             newSlot.nBuyVolume = newSlot.nCurVolume;
             mySlot.nBuyVolume -= newSlot.nBuyVolume;
+            newSlot.nBuyedSumPrice = newSlot.nBuyPrice * newSlot.nBuyVolume;
+            mySlot.nBuyedSumPrice = mySlot.nBuyPrice * mySlot.nBuyVolume;
             newSlot.nBuyedSlotId = ea[nEaIdx].myTradeManager.arrBuyedSlots.Count;
             ea[nEaIdx].myTradeManager.arrBuyedSlots.Add(newSlot);
 
