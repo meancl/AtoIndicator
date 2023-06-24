@@ -623,7 +623,7 @@ namespace AtoIndicator
             public TradeMethodCategory eDefaultTradeCategory;
             public BuyedManager()
             {
-                eDefaultTradeCategory = TradeMethodCategory.RisingMethod;
+                eDefaultTradeCategory = TradeMethodCategory.FixedMethod;
                 arrBuyedSlots = new List<BuyedSlot>();
                 sTotalLog = new StringBuilder();
             }

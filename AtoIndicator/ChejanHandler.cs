@@ -22,8 +22,8 @@ namespace AtoIndicator
 
         public const double KIWOOM_STOCK_FEE = 0.00015; // 증권 매매수수료
 
-        public const double DEFAULT_FIXED_CEILING = 0.015;
-        public const double DEFAULT_FIXED_BOTTOM = -0.02;
+        public const double DEFAULT_FIXED_CEILING = 0.05;
+        public const double DEFAULT_FIXED_BOTTOM = -0.05;
 
         #endregion
 
