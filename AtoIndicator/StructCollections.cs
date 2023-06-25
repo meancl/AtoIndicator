@@ -1317,9 +1317,6 @@ namespace AtoIndicator
             public int nCurHitNum;
             public int nCurHitType;
 
-            public int nHit5Num;
-            public int nHit8Num;
-            public int nHit10Num;
 
             public Dictionary<int, int> hitDict25;
             public Dictionary<int, int> hitDict38;

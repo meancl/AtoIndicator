@@ -349,6 +349,8 @@ namespace AtoIndicator.View
                         tHIT82.Text = "";
                         tHIT101.Text = "";
                         tHIT102.Text = "";
+                        tHIT121.Text = "";
+                        tHIT122.Text = "";
                         tCURFT1.Text = "";
                         tCURFT2.Text = "";
                         tCURFC1.Text = "";
@@ -603,6 +605,8 @@ namespace AtoIndicator.View
                 string sHIT82 = "";
                 string sHIT101 = "";
                 string sHIT102 = "";
+                string sHIT121 = "";
+                string sHIT122 = "";
                 string sCURFT1 = "";
                 string sCURFT2 = "";
                 string sCURFC1 = "";
@@ -747,6 +751,8 @@ namespace AtoIndicator.View
                 bool isHIT82 = false;
                 bool isHIT101 = false;
                 bool isHIT102 = false;
+                bool isHIT121 = false;
+                bool isHIT122 = false;
                 bool isCURFT1 = false;
                 bool isCURFT2 = false;
                 bool isCURFC1 = false;
@@ -900,6 +906,8 @@ namespace AtoIndicator.View
                     sHIT82 = tHIT82.Text.Trim();
                     sHIT101 = tHIT101.Text.Trim();
                     sHIT102 = tHIT102.Text.Trim();
+                    sHIT121 = tHIT121.Text.Trim();
+                    sHIT122 = tHIT122.Text.Trim();
                     sCURFT1 = tCURFT1.Text.Trim();
                     sCURFT2 = tCURFT2.Text.Trim();
                     sCURFC1 = tCURFC1.Text.Trim();
@@ -1044,6 +1052,8 @@ namespace AtoIndicator.View
                     isHIT82 = !sHIT82.Equals("");
                     isHIT101 = !sHIT101.Equals("");
                     isHIT102 = !sHIT102.Equals("");
+                    isHIT121 = !sHIT121.Equals("");
+                    isHIT122 = !sHIT122.Equals("");
                     isCURFT1 = !sCURFT1.Equals("");
                     isCURFT2 = !sCURFT2.Equals("");
                     isCURFC1 = !sCURFC1.Equals("");
@@ -1122,6 +1132,7 @@ namespace AtoIndicator.View
                                         isHIT51 || isHIT52,
                                         isHIT81 || isHIT82,
                                         isHIT101 || isHIT102,
+                                        isHIT121 || isHIT122,
                                         isCURFT1 || isCURFT2,
                                         isCURFC1 || isCURFC2,
                     });
@@ -1361,14 +1372,17 @@ namespace AtoIndicator.View
                             nPass += ((isSFD1 ? int.Parse(sSFD1) <= mainForm.ea[i].fakeStrategyMgr.nSharedMinuteLocationCount : true) &&
                               (isSFD2 ? mainForm.ea[i].fakeStrategyMgr.nSharedMinuteLocationCount <= int.Parse(sSFD2) : true)) ? 1 : 0;
                         if (isHIT51 || isHIT52)
-                            nPass += ((isHIT51 ? int.Parse(sHIT51) <= mainForm.ea[i].fakeStrategyMgr.nHit5Num : true) &&
-                              (isHIT52 ? mainForm.ea[i].fakeStrategyMgr.nHit5Num <= int.Parse(sHIT52) : true)) ? 1 : 0;
+                            nPass += ((isHIT51 ? int.Parse(sHIT51) <= mainForm.ea[i].fakeStrategyMgr.hitDict25.Count : true) &&
+                              (isHIT52 ? mainForm.ea[i].fakeStrategyMgr.hitDict25.Count <= int.Parse(sHIT52) : true)) ? 1 : 0;
                         if (isHIT81 || isHIT82)
-                            nPass += ((isHIT81 ? int.Parse(sHIT81) <= mainForm.ea[i].fakeStrategyMgr.nHit8Num : true) &&
-                              (isHIT82 ? mainForm.ea[i].fakeStrategyMgr.nHit8Num <= int.Parse(sHIT82) : true)) ? 1 : 0;
+                            nPass += ((isHIT81 ? int.Parse(sHIT81) <= mainForm.ea[i].fakeStrategyMgr.hitDict38.Count : true) &&
+                              (isHIT82 ? mainForm.ea[i].fakeStrategyMgr.hitDict38.Count <= int.Parse(sHIT82) : true)) ? 1 : 0;
                         if (isHIT101 || isHIT102)
-                            nPass += ((isHIT101 ? int.Parse(sHIT101) <= mainForm.ea[i].fakeStrategyMgr.nHit10Num : true) &&
-                              (isHIT102 ? mainForm.ea[i].fakeStrategyMgr.nHit10Num <= int.Parse(sHIT102) : true)) ? 1 : 0;
+                            nPass += ((isHIT101 ? int.Parse(sHIT101) <= mainForm.ea[i].fakeStrategyMgr.hitDict410.Count : true) &&
+                              (isHIT102 ? mainForm.ea[i].fakeStrategyMgr.hitDict410.Count <= int.Parse(sHIT102) : true)) ? 1 : 0;
+                        if (isHIT121 || isHIT122)
+                            nPass += ((isHIT121 ? int.Parse(sHIT121) <= mainForm.ea[i].fakeStrategyMgr.hitDict312.Count : true) &&
+                              (isHIT122 ? mainForm.ea[i].fakeStrategyMgr.hitDict312.Count <= int.Parse(sHIT122) : true)) ? 1 : 0;
                         if (isCURFT1 || isCURFT2)
                             nPass += ((isCURFT1 ? int.Parse(sCURFT1) <= mainForm.ea[i].fakeStrategyMgr.nCurHitType : true) &&
                               (isCURFT2 ? mainForm.ea[i].fakeStrategyMgr.nCurHitType <= int.Parse(sCURFT2) : true)) ? 1 : 0;

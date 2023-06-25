@@ -1132,21 +1132,6 @@ namespace AtoIndicator
                         #region HIT 초기화
                         // 페이크매수/매도 히트횟수 초기화(*동일분봉동안 가지는 히트횟수)
                         {
-                            if (ea[i].fakeStrategyMgr.nCurHitType >= 3)
-                            {
-                                if (ea[i].fakeStrategyMgr.nCurHitNum >= 5)
-                                {
-                                    ea[i].fakeStrategyMgr.nHit5Num++;
-                                    if (ea[i].fakeStrategyMgr.nCurHitNum >= 8)
-                                    {
-                                        ea[i].fakeStrategyMgr.nHit8Num++;
-                                        if (ea[i].fakeStrategyMgr.nCurHitNum >= 10)
-                                        {
-                                            ea[i].fakeStrategyMgr.nHit10Num++;
-                                        }
-                                    }
-                                }
-                            }
 
                             // 초기화
                             ea[i].paperBuyStrategy.nHitNum = 0;
