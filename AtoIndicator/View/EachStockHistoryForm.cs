@@ -130,41 +130,6 @@ namespace AtoIndicator.View.EachStockHistory
             };
 
             timer.Enabled = true;
-
-
-            historyChart.AxisViewChanged += ChartViewChanged;
-
-            showVarToolStripMenuItem.Click += ToolTipItemClickHandler;
-            showLogToolStripMenuItem.Click += ToolTipItemClickHandler;
-
-            tabControl1.SelectedIndexChanged += SelectedIndexChangedHandler;
-
-            historyChart.MouseMove += ChartMouseMoveHandler; // this.MouseMove로 바꾸면 chart cursor이런거 동작 안한다.
-            historyChart.MouseClick += ChartMouseClickHandler; // 이하동문
-            historyChart.Paint += ChartOnPaintHandler;
-
-            this.KeyPreview = true;
-            this.KeyDown += KeyDownHandler;
-            this.KeyUp += KeyUpHandler;
-            this.FormClosed += FormClosedHandler;
-            this.Resize += CancelEventHandler;
-            this.MouseWheel += MouseWheelEventHandler;
-            nSpecificStrategyIdx = specificStrategy;
-
-            ResetMinuteChart(); // 이게 먼저 실행되어야 chart를 초기화시켜줌. 먼저 실행안되면 차트가 candleStickType아니라 오류생김
-
-
-            historyChart.ChartAreas["TotalArea"].Visible = true;
-            isMinuteVisible = true;
-
-            if (nSpecificStrategyIdx != null)
-            {
-                this.Text += $" {specificStrategy}번 전략 전용창";
-                ReverseAllArrowVisible();
-                isPaperBuyArrowVisible = true; // 매수와
-                isPaperSellArrowVisible = true; // 매도만 
-                UpdateMinuteHistoryData();
-            }
             #region Raio Button Delegate
             // ---------------------------------------------
             // START ---- Radio Button 파트
@@ -350,11 +315,48 @@ namespace AtoIndicator.View.EachStockHistory
 
             #endregion
 
+            historyChart.AxisViewChanged += ChartViewChanged;
+
+            showVarToolStripMenuItem.Click += ToolTipItemClickHandler;
+            showLogToolStripMenuItem.Click += ToolTipItemClickHandler;
+
+            tabControl1.SelectedIndexChanged += SelectedIndexChangedHandler;
+
+            historyChart.MouseMove += ChartMouseMoveHandler; // this.MouseMove로 바꾸면 chart cursor이런거 동작 안한다.
+            historyChart.MouseClick += ChartMouseClickHandler; // 이하동문
+            historyChart.Paint += ChartOnPaintHandler;
+
+            this.KeyPreview = true;
+            this.KeyDown += KeyDownHandler;
+            this.KeyUp += KeyUpHandler;
+            this.FormClosed += FormClosedHandler;
+            this.Resize += CancelEventHandler;
+            this.MouseWheel += MouseWheelEventHandler;
+            nSpecificStrategyIdx = specificStrategy;
+
+            ResetMinuteChart(); // 이게 먼저 실행되어야 chart를 초기화시켜줌. 먼저 실행안되면 차트가 candleStickType아니라 오류생김
+
+
+            historyChart.ChartAreas["TotalArea"].Visible = true;
+            isMinuteVisible = true;
+
+            if (nSpecificStrategyIdx != null)
+            {
+                this.Text += $" {specificStrategy}번 전략 전용창";
+                ReverseAllArrowVisible();
+                isPaperBuyArrowVisible = true; // 매수와
+                isPaperSellArrowVisible = true; // 매도만 
+                UpdateMinuteHistoryData();
+            }
+          
+
             setPaperRadioDelegate();
             setRealRadioDelegate();
 
             gp = historyChart.CreateGraphics();
             gpHorizontal = historyChart.CreateGraphics();
+
+            
 
         }
         #endregion
@@ -482,7 +484,6 @@ namespace AtoIndicator.View.EachStockHistory
                     }
                 }
 
-                // mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler?.Invoke(this, EventArgs.Empty);
             }
 
 
@@ -498,6 +499,8 @@ namespace AtoIndicator.View.EachStockHistory
             historyChart.ChartAreas[chartName].AxisY.Maximum = max;
             historyChart.ChartAreas[chartName].AxisY.Minimum = min;
             historyChart.ChartAreas[chartName].AxisY.MajorGrid.LineColor = Color.LightGray;
+
+            
 
         }
 
@@ -2568,8 +2571,14 @@ namespace AtoIndicator.View.EachStockHistory
                 DrawHitEdge(mainForm.ea[nCurIdx].fakeStrategyMgr.hitDict312, Color.Purple);
                 DrawHitEdge(mainForm.ea[nCurIdx].fakeStrategyMgr.hitDict410, Color.Black);
             }
-        }
 
+            if(!isTradeCancelInit)
+            {
+                isTradeCancelInit = true;
+                mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler?.Invoke(this, EventArgs.Empty); 
+            }
+        }
+        public bool isTradeCancelInit = false;
         public int GetCursorIdx(double xCoord, int frontPad, int backPad, ref int xIdx)
         {
             xIdx = (int)xCoord - frontPad;

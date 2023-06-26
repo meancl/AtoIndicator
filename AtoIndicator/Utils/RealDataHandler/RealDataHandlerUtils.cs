@@ -320,7 +320,7 @@ namespace AtoIndicator
 
             if (isSell)
             {
-                UpFakeCount(nCurIdx, PAPER_SELL_SIGNAL, i);
+                UpFakeCount(nCurIdx, PAPER_SELL_SIGNAL, frame.arrSpecificStrategy[i]);
                 frame.paperTradeSlot[i].isSelling = true;
                 frame.paperTradeSlot[i].nBuyHogaVolume = ea[nCurIdx].nTotalBuyHogaVolume / 10;
                 frame.paperTradeSlot[i].nSellRqVolume = frame.paperTradeSlot[i].nBuyedVolume;
