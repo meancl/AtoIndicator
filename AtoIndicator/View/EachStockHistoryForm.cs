@@ -65,9 +65,7 @@ namespace AtoIndicator.View.EachStockHistory
         public const int BUY_RESERVE = 0;
         public const int SELL_RESERVE = 1;
 
-        public bool isTargetChoice;
-        public double fTargetPriceTouch;
-        public double fBottomPriceTouch;
+        
         #endregion
 
         #region 이전 어노테이션 같은위치일 시 삭제용
@@ -2075,17 +2073,17 @@ namespace AtoIndicator.View.EachStockHistory
                             reserveChosenLabel.Text = sReserveChosenMsg;
                     }
 
-                    if (isTargetChoice)
+                    if (curEa.myTradeManager.isTargetChoice)
                     {
-                        if (fBottomPriceTouch > 0)
+                        if (curEa.myTradeManager.fBottomPriceTouch > 0)
                         {
-                            reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(fBottomPriceTouch);
+                            reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.myTradeManager.fBottomPriceTouch);
                             gpHorizontal.DrawLine(new Pen(Color.Black, 3), reservationX1, reservationY1, reservationX2, reservationY1);
                         }
 
-                        if (fTargetPriceTouch > 0)
+                        if (curEa.myTradeManager.fTargetPriceTouch > 0)
                         {
-                            reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(fTargetPriceTouch);
+                            reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.myTradeManager.fTargetPriceTouch);
                             gpHorizontal.DrawLine(new Pen(Color.Black, 3), reservationX1, reservationY1, reservationX2, reservationY1);
                         }
                     }
@@ -2492,20 +2490,20 @@ namespace AtoIndicator.View.EachStockHistory
                             }
                             else // 0으로 설정 가능
                             {
-                                if (isTargetChoice)
+                                if (curEa.myTradeManager.isTargetChoice)
                                 {
-                                    if (fBottomPriceTouch == 0)
+                                    if (curEa.myTradeManager.fBottomPriceTouch == 0)
                                     {
-                                        fBottomPriceTouch = yCoord;
+                                        curEa.myTradeManager.fBottomPriceTouch = yCoord;
                                     }
                                     else
                                     {
-                                        fTargetPriceTouch = yCoord;
-                                        if (fBottomPriceTouch > fTargetPriceTouch)
+                                        curEa.myTradeManager.fTargetPriceTouch = yCoord;
+                                        if (curEa.myTradeManager.fBottomPriceTouch > curEa.myTradeManager.fTargetPriceTouch)
                                         {
-                                            double tmpVal = fBottomPriceTouch;
-                                            fBottomPriceTouch = fTargetPriceTouch;
-                                            fTargetPriceTouch = tmpVal;
+                                            double tmpVal = curEa.myTradeManager.fBottomPriceTouch;
+                                            curEa.myTradeManager.fBottomPriceTouch = curEa.myTradeManager.fTargetPriceTouch;
+                                            curEa.myTradeManager.fTargetPriceTouch = tmpVal;
                                         }
                                     }
                                 }
@@ -2982,10 +2980,10 @@ namespace AtoIndicator.View.EachStockHistory
                                 ResetCheckLinesBeforeApply();
 
                                 curEa.myTradeManager.arrBuyedSlots[i].eTradeMethod = MainForm.TradeMethodCategory.FixedMethod;
-                                if (fBottomPriceTouch != 0 && fTargetPriceTouch != 0)
+                                if (curEa.myTradeManager.fBottomPriceTouch != 0 && curEa.myTradeManager.fTargetPriceTouch != 0)
                                 {
-                                    curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetProfitPercent(curEa.myTradeManager.arrBuyedSlots[i].nBuyedSumPrice, (int)(fTargetPriceTouch * curEa.myTradeManager.arrBuyedSlots[i].nBuyVolume), curEa.nMarketGubun) / 100;
-                                    curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetProfitPercent(curEa.myTradeManager.arrBuyedSlots[i].nBuyedSumPrice, (int)(fBottomPriceTouch * curEa.myTradeManager.arrBuyedSlots[i].nBuyVolume), curEa.nMarketGubun) / 100;
+                                    curEa.myTradeManager.arrBuyedSlots[i].fTargetPer = mainForm.GetProfitPercent(curEa.myTradeManager.arrBuyedSlots[i].nBuyedSumPrice, (int)(curEa.myTradeManager.fTargetPriceTouch * curEa.myTradeManager.arrBuyedSlots[i].nBuyVolume), curEa.nMarketGubun) / 100;
+                                    curEa.myTradeManager.arrBuyedSlots[i].fBottomPer = mainForm.GetProfitPercent(curEa.myTradeManager.arrBuyedSlots[i].nBuyedSumPrice, (int)(curEa.myTradeManager.fBottomPriceTouch * curEa.myTradeManager.arrBuyedSlots[i].nBuyVolume), curEa.nMarketGubun) / 100;
                                 }
                                 else
                                 {
@@ -3012,17 +3010,17 @@ namespace AtoIndicator.View.EachStockHistory
                 {
                     if (cUp == 57) // 9
                     {
-                        isTargetChoice = false;
-                        if (fTargetPriceTouch == 0) // 두번째 타겟이 입력 안됐으면 초기화
+                        curEa.myTradeManager.isTargetChoice = false;
+                        if (curEa.myTradeManager.fTargetPriceTouch == 0) // 두번째 타겟이 입력 안됐으면 초기화
                         {
-                            fBottomPriceTouch = 0;
-                            fTargetPriceTouch = 0;
+                            curEa.myTradeManager.fBottomPriceTouch = 0;
+                            curEa.myTradeManager.fTargetPriceTouch = 0;
                         }
 
                         if (isCtrlPushed) // 초기화
                         {
-                            fBottomPriceTouch = 0;
-                            fTargetPriceTouch = 0;
+                            curEa.myTradeManager.fBottomPriceTouch = 0;
+                            curEa.myTradeManager.fTargetPriceTouch = 0;
                         }
 
                     }
@@ -3101,7 +3099,7 @@ namespace AtoIndicator.View.EachStockHistory
             if (cPressed == 57) // 9
             {
                 ClearBuyMode();
-                isTargetChoice = true;
+                curEa.myTradeManager.isTargetChoice = true;
             }
 
             if (cPressed == 'C') // 오토 바운더리

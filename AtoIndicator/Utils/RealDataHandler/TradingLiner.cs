@@ -182,6 +182,7 @@ namespace AtoIndicator
 
             if (ea[nCurIdx].fPower >= 0.29)
             {
+                isSell = true;
                 sSharedSellDescription.Append($"상한가 도달!{NEW_LINE}");
                 PrintLog($"상한가 도달! : {checkSellIterIdx}번째 매매슬롯 {nSharedTime} {ea[nCurIdx].sCode} {ea[nCurIdx].sCodeName}", nCurIdx, checkSellIterIdx);
             }
@@ -300,7 +301,7 @@ namespace AtoIndicator
                     priceToOrder = nRequestPrice;
 
 
-                SetAndServeCurSlot(false, NEW_BUY, nCurIdx, ea[nCurIdx].sCode, PENDING_ORDER, priceToOrder, nQty, "신규매수", "", "기계매수", eTradeMethod:TradeMethodCategory.RisingMethod);
+                SetAndServeCurSlot(false, NEW_BUY, nCurIdx, ea[nCurIdx].sCode, PENDING_ORDER, priceToOrder, nQty, "신규매수", "", "기계매수", eTradeMethod:TradeMethodCategory.FixedMethod);
 
 
                 PrintLog($"시간 : {nSharedTime}, 종목코드 : {ea[nCurIdx].sCode} 종목명 : {ea[nCurIdx].sCodeName}, 매수가 : {priceToOrder} 손매수신청", nCurIdx);

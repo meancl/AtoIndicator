@@ -619,8 +619,13 @@ namespace AtoIndicator
             public int nTotalSelled;
             public int nTotalSelling;
 
-
             public TradeMethodCategory eDefaultTradeCategory;
+
+            // EachStockHistoryForm 조작용 변수
+            public bool isTargetChoice;
+            public double fTargetPriceTouch;
+            public double fBottomPriceTouch;
+
             public BuyedManager()
             {
                 eDefaultTradeCategory = TradeMethodCategory.FixedMethod;
