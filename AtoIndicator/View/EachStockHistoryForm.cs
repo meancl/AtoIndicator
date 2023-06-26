@@ -686,7 +686,7 @@ namespace AtoIndicator.View.EachStockHistory
 
                                 nNumInjector++;
 
-                                int nPaperBuyAnnotationIdx = curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedTimeLineIdx;
+                                int nPaperBuyAnnotationIdx = curEa.paperBuyStrategy.paperTradeSlot[p].nBuyRqTimeLineIdx;
                                 string sPaperBuyArrowToolTip = "";
 
                                 if (curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedVolume == 0) // 전량 매수취소가 된 상황 
@@ -751,7 +751,7 @@ namespace AtoIndicator.View.EachStockHistory
                                 realDictionary[nPaperBuyAnnotationIdx].nLastAnnotationLoc = nNumInjector;  // 최근 삽입시점 삽입
 
                                 arrowPaperBuy.BackColor = Color.Red;
-                                arrowPaperBuy.SetAnchor(historyChart.Series["MinuteStick"].Points[curEa.paperBuyStrategy.paperTradeSlot[p].nBuyedTimeLineIdx]);
+                                arrowPaperBuy.SetAnchor(historyChart.Series["MinuteStick"].Points[curEa.paperBuyStrategy.paperTradeSlot[p].nBuyRqTimeLineIdx]);
                                 // arrowFakeBuy.AnchorY = historyChart.Series["MinuteStick"].Points[curEa.fakeBuyStrategy.arrMinuteIdx[p]].YValues[1]; // 고.저.시종
                                 arrowPaperBuy.Name = "P" + nNumInjector;
                                 arrowPaperBuy.LineColor = Color.Black;
@@ -956,7 +956,7 @@ namespace AtoIndicator.View.EachStockHistory
 
                                 nNumInjector++;
 
-                                int nPaperSellAnnotationIdx = curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndTimeLineIdx;
+                                int nPaperSellAnnotationIdx = curEa.paperBuyStrategy.paperTradeSlot[p].nSellRqTimeLineIdx;
                                 string sPaperSellArrowToolTip = "";
 
 
@@ -1023,7 +1023,7 @@ namespace AtoIndicator.View.EachStockHistory
                                 realDictionary[nPaperSellAnnotationIdx].nLastAnnotationLoc = nNumInjector;  // 최근 삽입시점 삽입
 
                                 arrowPaperSell.BackColor = Color.Blue;
-                                arrowPaperSell.SetAnchor(historyChart.Series["MinuteStick"].Points[curEa.paperBuyStrategy.paperTradeSlot[p].nSellEndTimeLineIdx]);
+                                arrowPaperSell.SetAnchor(historyChart.Series["MinuteStick"].Points[curEa.paperBuyStrategy.paperTradeSlot[p].nSellRqTimeLineIdx]);
                                 // arrowFakeBuy.AnchorY = historyChart.Series["MinuteStick"].Points[curEa.fakeBuyStrategy.arrMinuteIdx[p]].YValues[1]; // 고.저.시종
                                 arrowPaperSell.Name = "P" + nNumInjector;
                                 arrowPaperSell.LineColor = Color.Black;

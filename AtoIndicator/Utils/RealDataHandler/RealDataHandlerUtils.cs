@@ -18,103 +18,106 @@ namespace AtoIndicator
 
         void UpFakeCount(int nEaIdx, int nFakeNum, int nBuyStrategyNum)
         {
-            if (nFakeNum != EVERY_SIGNAL && nFakeNum != PAPER_SELL_SIGNAL)
+            try
             {
-                if (nFakeNum != PAPER_BUY_SIGNAL)
-                    ea[nEaIdx].fakeStrategyMgr.nTotalFakeCount++; // 실매수 미포함
-                ea[nEaIdx].fakeStrategyMgr.nTotalArrowCount++; // 실매수 포함 
+                if (nFakeNum != EVERY_SIGNAL && nFakeNum != PAPER_SELL_SIGNAL)
+                {
+                    if (nFakeNum != PAPER_BUY_SIGNAL)
+                        ea[nEaIdx].fakeStrategyMgr.nTotalFakeCount++; // 실매수 미포함
+                    ea[nEaIdx].fakeStrategyMgr.nTotalArrowCount++; // 실매수 포함 
 
-            }
+                }
 
-            FakeDBRecordInfo newF = new FakeDBRecordInfo();
-            ea[nEaIdx].GetFakeFix(newF.fr);
+                FakeDBRecordInfo newF = new FakeDBRecordInfo();
+                ea[nEaIdx].GetFakeFix(newF.fr);
 
-            newF.fr.nRqTime = nSharedTime;
-            newF.fr.nOverPrice = newF.fr.nFb;
+                newF.fr.nRqTime = nSharedTime;
+                newF.fr.nOverPrice = newF.fr.nFb;
 
-            if (newF.fr.nOverPrice == 0) // 값이 없다면..?
-                newF.fr.nOverPrice = ea[nEaIdx].nCurHogaPrice;
+                if (newF.fr.nOverPrice == 0) // 값이 없다면..?
+                    newF.fr.nOverPrice = ea[nEaIdx].nCurHogaPrice;
 
-            if (nFakeNum != PAPER_SELL_SIGNAL)
-            {
-                for (int i = 0; i < EYES_CLOSE_NUM; i++)
-                    newF.fr.nOverPrice += GetIntegratedMarketGap(newF.fr.nOverPrice);
-            }
+                if (nFakeNum != PAPER_SELL_SIGNAL)
+                {
+                    for (int i = 0; i < EYES_CLOSE_NUM; i++)
+                        newF.fr.nOverPrice += GetIntegratedMarketGap(newF.fr.nOverPrice);
+                }
 
-            newF.nTimeLineIdx = nTimeLineIdx;
+                newF.nTimeLineIdx = nTimeLineIdx;
 
-            int nRequestSignal = FAKE_REQUEST_SIGNAL; // default로 FAKE_REQUEST_SIGNAL
+                int nRequestSignal = FAKE_REQUEST_SIGNAL; // default로 FAKE_REQUEST_SIGNAL
 
 
-            switch (nFakeNum)
-            {
-                case FAKE_BUY_SIGNAL:
-                    newF.fr.nBuyStrategyIdx = strategyNameDict[(FAKE_BUY_SIGNAL, strategyName.arrFakeBuyStrategyName[nBuyStrategyNum])];
-                    newF.fr.nBuyStrategyGroupNum = FAKE_BUY_SIGNAL; //key
-                    newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeBuyStrategy.arrStrategy[nBuyStrategyNum]; // key
-                    break;
-                case FAKE_RESIST_SIGNAL:
-                    newF.fr.nBuyStrategyIdx = strategyNameDict[(FAKE_RESIST_SIGNAL, strategyName.arrFakeResistStrategyName[nBuyStrategyNum])];
-                    newF.fr.nBuyStrategyGroupNum = FAKE_RESIST_SIGNAL; // key
-                    newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeResistStrategy.arrStrategy[nBuyStrategyNum]; // key
-                    break;
-                case FAKE_ASSISTANT_SIGNAL:
-                    newF.fr.nBuyStrategyIdx = strategyNameDict[(FAKE_ASSISTANT_SIGNAL, strategyName.arrFakeAssistantStrategyName[nBuyStrategyNum])];
-                    newF.fr.nBuyStrategyGroupNum = FAKE_ASSISTANT_SIGNAL; // key
-                    newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeAssistantStrategy.arrStrategy[nBuyStrategyNum]; // key
-                    break;
-                case FAKE_VOLATILE_SIGNAL:
-                    newF.fr.nBuyStrategyIdx = strategyNameDict[(FAKE_VOLATILE_SIGNAL, strategyName.arrFakeVolatilityStrategyName[nBuyStrategyNum])];
-                    newF.fr.nBuyStrategyGroupNum = FAKE_VOLATILE_SIGNAL; // key
-                    newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeVolatilityStrategy.arrStrategy[nBuyStrategyNum]; // key
-                    break;
-                case FAKE_DOWN_SIGNAL:
-                    newF.fr.nBuyStrategyIdx = strategyNameDict[(FAKE_DOWN_SIGNAL, strategyName.arrFakeDownStrategyName[nBuyStrategyNum])];
-                    newF.fr.nBuyStrategyGroupNum = FAKE_DOWN_SIGNAL; // key
-                    newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeDownStrategy.arrStrategy[nBuyStrategyNum]; // key
-                    break;
-                case PAPER_BUY_SIGNAL:
-                    newF.fr.nBuyStrategyIdx = strategyNameDict[(PAPER_BUY_SIGNAL, strategyName.arrPaperBuyStrategyName[nBuyStrategyNum])]; // key
-                    newF.fr.nBuyStrategyGroupNum = PAPER_BUY_SIGNAL; // key
-                    newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].paperBuyStrategy.arrStrategy[nBuyStrategyNum]; // key
-                    break;
-                case PAPER_SELL_SIGNAL:
-                    newF.fr.nBuyStrategyIdx = strategyNameDict[(PAPER_BUY_SIGNAL, strategyName.arrPaperBuyStrategyName[nBuyStrategyNum])]; // key
-                    newF.fr.nBuyStrategyGroupNum = PAPER_SELL_SIGNAL; // key
-                    newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].paperBuyStrategy.arrStrategy[nBuyStrategyNum]; // key
-                    nRequestSignal = EVERY_SIGNAL;
-                    break;
-                case EVERY_SIGNAL:
-                    newF.fr.nBuyStrategyIdx = nBuyStrategyNum; // key
-                    newF.fr.nBuyStrategyGroupNum = EVERY_SIGNAL; // key
-                    newF.fr.nBuyStrategySequenceIdx = ++ea[nEaIdx].fakeStrategyMgr.nEveryAICount;
-                    nRequestSignal = EVERY_SIGNAL;
-                    break;
-                default:
-                    break;
-            }
+                switch (nFakeNum)
+                {
+                    case FAKE_BUY_SIGNAL:
+                        newF.fr.nBuyStrategyIdx = strategyNameDict[(FAKE_BUY_SIGNAL, strategyName.arrFakeBuyStrategyName[nBuyStrategyNum])];
+                        newF.fr.nBuyStrategyGroupNum = FAKE_BUY_SIGNAL; //key
+                        newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeBuyStrategy.arrStrategy[nBuyStrategyNum]; // key
+                        break;
+                    case FAKE_RESIST_SIGNAL:
+                        newF.fr.nBuyStrategyIdx = strategyNameDict[(FAKE_RESIST_SIGNAL, strategyName.arrFakeResistStrategyName[nBuyStrategyNum])];
+                        newF.fr.nBuyStrategyGroupNum = FAKE_RESIST_SIGNAL; // key
+                        newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeResistStrategy.arrStrategy[nBuyStrategyNum]; // key
+                        break;
+                    case FAKE_ASSISTANT_SIGNAL:
+                        newF.fr.nBuyStrategyIdx = strategyNameDict[(FAKE_ASSISTANT_SIGNAL, strategyName.arrFakeAssistantStrategyName[nBuyStrategyNum])];
+                        newF.fr.nBuyStrategyGroupNum = FAKE_ASSISTANT_SIGNAL; // key
+                        newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeAssistantStrategy.arrStrategy[nBuyStrategyNum]; // key
+                        break;
+                    case FAKE_VOLATILE_SIGNAL:
+                        newF.fr.nBuyStrategyIdx = strategyNameDict[(FAKE_VOLATILE_SIGNAL, strategyName.arrFakeVolatilityStrategyName[nBuyStrategyNum])];
+                        newF.fr.nBuyStrategyGroupNum = FAKE_VOLATILE_SIGNAL; // key
+                        newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeVolatilityStrategy.arrStrategy[nBuyStrategyNum]; // key
+                        break;
+                    case FAKE_DOWN_SIGNAL:
+                        newF.fr.nBuyStrategyIdx = strategyNameDict[(FAKE_DOWN_SIGNAL, strategyName.arrFakeDownStrategyName[nBuyStrategyNum])];
+                        newF.fr.nBuyStrategyGroupNum = FAKE_DOWN_SIGNAL; // key
+                        newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].fakeDownStrategy.arrStrategy[nBuyStrategyNum]; // key
+                        break;
+                    case PAPER_BUY_SIGNAL:
+                        newF.fr.nBuyStrategyIdx = strategyNameDict[(PAPER_BUY_SIGNAL, strategyName.arrPaperBuyStrategyName[nBuyStrategyNum])]; // key
+                        newF.fr.nBuyStrategyGroupNum = PAPER_BUY_SIGNAL; // key
+                        newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].paperBuyStrategy.arrStrategy[nBuyStrategyNum]; // key
+                        break;
+                    case PAPER_SELL_SIGNAL:
+                        newF.fr.nBuyStrategyIdx = strategyNameDict[(PAPER_BUY_SIGNAL, strategyName.arrPaperBuyStrategyName[nBuyStrategyNum])]; // key
+                        newF.fr.nBuyStrategyGroupNum = PAPER_SELL_SIGNAL; // key
+                        newF.fr.nBuyStrategySequenceIdx = ea[nEaIdx].paperBuyStrategy.arrStrategy[nBuyStrategyNum]; // key
+                        nRequestSignal = EVERY_SIGNAL;
+                        break;
+                    case EVERY_SIGNAL:
+                        newF.fr.nBuyStrategyIdx = nBuyStrategyNum; // key
+                        newF.fr.nBuyStrategyGroupNum = EVERY_SIGNAL; // key
+                        newF.fr.nBuyStrategySequenceIdx = ++ea[nEaIdx].fakeStrategyMgr.nEveryAICount;
+                        nRequestSignal = EVERY_SIGNAL;
+                        break;
+                    default:
+                        break;
+                }
 
-            ea[nEaIdx].fakeStrategyMgr.fd.Add(newF);
+                ea[nEaIdx].fakeStrategyMgr.fd.Add(newF);
 
 
 #if AI
-            // AI 서비스 요청
-            double[] features102 = GetParameters(nCurIdx: nEaIdx, 102, nTradeMethod: nRequestSignal, nRealStrategyNum: newF.fr.nBuyStrategyIdx);
+                // AI 서비스 요청
+                double[] features102 = GetParameters(nCurIdx: nEaIdx, 102, nTradeMethod: nRequestSignal, nRealStrategyNum: newF.fr.nBuyStrategyIdx);
 
-            var nMMFNum = mmf.RequestAIService(sCode: ea[nEaIdx].sCode, nRqTime: nSharedTime, nRqType: nRequestSignal, inputData: features102);
-            if (nMMFNum == -1)
-            {
-                PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
-                return;
-            }
-            aiSlot.nEaIdx = nEaIdx;
-            aiSlot.nRequestId = nRequestSignal;
-            aiSlot.nMMFNumber = nMMFNum;
+                var nMMFNum = mmf.RequestAIService(sCode: ea[nEaIdx].sCode, nRqTime: nSharedTime, nRqType: nRequestSignal, inputData: features102);
+                if (nMMFNum == -1)
+                {
+                    PrintLog($"{nSharedTime} AI Service Slot이 부족합니다.");
+                    return;
+                }
+                aiSlot.nEaIdx = nEaIdx;
+                aiSlot.nRequestId = nRequestSignal;
+                aiSlot.nMMFNumber = nMMFNum;
 
-            aiQueue.Enqueue(aiSlot);
+                aiQueue.Enqueue(aiSlot);
 
 #endif
-
+            }
+            catch { }
         }
 
         #region SetThisFake
@@ -321,6 +324,7 @@ namespace AtoIndicator
             if (isSell)
             {
                 UpFakeCount(nCurIdx, PAPER_SELL_SIGNAL, frame.arrSpecificStrategy[i]);
+                frame.paperTradeSlot[i].nSellRqTimeLineIdx = nTimeLineIdx;
                 frame.paperTradeSlot[i].isSelling = true;
                 frame.paperTradeSlot[i].nBuyHogaVolume = ea[nCurIdx].nTotalBuyHogaVolume / 10;
                 frame.paperTradeSlot[i].nSellRqVolume = frame.paperTradeSlot[i].nBuyedVolume;
@@ -351,7 +355,7 @@ namespace AtoIndicator
                     frame.paperTradeSlot[frame.nStrategyNum].nOverPrice += GetIntegratedMarketGap(frame.paperTradeSlot[frame.nStrategyNum].nOverPrice);
                 frame.paperTradeSlot[frame.nStrategyNum].nRqTime = nSharedTime;
                 frame.paperTradeSlot[frame.nStrategyNum].nRqVolume = nMaxNumToBuy;
-                frame.paperTradeSlot[frame.nStrategyNum].nRqTimeLineIdx = nTimeLineIdx;
+                frame.paperTradeSlot[frame.nStrategyNum].nBuyRqTimeLineIdx = nTimeLineIdx;
                 frame.paperTradeSlot[frame.nStrategyNum].nTargetRqVolume = nMaxNumToBuy;
                 frame.paperTradeSlot[frame.nStrategyNum].nSellHogaVolume = ea[nEaIdx].nThreeSellHogaVolume / 3;
                 frame.paperTradeSlot[frame.nStrategyNum].nCanceledVolume = 0;

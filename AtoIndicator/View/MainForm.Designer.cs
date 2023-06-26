@@ -67,7 +67,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.isMarketLabel = new System.Windows.Forms.Label();
             this.isHoldingsLabel = new System.Windows.Forms.Label();
-            this.atoVersionLabel = new System.Windows.Forms.Label();
+            this.latestUpdatedLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).BeginInit();
             this.manualGroupBox.SuspendLayout();
@@ -415,22 +415,22 @@
             this.isHoldingsLabel.TabIndex = 26;
             this.isHoldingsLabel.Text = "잔고확인 : false";
             // 
-            // atoVersionLabel
+            // latestUpdatedLabel
             // 
-            this.atoVersionLabel.AutoSize = true;
-            this.atoVersionLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.atoVersionLabel.Location = new System.Drawing.Point(1054, 31);
-            this.atoVersionLabel.Name = "atoVersionLabel";
-            this.atoVersionLabel.Size = new System.Drawing.Size(82, 11);
-            this.atoVersionLabel.TabIndex = 27;
-            this.atoVersionLabel.Text = "version : 26";
+            this.latestUpdatedLabel.AutoSize = true;
+            this.latestUpdatedLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.latestUpdatedLabel.Location = new System.Drawing.Point(949, 28);
+            this.latestUpdatedLabel.Name = "latestUpdatedLabel";
+            this.latestUpdatedLabel.Size = new System.Drawing.Size(187, 11);
+            this.latestUpdatedLabel.TabIndex = 27;
+            this.latestUpdatedLabel.Text = "Latest Updated : 2023-06-26";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1148, 533);
-            this.Controls.Add(this.atoVersionLabel);
+            this.Controls.Add(this.latestUpdatedLabel);
             this.Controls.Add(this.isHoldingsLabel);
             this.Controls.Add(this.isMarketLabel);
             this.Controls.Add(this.panel1);
@@ -498,7 +498,7 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label isMarketLabel;
         private System.Windows.Forms.Label isHoldingsLabel;
-        private System.Windows.Forms.Label atoVersionLabel;
+        private System.Windows.Forms.Label latestUpdatedLabel;
     }
 }
 

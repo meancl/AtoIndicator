@@ -53,11 +53,11 @@
         public const int TEN_MINUTE_SEC = 600;
         public const int TEN_MINUTE_KIWOOM = 1000;
         public const int HOUR_KIWOOM = 10000;
-        public const int SHUTDOWN_TIME = 150000; // 매매마감시간
+        public const int SHUTDOWN_TIME = 152000; // 매매마감시간
         public const int MARKET_END_TIME = 153000; // 시장마감시간
         public const int REAL_DATA_END_TIME = 152000; // 시장마감시간u
         public const int MARKET_START_TIME = 90000; // 시장시작시간
-        public const int BAN_BUY_TIME = 144000; // 매수마감시간
+        public const int BAN_BUY_TIME = 151000; // 매수마감시간
         #endregion
         #region 가격
         //--------------------------------------------------------

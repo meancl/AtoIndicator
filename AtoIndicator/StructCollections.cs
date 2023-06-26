@@ -1422,7 +1422,7 @@ namespace AtoIndicator
             public int nBuyedVolume; // 언제 사졌는 지
             public int nBuyedPrice; // 얼마에 사졌는 지 
             public int nBuyedTimeLineIdx;
-            public int nRqTimeLineIdx;
+            public int nBuyRqTimeLineIdx;
             public int nBuyEndTime;
             public int nSellHogaVolume; // 호가에 얼마나 걸려있는 지
             public int nCanceledVolume; // 매수취소 적용된 매수요청물량
@@ -1436,6 +1436,7 @@ namespace AtoIndicator
             public int nSellRqVolume; // 얼만큼 주문신청했는 지
             public int nSellRqCount;
             public int nSellRqTime;
+            public int nSellRqTimeLineIdx;
             public int nSellRqPrice;
             public int nSellEndVolume;
             public int nSellEndPrice;
