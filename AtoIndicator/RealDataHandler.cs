@@ -4752,6 +4752,8 @@ namespace AtoIndicator
                                             ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume;
                                             ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTime = nSharedTime;
                                             ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTimeLineIdx = nTimeLineIdx;
+                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqTime = nSharedTime;
+                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqTimeLineIdx = nTimeLineIdx;
                                             ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].sSellDescription = "시간초과 전량 매수취소";
                                             ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedTimeLineIdx = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyRqTimeLineIdx;
                                         }
@@ -4811,6 +4813,8 @@ namespace AtoIndicator
                                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndPrice = ea[nCurIdx].nFs;
                                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndVolume = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume;
                                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTime = nSharedTime;
+                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqTime = nSharedTime;
+                                                        ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellRqTimeLineIdx = nTimeLineIdx;
                                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nSellEndTimeLineIdx = nTimeLineIdx;
                                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].sSellDescription = "가격상승 전량 매수취소";
                                                         ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedTimeLineIdx = ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyRqTimeLineIdx;
