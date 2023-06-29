@@ -103,7 +103,7 @@ namespace AtoIndicator.View
             tooltip1.SetToolTip(reserve1Btn, "vi모드");
             tooltip2.SetToolTip(reserve2Btn, "현재 1퍼");
             tooltip3.SetToolTip(reserve3Btn, "파워자 1퍼");
-            tooltip4.SetToolTip(reserve4Btn, "이전 1퍼");
+            tooltip4.SetToolTip(reserve4Btn, "페이크매수분포2 페이크갯수 50 맥스파워 0.1");
 
 
             tooltip7.SetToolTip(write1Btn, "실매수 10 실매수분포 2 공유분포 5");
@@ -249,6 +249,8 @@ namespace AtoIndicator.View
                         t4P2.Text = "";
                         tPD1.Text = "";
                         tPD2.Text = "";
+                        tRPD1.Text = "";
+                        tRPD2.Text = "";
                         tVI1.Text = "";
                         tVI2.Text = "";
                         tRBP1.Text = "";
@@ -477,6 +479,8 @@ namespace AtoIndicator.View
                 string sCP2 = "";
                 string sPD1 = "";
                 string sPD2 = "";
+                string sRPD1 = "";
+                string sRPD2 = "";
                 string sPJ1 = "";
                 string sPJ2 = "";
                 string sUPJ1 = "";
@@ -623,6 +627,8 @@ namespace AtoIndicator.View
                 bool isCP2 = false;
                 bool isPD1 = false;
                 bool isPD2 = false;
+                bool isRPD1 = false;
+                bool isRPD2 = false;
                 bool isPJ1 = false;
                 bool isPJ2 = false;
                 bool isUPJ1 = false;
@@ -778,6 +784,8 @@ namespace AtoIndicator.View
                     sCP2 = tCP2.Text.Trim();
                     sPD1 = tPD1.Text.Trim();
                     sPD2 = tPD2.Text.Trim();
+                    sRPD1 = tRPD1.Text.Trim();
+                    sRPD2 = tRPD2.Text.Trim();
                     sPJ1 = tPJ1.Text.Trim();
                     sPJ2 = tPJ2.Text.Trim();
                     sUPJ1 = tUPJ1.Text.Trim();
@@ -924,6 +932,8 @@ namespace AtoIndicator.View
                     isCP2 = !sCP2.Equals("");
                     isPD1 = !sPD1.Equals("");
                     isPD2 = !sPD2.Equals("");
+                    isRPD1 = !sRPD1.Equals("");
+                    isRPD2 = !sRPD2.Equals("");
                     isPJ1 = !sPJ1.Equals("");
                     isPJ2 = !sPJ2.Equals("");
                     isUPJ1 = !sUPJ1.Equals("");
@@ -1073,6 +1083,7 @@ namespace AtoIndicator.View
                                         isTTM1 || isTTM2 ,
                                         isBM1 || isBM2 ,
                                         isPD1 || isPD2 ,
+                                        isRPD1 || isRPD2 ,
                                         isSM1 || isSM2 ,
                                         isTA1 || isTA2 ,
                                         isHA1 || isHA2 ,
@@ -1186,8 +1197,11 @@ namespace AtoIndicator.View
                             nPass += ((isCP1 ? double.Parse(sCP1) <= mainForm.ea[i].fPower : true) &&
                                 (isCP2 ? mainForm.ea[i].fPower <= double.Parse(sCP2) : true)) ? 1 : 0;
                         if ((isPD1 || isPD2) && mainForm.ea[i].nYesterdayEndPrice > 0)
-                            nPass += ((isPD1 ? double.Parse(sPD1) <= (double)(mainForm.ea[i].nFs - mainForm.ea[i].timeLines1m.nMaxUpFs) / mainForm.ea[i].nYesterdayEndPrice : true) &&
-                                (isPD2 ? (double)(mainForm.ea[i].nFs - mainForm.ea[i].timeLines1m.nMaxUpFs) / mainForm.ea[i].nYesterdayEndPrice <= double.Parse(sPD2) : true)) ? 1 : 0;
+                            nPass += ((isPD1 ? double.Parse(sPD1) <= (double)(mainForm.ea[i].timeLines1m.nMaxUpFs - mainForm.ea[i].nFs ) / mainForm.ea[i].nYesterdayEndPrice : true) &&
+                                (isPD2 ? (double)(mainForm.ea[i].timeLines1m.nMaxUpFs - mainForm.ea[i].nFs ) / mainForm.ea[i].nYesterdayEndPrice <= double.Parse(sPD2) : true)) ? 1 : 0;
+                        if (isRPD1 || isRPD2)
+                            nPass += ((isRPD1 ? double.Parse(sRPD1) <= mainForm.ea[i].fTodayMaxPower - mainForm.ea[i].fPower : true) &&
+                                (isRPD2 ? mainForm.ea[i].fTodayMaxPower - mainForm.ea[i].fPower <= double.Parse(sRPD2) : true)) ? 1 : 0;
                         if (isPJ1 || isPJ2)
                             nPass += ((isPJ1 ? double.Parse(sPJ1) <= mainForm.ea[i].fPowerJar : true) &&
                                 (isPJ2 ? mainForm.ea[i].fPowerJar <= double.Parse(sPJ2) : true)) ? 1 : 0;
@@ -1412,7 +1426,9 @@ namespace AtoIndicator.View
                             }
                             else if (isR4) // r4 조건
                             {
-                                isReserveShow = (double)(mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nRealDataIdx].nLastFs - mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nRealDataIdx].nStartFs) / mainForm.ea[i].nYesterdayEndPrice >= 0.01;
+                                isReserveShow = mainForm.ea[i].fTodayMaxPower >= 0.1 &&
+                                            mainForm.ea[i].fakeStrategyMgr.nTotalFakeCount >= 50 &&
+                                            mainForm.ea[i].fakeBuyStrategy.nMinuteLocationCount >= 2;
                             }
                             else if (isRZ)
                             {

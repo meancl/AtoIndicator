@@ -63,11 +63,11 @@
             this.todayResultStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.realTimeLogStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.라스트업데이트ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logTxtBx = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.isMarketLabel = new System.Windows.Forms.Label();
             this.isHoldingsLabel = new System.Windows.Forms.Label();
-            this.라스트업데이트ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).BeginInit();
             this.manualGroupBox.SuspendLayout();
@@ -275,7 +275,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1312, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(1312, 28);
             this.menuStrip1.TabIndex = 23;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -292,7 +292,7 @@
             this.configStripMenuItem,
             this.라스트업데이트ToolStripMenuItem});
             this.메뉴ToolStripMenuItem.Name = "메뉴ToolStripMenuItem";
-            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 26);
+            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
             this.메뉴ToolStripMenuItem.Text = "메뉴";
             // 
             // 수동매수ToolStripMenuItem
@@ -301,7 +301,7 @@
             this.onManualToolStripMenuItem,
             this.offManualToolStripMenuItem});
             this.수동매수ToolStripMenuItem.Name = "수동매수ToolStripMenuItem";
-            this.수동매수ToolStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.수동매수ToolStripMenuItem.Size = new System.Drawing.Size(284, 26);
             this.수동매수ToolStripMenuItem.Text = "수동작업( M )";
             // 
             // onManualToolStripMenuItem
@@ -319,19 +319,19 @@
             // depositToolStripMenuItem
             // 
             this.depositToolStripMenuItem.Name = "depositToolStripMenuItem";
-            this.depositToolStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.depositToolStripMenuItem.Size = new System.Drawing.Size(284, 26);
             this.depositToolStripMenuItem.Text = "예수금확인( D )";
             // 
             // holdingsToolStripMenuItem
             // 
             this.holdingsToolStripMenuItem.Name = "holdingsToolStripMenuItem";
-            this.holdingsToolStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.holdingsToolStripMenuItem.Size = new System.Drawing.Size(284, 26);
             this.holdingsToolStripMenuItem.Text = "보유종목확인( H )";
             // 
             // curRecordToolStripMenuItem
             // 
             this.curRecordToolStripMenuItem.Name = "curRecordToolStripMenuItem";
-            this.curRecordToolStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.curRecordToolStripMenuItem.Size = new System.Drawing.Size(284, 26);
             this.curRecordToolStripMenuItem.Text = "현황기록( R )";
             // 
             // 강제장시작ToolStripMenuItem1
@@ -341,7 +341,7 @@
             this.onMarketWithBuyAccToolStripMenuItem,
             this.offMarketToolStripMenuItem});
             this.강제장시작ToolStripMenuItem1.Name = "강제장시작ToolStripMenuItem1";
-            this.강제장시작ToolStripMenuItem1.Size = new System.Drawing.Size(213, 26);
+            this.강제장시작ToolStripMenuItem1.Size = new System.Drawing.Size(284, 26);
             this.강제장시작ToolStripMenuItem1.Text = "강제장시작 여부";
             // 
             // onMarketToolStripMenuItem
@@ -365,20 +365,26 @@
             // todayResultStripMenuItem
             // 
             this.todayResultStripMenuItem.Name = "todayResultStripMenuItem";
-            this.todayResultStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.todayResultStripMenuItem.Size = new System.Drawing.Size(284, 26);
             this.todayResultStripMenuItem.Text = "당일실현손익( T )";
             // 
             // realTimeLogStripMenuItem
             // 
             this.realTimeLogStripMenuItem.Name = "realTimeLogStripMenuItem";
-            this.realTimeLogStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.realTimeLogStripMenuItem.Size = new System.Drawing.Size(284, 26);
             this.realTimeLogStripMenuItem.Text = "실시간 로그( L )";
             // 
             // configStripMenuItem
             // 
             this.configStripMenuItem.Name = "configStripMenuItem";
-            this.configStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.configStripMenuItem.Size = new System.Drawing.Size(284, 26);
             this.configStripMenuItem.Text = "설정( C )";
+            // 
+            // 라스트업데이트ToolStripMenuItem
+            // 
+            this.라스트업데이트ToolStripMenuItem.Name = "라스트업데이트ToolStripMenuItem";
+            this.라스트업데이트ToolStripMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.라스트업데이트ToolStripMenuItem.Text = "Latest Updated : 2023-06-29";
             // 
             // logTxtBx
             // 
@@ -423,12 +429,6 @@
             this.isHoldingsLabel.Size = new System.Drawing.Size(121, 14);
             this.isHoldingsLabel.TabIndex = 26;
             this.isHoldingsLabel.Text = "잔고확인 : false";
-            // 
-            // 라스트업데이트ToolStripMenuItem
-            // 
-            this.라스트업데이트ToolStripMenuItem.Name = "라스트업데이트ToolStripMenuItem";
-            this.라스트업데이트ToolStripMenuItem.Size = new System.Drawing.Size(284, 26);
-            this.라스트업데이트ToolStripMenuItem.Text = "Latest Updated : 2023-06-26";
             // 
             // MainForm
             // 

@@ -625,12 +625,13 @@ namespace AtoIndicator
             public bool isTargetChoice;
             public double fTargetPriceTouch;
             public double fBottomPriceTouch;
-
+            public List<(double, double)> posRecordList;
             public BuyedManager()
             {
                 eDefaultTradeCategory = TradeMethodCategory.FixedMethod;
                 arrBuyedSlots = new List<BuyedSlot>();
                 sTotalLog = new StringBuilder();
+                posRecordList = new List<(double, double)>();
             }
         }
 

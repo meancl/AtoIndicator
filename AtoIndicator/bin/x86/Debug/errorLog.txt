@@ -396,3 +396,29 @@
    위치: AtoIndicator.MainForm..ctor() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\MainForm.cs:줄 59
    위치: AtoIndicator.Program.Main() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\Program.cs:줄 69
 
+2023-06-29 오후 8:07:55 ## Msg : 오버플로 오류가 발생했습니다.
+======================================================
+   위치: System.Drawing.Graphics.CheckErrorStatus(Int32 status)
+   위치: System.Drawing.Graphics.DrawEllipse(Pen pen, Int32 x, Int32 y, Int32 width, Int32 height)
+   위치: System.Drawing.Graphics.DrawEllipse(Pen pen, Rectangle rect)
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.ChartMouseClickHandler(Object sender, MouseEventArgs e) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 2246
+   위치: System.Windows.Forms.Control.OnMouseClick(MouseEventArgs e)
+   위치: System.Windows.Forms.Control.WmMouseUp(Message& m, MouseButtons button, Int32 clicks)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+   위치: System.Windows.Forms.UnsafeNativeMethods.DispatchMessageW(MSG& msg)
+   위치: System.Windows.Forms.Application.ComponentManager.System.Windows.Forms.UnsafeNativeMethods.IMsoComponentManager.FPushMessageLoop(IntPtr dwComponentID, Int32 reason, Int32 pvLoopData)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoopInner(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoop(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.RunDialog(Form form)
+   위치: System.Windows.Forms.Form.ShowDialog(IWin32Window owner)
+   위치: System.Windows.Forms.Form.ShowDialog()
+   위치: AtoIndicator.MainForm.<>c__DisplayClass353_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\WinFormHandler.cs:줄 376
+   위치: System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   위치: System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   위치: System.Threading.ThreadHelper.ThreadStart()
+
