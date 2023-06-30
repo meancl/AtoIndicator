@@ -369,8 +369,9 @@ namespace AtoIndicator.View.EachStockHistory
 
         public void FormClosedHandler(Object sender, FormClosedEventArgs e)
         {
-            mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler -= CancelEventHandler;
             timer.Enabled = false;
+            mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler -= CancelEventHandler;
+            mainForm.ea[nCurIdx].myTradeManager.isEachStockHistoryExist = false;
             this.Dispose();
         }
 
@@ -2722,6 +2723,7 @@ namespace AtoIndicator.View.EachStockHistory
 
             if (cUp == 27) // esc
             {
+                timer.Enabled = false;
                 this.Close();
             }
 

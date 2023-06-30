@@ -26,8 +26,8 @@ namespace AtoIndicator
             InitializeComponent(); // c# 고유 고정메소드  
 
             this.Text = "Ato";
-            this.KeyPreview = true;
 
+            this.KeyPreview = true;
             this.KeyDown += KeyDownHandler;
             this.KeyUp += KeyUpHandler;
 

@@ -138,6 +138,7 @@ namespace AtoIndicator
                     PrintLog("계산용예수금 세팅 완료"); //++
                 }
                 this.Enabled = true;
+
                 myDepositLabel.Text = $"{nCurDeposit}(원)";
                 PrintLog("예수금 세팅 완료"); //++
 

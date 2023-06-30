@@ -626,12 +626,16 @@ namespace AtoIndicator
             public double fTargetPriceTouch;
             public double fBottomPriceTouch;
             public List<(double, double)> posRecordList;
+            public DateTime dLatestApproachTime;
+            public bool isEachStockHistoryExist;
+
             public BuyedManager()
             {
                 eDefaultTradeCategory = TradeMethodCategory.FixedMethod;
                 arrBuyedSlots = new List<BuyedSlot>();
                 sTotalLog = new StringBuilder();
                 posRecordList = new List<(double, double)>();
+                dLatestApproachTime = DateTime.UtcNow;
             }
         }
 

@@ -329,7 +329,12 @@ namespace AtoIndicator.View.EachStrategy
         {
             try
             {
-                new Thread(() => new EachStockHistoryForm(mainForm, nCallIdx, nCallStrategy).ShowDialog()).Start();
+                if ((DateTime.UtcNow - mainForm.ea[nCallIdx].myTradeManager.dLatestApproachTime).TotalSeconds >= 1 && !mainForm.ea[nCallIdx].myTradeManager.isEachStockHistoryExist)
+                {
+                    mainForm.ea[nCallIdx].myTradeManager.dLatestApproachTime = DateTime.UtcNow;
+                    mainForm.ea[nCallIdx].myTradeManager.isEachStockHistoryExist = true;
+                    new Thread(() => new EachStockHistoryForm(mainForm, nCallIdx, nCallStrategy).ShowDialog()).Start();
+                }
             }
             catch { }
         }

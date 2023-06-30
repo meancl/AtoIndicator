@@ -107,6 +107,13 @@ namespace AtoIndicator
                 {
                     RequestHoldings(0);
                 }
+                if (cUp == 'C')
+                {
+                    for(int i = 0; i < nStockLength; i++)
+                    {
+                        ea[i].myTradeManager.isEachStockHistoryExist = false;
+                    }
+                }
                 if (cUp == 'T')
                 {
                     #region ONNX 실전 TEST
@@ -380,7 +387,12 @@ namespace AtoIndicator
         {
             try
             {
-                new Thread(() => new EachStockHistoryForm(this, nCallIdx).ShowDialog()).Start();
+                if ((DateTime.UtcNow - ea[nCallIdx].myTradeManager.dLatestApproachTime).TotalSeconds >= 1 && !ea[nCallIdx].myTradeManager.isEachStockHistoryExist)
+                {
+                    ea[nCallIdx].myTradeManager.dLatestApproachTime = DateTime.UtcNow;
+                    ea[nCallIdx].myTradeManager.isEachStockHistoryExist = true;
+                    new Thread(() => new EachStockHistoryForm(this, nCallIdx).ShowDialog()).Start();
+                }
             }
             catch { }
         }

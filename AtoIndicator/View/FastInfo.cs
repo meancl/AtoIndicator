@@ -1834,7 +1834,16 @@ namespace AtoIndicator.View
         #region Thread Call Method
         public void CallThreadEachStockHistoryForm(int nCallIdx)
         {
-            new Thread(() => new EachStockHistoryForm(mainForm, nCallIdx).ShowDialog()).Start();
+            try
+            {
+                if ((DateTime.UtcNow - mainForm.ea[nCallIdx].myTradeManager.dLatestApproachTime).TotalSeconds >= 1 && !mainForm.ea[nCallIdx].myTradeManager.isEachStockHistoryExist)
+                {
+                    mainForm.ea[nCallIdx].myTradeManager.dLatestApproachTime = DateTime.UtcNow;
+                    mainForm.ea[nCallIdx].myTradeManager.isEachStockHistoryExist = true;
+                    new Thread(() => new EachStockHistoryForm(mainForm, nCallIdx).ShowDialog()).Start();
+                }
+            }
+            catch { }
         }
 
         #endregion
