@@ -2567,9 +2567,9 @@ namespace AtoIndicator
                                 ea[nCurIdx].manualReserve.reserveArr[0].isChosen1 = true;
                             }
                         }
-                        else if (ea[nCurIdx].manualReserve.reserveArr[1].isSelected && !ea[nCurIdx].manualReserve.reserveArr[1].isChosen1)
+                        if (ea[nCurIdx].manualReserve.reserveArr[1].isSelected && !ea[nCurIdx].manualReserve.reserveArr[1].isChosen1)
                         {
-                            if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.reserveArr[1].fCritLine1)
+                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[1].fCritLine1)
                             {
                                 if (ea[nCurIdx].manualReserve.reserveArr[1].isBuyReserved)
                                 {
@@ -2579,7 +2579,8 @@ namespace AtoIndicator
                                 ea[nCurIdx].manualReserve.reserveArr[1].isChosen1 = true;
                             }
                         }
-                        else if (ea[nCurIdx].manualReserve.reserveArr[2].isSelected && !(ea[nCurIdx].manualReserve.reserveArr[2].isChosen1 || ea[nCurIdx].manualReserve.reserveArr[2].isChosen2))
+
+                        if (ea[nCurIdx].manualReserve.reserveArr[2].isSelected && !(ea[nCurIdx].manualReserve.reserveArr[2].isChosen1 || ea[nCurIdx].manualReserve.reserveArr[2].isChosen2))
                         {
                             if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine2)
                             {
@@ -2590,14 +2591,15 @@ namespace AtoIndicator
                                 }
                                 ea[nCurIdx].manualReserve.reserveArr[2].isChosen2 = true;
                             }
-                            if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine1)
+                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine1)
                             {
                                 ea[nCurIdx].manualReserve.reserveArr[2].isChosen1 = true;
                             }
                         }
-                        else if (ea[nCurIdx].manualReserve.reserveArr[3].isSelected && !ea[nCurIdx].manualReserve.reserveArr[3].isChosen1 && !ea[nCurIdx].manualReserve.reserveArr[3].isChosen2)
+
+                        if (ea[nCurIdx].manualReserve.reserveArr[3].isSelected && !ea[nCurIdx].manualReserve.reserveArr[3].isChosen1 && !ea[nCurIdx].manualReserve.reserveArr[3].isChosen2)
                         {
-                            if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.reserveArr[3].fCritLine1)
+                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[3].fCritLine1)
                             {
                                 ea[nCurIdx].manualReserve.reserveArr[3].isChosen1 = true;
                             }
@@ -2612,9 +2614,10 @@ namespace AtoIndicator
                                 ea[nCurIdx].manualReserve.reserveArr[3].isChosen2 = true;
                             }
                         }
-                        else if (ea[nCurIdx].manualReserve.reserveArr[4].isSelected && !ea[nCurIdx].manualReserve.reserveArr[4].isChosen2)
+
+                        if (ea[nCurIdx].manualReserve.reserveArr[4].isSelected && !ea[nCurIdx].manualReserve.reserveArr[4].isChosen2)
                         {
-                            if (ea[nCurIdx].nFb <= ea[nCurIdx].manualReserve.reserveArr[4].fCritLine1)
+                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[4].fCritLine1)
                             {
                                 ea[nCurIdx].manualReserve.reserveArr[4].isChosen1 = true;
                             }

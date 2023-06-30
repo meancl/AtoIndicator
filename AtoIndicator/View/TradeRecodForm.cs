@@ -491,12 +491,21 @@ namespace AtoIndicator.View.TradeRecod
         #region Thread Call Method
         public void CallThreadEachStockHistoryForm(int nCallIdx)
         {
-            new Thread(() => new EachStockHistoryForm(mainForm, nCallIdx).ShowDialog()).Start();
+            try
+            {
+                new Thread(() => new EachStockHistoryForm(mainForm, nCallIdx).ShowDialog()).Start();
+            }
+            catch
+            { }
         }
 
         public void CallThreadStatisticResultForm()
         {
-            new Thread(() => new StatisticResultForm(mainForm).ShowDialog()).Start();
+            try
+            {
+                new Thread(() => new StatisticResultForm(mainForm).ShowDialog()).Start();
+            }
+            catch { }
         }
         #endregion
     }

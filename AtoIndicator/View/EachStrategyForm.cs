@@ -271,7 +271,11 @@ namespace AtoIndicator.View.EachStrategy
 
                 //EachStockHistoryForm eaForm = new EachStockHistoryForm(mainForm, mainForm.eachStockIdxArray[nCodeIdx], nStrategyIdx); // 메인폼, nCurIdx, buyedSlotIdx 를 던져준다.
                 //eaForm.Show();
-                CallThreadEachStockHistoryForm(mainForm.eachStockDict[sCode.Trim()], nStrategyIdx);
+                try
+                {
+                    CallThreadEachStockHistoryForm(mainForm.eachStockDict[sCode.Trim()], nStrategyIdx);
+                }
+                catch { }
             }
 
         }
@@ -323,7 +327,11 @@ namespace AtoIndicator.View.EachStrategy
         #region Thread Call Method
         public void CallThreadEachStockHistoryForm(int nCallIdx, int nCallStrategy)
         {
-            new Thread(() => new EachStockHistoryForm(mainForm, nCallIdx, nCallStrategy).ShowDialog()).Start();
+            try
+            {
+                new Thread(() => new EachStockHistoryForm(mainForm, nCallIdx, nCallStrategy).ShowDialog()).Start();
+            }
+            catch { }
         }
         #endregion
     }

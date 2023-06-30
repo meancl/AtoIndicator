@@ -418,7 +418,11 @@ namespace AtoIndicator.View.StatisticResult
         #region Thread Call Method
         public void CallThreadEachStrategyForm(int nCallStrategy)
         {
-            new Thread(() => new EachStrategyForm(mainForm, nCallStrategy).ShowDialog()).Start();
+            try
+            {
+                new Thread(() => new EachStrategyForm(mainForm, nCallStrategy).ShowDialog()).Start();
+            }
+            catch { }
         }
         #endregion
     }

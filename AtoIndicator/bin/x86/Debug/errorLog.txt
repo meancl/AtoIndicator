@@ -422,3 +422,233 @@
    위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
    위치: System.Threading.ThreadHelper.ThreadStart()
 
+2023-06-30 오후 2:14:32 ## Msg : 축 개체 - 축의 최소값이 최대 데이터 요소 값보다 큽니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis(Double& minimumValue, Double& maximumValue, Boolean autoMaximum, Boolean autoMinimum)
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetDefaultAxesValues()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetData(Boolean initializeAxes, Boolean checkIndexedAligned)
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.ReCalcInternal()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartPicture.Paint(Graphics graph, Boolean paintTopLevelElementOnly)
+   위치: System.Windows.Forms.DataVisualization.Charting.Chart.OnPaint(PaintEventArgs e)
+   위치: System.Windows.Forms.Control.PaintWithErrorHandling(PaintEventArgs e, Int16 layer)
+   위치: System.Windows.Forms.Control.WmPaint(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+2023-06-30 오후 2:16:25 ## Msg : 축 개체 - 축의 최소값이 최대 데이터 요소 값보다 큽니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis(Double& minimumValue, Double& maximumValue, Boolean autoMaximum, Boolean autoMinimum)
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetDefaultAxesValues()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetData(Boolean initializeAxes, Boolean checkIndexedAligned)
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.ReCalcInternal()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartPicture.Paint(Graphics graph, Boolean paintTopLevelElementOnly)
+   위치: System.Windows.Forms.DataVisualization.Charting.Chart.OnPaint(PaintEventArgs e)
+   위치: System.Windows.Forms.Control.PaintWithErrorHandling(PaintEventArgs e, Int16 layer)
+   위치: System.Windows.Forms.Control.WmPaint(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+2023-06-30 오후 2:17:24 ## Msg : 축 개체 - 자동 간격에 적절한 값이 없습니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis(Double& minimumValue, Double& maximumValue, Boolean autoMaximum, Boolean autoMinimum)
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetDefaultAxesValues()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetData(Boolean initializeAxes, Boolean checkIndexedAligned)
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.ReCalcInternal()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartPicture.Paint(Graphics graph, Boolean paintTopLevelElementOnly)
+   위치: System.Windows.Forms.DataVisualization.Charting.Chart.OnPaint(PaintEventArgs e)
+   위치: System.Windows.Forms.Control.PaintWithErrorHandling(PaintEventArgs e, Int16 layer)
+   위치: System.Windows.Forms.Control.WmPaint(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+2023-06-30 오후 2:18:21 ## Msg : 축 개체 - 자동 간격에 적절한 값이 없습니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis(Double& minimumValue, Double& maximumValue, Boolean autoMaximum, Boolean autoMinimum)
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetDefaultAxesValues()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetData(Boolean initializeAxes, Boolean checkIndexedAligned)
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.ReCalcInternal()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartPicture.Paint(Graphics graph, Boolean paintTopLevelElementOnly)
+   위치: System.Windows.Forms.DataVisualization.Charting.Chart.OnPaint(PaintEventArgs e)
+   위치: System.Windows.Forms.Control.PaintWithErrorHandling(PaintEventArgs e, Int16 layer)
+   위치: System.Windows.Forms.Control.WmPaint(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+2023-06-30 오후 2:21:58 ## Msg : 축 개체 - 자동 간격에 적절한 값이 없습니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis(Double& minimumValue, Double& maximumValue, Boolean autoMaximum, Boolean autoMinimum)
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetDefaultAxesValues()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetData(Boolean initializeAxes, Boolean checkIndexedAligned)
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.ReCalcInternal()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartPicture.Paint(Graphics graph, Boolean paintTopLevelElementOnly)
+   위치: System.Windows.Forms.DataVisualization.Charting.Chart.OnPaint(PaintEventArgs e)
+   위치: System.Windows.Forms.Control.PaintWithErrorHandling(PaintEventArgs e, Int16 layer)
+   위치: System.Windows.Forms.Control.WmPaint(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+2023-06-30 오후 2:26:54 ## Msg : 축 개체 - 축의 최소값이 최대 데이터 요소 값보다 큽니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis(Double& minimumValue, Double& maximumValue, Boolean autoMaximum, Boolean autoMinimum)
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetDefaultAxesValues()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetData(Boolean initializeAxes, Boolean checkIndexedAligned)
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.ReCalcInternal()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartPicture.Paint(Graphics graph, Boolean paintTopLevelElementOnly)
+   위치: System.Windows.Forms.DataVisualization.Charting.Chart.OnPaint(PaintEventArgs e)
+   위치: System.Windows.Forms.Control.PaintWithErrorHandling(PaintEventArgs e, Int16 layer)
+   위치: System.Windows.Forms.Control.WmPaint(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+2023-06-30 오후 2:31:20 ## Msg : 축 개체 - 자동 간격에 적절한 값이 없습니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis(Double& minimumValue, Double& maximumValue, Boolean autoMaximum, Boolean autoMinimum)
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetDefaultAxesValues()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetData(Boolean initializeAxes, Boolean checkIndexedAligned)
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.ReCalcInternal()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartPicture.Paint(Graphics graph, Boolean paintTopLevelElementOnly)
+   위치: System.Windows.Forms.DataVisualization.Charting.Chart.OnPaint(PaintEventArgs e)
+   위치: System.Windows.Forms.Control.PaintWithErrorHandling(PaintEventArgs e, Int16 layer)
+   위치: System.Windows.Forms.Control.WmPaint(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+2023-06-30 오후 2:34:22 ## Msg : 축 개체 - 축의 최소값이 최대 데이터 요소 값보다 큽니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis(Double& minimumValue, Double& maximumValue, Boolean autoMaximum, Boolean autoMinimum)
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetDefaultAxesValues()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetData(Boolean initializeAxes, Boolean checkIndexedAligned)
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.ReCalcInternal()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartPicture.Paint(Graphics graph, Boolean paintTopLevelElementOnly)
+   위치: System.Windows.Forms.DataVisualization.Charting.Chart.OnPaint(PaintEventArgs e)
+   위치: System.Windows.Forms.Control.PaintWithErrorHandling(PaintEventArgs e, Int16 layer)
+   위치: System.Windows.Forms.Control.WmPaint(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+2023-06-30 오후 2:36:28 ## Msg : 축 개체 - 자동 간격에 적절한 값이 없습니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis(Double& minimumValue, Double& maximumValue, Boolean autoMaximum, Boolean autoMinimum)
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetDefaultAxesValues()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetData(Boolean initializeAxes, Boolean checkIndexedAligned)
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.ReCalcInternal()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartPicture.Paint(Graphics graph, Boolean paintTopLevelElementOnly)
+   위치: System.Windows.Forms.DataVisualization.Charting.Chart.OnPaint(PaintEventArgs e)
+   위치: System.Windows.Forms.Control.PaintWithErrorHandling(PaintEventArgs e, Int16 layer)
+   위치: System.Windows.Forms.Control.WmPaint(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+2023-06-30 오후 2:37:25 ## Msg : 축 개체 - 축의 최소값이 최대 데이터 요소 값보다 큽니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis(Double& minimumValue, Double& maximumValue, Boolean autoMaximum, Boolean autoMinimum)
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetDefaultAxesValues()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetData(Boolean initializeAxes, Boolean checkIndexedAligned)
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.ReCalcInternal()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartPicture.Paint(Graphics graph, Boolean paintTopLevelElementOnly)
+   위치: System.Windows.Forms.DataVisualization.Charting.Chart.OnPaint(PaintEventArgs e)
+   위치: System.Windows.Forms.Control.PaintWithErrorHandling(PaintEventArgs e, Int16 layer)
+   위치: System.Windows.Forms.Control.WmPaint(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+2023-06-30 오후 2:41:57 ## Msg : 축 개체 - 축의 최소값이 최대 데이터 요소 값보다 큽니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis(Double& minimumValue, Double& maximumValue, Boolean autoMaximum, Boolean autoMinimum)
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetDefaultAxesValues()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetData(Boolean initializeAxes, Boolean checkIndexedAligned)
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.ReCalcInternal()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartPicture.Paint(Graphics graph, Boolean paintTopLevelElementOnly)
+   위치: System.Windows.Forms.DataVisualization.Charting.Chart.OnPaint(PaintEventArgs e)
+   위치: System.Windows.Forms.Control.PaintWithErrorHandling(PaintEventArgs e, Int16 layer)
+   위치: System.Windows.Forms.Control.WmPaint(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+2023-06-30 오후 2:43:13 ## Msg : 축 개체 - 축의 최소값이 최대 데이터 요소 값보다 큽니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis(Double& minimumValue, Double& maximumValue, Boolean autoMaximum, Boolean autoMinimum)
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetDefaultAxesValues()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetData(Boolean initializeAxes, Boolean checkIndexedAligned)
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.ReCalcInternal()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartPicture.Paint(Graphics graph, Boolean paintTopLevelElementOnly)
+   위치: System.Windows.Forms.DataVisualization.Charting.Chart.OnPaint(PaintEventArgs e)
+   위치: System.Windows.Forms.Control.PaintWithErrorHandling(PaintEventArgs e, Int16 layer)
+   위치: System.Windows.Forms.Control.WmPaint(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+2023-06-30 오후 2:44:07 ## Msg : 축 개체 - 자동 간격에 적절한 값이 없습니다.
+======================================================
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis(Double& minimumValue, Double& maximumValue, Boolean autoMaximum, Boolean autoMinimum)
+   위치: System.Windows.Forms.DataVisualization.Charting.Axis.EstimateAxis()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetDefaultAxesValues()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.SetData(Boolean initializeAxes, Boolean checkIndexedAligned)
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartArea.ReCalcInternal()
+   위치: System.Windows.Forms.DataVisualization.Charting.ChartPicture.Paint(Graphics graph, Boolean paintTopLevelElementOnly)
+   위치: System.Windows.Forms.DataVisualization.Charting.Chart.OnPaint(PaintEventArgs e)
+   위치: System.Windows.Forms.Control.PaintWithErrorHandling(PaintEventArgs e, Int16 layer)
+   위치: System.Windows.Forms.Control.WmPaint(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+2023-06-30 오후 5:22:20 ## Msg : 0으로 나누려 했습니다.
+======================================================
+   위치: AtoIndicator.MainForm.KeyUpHandler(Object sender, KeyEventArgs e) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\WinFormHandler.cs:줄 113
+   위치: System.Windows.Forms.Control.OnKeyUp(KeyEventArgs e)
+   위치: System.Windows.Forms.Control.ProcessKeyEventArgs(Message& m)
+   위치: System.Windows.Forms.Form.ProcessKeyPreview(Message& m)
+   위치: System.Windows.Forms.Control.ProcessKeyPreview(Message& m)
+   위치: System.Windows.Forms.Control.ProcessKeyMessage(Message& m)
+   위치: System.Windows.Forms.Control.WmKeyChar(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.TextBoxBase.WndProc(Message& m)
+   위치: System.Windows.Forms.TextBox.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+   위치: System.Windows.Forms.UnsafeNativeMethods.DispatchMessageW(MSG& msg)
+   위치: System.Windows.Forms.Application.ComponentManager.System.Windows.Forms.UnsafeNativeMethods.IMsoComponentManager.FPushMessageLoop(IntPtr dwComponentID, Int32 reason, Int32 pvLoopData)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoopInner(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoop(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.Run(Form mainForm)
+   위치: AtoIndicator.Program.Main() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\Program.cs:줄 70
+

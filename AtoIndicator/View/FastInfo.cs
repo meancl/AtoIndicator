@@ -1701,8 +1701,12 @@ namespace AtoIndicator.View
         public void RowDoubleClickHandler(Object sender, MouseEventArgs e)
         {
 
-            if (listView1.FocusedItem != null)
-                CallThreadEachStockHistoryForm(mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()]);
+            try
+            {
+                if (listView1.FocusedItem != null)
+                    CallThreadEachStockHistoryForm(mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()]);
+            }
+            catch { }
 
         }
 
@@ -1711,9 +1715,16 @@ namespace AtoIndicator.View
         {
             if (listView1.FocusedItem != null)
             {
-                nChosenStockCode = mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()];
-                if (timerCheckBox.Checked)
-                    CallThreadEachStockHistoryForm(mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()]);
+                try
+                {
+                    nChosenStockCode = mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()];
+                    if (timerCheckBox.Checked)
+                        CallThreadEachStockHistoryForm(mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()]);
+                }
+                catch
+                {
+
+                }
             }
         }
 

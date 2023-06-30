@@ -369,20 +369,40 @@ namespace AtoIndicator
 #region Thread Call Method
         public void CallThreadTradeRecordForm()
         {
-            new Thread(() => new TradeRecodForm(this).ShowDialog()).Start();
+            try
+            {
+                new Thread(() => new TradeRecodForm(this).ShowDialog()).Start();
+            }
+            catch
+            { }
         }
         public void CallThreadEachStockHistoryForm(int nCallIdx)
         {
-            new Thread(() => new EachStockHistoryForm(this, nCallIdx).ShowDialog()).Start();
+            try
+            {
+                new Thread(() => new EachStockHistoryForm(this, nCallIdx).ShowDialog()).Start();
+            }
+            catch { }
         }
         public void CallThreadTextLogForm()
         {
-            new Thread(() => new TextLogForm(this).ShowDialog()).Start();
+            try
+            {
+                new Thread(() => new TextLogForm(this).ShowDialog()).Start();
+            }
+            catch { }
         }
 
         public void CallThreadFastInfo()
         {
-            new Thread(() => new FastInfo(this).ShowDialog()).Start();
+            try
+            {
+                new Thread(() => new FastInfo(this).ShowDialog()).Start();
+            }
+            catch
+            {
+
+            }
         }
         #endregion
     }
