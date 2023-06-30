@@ -177,6 +177,7 @@ namespace AtoIndicator
         public int nOverFlowCnt = 0;
 
         public const string HAND_TRADE_SCREEN = "5353";
+        public const int BOX_ENDURE_SEC = 720; 
         #endregion
 
         #region  실시간이벤트핸들러
@@ -2582,7 +2583,13 @@ namespace AtoIndicator
 
                         if (ea[nCurIdx].manualReserve.reserveArr[2].isSelected && !(ea[nCurIdx].manualReserve.reserveArr[2].isChosen1 || ea[nCurIdx].manualReserve.reserveArr[2].isChosen2))
                         {
-                            if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine2)
+                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine1 ||  // 가격이 아래에 있던가
+                                (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine2 &&  SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].manualReserve.reserveArr[2].nSelectedTime) < BOX_ENDURE_SEC) // 12분 전에 가격이 박스권을 돌파하던가
+                                )
+                            {
+                                ea[nCurIdx].manualReserve.reserveArr[2].isChosen1 = true;
+                            }
+                            else if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine2)
                             {
                                 if (ea[nCurIdx].manualReserve.reserveArr[2].isBuyReserved)
                                 {
@@ -2591,10 +2598,7 @@ namespace AtoIndicator
                                 }
                                 ea[nCurIdx].manualReserve.reserveArr[2].isChosen2 = true;
                             }
-                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine1)
-                            {
-                                ea[nCurIdx].manualReserve.reserveArr[2].isChosen1 = true;
-                            }
+                          
                         }
 
                         if (ea[nCurIdx].manualReserve.reserveArr[3].isSelected && !ea[nCurIdx].manualReserve.reserveArr[3].isChosen1 && !ea[nCurIdx].manualReserve.reserveArr[3].isChosen2)
