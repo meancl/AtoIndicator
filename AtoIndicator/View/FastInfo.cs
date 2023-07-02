@@ -1520,21 +1520,22 @@ namespace AtoIndicator.View
                                     listViewItem.SubItems[restIdx].BackColor = Color.Green;
                                 else if (mainForm.ea[i].isChosen2 && (restIdx == 2 || restIdx == 3))
                                     listViewItem.SubItems[restIdx].BackColor = Color.Orange;
-                                else if ((mainForm.ea[i].manualReserve.reserveArr[0].isSelected && restIdx == 4) || (mainForm.ea[i].manualReserve.reserveArr[0].isChosen1 && restIdx == 5))
+                                else if ((mainForm.ea[i].manualReserve.reserveArr[0].isSelected && restIdx == 4) || 
+                                        (mainForm.ea[i].manualReserve.reserveArr[0].isChosen1 && restIdx == 5))
                                     listViewItem.SubItems[restIdx].BackColor = Color.BlueViolet;
-                                else if ((mainForm.ea[i].manualReserve.reserveArr[1].isSelected && restIdx == 6) || (mainForm.ea[i].manualReserve.reserveArr[1].isChosen1 && restIdx == 7))
+                                else if ((mainForm.ea[i].manualReserve.reserveArr[1].isSelected && restIdx == 6) || 
+                                        (mainForm.ea[i].manualReserve.reserveArr[1].isChosen1 && restIdx == 7))
                                     listViewItem.SubItems[restIdx].BackColor = Color.Gold;
                                 else if ((mainForm.ea[i].manualReserve.reserveArr[2].isSelected && restIdx == 8) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[2].isChosen1 && restIdx == 9) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[2].isChosen2 && restIdx == 10))
+                                        (mainForm.ea[i].manualReserve.reserveArr[2].isChosen1 && restIdx == 9))
                                     listViewItem.SubItems[restIdx].BackColor = Color.Magenta;
-                                else if ((mainForm.ea[i].manualReserve.reserveArr[3].isSelected && restIdx == 11) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[3].isChosen1 && restIdx == 12) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[3].isChosen2 && restIdx == 13))
+                                else if ((mainForm.ea[i].manualReserve.reserveArr[3].isSelected && restIdx == 10) ||
+                                        (mainForm.ea[i].manualReserve.reserveArr[3].isChosen1 && restIdx == 11) ||
+                                        (mainForm.ea[i].manualReserve.reserveArr[3].isChosen2 && restIdx == 12))
                                     listViewItem.SubItems[restIdx].BackColor = Color.DarkGray;
-                                else if ((mainForm.ea[i].manualReserve.reserveArr[4].isSelected && restIdx == 14) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[4].isChosen1 && restIdx == 15) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[4].isChosen2 && restIdx == 16))
+                                else if ((mainForm.ea[i].manualReserve.reserveArr[4].isSelected && restIdx == 13) ||
+                                        (mainForm.ea[i].manualReserve.reserveArr[4].isChosen1 && restIdx == 14) ||
+                                        (mainForm.ea[i].manualReserve.reserveArr[4].isChosen2 && restIdx == 15))
                                     listViewItem.SubItems[restIdx].BackColor = Color.Purple;
                                 else
                                     listViewItem.SubItems[restIdx].BackColor = myColor;

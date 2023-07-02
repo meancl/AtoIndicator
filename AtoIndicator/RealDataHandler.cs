@@ -177,7 +177,6 @@ namespace AtoIndicator
         public int nOverFlowCnt = 0;
 
         public const string HAND_TRADE_SCREEN = "5353";
-        public const int SUPPORT_ENDURE_SEC = 600; 
         #endregion
 
         #region  실시간이벤트핸들러
@@ -2566,6 +2565,7 @@ namespace AtoIndicator
                                     RequestMachineBuy(nCurIdx);
                                 }
                                 ea[nCurIdx].manualReserve.reserveArr[0].isChosen1 = true;
+                                ea[nCurIdx].manualReserve.reserveArr[0].nChosenTime = nSharedTime;
                             }
                         }
                         if (ea[nCurIdx].manualReserve.reserveArr[1].isSelected && !ea[nCurIdx].manualReserve.reserveArr[1].isChosen1)
@@ -2578,27 +2578,17 @@ namespace AtoIndicator
                                     RequestMachineBuy(nCurIdx);
                                 }
                                 ea[nCurIdx].manualReserve.reserveArr[1].isChosen1 = true;
+                                ea[nCurIdx].manualReserve.reserveArr[1].nChosenTime = nSharedTime;
                             }
                         }
 
-                        if (ea[nCurIdx].manualReserve.reserveArr[2].isSelected && !(ea[nCurIdx].manualReserve.reserveArr[2].isChosen1 || ea[nCurIdx].manualReserve.reserveArr[2].isChosen2))
+                        if (ea[nCurIdx].manualReserve.reserveArr[2].isSelected && ea[nCurIdx].manualReserve.reserveArr[2].isChosen1)
                         {
-                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine1 ||  // 가격이 아래에 있던가
-                                ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine2  
-                                )
+                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine1)
                             {
-                                ea[nCurIdx].manualReserve.reserveArr[2].isChosen1 = true;
+                                ea[nCurIdx].manualReserve.reserveArr[2].isChosen1 = false;
+                                ea[nCurIdx].manualReserve.reserveArr[2].nChosenTime = nSharedTime;
                             }
-                            else if (SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].manualReserve.reserveArr[2].nSelectedTime) >= SUPPORT_ENDURE_SEC)
-                            {
-                                if (ea[nCurIdx].manualReserve.reserveArr[2].isBuyReserved)
-                                {
-                                    ea[nCurIdx].manualReserve.reserveArr[2].isBuyReserved = false;
-                                    RequestMachineBuy(nCurIdx);
-                                }
-                                ea[nCurIdx].manualReserve.reserveArr[2].isChosen2 = true;
-                            }
-                          
                         }
 
                         if (ea[nCurIdx].manualReserve.reserveArr[3].isSelected && !ea[nCurIdx].manualReserve.reserveArr[3].isChosen1 && !ea[nCurIdx].manualReserve.reserveArr[3].isChosen2)
@@ -2606,6 +2596,7 @@ namespace AtoIndicator
                             if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[3].fCritLine1)
                             {
                                 ea[nCurIdx].manualReserve.reserveArr[3].isChosen1 = true;
+                                ea[nCurIdx].manualReserve.reserveArr[3].nChosenTime = nSharedTime;
                             }
 
                             if (!ea[nCurIdx].manualReserve.reserveArr[3].isChosen1 && ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[3].fCritLine2)
@@ -2616,6 +2607,7 @@ namespace AtoIndicator
                                     RequestMachineBuy(nCurIdx);
                                 }
                                 ea[nCurIdx].manualReserve.reserveArr[3].isChosen2 = true;
+                                ea[nCurIdx].manualReserve.reserveArr[3].nChosenTime = nSharedTime;
                             }
                         }
 
@@ -2624,6 +2616,7 @@ namespace AtoIndicator
                             if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[4].fCritLine1)
                             {
                                 ea[nCurIdx].manualReserve.reserveArr[4].isChosen1 = true;
+                                ea[nCurIdx].manualReserve.reserveArr[4].nChosenTime = nSharedTime;
                             }
 
                             if (ea[nCurIdx].manualReserve.reserveArr[4].isChosen1 && ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[4].fCritLine2)
@@ -2634,6 +2627,7 @@ namespace AtoIndicator
                                     RequestMachineBuy(nCurIdx);
                                 }
                                 ea[nCurIdx].manualReserve.reserveArr[4].isChosen2 = true;
+                                ea[nCurIdx].manualReserve.reserveArr[4].nChosenTime = nSharedTime;
                             }
                         }
 
