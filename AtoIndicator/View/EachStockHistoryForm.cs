@@ -2456,11 +2456,11 @@ namespace AtoIndicator.View.EachStockHistory
                                     priceViewLabel.Text = $"지지가격 : {Math.Round(curEa.manualReserve.reserveArr[2].fCritLine1, 2)}";
                                 }
 
-                                sReserveMsg = "";
+                                sReserveMsg = $"지지시간 : {(curEa.manualReserve.reserveArr[2].isChosen1 ? SubTimeToTime(mainForm.nSharedTime, curEa.manualReserve.reserveArr[2].nSelectedTime) : -1)}";
                                 if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
                                     realBuyReserveLabel.Text = sReserveMsg;
 
-                                sReserveChosenMsg = $"지지채택 : {curEa.manualReserve.reserveArr[2].isChosen1}( {(curEa.manualReserve.reserveArr[2].isChosen1? SubTimeToTime(mainForm.nSharedTime, curEa.manualReserve.reserveArr[2].nSelectedTime) :-1)} )";
+                                sReserveChosenMsg = $"지지채택 : {curEa.manualReserve.reserveArr[2].isChosen1}";
                                 if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
                                     reserveChosenLabel.Text = sReserveChosenMsg;
                             }
