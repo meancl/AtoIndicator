@@ -2275,7 +2275,6 @@ namespace AtoIndicator.View.EachStockHistory
         {
             if (!isTradeCancelInit)
             {
-                isTradeCancelInit = true;
                 mainForm.ea[nCurIdx].eventMgr.cancelEachStockFormEventHandler?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -2802,7 +2801,8 @@ namespace AtoIndicator.View.EachStockHistory
 
             if (cPressed >= 49 && cPressed <= 53)
             {
-                ClearBuyMode();
+
+                ClearBuyMode(false);
 
                 if (cPressed == 49)
                 {
@@ -2899,12 +2899,15 @@ namespace AtoIndicator.View.EachStockHistory
 
         #endregion
 
-        public void ClearBuyMode()
+        public void ClearBuyMode(bool wheelInit=true)
         {
             eBuyMode = TRADE_MODE.NONE_MODE;
             buyModeLabel.Text = $"buy : {eBuyMode}";
-            nMouseWheel = 0;
-            wheelLabel.Text = $"wheel : 0";
+            if (wheelInit)
+            {
+                nMouseWheel = 0;
+                wheelLabel.Text = $"wheel : 0";
+            }
         }
 
         public void ReverseAllArrowVisible()
@@ -2991,109 +2994,115 @@ namespace AtoIndicator.View.EachStockHistory
         {
             void RefreshCancelConfirm()
             {
-                curEa = mainForm.ea[nCurIdx];
-
-                if (historyChart.Series["MinuteStick"].Points.Count > 0)
+                try
                 {
-                    // ======================================예약대기 출력===============================================
-                    // 준비물 초기화
-                    for (int i = 0; i < historyChart.Controls.Count; i++)
+                    curEa = mainForm.ea[nCurIdx];
+
+                    if (historyChart.Series["MinuteStick"].Points.Count > 0)
                     {
-                        if (historyChart.Controls[i].Name != null && historyChart.Controls[i].Name[0] == '^')
-                            historyChart.Controls.RemoveAt(i--);
-                    }
-                    toCancelDict.Clear();
-
-                    List<ArrowControl> arrowList = new List<ArrowControl>();
-
-                    if (double.IsNaN(historyChart.ChartAreas["TotalArea"].AxisX.Maximum)) // 매수취소애로우 놓을 수 없음
-                        return;
-                    // 매수예약
-                    for (int buyCancel = 0; buyCancel < curEa.unhandledBuyOrderIdList.Count; buyCancel++)
-                    {
-                        string sOrderId = curEa.unhandledBuyOrderIdList[buyCancel];
-
-                        if (!mainForm.buyCancelingByOrderIdDict.ContainsKey(sOrderId))
+                        // ======================================예약대기 출력===============================================
+                        // 준비물 초기화
+                        for (int i = 0; i < historyChart.Controls.Count; i++)
                         {
-                            MainForm.BuyedSlot slot = mainForm.buySlotByOrderIdDict[sOrderId];
-                            PrevCancel cancelInfo;
-                            cancelInfo.sPrevOrderId = sOrderId;
-                            cancelInfo.sAccumMsg = "";
-                            arrowControl = new ArrowControl((int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Maximum), (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(slot.nOrderPrice), isBuy: true, le: OnTradeCancelArrowClicked);
-
-                            if (toCancelDict.ContainsKey((BUY_RESERVE, slot.nOrderPrice)))
-                            {
-                                List<PrevCancel> beforeList = toCancelDict[(BUY_RESERVE, slot.nOrderPrice)];
-                                int beforeCnt = beforeList.Count;
-
-                                arrowControl.ArrowColor = GetArrowStepColor(beforeCnt + 1);
-                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매수주문--------------{NEW_LINE} 물량 : {slot.nOrderVolume} 잔량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}===================== 대기물량: {beforeCnt}개 ====================={NEW_LINE}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}");
-                                cancelInfo.sAccumMsg += $"물량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}";
-                            }
-                            else
-                            {
-                                arrowControl.ArrowColor = GetArrowStepColor(1);
-                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매수주문--------------{NEW_LINE} 물량 : {slot.nOrderVolume} 잔량 : {slot.nOrderVolume - slot.nCurVolume} 가격 : {slot.nOrderPrice}{NEW_LINE}");
-                                toCancelDict[(BUY_RESERVE, slot.nOrderPrice)] = new List<PrevCancel>();
-                                cancelInfo.sAccumMsg += $"물량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}";
-                            }
-
-                            toCancelDict[(BUY_RESERVE, slot.nOrderPrice)].Add(cancelInfo);
-                            arrowControl.Name = $"^ B {sOrderId}";
-                            arrowList.Add(arrowControl);
+                            if (historyChart.Controls[i].Name != null && historyChart.Controls[i].Name[0] == '^')
+                                historyChart.Controls.RemoveAt(i--);
                         }
-                    }
+                        toCancelDict.Clear();
 
-                    if (double.IsNaN(historyChart.ChartAreas["TotalArea"].AxisX.Minimum)) // 매수취소애로우 놓을 수 없음
-                        return;
-                    // 매도예약
-                    for (int sellCancel = 0; sellCancel < curEa.unhandledSellOrderIdList.Count; sellCancel++)
-                    {
-                        string sOrderId = curEa.unhandledSellOrderIdList[sellCancel];
-                        if (!mainForm.sellCancelingByOrderIdDict.ContainsKey(sOrderId))
+                        List<ArrowControl> arrowList = new List<ArrowControl>();
+
+                        if (double.IsNaN(historyChart.ChartAreas["TotalArea"].AxisX.Maximum)) // 매수취소애로우 놓을 수 없음
+                            return;
+                        // 매수예약
+                        for (int buyCancel = 0; buyCancel < curEa.unhandledBuyOrderIdList.Count; buyCancel++)
                         {
-                            MainForm.VirtualSellBlock virtualSellBlock = mainForm.virtualSellBlockByOrderIdDict[sOrderId];
-                            PrevCancel cancelInfo;
-                            cancelInfo.sPrevOrderId = sOrderId;
-                            cancelInfo.sAccumMsg = "";
-                            arrowControl = new ArrowControl((int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Minimum - 1), (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(virtualSellBlock.nOrderPrice), isBuy: false, le: OnTradeCancelArrowClicked);
+                            string sOrderId = curEa.unhandledBuyOrderIdList[buyCancel];
 
-                            if (toCancelDict.ContainsKey((SELL_RESERVE, virtualSellBlock.nOrderPrice)))
+                            if (!mainForm.buyCancelingByOrderIdDict.ContainsKey(sOrderId))
                             {
-                                List<PrevCancel> beforeList = toCancelDict[(SELL_RESERVE, virtualSellBlock.nOrderPrice)];
-                                int beforeCnt = beforeList.Count;
+                                MainForm.BuyedSlot slot = mainForm.buySlotByOrderIdDict[sOrderId];
+                                PrevCancel cancelInfo;
+                                cancelInfo.sPrevOrderId = sOrderId;
+                                cancelInfo.sAccumMsg = "";
+                                arrowControl = new ArrowControl((int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Maximum), (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(slot.nOrderPrice), isBuy: true, le: OnTradeCancelArrowClicked);
 
-                                arrowControl.ArrowColor = GetArrowStepColor(beforeCnt + 1);
-                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume} 잔량 : {virtualSellBlock.nOrderVolume - virtualSellBlock.nProcessedVolume}{NEW_LINE}===================== 대기물량 : {beforeCnt}개 ====================={NEW_LINE}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}");
-                                cancelInfo.sAccumMsg = $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}";
+                                if (toCancelDict.ContainsKey((BUY_RESERVE, slot.nOrderPrice)))
+                                {
+                                    List<PrevCancel> beforeList = toCancelDict[(BUY_RESERVE, slot.nOrderPrice)];
+                                    int beforeCnt = beforeList.Count;
+
+                                    arrowControl.ArrowColor = GetArrowStepColor(beforeCnt + 1);
+                                    new ToolTip().SetToolTip(arrowControl, $"-----------------현재매수주문--------------{NEW_LINE} 물량 : {slot.nOrderVolume} 잔량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}===================== 대기물량: {beforeCnt}개 ====================={NEW_LINE}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}");
+                                    cancelInfo.sAccumMsg += $"물량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}";
+                                }
+                                else
+                                {
+                                    arrowControl.ArrowColor = GetArrowStepColor(1);
+                                    new ToolTip().SetToolTip(arrowControl, $"-----------------현재매수주문--------------{NEW_LINE} 물량 : {slot.nOrderVolume} 잔량 : {slot.nOrderVolume - slot.nCurVolume} 가격 : {slot.nOrderPrice}{NEW_LINE}");
+                                    toCancelDict[(BUY_RESERVE, slot.nOrderPrice)] = new List<PrevCancel>();
+                                    cancelInfo.sAccumMsg += $"물량 : {slot.nOrderVolume - slot.nCurVolume}  가격 : {slot.nOrderPrice}{NEW_LINE}";
+                                }
+
+                                toCancelDict[(BUY_RESERVE, slot.nOrderPrice)].Add(cancelInfo);
+                                arrowControl.Name = $"^ B {sOrderId}";
+                                arrowList.Add(arrowControl);
                             }
-                            else
-                            {
-                                arrowControl.ArrowColor = GetArrowStepColor(1);
-                                new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume} 잔량 : {virtualSellBlock.nOrderVolume - virtualSellBlock.nProcessedVolume}{NEW_LINE}");
-                                toCancelDict[(SELL_RESERVE, virtualSellBlock.nOrderPrice)] = new List<PrevCancel>();
-                                cancelInfo.sAccumMsg = $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume}{NEW_LINE}";
-                            }
-
-                            toCancelDict[(SELL_RESERVE, virtualSellBlock.nOrderPrice)].Add(cancelInfo);
-                            arrowControl.Name = $"^ S {sOrderId}";
-                            arrowList.Add(arrowControl);
-
-
                         }
 
+                        if (double.IsNaN(historyChart.ChartAreas["TotalArea"].AxisX.Minimum)) // 매수취소애로우 놓을 수 없음
+                            return;
+                        // 매도예약
+                        for (int sellCancel = 0; sellCancel < curEa.unhandledSellOrderIdList.Count; sellCancel++)
+                        {
+                            string sOrderId = curEa.unhandledSellOrderIdList[sellCancel];
+                            if (!mainForm.sellCancelingByOrderIdDict.ContainsKey(sOrderId))
+                            {
+                                MainForm.VirtualSellBlock virtualSellBlock = mainForm.virtualSellBlockByOrderIdDict[sOrderId];
+                                PrevCancel cancelInfo;
+                                cancelInfo.sPrevOrderId = sOrderId;
+                                cancelInfo.sAccumMsg = "";
+                                arrowControl = new ArrowControl((int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Minimum - 1), (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(virtualSellBlock.nOrderPrice), isBuy: false, le: OnTradeCancelArrowClicked);
+
+                                if (toCancelDict.ContainsKey((SELL_RESERVE, virtualSellBlock.nOrderPrice)))
+                                {
+                                    List<PrevCancel> beforeList = toCancelDict[(SELL_RESERVE, virtualSellBlock.nOrderPrice)];
+                                    int beforeCnt = beforeList.Count;
+
+                                    arrowControl.ArrowColor = GetArrowStepColor(beforeCnt + 1);
+                                    new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume} 잔량 : {virtualSellBlock.nOrderVolume - virtualSellBlock.nProcessedVolume}{NEW_LINE}===================== 대기물량 : {beforeCnt}개 ====================={NEW_LINE}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}");
+                                    cancelInfo.sAccumMsg = $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume}{NEW_LINE}{beforeList[beforeCnt - 1].sAccumMsg}";
+                                }
+                                else
+                                {
+                                    arrowControl.ArrowColor = GetArrowStepColor(1);
+                                    new ToolTip().SetToolTip(arrowControl, $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume} 잔량 : {virtualSellBlock.nOrderVolume - virtualSellBlock.nProcessedVolume}{NEW_LINE}");
+                                    toCancelDict[(SELL_RESERVE, virtualSellBlock.nOrderPrice)] = new List<PrevCancel>();
+                                    cancelInfo.sAccumMsg = $"-----------------현재매도주문--------------{NEW_LINE}시간 : {virtualSellBlock.nOrderTime} 가격 : {virtualSellBlock.nOrderPrice} 물량 : {virtualSellBlock.nOrderVolume}{NEW_LINE}";
+                                }
+
+                                toCancelDict[(SELL_RESERVE, virtualSellBlock.nOrderPrice)].Add(cancelInfo);
+                                arrowControl.Name = $"^ S {sOrderId}";
+                                arrowList.Add(arrowControl);
+
+
+                            }
+
+                        }
+
+                        for (int i = arrowList.Count - 1; i >= 0; i--)
+                            historyChart.Controls.Add(arrowList[i]); // 컨트롤은 먼저 들어간것이 가장 나중에 그려진다.
+
+                        //==============================================================================================================
+
+                        isTradeCancelInit = true;
                     }
 
-                    for (int i = arrowList.Count - 1; i >= 0; i--)
-                        historyChart.Controls.Add(arrowList[i]); // 컨트롤은 먼저 들어간것이 가장 나중에 그려진다.
-
-                    //==============================================================================================================
+                    isAllSelledLabel.Text = $"매도완료 : {curEa.myTradeManager.nTotalSelled}";
+                    isSellingLabel.Text = $"매도중 : {curEa.myTradeManager.nTotalSelling}";
+                    isAllBuyedLabel.Text = $"총매수 : {curEa.myTradeManager.nTotalBuyed}";
+                    restVolumeLabel.Text = $"잔량 : {curEa.myTradeManager.nTotalBuyed - (curEa.myTradeManager.nTotalSelling + curEa.myTradeManager.nTotalSelled)}";
                 }
-
-                isAllSelledLabel.Text = $"매도완료 : {curEa.myTradeManager.nTotalSelled}";
-                isSellingLabel.Text = $"매도중 : {curEa.myTradeManager.nTotalSelling}";
-                isAllBuyedLabel.Text = $"총매수 : {curEa.myTradeManager.nTotalBuyed}";
-                restVolumeLabel.Text = $"잔량 : {curEa.myTradeManager.nTotalBuyed - (curEa.myTradeManager.nTotalSelling + curEa.myTradeManager.nTotalSelled)}";
+                catch { }
             }
 
             if (historyChart.InvokeRequired)
@@ -3146,33 +3155,36 @@ namespace AtoIndicator.View.EachStockHistory
         {
             try
             {
-                foreach (var key in dict.Keys)
+                if (historyChart.Series["MinuteStick"].Points.Count > 0)
                 {
-                    Series series = historyChart.Series["MinuteStick"];
-
-                    if (series.Points.Count >= key + 1)
+                    foreach (var key in dict.Keys)
                     {
-                        DataPoint point = series.Points[key];
+                        Series series = historyChart.Series["MinuteStick"];
 
-                        double pixelPosition1 = historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(0.8);
-                        double pixelPosition2 = historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(0);
-
-                        double barLength = Math.Abs(pixelPosition2 - pixelPosition1);
-
-                        double xLocation = key + 1;
-                        double yStartValue = point.YValues[2]; // 시가
-                        double yLastValue = point.YValues[3]; // 종가
-
-                        double yMaxValue = Max(yLastValue, yStartValue);
-                        double yMinValue = Min(yLastValue, yStartValue);
-
-                        using (Pen pen = new Pen(color, 2))
+                        if (series.Points.Count >= key + 1)
                         {
-                            gp.DrawRectangle(pen,
-                                (float)(historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xLocation) - barLength / 2),
-                                (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yMaxValue),
-                                (float)barLength,
-                                (float)(historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yMinValue) - historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yMaxValue)));
+                            DataPoint point = series.Points[key];
+
+                            double pixelPosition1 = historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(0.8);
+                            double pixelPosition2 = historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(0);
+
+                            double barLength = Math.Abs(pixelPosition2 - pixelPosition1);
+
+                            double xLocation = key + 1;
+                            double yStartValue = point.YValues[2]; // 시가
+                            double yLastValue = point.YValues[3]; // 종가
+
+                            double yMaxValue = Max(yLastValue, yStartValue);
+                            double yMinValue = Min(yLastValue, yStartValue);
+
+                            using (Pen pen = new Pen(color, 2))
+                            {
+                                gp.DrawRectangle(pen,
+                                    (float)(historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xLocation) - barLength / 2),
+                                    (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yMaxValue),
+                                    (float)barLength,
+                                    (float)(historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yMinValue) - historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yMaxValue)));
+                            }
                         }
                     }
                 }
@@ -3184,15 +3196,18 @@ namespace AtoIndicator.View.EachStockHistory
         {
             try
             {
-                using (Pen pen = new Pen(color, 2))
+                if (historyChart.Series["MinuteStick"].Points.Count > 0)
                 {
-                    for (int posIdx = 0; posIdx < curEa.myTradeManager.posRecordList.Count; posIdx++)
+                    using (Pen pen = new Pen(color, 2))
                     {
-                        var pos = curEa.myTradeManager.posRecordList[posIdx];
-                        double x = historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(pos.Item1);
-                        double y = historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(pos.Item2);
+                        for (int posIdx = 0; posIdx < curEa.myTradeManager.posRecordList.Count; posIdx++)
+                        {
+                            var pos = curEa.myTradeManager.posRecordList[posIdx];
+                            double x = historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(pos.Item1);
+                            double y = historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(pos.Item2);
 
-                        gp.DrawEllipse(pen, new Rectangle((int)(x - Cursor.Size.Width / nCircleDenom), (int)(y - Cursor.Size.Height / nCircleDenom), nCircleSize, nCircleSize));
+                            gp.DrawEllipse(pen, new Rectangle((int)(x - Cursor.Size.Width / nCircleDenom), (int)(y - Cursor.Size.Height / nCircleDenom), nCircleSize, nCircleSize));
+                        }
                     }
                 }
             }
@@ -3205,61 +3220,64 @@ namespace AtoIndicator.View.EachStockHistory
         {
             try
             {
-                if (isRightPressed || isPreciselyCheck)
+                if (historyChart.Series["MinuteStick"].Points.Count > 0)
                 {
-                    moveLabel.Text = $"{cPressed}\n{nPressed}\n( {Math.Round(xVal1, 2)}, {Math.Round(yVal1, 2)} )\n( {Math.Round(xVal2, 2)}, {Math.Round(yVal2, 2)} )\n";
-                    if (nPressed == 1)
+                    if (isRightPressed || isPreciselyCheck)
                     {
-                        xPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xVal1);
-                        yPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yVal1);
-                        gp.DrawEllipse(cPen, new Rectangle((int)(xPixel1 - Cursor.Size.Width / nCircleDenom), (int)(yPixel1 - Cursor.Size.Height / nCircleDenom), nCircleSize, nCircleSize));
-                    }
-                    else if (nPressed == 2)
-                    {
-                        xPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xVal1);
-                        xPixel2 = (float)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xVal2);
-                        yPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yVal1);
-                        yPixel2 = (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yVal2);
-
-                        gp.DrawLine(lpen, xPixel1, yPixel1, xPixel2, yPixel2);
-
-                        if (CheckIsNormalChartYValue(yVal1, yVal2))
+                        moveLabel.Text = $"{cPressed}\n{nPressed}\n( {Math.Round(xVal1, 2)}, {Math.Round(yVal1, 2)} )\n( {Math.Round(xVal2, 2)}, {Math.Round(yVal2, 2)} )\n";
+                        if (nPressed == 1)
                         {
-                            moveLabel.Text += $"( {Math.Round(xVal1, 2)}, {Math.Round(yVal1, 2)} ) -> ( {Math.Round(xVal2, 2)},  {Math.Round(yVal2, 2)})\n" +
-                                $"손익(시초값기준) : {Math.Round((yVal2 - yVal1) / curEa.nTodayStartPrice * 100, 2)}(%)\n" +
-                                $"손익( 종가기준 ) : {Math.Round((yVal2 - yVal1) / curEa.nYesterdayEndPrice * 100, 2)}(%)\n" +
-                                $"손익(첫번째기준) : {Math.Round((yVal2 - yVal1) / yVal1 * 100, 2)}(%)\n" +
-                                $"x2 - x1 : {Math.Round(xVal2, 0) - Math.Round(xVal1, 0)}칸\n";
+                            xPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xVal1);
+                            yPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yVal1);
+                            gp.DrawEllipse(cPen, new Rectangle((int)(xPixel1 - Cursor.Size.Width / nCircleDenom), (int)(yPixel1 - Cursor.Size.Height / nCircleDenom), nCircleSize, nCircleSize));
                         }
-                        else
-                            moveLabel.Text += "포인트를 다시 지정하세요\n";
-
-                        if (isPreciselyCheck)
+                        else if (nPressed == 2)
                         {
-                            // 여기서는 mouseClick에서 계산해놓은것을 그대로 출력만 할거
+                            xPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xVal1);
+                            xPixel2 = (float)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xVal2);
+                            yPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yVal1);
+                            yPixel2 = (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yVal2);
+
+                            gp.DrawLine(lpen, xPixel1, yPixel1, xPixel2, yPixel2);
+
+                            if (CheckIsNormalChartYValue(yVal1, yVal2))
                             {
-                                nMinPositionX1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinIdx1 + 1);
-                                nMinPositionY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1].nLastFs);
-                                nMinPositionX2 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinIdx2 + 1);
-                                nMinPositionY2 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx2].nLastFs);
+                                moveLabel.Text += $"( {Math.Round(xVal1, 2)}, {Math.Round(yVal1, 2)} ) -> ( {Math.Round(xVal2, 2)},  {Math.Round(yVal2, 2)})\n" +
+                                    $"손익(시초값기준) : {Math.Round((yVal2 - yVal1) / curEa.nTodayStartPrice * 100, 2)}(%)\n" +
+                                    $"손익( 종가기준 ) : {Math.Round((yVal2 - yVal1) / curEa.nYesterdayEndPrice * 100, 2)}(%)\n" +
+                                    $"손익(첫번째기준) : {Math.Round((yVal2 - yVal1) / yVal1 * 100, 2)}(%)\n" +
+                                    $"x2 - x1 : {Math.Round(xVal2, 0) - Math.Round(xVal1, 0)}칸\n";
+                            }
+                            else
+                                moveLabel.Text += "포인트를 다시 지정하세요\n";
 
-                                if (isMinuteVisible && CheckIsNormalChartYValue(nMinPositionY1, nMinPositionY2))
-                                    gp.DrawLine(pPen, nMinPositionX1, nMinPositionY1, nMinPositionX2, nMinPositionY2);
-                                moveLabel.Text += $"================== 분당 정보 ==================\n" +
-                                    $"페이크 매수 : ( {pResult.nFakeBuyStrategyNum}, 분당 : {pResult.nFakeBuyStrategyMinuteNum} ){NEW_LINE}" +
-                                    $"페이크 보조 : ( {pResult.nFakeAssistantStrategyNum}, 분당 : {pResult.nFakeAssistantStrategyMinuteNum} ){NEW_LINE}" +
-                                    $"페이크 저항 : ( {pResult.nFakeResistStrategyNum}, 분당 : {pResult.nFakeResistStrategyMinuteNum} ){NEW_LINE}" +
-                                    $"가격 업 :      ( {pResult.nFakeUpStrategyNum}, 분당 : {pResult.nFakeUpStrategyMinuteNum} ){NEW_LINE}" +
-                                    $"가격다운 :    ( {pResult.nFakeDownStrategyNum}, 분당 : {pResult.nFakeDownStrategyMinuteNum} ){NEW_LINE}" +
-                                    $"모의매수 :    ( {pResult.nPaperBuyStrategyNum}, 분당 : {pResult.nPaperBuyStrategyMinuteNum} ){NEW_LINE}" +
-                                    $"총 애로우 :   ( {pResult.nTotalStrategyNum}, 분당 : {pResult.nTotalStrategyMinuteNum} ){NEW_LINE}{NEW_LINE}";
+                            if (isPreciselyCheck)
+                            {
+                                // 여기서는 mouseClick에서 계산해놓은것을 그대로 출력만 할거
+                                {
+                                    nMinPositionX1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinIdx1 + 1);
+                                    nMinPositionY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1].nLastFs);
+                                    nMinPositionX2 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinIdx2 + 1);
+                                    nMinPositionY2 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx2].nLastFs);
 
+                                    if (isMinuteVisible && CheckIsNormalChartYValue(nMinPositionY1, nMinPositionY2))
+                                        gp.DrawLine(pPen, nMinPositionX1, nMinPositionY1, nMinPositionX2, nMinPositionY2);
+                                    moveLabel.Text += $"================== 분당 정보 ==================\n" +
+                                        $"페이크 매수 : ( {pResult.nFakeBuyStrategyNum}, 분당 : {pResult.nFakeBuyStrategyMinuteNum} ){NEW_LINE}" +
+                                        $"페이크 보조 : ( {pResult.nFakeAssistantStrategyNum}, 분당 : {pResult.nFakeAssistantStrategyMinuteNum} ){NEW_LINE}" +
+                                        $"페이크 저항 : ( {pResult.nFakeResistStrategyNum}, 분당 : {pResult.nFakeResistStrategyMinuteNum} ){NEW_LINE}" +
+                                        $"가격 업 :      ( {pResult.nFakeUpStrategyNum}, 분당 : {pResult.nFakeUpStrategyMinuteNum} ){NEW_LINE}" +
+                                        $"가격다운 :    ( {pResult.nFakeDownStrategyNum}, 분당 : {pResult.nFakeDownStrategyMinuteNum} ){NEW_LINE}" +
+                                        $"모의매수 :    ( {pResult.nPaperBuyStrategyNum}, 분당 : {pResult.nPaperBuyStrategyMinuteNum} ){NEW_LINE}" +
+                                        $"총 애로우 :   ( {pResult.nTotalStrategyNum}, 분당 : {pResult.nTotalStrategyMinuteNum} ){NEW_LINE}{NEW_LINE}";
+
+                                }
                             }
                         }
                     }
+                    else
+                        moveLabel.Text = "";
                 }
-                else
-                    moveLabel.Text = "";
             }
             catch
             {
