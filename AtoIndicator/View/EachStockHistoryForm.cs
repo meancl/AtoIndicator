@@ -298,8 +298,7 @@ namespace AtoIndicator.View.EachStockHistory
                                     nCurRealBuyedId = -1;
                                     curEa.myTradeManager.nAppliedShowingRealBuyedId = -1;
                                     nBReal = RADIO_BUTTON_CHECKED;
-                                    eBuyMode = TRADE_MODE.NONE_MODE;
-                                    buyModeLabel.Text = $"buy : {eBuyMode}";
+                                    ClearBuyMode();
 
                                     // 체크 해제됐을때는??
                                     tradeMethodLabel.Text = $"전체 매매기법 : {curEa.myTradeManager.eDefaultTradeCategory}";
@@ -362,7 +361,7 @@ namespace AtoIndicator.View.EachStockHistory
             setPaperRadioDelegate();
             setRealRadioDelegate();
 
-            gp = historyChart.CreateGraphics();
+            SetCurGraphics();
             timer.Enabled = true;
         }
         #endregion
@@ -534,7 +533,7 @@ namespace AtoIndicator.View.EachStockHistory
             {
                 if (sender.Equals(historyChart))
                 {
-                    SetChartViewRange((int)e.Axis.ScaleView.ViewMinimum, (int)e.Axis.ScaleView.ViewMaximum, (int)e.ChartArea.AxisY.ScaleView.ViewMinimum, (int)e.ChartArea.AxisY.ScaleView.ViewMaximum, e.ChartArea.Name);
+                    SetChartViewRange((int)e.Axis.ScaleView.ViewMinimum, (int)e.Axis.ScaleView.ViewMaximum, max: -1, min: 999999999, e.ChartArea.Name);
                 }
             }
             catch
@@ -1370,6 +1369,8 @@ namespace AtoIndicator.View.EachStockHistory
                         else
                             isViLabel.Text = "";
 
+                        WriteGraphicsSet();
+
                         SetChartViewRange(0, nLastMinuteIdx + 2, curEa.nFs, curEa.nFs, "TotalArea");
                     } // END ---- if (curEa.timeLines1m.nRealDataIdx > 0)
                 }
@@ -1923,11 +1924,9 @@ namespace AtoIndicator.View.EachStockHistory
 
             curLocLabel.Text = $"현재좌표 : {xCoord} {yCoord}";
             curLocPowerLabel.Text = $"커서파워 : {Math.Round((double)(yCoord - curEa.nYesterdayEndPrice) / curEa.nYesterdayEndPrice, 3)}";
-
-
         }
 
-        Graphics gp;
+        Graphics gp = null;
 
         int prevGpCount;
 
@@ -1957,7 +1956,7 @@ namespace AtoIndicator.View.EachStockHistory
                     if (prevGpCount != historyChart.Series["MinuteStick"].Points.Count)
                     {
                         prevGpCount = historyChart.Series["MinuteStick"].Points.Count;
-                        gp = historyChart.CreateGraphics();
+                        SetCurGraphics();
                     }
 
                     if (hit.ChartArea != null)
@@ -1980,7 +1979,6 @@ namespace AtoIndicator.View.EachStockHistory
                                 {
                                     xPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xVal1);
                                     yPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yVal1);
-
 
                                     gp.DrawEllipse(cPen, new Rectangle((int)(xPixel1 - Cursor.Size.Width / nCircleDenom), (int)(yPixel1 - Cursor.Size.Height / nCircleDenom), nCircleSize, nCircleSize));
 
@@ -2258,7 +2256,10 @@ namespace AtoIndicator.View.EachStockHistory
                 else if (e.Button == MouseButtons.Middle)
                 {
                     eBuyMode = SwitchTradeMode(eBuyMode);
-                    buyModeLabel.Text = $"buy : {eBuyMode}";
+                    if (eBuyMode == TRADE_MODE.NONE_MODE)
+                        ClearBuyMode();
+                    else
+                        buyModeLabel.Text = $"buy : {eBuyMode}";
                 }
             }
             catch { }
@@ -2266,302 +2267,12 @@ namespace AtoIndicator.View.EachStockHistory
 
         public void ChartResizeHandler(object sender, EventArgs e)
         {
-            gp = historyChart.CreateGraphics();
+            SetCurGraphics();
         }
 
         // 차트가 다시 그려질떄마다 발생하는 이벤트
         public void ChartOnPaintHandler(Object sender, PaintEventArgs e)
         {
-            void DrawHitEdge(Dictionary<int, int> dict, Color color)
-            {
-                try
-                {
-                    foreach (var key in dict.Keys)
-                    {
-                        Series series = historyChart.Series["MinuteStick"];
-
-                        if (series.Points.Count >= key + 1)
-                        {
-                            DataPoint point = series.Points[key];
-
-                            double pixelPosition1 = historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(0.8);
-                            double pixelPosition2 = historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(0);
-
-                            double barLength = Math.Abs(pixelPosition2 - pixelPosition1);
-
-                            double xLocation = key + 1;
-                            double yStartValue = point.YValues[2]; // 시가
-                            double yLastValue = point.YValues[3]; // 종가
-
-                            double yMaxValue = Max(yLastValue, yStartValue);
-                            double yMinValue = Min(yLastValue, yStartValue);
-
-                            using (Pen pen = new Pen(color, 2))
-                            {
-                                e.Graphics.DrawRectangle(pen,
-                                    (float)(historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xLocation) - barLength / 2),
-                                    (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yMaxValue),
-                                    (float)barLength,
-                                    (float)(historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yMinValue) - historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yMaxValue)));
-                            }
-                        }
-                    }
-                }
-                catch { }
-            }
-
-            void DrawPosCheck(Color color)
-            {
-                try
-                {
-                    using (Pen pen = new Pen(color, 2))
-                    {
-                        for (int posIdx = 0; posIdx < curEa.myTradeManager.posRecordList.Count; posIdx++)
-                        {
-                            var pos = curEa.myTradeManager.posRecordList[posIdx];
-                            double x = historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(pos.Item1);
-                            double y = historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(pos.Item2);
-
-                            e.Graphics.DrawEllipse(pen, new Rectangle((int)(x - Cursor.Size.Width / nCircleDenom), (int)(y - Cursor.Size.Height / nCircleDenom), nCircleSize, nCircleSize));
-                        }
-                    }
-                }
-                catch
-                {
-                }
-            }
-
-            void DrawOPLine()
-            {
-                try
-                {
-                    if (isRightPressed || isPreciselyCheck)
-                    {
-                        moveLabel.Text = $"{cPressed}\n{nPressed}\n( {Math.Round(xVal1, 2)}, {Math.Round(yVal1, 2)} )\n( {Math.Round(xVal2, 2)}, {Math.Round(yVal2, 2)} )\n";
-                        if (nPressed == 1)
-                        {
-                            xPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xVal1);
-                            yPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yVal1);
-                            e.Graphics.DrawEllipse(cPen, new Rectangle((int)(xPixel1 - Cursor.Size.Width / nCircleDenom), (int)(yPixel1 - Cursor.Size.Height / nCircleDenom), nCircleSize, nCircleSize));
-                        }
-                        else if (nPressed == 2)
-                        {
-                            xPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xVal1);
-                            xPixel2 = (float)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xVal2);
-                            yPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yVal1);
-                            yPixel2 = (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yVal2);
-
-                            e.Graphics.DrawLine(lpen, xPixel1, yPixel1, xPixel2, yPixel2);
-
-                            if (CheckIsNormalChartYValue(yVal1, yVal2))
-                            {
-                                moveLabel.Text += $"( {Math.Round(xVal1, 2)}, {Math.Round(yVal1, 2)} ) -> ( {Math.Round(xVal2, 2)},  {Math.Round(yVal2, 2)})\n" +
-                                    $"손익(시초값기준) : {Math.Round((yVal2 - yVal1) / curEa.nTodayStartPrice * 100, 2)}(%)\n" +
-                                    $"손익( 종가기준 ) : {Math.Round((yVal2 - yVal1) / curEa.nYesterdayEndPrice * 100, 2)}(%)\n" +
-                                    $"손익(첫번째기준) : {Math.Round((yVal2 - yVal1) / yVal1 * 100, 2)}(%)\n" +
-                                    $"x2 - x1 : {Math.Round(xVal2, 0) - Math.Round(xVal1, 0)}칸\n";
-                            }
-                            else
-                                moveLabel.Text += "포인트를 다시 지정하세요\n";
-
-                            if (isPreciselyCheck)
-                            {
-                                // 여기서는 mouseClick에서 계산해놓은것을 그대로 출력만 할거
-                                {
-                                    nMinPositionX1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinIdx1 + 1);
-                                    nMinPositionY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1].nLastFs);
-                                    nMinPositionX2 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinIdx2 + 1);
-                                    nMinPositionY2 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx2].nLastFs);
-
-                                    if (isMinuteVisible && CheckIsNormalChartYValue(nMinPositionY1, nMinPositionY2))
-                                        e.Graphics.DrawLine(pPen, nMinPositionX1, nMinPositionY1, nMinPositionX2, nMinPositionY2);
-                                    moveLabel.Text += $"================== 분당 정보 ==================\n" +
-                                        $"페이크 매수 : ( {pResult.nFakeBuyStrategyNum}, 분당 : {pResult.nFakeBuyStrategyMinuteNum} ){NEW_LINE}" +
-                                        $"페이크 보조 : ( {pResult.nFakeAssistantStrategyNum}, 분당 : {pResult.nFakeAssistantStrategyMinuteNum} ){NEW_LINE}" +
-                                        $"페이크 저항 : ( {pResult.nFakeResistStrategyNum}, 분당 : {pResult.nFakeResistStrategyMinuteNum} ){NEW_LINE}" +
-                                        $"가격 업 :      ( {pResult.nFakeUpStrategyNum}, 분당 : {pResult.nFakeUpStrategyMinuteNum} ){NEW_LINE}" +
-                                        $"가격다운 :    ( {pResult.nFakeDownStrategyNum}, 분당 : {pResult.nFakeDownStrategyMinuteNum} ){NEW_LINE}" +
-                                        $"모의매수 :    ( {pResult.nPaperBuyStrategyNum}, 분당 : {pResult.nPaperBuyStrategyMinuteNum} ){NEW_LINE}" +
-                                        $"총 애로우 :   ( {pResult.nTotalStrategyNum}, 분당 : {pResult.nTotalStrategyMinuteNum} ){NEW_LINE}{NEW_LINE}";
-
-                                }
-                            }
-                        }
-                    }
-                    else
-                        moveLabel.Text = "";
-                }
-                catch
-                {
-
-                }
-            }
-
-            void DrawReserveLine()
-            {
-                try
-                {
-                    if (historyChart.Series["MinuteStick"].Points.Count > 0)
-                    {
-                        try
-                        {
-
-                            int reservationX1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Minimum);
-                            int reservationX2 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Maximum);
-
-                            float reservationY1;
-
-                            string sReserveMsg;
-                            string sReserveChosenMsg;
-
-                            if (curEa.manualReserve.reserveArr[0].isSelected && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.UP_RESERVE)
-                            {
-                                if (curEa.manualReserve.reserveArr[0].fCritLine1 > 0)
-                                {
-                                    reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[0].fCritLine1);
-                                    e.Graphics.DrawLine(new Pen(Color.BlueViolet, 3), reservationX1, reservationY1, reservationX2, reservationY1);
-                                    priceViewLabel.Text = $"이상가격 : {Math.Round(curEa.manualReserve.reserveArr[0].fCritLine1, 2)}";
-                                }
-                                sReserveMsg = (curEa.manualReserve.reserveArr[0].isBuyReserved) ? "이상 매수예약 : Yes" : "이상 매수예약 : No";
-                                if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
-                                    realBuyReserveLabel.Text = sReserveMsg;
-
-                                sReserveChosenMsg = $"이상채택 : {curEa.manualReserve.reserveArr[0].isChosen1}";
-                                if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
-                                    reserveChosenLabel.Text = sReserveChosenMsg;
-                            }
-                            else if (curEa.manualReserve.reserveArr[1].isSelected && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.DOWN_RESERVE)
-                            {
-                                if (curEa.manualReserve.reserveArr[1].fCritLine1 > 0)
-                                {
-                                    reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[1].fCritLine1);
-                                    e.Graphics.DrawLine(new Pen(Color.Gold, 3), reservationX1, reservationY1, reservationX2, reservationY1);
-                                    priceViewLabel.Text = $"이하가격 : {Math.Round(curEa.manualReserve.reserveArr[1].fCritLine1, 2)}";
-                                }
-
-                                sReserveMsg = (curEa.manualReserve.reserveArr[1].isBuyReserved) ? "이하 매수예약 : Yes" : "이하 매수예약 : No";
-                                if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
-                                    realBuyReserveLabel.Text = sReserveMsg;
-
-                                sReserveChosenMsg = $"이하채택 : {curEa.manualReserve.reserveArr[1].isChosen1}";
-                                if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
-                                    reserveChosenLabel.Text = sReserveChosenMsg;
-                            }
-                            else if (curEa.manualReserve.reserveArr[2].isSelected && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.SUPPORT_RESERVE)
-                            {
-                                if (curEa.manualReserve.reserveArr[2].fCritLine1 > 0)
-                                {
-                                    reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[2].fCritLine1);
-                                    e.Graphics.DrawLine(new Pen(Color.Magenta, 3), reservationX1, reservationY1, reservationX2, reservationY1);
-                                    priceViewLabel.Text = $"지지가격 : {Math.Round(curEa.manualReserve.reserveArr[2].fCritLine1, 2)}";
-                                }
-
-                                sReserveMsg = $"지지시간 : {(curEa.manualReserve.reserveArr[2].isChosen1 ? SubTimeToTime(mainForm.nSharedTime, curEa.manualReserve.reserveArr[2].nSelectedTime) : -1)}";
-                                if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
-                                    realBuyReserveLabel.Text = sReserveMsg;
-
-                                sReserveChosenMsg = $"지지채택 : {curEa.manualReserve.reserveArr[2].isChosen1}";
-                                if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
-                                    reserveChosenLabel.Text = sReserveChosenMsg;
-                            }
-                            else if (curEa.manualReserve.reserveArr[3].fCritLine1 > 0 && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.NO_FLOOR_UP)
-                            {
-                                if (curEa.manualReserve.reserveArr[3].fCritLine1 > 0)
-                                {
-                                    reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[3].fCritLine1);
-                                    e.Graphics.DrawLine(new Pen(Color.DarkGray, 3), reservationX1, reservationY1, reservationX2, reservationY1);
-                                    priceViewLabel.Text = $"점프가격 : ({Math.Round(curEa.manualReserve.reserveArr[3].fCritLine1, 2)}, 0)";
-                                }
-
-                                if (curEa.manualReserve.reserveArr[3].fCritLine2 > 0)
-                                {
-                                    reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[3].fCritLine2);
-                                    e.Graphics.DrawLine(new Pen(Color.DarkGray, 3), reservationX1, reservationY1, reservationX2, reservationY1);
-                                    priceViewLabel.Text = $"점프가격 : ({Math.Round(curEa.manualReserve.reserveArr[3].fCritLine1, 2)}, {Math.Round(curEa.manualReserve.reserveArr[3].fCritLine2, 2)})";
-                                }
-
-                                sReserveMsg = (curEa.manualReserve.reserveArr[3].isBuyReserved) ? "점프 매수예약 : Yes" : "점프 매수예약 : No";
-                                if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
-                                    realBuyReserveLabel.Text = sReserveMsg;
-                                sReserveChosenMsg = $"점프 아래 :{curEa.manualReserve.reserveArr[3].isChosen1}, 위 : {curEa.manualReserve.reserveArr[3].isChosen2}";
-                                if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
-                                    reserveChosenLabel.Text = sReserveChosenMsg;
-                            }
-                            else if (curEa.manualReserve.reserveArr[4].fCritLine1 > 0 && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.YES_FLOOR_UP)
-                            {
-                                if (curEa.manualReserve.reserveArr[4].fCritLine1 > 0)
-                                {
-                                    reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[4].fCritLine1);
-                                    e.Graphics.DrawLine(new Pen(Color.Purple, 3), reservationX1, reservationY1, reservationX2, reservationY1);
-                                    priceViewLabel.Text = $"돌파가격 : ({Math.Round(curEa.manualReserve.reserveArr[4].fCritLine1, 2)}, 0)";
-                                }
-                                if (curEa.manualReserve.reserveArr[4].fCritLine2 > 0)
-                                {
-                                    reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[4].fCritLine2);
-                                    e.Graphics.DrawLine(new Pen(Color.Purple, 3), reservationX1, reservationY1, reservationX2, reservationY1);
-                                    priceViewLabel.Text = $"돌파가격 : ({Math.Round(curEa.manualReserve.reserveArr[4].fCritLine1, 2)}, {Math.Round(curEa.manualReserve.reserveArr[4].fCritLine2, 2)})";
-                                }
-
-
-                                sReserveMsg = (curEa.manualReserve.reserveArr[4].isBuyReserved) ? "돌파 매수예약 : Yes" : "돌파 매수예약 : No";
-                                if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
-                                    realBuyReserveLabel.Text = sReserveMsg;
-                                sReserveChosenMsg = $"돌파 아래 : {curEa.manualReserve.reserveArr[4].isChosen1}, 위 : {curEa.manualReserve.reserveArr[4].isChosen2}";
-                                if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
-                                    reserveChosenLabel.Text = sReserveChosenMsg;
-                            }
-
-                            if (curEa.myTradeManager.isTargetChoice)
-                            {
-                                if (curEa.myTradeManager.fBottomPriceTouch > 0)
-                                {
-                                    reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.myTradeManager.fBottomPriceTouch);
-                                    e.Graphics.DrawLine(new Pen(Color.Black, 3), reservationX1, reservationY1, reservationX2, reservationY1);
-                                }
-
-                                if (curEa.myTradeManager.fTargetPriceTouch > 0)
-                                {
-                                    reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.myTradeManager.fTargetPriceTouch);
-                                    e.Graphics.DrawLine(new Pen(Color.Black, 3), reservationX1, reservationY1, reservationX2, reservationY1);
-                                }
-                            }
-                        }
-                        catch
-                        { }
-                    }
-                }
-                catch { }
-            }
-            void WriteInfo()
-            {
-                try
-                {
-                    gapLabel.Text = $"현재갭 : {Math.Round(curEa.fStartGap, 3)}";
-                    isAllSelledLabel.Text = $"매도완료 : {curEa.myTradeManager.nTotalSelled}";
-                    isSellingLabel.Text = $"매도중 : {curEa.myTradeManager.nTotalSelling}";
-                    isAllBuyedLabel.Text = $"총매수 : {curEa.myTradeManager.nTotalBuyed}";
-                    restVolumeLabel.Text = $"잔량 : {curEa.myTradeManager.nTotalBuyed - (curEa.myTradeManager.nTotalSelling + curEa.myTradeManager.nTotalSelled)}";
-                }
-                catch
-                { }
-            }
-            if (isHitView)
-            {
-                DrawHitEdge(mainForm.ea[nCurIdx].fakeStrategyMgr.hitDict25, Color.Orange);
-                DrawHitEdge(mainForm.ea[nCurIdx].fakeStrategyMgr.hitDict38, Color.Green);
-                DrawHitEdge(mainForm.ea[nCurIdx].fakeStrategyMgr.hitDict312, Color.Purple);
-                DrawHitEdge(mainForm.ea[nCurIdx].fakeStrategyMgr.hitDict410, Color.Black);
-            }
-
-            if (isPosView)
-            {
-                DrawPosCheck(Color.Gold);
-            }
-
-            DrawReserveLine();
-            DrawOPLine();
-            WriteInfo();
-
             if (!isTradeCancelInit)
             {
                 isTradeCancelInit = true;
@@ -3096,13 +2807,19 @@ namespace AtoIndicator.View.EachStockHistory
                 if (cPressed == 49)
                 {
                     if (isShiftPushed && !curEa.manualReserve.reserveArr[0].isChosen1 && curEa.manualReserve.reserveArr[0].isSelected)
+                    {
+                        curEa.manualReserve.reserveArr[0].nBuyReserveNumStock = nMouseWheel;
                         curEa.manualReserve.reserveArr[0].isBuyReserved = true;
+                    }
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.UP_RESERVE;
                 }
                 else if (cPressed == 50)
                 {
                     if (isShiftPushed && !curEa.manualReserve.reserveArr[1].isChosen1 && curEa.manualReserve.reserveArr[1].isSelected)
+                    {
+                        curEa.manualReserve.reserveArr[1].nBuyReserveNumStock = nMouseWheel;
                         curEa.manualReserve.reserveArr[1].isBuyReserved = true;
+                    }
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.DOWN_RESERVE;
                 }
                 else if (cPressed == 51) // 지지는 매수예약 없음
@@ -3112,13 +2829,19 @@ namespace AtoIndicator.View.EachStockHistory
                 else if (cPressed == 52)
                 {
                     if (isShiftPushed && !curEa.manualReserve.reserveArr[3].isChosen2 && curEa.manualReserve.reserveArr[3].isSelected)
+                    {
+                        curEa.manualReserve.reserveArr[3].nBuyReserveNumStock = nMouseWheel;
                         curEa.manualReserve.reserveArr[3].isBuyReserved = true;
+                    }
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.NO_FLOOR_UP;
                 }
                 else if (cPressed == 53)
                 {
                     if (isShiftPushed && !curEa.manualReserve.reserveArr[4].isChosen2 && curEa.manualReserve.reserveArr[4].isSelected)
+                    {
+                        curEa.manualReserve.reserveArr[4].nBuyReserveNumStock = nMouseWheel;
                         curEa.manualReserve.reserveArr[4].isBuyReserved = true;
+                    }
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.YES_FLOOR_UP;
                 }
 
@@ -3180,6 +2903,8 @@ namespace AtoIndicator.View.EachStockHistory
         {
             eBuyMode = TRADE_MODE.NONE_MODE;
             buyModeLabel.Text = $"buy : {eBuyMode}";
+            nMouseWheel = 0;
+            wheelLabel.Text = $"wheel : 0";
         }
 
         public void ReverseAllArrowVisible()
@@ -3415,6 +3140,317 @@ namespace AtoIndicator.View.EachStockHistory
             }
             return retC;
         }
+
+        // 
+        public void DrawHitEdge(Dictionary<int, int> dict, Color color)
+        {
+            try
+            {
+                foreach (var key in dict.Keys)
+                {
+                    Series series = historyChart.Series["MinuteStick"];
+
+                    if (series.Points.Count >= key + 1)
+                    {
+                        DataPoint point = series.Points[key];
+
+                        double pixelPosition1 = historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(0.8);
+                        double pixelPosition2 = historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(0);
+
+                        double barLength = Math.Abs(pixelPosition2 - pixelPosition1);
+
+                        double xLocation = key + 1;
+                        double yStartValue = point.YValues[2]; // 시가
+                        double yLastValue = point.YValues[3]; // 종가
+
+                        double yMaxValue = Max(yLastValue, yStartValue);
+                        double yMinValue = Min(yLastValue, yStartValue);
+
+                        using (Pen pen = new Pen(color, 2))
+                        {
+                            gp.DrawRectangle(pen,
+                                (float)(historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xLocation) - barLength / 2),
+                                (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yMaxValue),
+                                (float)barLength,
+                                (float)(historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yMinValue) - historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yMaxValue)));
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+
+        public void DrawPosCheck(Color color)
+        {
+            try
+            {
+                using (Pen pen = new Pen(color, 2))
+                {
+                    for (int posIdx = 0; posIdx < curEa.myTradeManager.posRecordList.Count; posIdx++)
+                    {
+                        var pos = curEa.myTradeManager.posRecordList[posIdx];
+                        double x = historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(pos.Item1);
+                        double y = historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(pos.Item2);
+
+                        gp.DrawEllipse(pen, new Rectangle((int)(x - Cursor.Size.Width / nCircleDenom), (int)(y - Cursor.Size.Height / nCircleDenom), nCircleSize, nCircleSize));
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        public void DrawOPLine()
+        {
+            try
+            {
+                if (isRightPressed || isPreciselyCheck)
+                {
+                    moveLabel.Text = $"{cPressed}\n{nPressed}\n( {Math.Round(xVal1, 2)}, {Math.Round(yVal1, 2)} )\n( {Math.Round(xVal2, 2)}, {Math.Round(yVal2, 2)} )\n";
+                    if (nPressed == 1)
+                    {
+                        xPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xVal1);
+                        yPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yVal1);
+                        gp.DrawEllipse(cPen, new Rectangle((int)(xPixel1 - Cursor.Size.Width / nCircleDenom), (int)(yPixel1 - Cursor.Size.Height / nCircleDenom), nCircleSize, nCircleSize));
+                    }
+                    else if (nPressed == 2)
+                    {
+                        xPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xVal1);
+                        xPixel2 = (float)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xVal2);
+                        yPixel1 = (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yVal1);
+                        yPixel2 = (float)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(yVal2);
+
+                        gp.DrawLine(lpen, xPixel1, yPixel1, xPixel2, yPixel2);
+
+                        if (CheckIsNormalChartYValue(yVal1, yVal2))
+                        {
+                            moveLabel.Text += $"( {Math.Round(xVal1, 2)}, {Math.Round(yVal1, 2)} ) -> ( {Math.Round(xVal2, 2)},  {Math.Round(yVal2, 2)})\n" +
+                                $"손익(시초값기준) : {Math.Round((yVal2 - yVal1) / curEa.nTodayStartPrice * 100, 2)}(%)\n" +
+                                $"손익( 종가기준 ) : {Math.Round((yVal2 - yVal1) / curEa.nYesterdayEndPrice * 100, 2)}(%)\n" +
+                                $"손익(첫번째기준) : {Math.Round((yVal2 - yVal1) / yVal1 * 100, 2)}(%)\n" +
+                                $"x2 - x1 : {Math.Round(xVal2, 0) - Math.Round(xVal1, 0)}칸\n";
+                        }
+                        else
+                            moveLabel.Text += "포인트를 다시 지정하세요\n";
+
+                        if (isPreciselyCheck)
+                        {
+                            // 여기서는 mouseClick에서 계산해놓은것을 그대로 출력만 할거
+                            {
+                                nMinPositionX1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinIdx1 + 1);
+                                nMinPositionY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx1].nLastFs);
+                                nMinPositionX2 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(xMinIdx2 + 1);
+                                nMinPositionY2 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(mainForm.ea[nCurIdx].timeLines1m.arrTimeLine[xMinIdx2].nLastFs);
+
+                                if (isMinuteVisible && CheckIsNormalChartYValue(nMinPositionY1, nMinPositionY2))
+                                    gp.DrawLine(pPen, nMinPositionX1, nMinPositionY1, nMinPositionX2, nMinPositionY2);
+                                moveLabel.Text += $"================== 분당 정보 ==================\n" +
+                                    $"페이크 매수 : ( {pResult.nFakeBuyStrategyNum}, 분당 : {pResult.nFakeBuyStrategyMinuteNum} ){NEW_LINE}" +
+                                    $"페이크 보조 : ( {pResult.nFakeAssistantStrategyNum}, 분당 : {pResult.nFakeAssistantStrategyMinuteNum} ){NEW_LINE}" +
+                                    $"페이크 저항 : ( {pResult.nFakeResistStrategyNum}, 분당 : {pResult.nFakeResistStrategyMinuteNum} ){NEW_LINE}" +
+                                    $"가격 업 :      ( {pResult.nFakeUpStrategyNum}, 분당 : {pResult.nFakeUpStrategyMinuteNum} ){NEW_LINE}" +
+                                    $"가격다운 :    ( {pResult.nFakeDownStrategyNum}, 분당 : {pResult.nFakeDownStrategyMinuteNum} ){NEW_LINE}" +
+                                    $"모의매수 :    ( {pResult.nPaperBuyStrategyNum}, 분당 : {pResult.nPaperBuyStrategyMinuteNum} ){NEW_LINE}" +
+                                    $"총 애로우 :   ( {pResult.nTotalStrategyNum}, 분당 : {pResult.nTotalStrategyMinuteNum} ){NEW_LINE}{NEW_LINE}";
+
+                            }
+                        }
+                    }
+                }
+                else
+                    moveLabel.Text = "";
+            }
+            catch
+            {
+
+            }
+        }
+
+        public void DrawReserveLine()
+        {
+            try
+            {
+                if (historyChart.Series["MinuteStick"].Points.Count > 0)
+                {
+                    try
+                    {
+
+                        int reservationX1 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Minimum);
+                        int reservationX2 = (int)historyChart.ChartAreas["TotalArea"].AxisX.ValueToPixelPosition(historyChart.ChartAreas["TotalArea"].AxisX.Maximum);
+
+                        float reservationY1;
+
+                        string sReserveMsg;
+                        string sReserveChosenMsg;
+
+                        if (curEa.manualReserve.reserveArr[0].isSelected && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.UP_RESERVE)
+                        {
+                            if (curEa.manualReserve.reserveArr[0].fCritLine1 > 0)
+                            {
+                                reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[0].fCritLine1);
+                                gp.DrawLine(new Pen(Color.BlueViolet, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                                priceViewLabel.Text = $"이상가격 : {Math.Round(curEa.manualReserve.reserveArr[0].fCritLine1, 2)}";
+                            }
+                            sReserveMsg = (curEa.manualReserve.reserveArr[0].isBuyReserved) ? "이상 매수예약 : Yes" : "이상 매수예약 : No";
+                            if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
+                                realBuyReserveLabel.Text = sReserveMsg;
+
+                            sReserveChosenMsg = $"이상채택 : {curEa.manualReserve.reserveArr[0].isChosen1}";
+                            if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
+                                reserveChosenLabel.Text = sReserveChosenMsg;
+                        }
+                        else if (curEa.manualReserve.reserveArr[1].isSelected && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.DOWN_RESERVE)
+                        {
+                            if (curEa.manualReserve.reserveArr[1].fCritLine1 > 0)
+                            {
+                                reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[1].fCritLine1);
+                                gp.DrawLine(new Pen(Color.Gold, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                                priceViewLabel.Text = $"이하가격 : {Math.Round(curEa.manualReserve.reserveArr[1].fCritLine1, 2)}";
+                            }
+
+                            sReserveMsg = (curEa.manualReserve.reserveArr[1].isBuyReserved) ? "이하 매수예약 : Yes" : "이하 매수예약 : No";
+                            if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
+                                realBuyReserveLabel.Text = sReserveMsg;
+
+                            sReserveChosenMsg = $"이하채택 : {curEa.manualReserve.reserveArr[1].isChosen1}";
+                            if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
+                                reserveChosenLabel.Text = sReserveChosenMsg;
+                        }
+                        else if (curEa.manualReserve.reserveArr[2].isSelected && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.SUPPORT_RESERVE)
+                        {
+                            if (curEa.manualReserve.reserveArr[2].fCritLine1 > 0)
+                            {
+                                reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[2].fCritLine1);
+                                gp.DrawLine(new Pen(Color.Magenta, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                                priceViewLabel.Text = $"지지가격 : {Math.Round(curEa.manualReserve.reserveArr[2].fCritLine1, 2)}";
+                            }
+
+                            sReserveMsg = $"지지시간 : {(curEa.manualReserve.reserveArr[2].isChosen1 ? SubTimeToTime(mainForm.nSharedTime, curEa.manualReserve.reserveArr[2].nSelectedTime) : -1)}";
+                            if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
+                                realBuyReserveLabel.Text = sReserveMsg;
+
+                            sReserveChosenMsg = $"지지채택 : {curEa.manualReserve.reserveArr[2].isChosen1}";
+                            if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
+                                reserveChosenLabel.Text = sReserveChosenMsg;
+                        }
+                        else if (curEa.manualReserve.reserveArr[3].fCritLine1 > 0 && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.NO_FLOOR_UP)
+                        {
+                            if (curEa.manualReserve.reserveArr[3].fCritLine1 > 0)
+                            {
+                                reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[3].fCritLine1);
+                                gp.DrawLine(new Pen(Color.DarkGray, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                                priceViewLabel.Text = $"점프가격 : ({Math.Round(curEa.manualReserve.reserveArr[3].fCritLine1, 2)}, 0)";
+                            }
+
+                            if (curEa.manualReserve.reserveArr[3].fCritLine2 > 0)
+                            {
+                                reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[3].fCritLine2);
+                                gp.DrawLine(new Pen(Color.DarkGray, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                                priceViewLabel.Text = $"점프가격 : ({Math.Round(curEa.manualReserve.reserveArr[3].fCritLine1, 2)}, {Math.Round(curEa.manualReserve.reserveArr[3].fCritLine2, 2)})";
+                            }
+
+                            sReserveMsg = (curEa.manualReserve.reserveArr[3].isBuyReserved) ? "점프 매수예약 : Yes" : "점프 매수예약 : No";
+                            if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
+                                realBuyReserveLabel.Text = sReserveMsg;
+                            sReserveChosenMsg = $"점프 아래 :{curEa.manualReserve.reserveArr[3].isChosen1}, 위 : {curEa.manualReserve.reserveArr[3].isChosen2}";
+                            if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
+                                reserveChosenLabel.Text = sReserveChosenMsg;
+                        }
+                        else if (curEa.manualReserve.reserveArr[4].fCritLine1 > 0 && curEa.manualReserve.eCurReserve == MainForm.ReserveEnum.YES_FLOOR_UP)
+                        {
+                            if (curEa.manualReserve.reserveArr[4].fCritLine1 > 0)
+                            {
+                                reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[4].fCritLine1);
+                                gp.DrawLine(new Pen(Color.Purple, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                                priceViewLabel.Text = $"돌파가격 : ({Math.Round(curEa.manualReserve.reserveArr[4].fCritLine1, 2)}, 0)";
+                            }
+                            if (curEa.manualReserve.reserveArr[4].fCritLine2 > 0)
+                            {
+                                reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[4].fCritLine2);
+                                gp.DrawLine(new Pen(Color.Purple, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                                priceViewLabel.Text = $"돌파가격 : ({Math.Round(curEa.manualReserve.reserveArr[4].fCritLine1, 2)}, {Math.Round(curEa.manualReserve.reserveArr[4].fCritLine2, 2)})";
+                            }
+
+
+                            sReserveMsg = (curEa.manualReserve.reserveArr[4].isBuyReserved) ? "돌파 매수예약 : Yes" : "돌파 매수예약 : No";
+                            if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
+                                realBuyReserveLabel.Text = sReserveMsg;
+                            sReserveChosenMsg = $"돌파 아래 : {curEa.manualReserve.reserveArr[4].isChosen1}, 위 : {curEa.manualReserve.reserveArr[4].isChosen2}";
+                            if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
+                                reserveChosenLabel.Text = sReserveChosenMsg;
+                        }
+
+                        if (curEa.myTradeManager.isTargetChoice)
+                        {
+                            if (curEa.myTradeManager.fBottomPriceTouch > 0)
+                            {
+                                reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.myTradeManager.fBottomPriceTouch);
+                                gp.DrawLine(new Pen(Color.Black, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                            }
+
+                            if (curEa.myTradeManager.fTargetPriceTouch > 0)
+                            {
+                                reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.myTradeManager.fTargetPriceTouch);
+                                gp.DrawLine(new Pen(Color.Black, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                            }
+                        }
+                    }
+                    catch
+                    { }
+                }
+            }
+            catch { }
+        }
+
+        public void WriteInfo()
+        {
+            try
+            {
+                gapLabel.Text = $"현재갭 : {Math.Round(curEa.fStartGap, 3)}";
+                isAllSelledLabel.Text = $"매도완료 : {curEa.myTradeManager.nTotalSelled}";
+                isSellingLabel.Text = $"매도중 : {curEa.myTradeManager.nTotalSelling}";
+                isAllBuyedLabel.Text = $"총매수 : {curEa.myTradeManager.nTotalBuyed}";
+                restVolumeLabel.Text = $"잔량 : {curEa.myTradeManager.nTotalBuyed - (curEa.myTradeManager.nTotalSelling + curEa.myTradeManager.nTotalSelled)}";
+            }
+            catch
+            { }
+        }
+
+        public void WriteGraphicsSet()
+        {
+            try
+            {
+                if (isHitView)
+                {
+                    DrawHitEdge(mainForm.ea[nCurIdx].fakeStrategyMgr.hitDict25, Color.Orange);
+                    DrawHitEdge(mainForm.ea[nCurIdx].fakeStrategyMgr.hitDict38, Color.Green);
+                    DrawHitEdge(mainForm.ea[nCurIdx].fakeStrategyMgr.hitDict312, Color.Purple);
+                    DrawHitEdge(mainForm.ea[nCurIdx].fakeStrategyMgr.hitDict410, Color.Black);
+                }
+
+                if (isPosView)
+                {
+                    DrawPosCheck(Color.Gold);
+                }
+
+                DrawReserveLine();
+                DrawOPLine();
+                WriteInfo();
+            }
+            catch { }
+        }
+
+        public void SetCurGraphics()
+        {
+            try
+            {
+                gp = historyChart.CreateGraphics();
+            }
+            catch { }
+        }
     }
+
+
     #endregion
 }

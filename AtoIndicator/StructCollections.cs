@@ -963,6 +963,7 @@ namespace AtoIndicator
         public struct ReservationPoint
         {
             public bool isBuyReserved;
+            public int nBuyReserveNumStock;
             public bool isSelected;
             public bool isChosen1;
             public bool isChosen2;
@@ -973,6 +974,7 @@ namespace AtoIndicator
 
             public void Clear()
             {
+                nBuyReserveNumStock = 0;
                 isBuyReserved = false;
                 isSelected = false;
                 isChosen1 = false;

@@ -2562,7 +2562,7 @@ namespace AtoIndicator
                                 if (ea[nCurIdx].manualReserve.reserveArr[0].isBuyReserved)
                                 {
                                     ea[nCurIdx].manualReserve.reserveArr[0].isBuyReserved = false;
-                                    RequestMachineBuy(nCurIdx);
+                                    RequestMachineBuy(nCurIdx, nQty: ea[nCurIdx].manualReserve.reserveArr[0].nBuyReserveNumStock);
                                 }
                                 ea[nCurIdx].manualReserve.reserveArr[0].isChosen1 = true;
                                 ea[nCurIdx].manualReserve.reserveArr[0].nChosenTime = nSharedTime;
@@ -2575,7 +2575,7 @@ namespace AtoIndicator
                                 if (ea[nCurIdx].manualReserve.reserveArr[1].isBuyReserved)
                                 {
                                     ea[nCurIdx].manualReserve.reserveArr[1].isBuyReserved = false;
-                                    RequestMachineBuy(nCurIdx);
+                                    RequestMachineBuy(nCurIdx, nQty: ea[nCurIdx].manualReserve.reserveArr[1].nBuyReserveNumStock);
                                 }
                                 ea[nCurIdx].manualReserve.reserveArr[1].isChosen1 = true;
                                 ea[nCurIdx].manualReserve.reserveArr[1].nChosenTime = nSharedTime;
@@ -2604,7 +2604,7 @@ namespace AtoIndicator
                                 if (ea[nCurIdx].manualReserve.reserveArr[3].isBuyReserved)
                                 {
                                     ea[nCurIdx].manualReserve.reserveArr[3].isBuyReserved = false;
-                                    RequestMachineBuy(nCurIdx);
+                                    RequestMachineBuy(nCurIdx, nQty: ea[nCurIdx].manualReserve.reserveArr[3].nBuyReserveNumStock);
                                 }
                                 ea[nCurIdx].manualReserve.reserveArr[3].isChosen2 = true;
                                 ea[nCurIdx].manualReserve.reserveArr[3].nChosenTime = nSharedTime;
@@ -2626,7 +2626,7 @@ namespace AtoIndicator
                                     if (ea[nCurIdx].manualReserve.reserveArr[4].isBuyReserved)
                                     {
                                         ea[nCurIdx].manualReserve.reserveArr[4].isBuyReserved = false;
-                                        RequestMachineBuy(nCurIdx);
+                                        RequestMachineBuy(nCurIdx, nQty: ea[nCurIdx].manualReserve.reserveArr[4].nBuyReserveNumStock);
                                     }
                                 }
 
