@@ -3095,13 +3095,13 @@ namespace AtoIndicator.View.EachStockHistory
 
                 if (cPressed == 49)
                 {
-                    if (isShiftPushed && !curEa.manualReserve.reserveArr[0].isChosen1)
+                    if (isShiftPushed && !curEa.manualReserve.reserveArr[0].isChosen1 && curEa.manualReserve.reserveArr[0].isSelected)
                         curEa.manualReserve.reserveArr[0].isBuyReserved = true;
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.UP_RESERVE;
                 }
                 else if (cPressed == 50)
                 {
-                    if (isShiftPushed && !curEa.manualReserve.reserveArr[1].isChosen1)
+                    if (isShiftPushed && !curEa.manualReserve.reserveArr[1].isChosen1 && curEa.manualReserve.reserveArr[1].isSelected)
                         curEa.manualReserve.reserveArr[1].isBuyReserved = true;
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.DOWN_RESERVE;
                 }
@@ -3111,13 +3111,13 @@ namespace AtoIndicator.View.EachStockHistory
                 }
                 else if (cPressed == 52)
                 {
-                    if (isShiftPushed && !curEa.manualReserve.reserveArr[3].isChosen2)
+                    if (isShiftPushed && !curEa.manualReserve.reserveArr[3].isChosen2 && curEa.manualReserve.reserveArr[3].isSelected)
                         curEa.manualReserve.reserveArr[3].isBuyReserved = true;
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.NO_FLOOR_UP;
                 }
                 else if (cPressed == 53)
                 {
-                    if (isShiftPushed && !curEa.manualReserve.reserveArr[4].isChosen2)
+                    if (isShiftPushed && !curEa.manualReserve.reserveArr[4].isChosen2 && curEa.manualReserve.reserveArr[4].isSelected)
                         curEa.manualReserve.reserveArr[4].isBuyReserved = true;
                     curEa.manualReserve.eCurReserve = MainForm.ReserveEnum.YES_FLOOR_UP;
                 }

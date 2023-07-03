@@ -2619,13 +2619,17 @@ namespace AtoIndicator
                                 ea[nCurIdx].manualReserve.reserveArr[4].nChosenTime = nSharedTime;
                             }
 
-                            if (ea[nCurIdx].manualReserve.reserveArr[4].isChosen1 && ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[4].fCritLine2)
+                            if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[4].fCritLine2)
                             {
-                                if (ea[nCurIdx].manualReserve.reserveArr[4].isBuyReserved)
+                                if (ea[nCurIdx].manualReserve.reserveArr[4].isChosen1)
                                 {
-                                    ea[nCurIdx].manualReserve.reserveArr[4].isBuyReserved = false;
-                                    RequestMachineBuy(nCurIdx);
+                                    if (ea[nCurIdx].manualReserve.reserveArr[4].isBuyReserved)
+                                    {
+                                        ea[nCurIdx].manualReserve.reserveArr[4].isBuyReserved = false;
+                                        RequestMachineBuy(nCurIdx);
+                                    }
                                 }
+
                                 ea[nCurIdx].manualReserve.reserveArr[4].isChosen2 = true;
                                 ea[nCurIdx].manualReserve.reserveArr[4].nChosenTime = nSharedTime;
                             }
