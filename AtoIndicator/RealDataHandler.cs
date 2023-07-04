@@ -123,23 +123,20 @@ namespace AtoIndicator
         public const int FAKE_BUY_SIGNAL = 0;
         public const int FAKE_RESIST_SIGNAL = 1;
         public const int FAKE_ASSISTANT_SIGNAL = 2;
-        //public const int REAL_BUY_SIGNAL = 5;
-        public const int REAL_SELL_SIGNAL = 6;
         public const int FAKE_VOLATILE_SIGNAL = 7;
         public const int EVERY_SIGNAL = 8;
         public const int FAKE_DOWN_SIGNAL = 9;
         public const int PAPER_BUY_SIGNAL = 10;
         public const int PAPER_SELL_SIGNAL = 11;
 
-        public enum ReserveEnum
-        {
-            NONE_RESERVE,
-            UP_RESERVE,
-            DOWN_RESERVE,
-            SUPPORT_RESERVE,
-            NO_FLOOR_UP,
-            YES_FLOOR_UP,
-        }
+
+        
+        public const int UP_RESERVE = 0;
+        public const int DOWN_RESERVE = 1;
+        public const int SUPPORT_RESERVE = 2;
+        public const int NO_FLOOR_RESERVE = 3;
+        public const int YES_FLOOR_RESERVE = 4;
+        public const int INIT_RESERVE = 5;
 
         public const string SEND_ORDER_ERROR_CHECK_PREFIX = "둥둥둥";
 
@@ -2555,83 +2552,83 @@ namespace AtoIndicator
 
                     #region 실시간 manual crush 테스트(예약)
                     {
-                        if (ea[nCurIdx].manualReserve.reserveArr[0].isSelected && !ea[nCurIdx].manualReserve.reserveArr[0].isChosen1)
+                        if (ea[nCurIdx].manualReserve.reserveArr[UP_RESERVE].isSelected && !ea[nCurIdx].manualReserve.reserveArr[UP_RESERVE].isChosen1)
                         {
-                            if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[0].fCritLine1)
+                            if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[UP_RESERVE].fCritLine1)
                             {
-                                if (ea[nCurIdx].manualReserve.reserveArr[0].isBuyReserved)
+                                if (ea[nCurIdx].manualReserve.reserveArr[UP_RESERVE].isBuyReserved)
                                 {
-                                    ea[nCurIdx].manualReserve.reserveArr[0].isBuyReserved = false;
-                                    RequestMachineBuy(nCurIdx, nQty: ea[nCurIdx].manualReserve.reserveArr[0].nBuyReserveNumStock);
+                                    ea[nCurIdx].manualReserve.reserveArr[UP_RESERVE].isBuyReserved = false;
+                                    RequestMachineBuy(nCurIdx, nQty: ea[nCurIdx].manualReserve.reserveArr[UP_RESERVE].nBuyReserveNumStock);
                                 }
-                                ea[nCurIdx].manualReserve.reserveArr[0].isChosen1 = true;
-                                ea[nCurIdx].manualReserve.reserveArr[0].nChosenTime = nSharedTime;
+                                ea[nCurIdx].manualReserve.reserveArr[UP_RESERVE].isChosen1 = true;
+                                ea[nCurIdx].manualReserve.reserveArr[UP_RESERVE].nChosenTime = nSharedTime;
                             }
                         }
-                        if (ea[nCurIdx].manualReserve.reserveArr[1].isSelected && !ea[nCurIdx].manualReserve.reserveArr[1].isChosen1)
+                        if (ea[nCurIdx].manualReserve.reserveArr[DOWN_RESERVE].isSelected && !ea[nCurIdx].manualReserve.reserveArr[DOWN_RESERVE].isChosen1)
                         {
-                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[1].fCritLine1)
+                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[DOWN_RESERVE].fCritLine1)
                             {
-                                if (ea[nCurIdx].manualReserve.reserveArr[1].isBuyReserved)
+                                if (ea[nCurIdx].manualReserve.reserveArr[DOWN_RESERVE].isBuyReserved)
                                 {
-                                    ea[nCurIdx].manualReserve.reserveArr[1].isBuyReserved = false;
-                                    RequestMachineBuy(nCurIdx, nQty: ea[nCurIdx].manualReserve.reserveArr[1].nBuyReserveNumStock);
+                                    ea[nCurIdx].manualReserve.reserveArr[DOWN_RESERVE].isBuyReserved = false;
+                                    RequestMachineBuy(nCurIdx, nQty: ea[nCurIdx].manualReserve.reserveArr[DOWN_RESERVE].nBuyReserveNumStock);
                                 }
-                                ea[nCurIdx].manualReserve.reserveArr[1].isChosen1 = true;
-                                ea[nCurIdx].manualReserve.reserveArr[1].nChosenTime = nSharedTime;
+                                ea[nCurIdx].manualReserve.reserveArr[DOWN_RESERVE].isChosen1 = true;
+                                ea[nCurIdx].manualReserve.reserveArr[DOWN_RESERVE].nChosenTime = nSharedTime;
                             }
                         }
 
-                        if (ea[nCurIdx].manualReserve.reserveArr[2].isSelected && ea[nCurIdx].manualReserve.reserveArr[2].isChosen1)
+                        if (ea[nCurIdx].manualReserve.reserveArr[SUPPORT_RESERVE].isSelected && ea[nCurIdx].manualReserve.reserveArr[SUPPORT_RESERVE].isChosen1)
                         {
-                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[2].fCritLine1)
+                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[SUPPORT_RESERVE].fCritLine1)
                             {
-                                ea[nCurIdx].manualReserve.reserveArr[2].isChosen1 = false;
-                                ea[nCurIdx].manualReserve.reserveArr[2].nChosenTime = nSharedTime;
+                                ea[nCurIdx].manualReserve.reserveArr[SUPPORT_RESERVE].isChosen1 = false;
+                                ea[nCurIdx].manualReserve.reserveArr[SUPPORT_RESERVE].nChosenTime = nSharedTime;
                             }
                         }
 
-                        if (ea[nCurIdx].manualReserve.reserveArr[3].isSelected && !ea[nCurIdx].manualReserve.reserveArr[3].isChosen1 && !ea[nCurIdx].manualReserve.reserveArr[3].isChosen2)
+                        if (ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].isSelected && !ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].isChosen1 && !ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].isChosen2)
                         {
-                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[3].fCritLine1)
+                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].fCritLine1)
                             {
-                                ea[nCurIdx].manualReserve.reserveArr[3].isChosen1 = true;
-                                ea[nCurIdx].manualReserve.reserveArr[3].nChosenTime = nSharedTime;
+                                ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].isChosen1 = true;
+                                ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].nChosenTime = nSharedTime;
                             }
 
-                            if (!ea[nCurIdx].manualReserve.reserveArr[3].isChosen1 && ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[3].fCritLine2)
+                            if (!ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].isChosen1 && ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].fCritLine2)
                             {
-                                if (ea[nCurIdx].manualReserve.reserveArr[3].isBuyReserved)
+                                if (ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].isBuyReserved)
                                 {
-                                    ea[nCurIdx].manualReserve.reserveArr[3].isBuyReserved = false;
-                                    RequestMachineBuy(nCurIdx, nQty: ea[nCurIdx].manualReserve.reserveArr[3].nBuyReserveNumStock);
+                                    ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].isBuyReserved = false;
+                                    RequestMachineBuy(nCurIdx, nQty: ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].nBuyReserveNumStock);
                                 }
-                                ea[nCurIdx].manualReserve.reserveArr[3].isChosen2 = true;
-                                ea[nCurIdx].manualReserve.reserveArr[3].nChosenTime = nSharedTime;
+                                ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].isChosen2 = true;
+                                ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].nChosenTime = nSharedTime;
                             }
                         }
 
-                        if (ea[nCurIdx].manualReserve.reserveArr[4].isSelected && !ea[nCurIdx].manualReserve.reserveArr[4].isChosen2)
+                        if (ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].isSelected && !ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].isChosen2)
                         {
-                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[4].fCritLine1)
+                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].fCritLine1)
                             {
-                                ea[nCurIdx].manualReserve.reserveArr[4].isChosen1 = true;
-                                ea[nCurIdx].manualReserve.reserveArr[4].nChosenTime = nSharedTime;
+                                ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].isChosen1 = true;
+                                ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].nChosenTime = nSharedTime;
                             }
 
-                            if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[4].fCritLine2)
+                            if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].fCritLine2)
                             {
-                                if (ea[nCurIdx].manualReserve.reserveArr[4].isChosen1)
+                                if (ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].isChosen1)
                                 {
-                                    if (ea[nCurIdx].manualReserve.reserveArr[4].isBuyReserved)
+                                    if (ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].isBuyReserved)
                                     {
-                                        ea[nCurIdx].manualReserve.reserveArr[4].isBuyReserved = false;
-                                        RequestMachineBuy(nCurIdx, nQty: ea[nCurIdx].manualReserve.reserveArr[4].nBuyReserveNumStock);
+                                        ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].isBuyReserved = false;
+                                        RequestMachineBuy(nCurIdx, nQty: ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].nBuyReserveNumStock);
                                     }
                                 }
 
-                                ea[nCurIdx].manualReserve.reserveArr[4].isChosen2 = true;
-                                ea[nCurIdx].manualReserve.reserveArr[4].nChosenTime = nSharedTime;
+                                ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].isChosen2 = true;
+                                ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].nChosenTime = nSharedTime;
                             }
                         }
 

@@ -946,16 +946,16 @@ namespace AtoIndicator
         public class ManualReservation
         {
             public ReservationPoint[] reserveArr;
-            public ReserveEnum eCurReserve;
+            public int nCurReserve;
 
             public ManualReservation()
             {
-                eCurReserve = ReserveEnum.NONE_RESERVE;
-                reserveArr = new ReservationPoint[5]; // 포인트가 5개
+                nCurReserve = INIT_RESERVE;
+                reserveArr = new ReservationPoint[INIT_RESERVE]; 
             }
             public void ClearAll()
             {
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < INIT_RESERVE; i++)
                     reserveArr[i].Clear();
             }
         }

@@ -652,3 +652,54 @@
    위치: System.Windows.Forms.Application.Run(Form mainForm)
    위치: AtoIndicator.Program.Main() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\Program.cs:줄 70
 
+2023-07-04 오후 2:10:23 ## Msg : 창 핸들을 만드는 동안 오류가 발생했습니다.
+======================================================
+   위치: System.Windows.Forms.NativeWindow.CreateHandle(CreateParams cp)
+   위치: System.Windows.Forms.ToolTip.CreateHandle()
+   위치: System.Windows.Forms.ToolTip.get_TopLevelControl()
+   위치: System.Windows.Forms.ToolTip.CreateRegion(Control ctl)
+   위치: System.Windows.Forms.ToolTip.HandleCreated(Object sender, EventArgs eventargs)
+   위치: System.Windows.Forms.Control.OnHandleCreated(EventArgs e)
+   위치: System.Windows.Forms.Control.WmCreate(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.ScrollableControl.WndProc(Message& m)
+   위치: System.Windows.Forms.ContainerControl.WndProc(Message& m)
+   위치: System.Windows.Forms.UserControl.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+2023-07-04 오후 2:13:33 ## Msg : 창 핸들을 만드는 동안 오류가 발생했습니다.
+======================================================
+   위치: System.Windows.Forms.NativeWindow.CreateHandle(CreateParams cp)
+   위치: System.Windows.Forms.ToolTip.CreateHandle()
+   위치: System.Windows.Forms.ToolTip.get_TopLevelControl()
+   위치: System.Windows.Forms.ToolTip.CreateRegion(Control ctl)
+   위치: System.Windows.Forms.ToolTip.HandleCreated(Object sender, EventArgs eventargs)
+   위치: System.Windows.Forms.Control.OnHandleCreated(EventArgs e)
+   위치: System.Windows.Forms.Control.WmCreate(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.ScrollableControl.WndProc(Message& m)
+   위치: System.Windows.Forms.ContainerControl.WndProc(Message& m)
+   위치: System.Windows.Forms.UserControl.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+2023-07-04 오후 2:25:45 ## Msg : 창 핸들을 만드는 동안 오류가 발생했습니다.
+======================================================
+   위치: System.Windows.Forms.NativeWindow.CreateHandle(CreateParams cp)
+   위치: System.Windows.Forms.ToolTip.CreateHandle()
+   위치: System.Windows.Forms.ToolTip.get_TopLevelControl()
+   위치: System.Windows.Forms.ToolTip.CreateRegion(Control ctl)
+   위치: System.Windows.Forms.ToolTip.HandleCreated(Object sender, EventArgs eventargs)
+   위치: System.Windows.Forms.Control.OnHandleCreated(EventArgs e)
+   위치: System.Windows.Forms.Control.WmCreate(Message& m)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.ScrollableControl.WndProc(Message& m)
+   위치: System.Windows.Forms.ContainerControl.WndProc(Message& m)
+   위치: System.Windows.Forms.UserControl.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+

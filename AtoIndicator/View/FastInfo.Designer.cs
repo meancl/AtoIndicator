@@ -2063,7 +2063,6 @@ namespace AtoIndicator.View
             this.timerCheckBox.TabIndex = 262;
             this.timerCheckBox.Text = "타이머";
             this.timerCheckBox.UseVisualStyleBackColor = true;
-            this.timerCheckBox.CheckedChanged += new System.EventHandler(this.timerCheckBox_CheckedChanged);
             // 
             // write1Btn
             // 

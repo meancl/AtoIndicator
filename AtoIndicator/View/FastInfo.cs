@@ -150,22 +150,34 @@ namespace AtoIndicator.View
             {
                 int nEaIdxChosen = mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()];
 
-                if (cUp == 'Q')
+                if (!isCtrlMode)
                 {
-                    mainForm.ea[nEaIdxChosen].isChosen1 = !mainForm.ea[nEaIdxChosen].isChosen1;
-                    if (mainForm.ea[nEaIdxChosen].isChosen1)
-                        registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} Q창 등록됨";
-                    else
-                        registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} Q창 등록해제됨";
-                }
+                    if (cUp == 'Q')
+                    {
+                        mainForm.ea[nEaIdxChosen].isChosen1 = !mainForm.ea[nEaIdxChosen].isChosen1;
+                        if (mainForm.ea[nEaIdxChosen].isChosen1)
+                            registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} Q창 등록됨";
+                        else
+                            registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} Q창 등록해제됨";
+                    }
 
-                if (cUp == 'W')
+                    if (cUp == 'W')
+                    {
+                        mainForm.ea[nEaIdxChosen].isChosen2 = !mainForm.ea[nEaIdxChosen].isChosen2;
+                        if (mainForm.ea[nEaIdxChosen].isChosen2)
+                            registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} W창 등록됨";
+                        else
+                            registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} W창 등록해제됨";
+                    }
+
+                }
+                else
                 {
-                    mainForm.ea[nEaIdxChosen].isChosen2 = !mainForm.ea[nEaIdxChosen].isChosen2;
-                    if (mainForm.ea[nEaIdxChosen].isChosen2)
-                        registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} W창 등록됨";
-                    else
-                        registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} W창 등록해제됨";
+                    if (cUp == 191) // ?
+                    {
+                        mainForm.ea[nEaIdxChosen].manualReserve.ClearAll();
+                        registerLabel.Text = $"{mainForm.ea[nEaIdxChosen].sCode} 전체예약 취소";
+                    }
                 }
             }
         }
@@ -200,6 +212,13 @@ namespace AtoIndicator.View
                 isCtrlMode = false;
                 zzimLabel.Text = "ctrl off";
                 this.ActiveControl = this.passLenLabel;
+            }
+
+            if(cUp =='T')
+            {
+                timerCheckBox.Checked = !timerCheckBox.Checked;
+                if (timerCheckBox.Checked == false)
+                    timer.Enabled = false;
             }
 
             if (isCtrlMode)
@@ -363,8 +382,12 @@ namespace AtoIndicator.View
                 }
 
                 if (cUp == 'A')
+                {
+                    isReserved = false;
+                    timer.Enabled = false;
                     ShowIndicator();
-
+                }
+                
                 if (cUp == 'Q')
                 {
                     CheckReserve();
@@ -1439,15 +1462,15 @@ namespace AtoIndicator.View
                                 else if (nRZNum == 2)
                                     isReserveShow = mainForm.ea[i].isChosen2;
                                 else if (nRZNum == 3)
-                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[0].isChosen1;
+                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isChosen1;
                                 else if (nRZNum == 4)
-                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[1].isChosen1;
+                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isChosen1;
                                 else if (nRZNum == 5)
-                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[2].isChosen1 || mainForm.ea[i].manualReserve.reserveArr[2].isChosen2;
+                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isSelected && SubTimeToTimeAndSec(mainForm.nSharedTime, mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].nSelectedTime) >= 300;
                                 else if (nRZNum == 6)
-                                    isReserveShow = !mainForm.ea[i].manualReserve.reserveArr[3].isChosen1 && mainForm.ea[i].manualReserve.reserveArr[3].isChosen2;
+                                    isReserveShow = !mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen1 && mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen2;
                                 else if (nRZNum == 7)
-                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[4].isChosen2;
+                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen1 && mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen2;
                             }
                             else // 에러
                             {
@@ -1523,27 +1546,27 @@ namespace AtoIndicator.View
                                     listViewItem.SubItems[restIdx].BackColor = Color.Green;
                                 else if (mainForm.ea[i].isChosen2 && (restIdx == 2 || restIdx == 3))
                                     listViewItem.SubItems[restIdx].BackColor = Color.Orange;
-                                else if ((mainForm.ea[i].manualReserve.reserveArr[0].isSelected && restIdx == 5) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[0].isChosen1 && restIdx == 6))
+                                else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isSelected && restIdx == 5) ||
+                                        (mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isChosen1 && restIdx == 6))
                                     listViewItem.SubItems[restIdx].BackColor = Color.BlueViolet;
-                                else if ((mainForm.ea[i].manualReserve.reserveArr[1].isSelected && restIdx == 7) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[1].isChosen1 && restIdx == 8))
+                                else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isSelected && restIdx == 7) ||
+                                        (mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isChosen1 && restIdx == 8))
                                     listViewItem.SubItems[restIdx].BackColor = Color.Gold;
-                                else if ((mainForm.ea[i].manualReserve.reserveArr[2].isSelected && restIdx == 9) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[2].isChosen1 && restIdx == 10))
+                                else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isSelected && restIdx == 9) ||
+                                        (mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isChosen1 && restIdx == 10))
                                     listViewItem.SubItems[restIdx].BackColor = Color.Magenta;
-                                else if ((mainForm.ea[i].manualReserve.reserveArr[3].isSelected && restIdx == 11) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[3].isChosen1 && restIdx == 12) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[3].isChosen2 && restIdx == 13))
+                                else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isSelected && restIdx == 11) ||
+                                        (mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen1 && restIdx == 12) ||
+                                        (mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen2 && restIdx == 13))
                                     listViewItem.SubItems[restIdx].BackColor = Color.DarkGray;
-                                else if ((mainForm.ea[i].manualReserve.reserveArr[4].isSelected && restIdx == 14) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[4].isChosen1 && restIdx == 15) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[4].isChosen2 && restIdx == 16))
+                                else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isSelected && restIdx == 14) ||
+                                        (mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen1 && restIdx == 15) ||
+                                        (mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen2 && restIdx == 16))
                                     listViewItem.SubItems[restIdx].BackColor = Color.Purple;
-                                else if (restIdx == 4 &&   (mainForm.ea[i].manualReserve.reserveArr[0].isBuyReserved ||
-                                                            mainForm.ea[i].manualReserve.reserveArr[1].isBuyReserved ||
-                                                            mainForm.ea[i].manualReserve.reserveArr[3].isBuyReserved ||
-                                                            mainForm.ea[i].manualReserve.reserveArr[4].isBuyReserved))
+                                else if (restIdx == 4 &&   (mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isBuyReserved ||
+                                                            mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isBuyReserved ||
+                                                            mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isBuyReserved ||
+                                                            mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isBuyReserved))
                                 {
                                     listViewItem.SubItems[restIdx].BackColor = Color.Black;
                                 }
@@ -1574,11 +1597,10 @@ namespace AtoIndicator.View
 
                     DateTime endTime = DateTime.Now;
                     // 타이머가 on이라면
-                    if (isTimerGO)
+                    if (timerCheckBox.Checked)
                     {
                         if (nPassLen > 200 || (endTime - startTime).TotalMilliseconds > 500)  //  타이머 무리무리
                         {
-                            isTimerGO = false;
                             timer.Enabled = false;
                             timerCheckBox.Checked = false;
                         }
@@ -1586,7 +1608,9 @@ namespace AtoIndicator.View
                         {
                             if (!timer.Enabled)
                                 timer.Interval = 350 < (endTime - startTime).TotalMilliseconds ? (endTime - startTime).TotalMilliseconds : 350;
+
                             timer.Enabled = true;
+                            timerCheckBox.Checked = true;
                         }
                     }
                     else
@@ -1618,10 +1642,8 @@ namespace AtoIndicator.View
 
         public int nDoneCnt = 0;
 
-
         public System.Timers.Timer timer = new System.Timers.Timer();
 
-        public bool isTimerGO = false;
         public bool isReserved = false;
         public bool isR1 = false;
         public bool isR2 = false;
@@ -1632,10 +1654,6 @@ namespace AtoIndicator.View
         public int nRZNum = -1;
 
 
-        private void timerCheckBox_CheckedChanged(object sender, EventArgs eventArg)
-        {
-            isTimerGO = timerCheckBox.Checked;
-        }
 
         public void CheckReserve()
         {
@@ -1700,6 +1718,7 @@ namespace AtoIndicator.View
             else if (sender.Equals(confirmButton))
             {
                 isReserved = false;
+                timer.Enabled = false;
                 ShowIndicator();
             }
         }
