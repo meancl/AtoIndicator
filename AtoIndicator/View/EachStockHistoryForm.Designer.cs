@@ -72,7 +72,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.curSpeedLabel = new System.Windows.Forms.Label();
             this.curHogaRatioLabel = new System.Windows.Forms.Label();
             this.curHitNumLabel = new System.Windows.Forms.Label();
-            this.curPriceMoveLabel = new System.Windows.Forms.Label();
+            this.curPureTradePriceLabel = new System.Windows.Forms.Label();
             this.curTradePriceLabel = new System.Windows.Forms.Label();
             this.curCheckLineIdxLabel = new System.Windows.Forms.Label();
             this.isViLabel = new System.Windows.Forms.Label();
@@ -304,7 +304,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.tabPage1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tabPage1.Size = new System.Drawing.Size(195, 466);
+            this.tabPage1.Size = new System.Drawing.Size(209, 450);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "실매매";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -316,7 +316,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.realBlockFlowLayoutPanel.Location = new System.Drawing.Point(3, 2);
             this.realBlockFlowLayoutPanel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.realBlockFlowLayoutPanel.Name = "realBlockFlowLayoutPanel";
-            this.realBlockFlowLayoutPanel.Size = new System.Drawing.Size(189, 462);
+            this.realBlockFlowLayoutPanel.Size = new System.Drawing.Size(203, 446);
             this.realBlockFlowLayoutPanel.TabIndex = 0;
             // 
             // tabPage2
@@ -487,16 +487,16 @@ namespace AtoIndicator.View.EachStockHistory
             this.curHitNumLabel.TabIndex = 40;
             this.curHitNumLabel.Text = "히트 : 0";
             // 
-            // curPriceMoveLabel
+            // curPureTradePriceLabel
             // 
-            this.curPriceMoveLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.curPriceMoveLabel.AutoSize = true;
-            this.curPriceMoveLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.curPriceMoveLabel.Location = new System.Drawing.Point(765, 41);
-            this.curPriceMoveLabel.Name = "curPriceMoveLabel";
-            this.curPriceMoveLabel.Size = new System.Drawing.Size(50, 11);
-            this.curPriceMoveLabel.TabIndex = 41;
-            this.curPriceMoveLabel.Text = "무빙 : 0";
+            this.curPureTradePriceLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.curPureTradePriceLabel.AutoSize = true;
+            this.curPureTradePriceLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.curPureTradePriceLabel.Location = new System.Drawing.Point(765, 41);
+            this.curPureTradePriceLabel.Name = "curPureTradePriceLabel";
+            this.curPureTradePriceLabel.Size = new System.Drawing.Size(50, 11);
+            this.curPureTradePriceLabel.TabIndex = 41;
+            this.curPureTradePriceLabel.Text = "매수 : 0";
             // 
             // curTradePriceLabel
             // 
@@ -572,7 +572,7 @@ namespace AtoIndicator.View.EachStockHistory
             this.Controls.Add(this.isViLabel);
             this.Controls.Add(this.curCheckLineIdxLabel);
             this.Controls.Add(this.curTradePriceLabel);
-            this.Controls.Add(this.curPriceMoveLabel);
+            this.Controls.Add(this.curPureTradePriceLabel);
             this.Controls.Add(this.curHitNumLabel);
             this.Controls.Add(this.curHogaRatioLabel);
             this.Controls.Add(this.curSpeedLabel);
@@ -650,7 +650,7 @@ namespace AtoIndicator.View.EachStockHistory
         private System.Windows.Forms.Label curSpeedLabel;
         private System.Windows.Forms.Label curHogaRatioLabel;
         private System.Windows.Forms.Label curHitNumLabel;
-        private System.Windows.Forms.Label curPriceMoveLabel;
+        private System.Windows.Forms.Label curPureTradePriceLabel;
         private System.Windows.Forms.Label curTradePriceLabel;
         private System.Windows.Forms.Label curCheckLineIdxLabel;
         private System.Windows.Forms.Label isViLabel;

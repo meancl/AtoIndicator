@@ -1358,7 +1358,7 @@ namespace AtoIndicator.View.EachStockHistory
                         priceLabel.Text = $"현재가격 : ({curEa.nFs}, {curEa.nFb})";
                         powerLabel.Text = $"현재파워 : {Math.Round(curEa.fPower, 3)}";
                         curSpeedLabel.Text = $"속도 : {Math.Round(curEa.speedStatus.fCur, 2)}";
-                        curPriceMoveLabel.Text = $"무빙 : {Math.Round(curEa.priceMoveStatus.fCur, 2)}";
+                        curPureTradePriceLabel.Text = $"매수 : {Math.Round(curEa.pureTradeStatus.fCur, 2)}";
                         curTradePriceLabel.Text = $"대금 : {Math.Round(curEa.tradeStatus.fCur, 2)}";
                         curHogaRatioLabel.Text = $"호가비 : {Math.Round(curEa.hogaRatioStatus.fCur, 2)}";
                         curHitNumLabel.Text = $"히트 : {curEa.fakeStrategyMgr.nCurHitNum}";
