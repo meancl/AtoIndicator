@@ -141,6 +141,7 @@ namespace AtoIndicator.View
         }
 
         public bool isCtrlMode;
+        public bool isShiftMode;
 
         public void ListViewKeyUpHandller(object sender, KeyEventArgs k)
         {
@@ -150,7 +151,7 @@ namespace AtoIndicator.View
             {
                 int nEaIdxChosen = mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()];
 
-                if (!isCtrlMode)
+                if (!isCtrlMode && !isShiftMode)
                 {
                     if (cUp == 'Q')
                     {
@@ -171,14 +172,14 @@ namespace AtoIndicator.View
                     }
 
                 }
-                else
-                {
+                
+                
                     if (cUp == 191) // ?
                     {
                         mainForm.ea[nEaIdxChosen].manualReserve.ClearAll();
                         registerLabel.Text = $"{mainForm.ea[nEaIdxChosen].sCode} 전체예약 취소";
                     }
-                }
+                
             }
         }
 
@@ -192,6 +193,12 @@ namespace AtoIndicator.View
                 zzimLabel.Text = "ctrl on";
                 this.ActiveControl = this.passLenLabel;
             }
+            if (cDown == 16) // shift
+            {
+                isShiftMode = true;
+                zzimLabel.Text = "shift on";
+                this.ActiveControl = this.passLenLabel;
+            }
         }
         public void KeyUpHandler(object sender, KeyEventArgs k)
         {
@@ -202,9 +209,12 @@ namespace AtoIndicator.View
             if (cUp == 27) // esc or space
                 this.Close();
 
+
             if (cUp == 16) // shift
             {
-
+                isShiftMode = false;
+                zzimLabel.Text = "shift off";
+                this.ActiveControl = this.passLenLabel;
             }
 
             if (cUp == 17) // ctrl
@@ -439,6 +449,47 @@ namespace AtoIndicator.View
                     CheckReserve();
                     isRZ = true;
                     nRZNum = 7;
+                    ShowIndicator();
+                }
+            }
+            else if(isShiftMode)
+            {
+              
+                if (cUp == 'E')
+                {
+                    CheckReserve();
+                    isRZ = true;
+                    nRZNum = 10;
+                    ShowIndicator();
+                }
+
+                if (cUp == 'R')
+                {
+                    CheckReserve();
+                    isRZ = true;
+                    nRZNum = 11;
+                    ShowIndicator();
+                }
+
+                if (cUp == 'S')
+                {
+                    CheckReserve();
+                    isRZ = true;
+                    nRZNum = 12;
+                    ShowIndicator();
+                }
+                if (cUp == 'D')
+                {
+                    CheckReserve();
+                    isRZ = true;
+                    nRZNum = 13;
+                    ShowIndicator();
+                }
+                if (cUp == 'F')
+                {
+                    CheckReserve();
+                    isRZ = true;
+                    nRZNum = 14;
                     ShowIndicator();
                 }
             }
@@ -1466,11 +1517,23 @@ namespace AtoIndicator.View
                                 else if (nRZNum == 4)
                                     isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isChosen1;
                                 else if (nRZNum == 5)
-                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isSelected && SubTimeToTimeAndSec(mainForm.nSharedTime, mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].nSelectedTime) >= 300;
+                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isChosen1;
                                 else if (nRZNum == 6)
                                     isReserveShow = !mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen1 && mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen2;
                                 else if (nRZNum == 7)
                                     isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen1 && mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen2;
+
+                                else if (nRZNum == 10)
+                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isSelected;
+                                else if (nRZNum == 11)
+                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isSelected;
+                                else if (nRZNum == 12)
+                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isSelected;
+                                else if (nRZNum == 13)
+                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isSelected;
+                                else if (nRZNum == 14)
+                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isSelected;
+
                             }
                             else // 에러
                             {

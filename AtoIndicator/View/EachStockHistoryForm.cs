@@ -2793,27 +2793,52 @@ namespace AtoIndicator.View.EachStockHistory
                 UpdateMinuteHistoryData();
             }
 
-
-            if (cUp == 'Q') // q가 눌렸는데 실매수
+            if (isCtrlPushed)
             {
-                if (isSpacePushed) // 스페이도 눌린상태라면 
+                if (cUp == 'Q') // q가 눌렸는데 실매수
                 {
-                    ShowPaperBuy(); // 전략현황을 출력해주고
-                    isSpacePushed = false;
+                    mainForm.ea[nCurIdx].isChosen1 = true;
                 }
-                else // 아니라면
+
+                if (cUp == 'W') // 실매도
                 {
-                    isPaperBuyArrowVisible = !isPaperBuyArrowVisible;
-                    UpdateMinuteHistoryData(); // 단순 Q이기 때문에 updateMinuteHistory만 해주면 된다.
+                    mainForm.ea[nCurIdx].isChosen2 = true;
                 }
             }
-
-            if (cUp == 'W') // 실매도
+            else if(isShiftPushed)
             {
-                isPaperSellArrowVisible = !isPaperSellArrowVisible;
-                UpdateMinuteHistoryData();
-            }
+                if (cUp == 'Q') // q가 눌렸는데 실매수
+                {
+                    mainForm.ea[nCurIdx].isChosen1 = false;
+                }
 
+                if (cUp == 'W') // 실매도
+                {
+                    mainForm.ea[nCurIdx].isChosen2 = false;
+                }
+            }
+            else
+            {
+                if (cUp == 'Q') // q가 눌렸는데 실매수
+                {
+                    if (isSpacePushed) // 스페이도 눌린상태라면 
+                    {
+                        ShowPaperBuy(); // 전략현황을 출력해주고
+                        isSpacePushed = false;
+                    }
+                    else // 아니라면
+                    {
+                        isPaperBuyArrowVisible = !isPaperBuyArrowVisible;
+                        UpdateMinuteHistoryData(); // 단순 Q이기 때문에 updateMinuteHistory만 해주면 된다.
+                    }
+                }
+
+                if (cUp == 'W') // 실매도
+                {
+                    isPaperSellArrowVisible = !isPaperSellArrowVisible;
+                    UpdateMinuteHistoryData();
+                }
+            }
             if (cUp == 'E') // 페이크매수
             {
                 if (isSpacePushed) // 스페이도 눌린상태라면 
