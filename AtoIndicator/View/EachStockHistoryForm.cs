@@ -2793,52 +2793,26 @@ namespace AtoIndicator.View.EachStockHistory
                 UpdateMinuteHistoryData();
             }
 
-            if (isCtrlPushed)
+            if (cUp == 'Q') // q가 눌렸는데 실매수
             {
-                if (cUp == 'Q') // q가 눌렸는데 실매수
+                if (isSpacePushed) // 스페이도 눌린상태라면 
                 {
-                    mainForm.ea[nCurIdx].isChosen1 = true;
+                    ShowPaperBuy(); // 전략현황을 출력해주고
+                    isSpacePushed = false;
                 }
-
-                if (cUp == 'W') // 실매도
+                else // 아니라면
                 {
-                    mainForm.ea[nCurIdx].isChosen2 = true;
+                    isPaperBuyArrowVisible = !isPaperBuyArrowVisible;
+                    UpdateMinuteHistoryData(); // 단순 Q이기 때문에 updateMinuteHistory만 해주면 된다.
                 }
             }
-            else if(isShiftPushed)
-            {
-                if (cUp == 'Q') // q가 눌렸는데 실매수
-                {
-                    mainForm.ea[nCurIdx].isChosen1 = false;
-                }
 
-                if (cUp == 'W') // 실매도
-                {
-                    mainForm.ea[nCurIdx].isChosen2 = false;
-                }
-            }
-            else
+            if (cUp == 'W') // 실매도
             {
-                if (cUp == 'Q') // q가 눌렸는데 실매수
-                {
-                    if (isSpacePushed) // 스페이도 눌린상태라면 
-                    {
-                        ShowPaperBuy(); // 전략현황을 출력해주고
-                        isSpacePushed = false;
-                    }
-                    else // 아니라면
-                    {
-                        isPaperBuyArrowVisible = !isPaperBuyArrowVisible;
-                        UpdateMinuteHistoryData(); // 단순 Q이기 때문에 updateMinuteHistory만 해주면 된다.
-                    }
-                }
-
-                if (cUp == 'W') // 실매도
-                {
-                    isPaperSellArrowVisible = !isPaperSellArrowVisible;
-                    UpdateMinuteHistoryData();
-                }
+                isPaperSellArrowVisible = !isPaperSellArrowVisible;
+                UpdateMinuteHistoryData();
             }
+
             if (cUp == 'E') // 페이크매수
             {
                 if (isSpacePushed) // 스페이도 눌린상태라면 
@@ -3241,7 +3215,7 @@ namespace AtoIndicator.View.EachStockHistory
 
         #endregion
 
-        public void ClearBuyMode(bool wheelInit=true)
+        public void ClearBuyMode(bool wheelInit = true)
         {
             eBuyMode = TRADE_MODE.NONE_MODE;
             buyModeLabel.Text = $"buy : {eBuyMode}";
@@ -3496,10 +3470,10 @@ namespace AtoIndicator.View.EachStockHistory
         }
 
         // 
-       
-       
 
-        
+
+
+
 
         public void SetCurGraphics()
         {

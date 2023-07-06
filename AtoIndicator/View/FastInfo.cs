@@ -141,7 +141,9 @@ namespace AtoIndicator.View
         }
 
         public bool isCtrlMode;
-        public bool isShiftMode;
+        public int nQWSharedNum = 0;
+        public int nQWNum1 = 0;
+        public int nQWNum2 = 0;
 
         public void ListViewKeyUpHandller(object sender, KeyEventArgs k)
         {
@@ -151,24 +153,38 @@ namespace AtoIndicator.View
             {
                 int nEaIdxChosen = mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()];
 
-                if (!isCtrlMode && !isShiftMode)
+                if (!isCtrlMode)
                 {
                     if (cUp == 'Q')
                     {
-                        mainForm.ea[nEaIdxChosen].isChosen1 = !mainForm.ea[nEaIdxChosen].isChosen1;
-                        if (mainForm.ea[nEaIdxChosen].isChosen1)
-                            registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} Q창 등록됨";
+                        if (nQWNum1 == nQWSharedNum)
+                        {
+                            nQWNum1 = ++nQWSharedNum;
+
+                            mainForm.ea[nEaIdxChosen].isChosen1 = !mainForm.ea[nEaIdxChosen].isChosen1;
+                            if (mainForm.ea[nEaIdxChosen].isChosen1)
+                                registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} Q창 등록됨";
+                            else
+                                registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} Q창 등록해제됨";
+                        }
                         else
-                            registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} Q창 등록해제됨";
+                            nQWNum1 = nQWSharedNum;
                     }
 
                     if (cUp == 'W')
                     {
-                        mainForm.ea[nEaIdxChosen].isChosen2 = !mainForm.ea[nEaIdxChosen].isChosen2;
-                        if (mainForm.ea[nEaIdxChosen].isChosen2)
-                            registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} W창 등록됨";
+                        if (nQWNum1 == nQWSharedNum)
+                        {
+                            nQWNum1 = ++nQWSharedNum;
+
+                            mainForm.ea[nEaIdxChosen].isChosen2 = !mainForm.ea[nEaIdxChosen].isChosen2;
+                            if (mainForm.ea[nEaIdxChosen].isChosen2)
+                                registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} W창 등록됨";
+                            else
+                                registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} W창 등록해제됨";
+                        }
                         else
-                            registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} W창 등록해제됨";
+                            nQWNum1 = nQWSharedNum;
                     }
 
                 }
@@ -195,9 +211,6 @@ namespace AtoIndicator.View
             }
             if (cDown == 16) // shift
             {
-                isShiftMode = true;
-                zzimLabel.Text = "shift on";
-                this.ActiveControl = this.passLenLabel;
             }
         }
         public void KeyUpHandler(object sender, KeyEventArgs k)
@@ -212,9 +225,6 @@ namespace AtoIndicator.View
 
             if (cUp == 16) // shift
             {
-                isShiftMode = false;
-                zzimLabel.Text = "shift off";
-                this.ActiveControl = this.passLenLabel;
             }
 
             if (cUp == 17) // ctrl
@@ -452,48 +462,40 @@ namespace AtoIndicator.View
                     ShowIndicator();
                 }
             }
-            else if(isShiftMode)
+            else
             {
-              
-                if (cUp == 'E')
+                if (cUp == 'Q')
                 {
-                    CheckReserve();
-                    isRZ = true;
-                    nRZNum = 10;
-                    ShowIndicator();
+                    if (nQWNum2 == nQWSharedNum)
+                    {
+                        nQWNum2 = ++nQWSharedNum;
+
+                        mainForm.ea[nPrevEaIdx].isChosen1 = !mainForm.ea[nPrevEaIdx].isChosen1;
+                        if (mainForm.ea[nPrevEaIdx].isChosen1)
+                            registerLabel.Text = $"{ mainForm.ea[nPrevEaIdx].sCode} Q창 등록됨";
+                        else
+                            registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} Q창 등록해제됨";
+                    }
+                    else
+                        nQWNum2 = nQWSharedNum;
                 }
 
-                if (cUp == 'R')
+                if (cUp == 'W')
                 {
-                    CheckReserve();
-                    isRZ = true;
-                    nRZNum = 11;
-                    ShowIndicator();
-                }
+                    if (nQWNum2 == nQWSharedNum)
+                    {
+                        nQWNum2 = ++nQWSharedNum;
 
-                if (cUp == 'S')
-                {
-                    CheckReserve();
-                    isRZ = true;
-                    nRZNum = 12;
-                    ShowIndicator();
+                        mainForm.ea[nPrevEaIdx].isChosen2 = !mainForm.ea[nPrevEaIdx].isChosen2;
+                        if (mainForm.ea[nPrevEaIdx].isChosen2)
+                            registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} W창 등록됨";
+                        else
+                            registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} W창 등록해제됨";
+                    }
+                    else
+                        nQWNum2 = nQWSharedNum;
                 }
-                if (cUp == 'D')
-                {
-                    CheckReserve();
-                    isRZ = true;
-                    nRZNum = 13;
-                    ShowIndicator();
-                }
-                if (cUp == 'F')
-                {
-                    CheckReserve();
-                    isRZ = true;
-                    nRZNum = 14;
-                    ShowIndicator();
-                }
-            }
-
+            }    
 
         }
 
@@ -1513,25 +1515,14 @@ namespace AtoIndicator.View
                                 else if (nRZNum == 2)
                                     isReserveShow = mainForm.ea[i].isChosen2;
                                 else if (nRZNum == 3)
-                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isChosen1;
-                                else if (nRZNum == 4)
-                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isChosen1;
-                                else if (nRZNum == 5)
-                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isChosen1;
-                                else if (nRZNum == 6)
-                                    isReserveShow = !mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen1 && mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen2;
-                                else if (nRZNum == 7)
-                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen1 && mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen2;
-
-                                else if (nRZNum == 10)
                                     isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isSelected;
-                                else if (nRZNum == 11)
+                                else if (nRZNum == 4)
                                     isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isSelected;
-                                else if (nRZNum == 12)
+                                else if (nRZNum == 5)
                                     isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isSelected;
-                                else if (nRZNum == 13)
+                                else if (nRZNum == 6)
                                     isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isSelected;
-                                else if (nRZNum == 14)
+                                else if (nRZNum == 7)
                                     isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isSelected;
 
                             }
@@ -1792,28 +1783,31 @@ namespace AtoIndicator.View
         // 마지막 편집일 : 2023-04-20
         // 1. 행을 더블클릭하면 해당 종목의 차트뷰 폼을 콜한다.
         // =======================================
+        public int nPrevEaIdx = 0;
         public void RowDoubleClickHandler(Object sender, MouseEventArgs e)
         {
 
             try
             {
                 if (listView1.FocusedItem != null)
-                    CallThreadEachStockHistoryForm(mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()]);
+                {
+                    nPrevEaIdx = mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()];
+                    CallThreadEachStockHistoryForm(nPrevEaIdx);
+                }
             }
             catch { }
 
         }
 
-        public int nChosenStockCode = -1;
         public void MouseClickHandler(Object sender, EventArgs e)
         {
             if (listView1.FocusedItem != null)
             {
                 try
                 {
-                    nChosenStockCode = mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()];
+                    nPrevEaIdx = mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()];
                     if (timerCheckBox.Checked)
-                        CallThreadEachStockHistoryForm(mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()]);
+                        CallThreadEachStockHistoryForm(nPrevEaIdx);
                 }
                 catch
                 {
