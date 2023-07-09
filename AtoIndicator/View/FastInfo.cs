@@ -70,7 +70,6 @@ namespace AtoIndicator.View
             listView1.KeyUp += ListViewKeyUpHandller;
 
 
-
             this.KeyPreview = true;
             this.KeyUp += KeyUpHandler;
             this.KeyDown += KeyDownHandler;
@@ -140,6 +139,7 @@ namespace AtoIndicator.View
             this.Dispose();
         }
 
+
         public bool isCtrlMode;
         public int nQWSharedNum = 0;
         public int nQWNum1 = 0;
@@ -151,51 +151,59 @@ namespace AtoIndicator.View
 
             if (listView1.FocusedItem != null)
             {
-                int nEaIdxChosen = mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()];
-
-                if (!isCtrlMode)
+                if (k.KeyCode == Keys.Up || k.KeyCode == Keys.Down)
                 {
-                    if (cUp == 'Q')
-                    {
-                        if (nQWNum1 == nQWSharedNum)
-                        {
-                            nQWNum1 = ++nQWSharedNum;
-
-                            mainForm.ea[nEaIdxChosen].isChosen1 = !mainForm.ea[nEaIdxChosen].isChosen1;
-                            if (mainForm.ea[nEaIdxChosen].isChosen1)
-                                registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} Q창 등록됨";
-                            else
-                                registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} Q창 등록해제됨";
-                        }
-                        else
-                            nQWNum1 = nQWSharedNum;
-                    }
-
-                    if (cUp == 'W')
-                    {
-                        if (nQWNum1 == nQWSharedNum)
-                        {
-                            nQWNum1 = ++nQWSharedNum;
-
-                            mainForm.ea[nEaIdxChosen].isChosen2 = !mainForm.ea[nEaIdxChosen].isChosen2;
-                            if (mainForm.ea[nEaIdxChosen].isChosen2)
-                                registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} W창 등록됨";
-                            else
-                                registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} W창 등록해제됨";
-                        }
-                        else
-                            nQWNum1 = nQWSharedNum;
-                    }
-
+                    nPrevEaIdx = mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()];
                 }
-                
-                
+                else
+                {
+                    nPrevEaIdx = mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()];
+
+                    if (!isCtrlMode)
+                    {
+                        if (cUp == 'Q')
+                        {
+                            if (nQWNum1 == nQWSharedNum)
+                            {
+                                nQWNum1 = ++nQWSharedNum;
+
+                                mainForm.ea[nPrevEaIdx].isChosen1 = !mainForm.ea[nPrevEaIdx].isChosen1;
+                                if (mainForm.ea[nPrevEaIdx].isChosen1)
+                                    registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} Q창 등록됨";
+                                else
+                                    registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} Q창 등록해제됨";
+                            }
+                            else
+                                nQWNum1 = nQWSharedNum;
+                        }
+
+                        if (cUp == 'W')
+                        {
+                            if (nQWNum1 == nQWSharedNum)
+                            {
+                                nQWNum1 = ++nQWSharedNum;
+
+                                mainForm.ea[nPrevEaIdx].isChosen2 = !mainForm.ea[nPrevEaIdx].isChosen2;
+                                if (mainForm.ea[nPrevEaIdx].isChosen2)
+                                    registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} W창 등록됨";
+                                else
+                                    registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} W창 등록해제됨";
+                            }
+                            else
+                                nQWNum1 = nQWSharedNum;
+                        }
+
+                    }
+
+
                     if (cUp == 191) // ?
                     {
-                        mainForm.ea[nEaIdxChosen].manualReserve.ClearAll();
-                        registerLabel.Text = $"{mainForm.ea[nEaIdxChosen].sCode} 전체예약 취소";
+                        mainForm.ea[nPrevEaIdx].manualReserve.ClearAll();
+                        registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} 전체예약 취소";
                     }
-                
+
+
+                }
             }
         }
 
@@ -234,7 +242,7 @@ namespace AtoIndicator.View
                 this.ActiveControl = this.passLenLabel;
             }
 
-            if(cUp =='T')
+            if (cUp == 'T')
             {
                 timerCheckBox.Checked = !timerCheckBox.Checked;
                 if (timerCheckBox.Checked == false)
@@ -407,7 +415,7 @@ namespace AtoIndicator.View
                     timer.Enabled = false;
                     ShowIndicator();
                 }
-                
+
                 if (cUp == 'Q')
                 {
                     CheckReserve();
@@ -495,7 +503,7 @@ namespace AtoIndicator.View
                     else
                         nQWNum2 = nQWSharedNum;
                 }
-            }    
+            }
 
         }
 
@@ -1617,7 +1625,7 @@ namespace AtoIndicator.View
                                         (mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen1 && restIdx == 15) ||
                                         (mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen2 && restIdx == 16))
                                     listViewItem.SubItems[restIdx].BackColor = Color.Purple;
-                                else if (restIdx == 4 &&   (mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isBuyReserved ||
+                                else if (restIdx == 4 && (mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isBuyReserved ||
                                                             mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isBuyReserved ||
                                                             mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isBuyReserved ||
                                                             mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isBuyReserved))
@@ -1801,19 +1809,20 @@ namespace AtoIndicator.View
 
         public void MouseClickHandler(Object sender, EventArgs e)
         {
-            if (listView1.FocusedItem != null)
+            try
             {
-                try
+                if (listView1.FocusedItem != null)
                 {
                     nPrevEaIdx = mainForm.eachStockDict[listView1.FocusedItem.SubItems[0].Text.Trim()];
                     if (timerCheckBox.Checked)
                         CallThreadEachStockHistoryForm(nPrevEaIdx);
                 }
-                catch
-                {
-
-                }
             }
+            catch
+            {
+
+            }
+
         }
 
 

@@ -221,4 +221,4 @@ C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\AtoIndicator.Vi
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\LdaNative.dll
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\CpuMathNative.dll
 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\bin\x86\Debug\onnxruntime.dll
-C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\ProjectAto.csproj.AssemblyReference.cache
+C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\obj\x86\Debug\ProjectAto.csprojAssemblyReference.cache
