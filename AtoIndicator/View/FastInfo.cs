@@ -103,14 +103,14 @@ namespace AtoIndicator.View
 
             tooltip1.SetToolTip(reserve1Btn, "vi모드");
             tooltip2.SetToolTip(reserve2Btn, "현재 1퍼");
-            tooltip3.SetToolTip(reserve3Btn, "파워자 1퍼");
+            tooltip3.SetToolTip(reserve3Btn, "페이크매수갯수 10 W지정 No");
             tooltip4.SetToolTip(reserve4Btn, "페이크매수분포2 페이크갯수 50 맥스파워 0.1");
 
 
             tooltip7.SetToolTip(write1Btn, "실매수 10 실매수분포 2 공유분포 5");
             tooltip8.SetToolTip(write2Btn, "실매수분포 2 페이크매수분포3 공유분포 5");
             tooltip9.SetToolTip(write3Btn, "페이크매수분포2 페이크갯수 50 맥스파워 0.1");
-            tooltip10.SetToolTip(write4Btn, "페이크 매수 30 ");
+            tooltip10.SetToolTip(write4Btn, "페이크 매수 30");
             tooltip11.SetToolTip(write5Btn, "AI 점수 10점");
 
             this.FormClosed += FormClosedHandler;
@@ -167,8 +167,8 @@ namespace AtoIndicator.View
                             {
                                 nQWNum1 = ++nQWSharedNum;
 
-                                mainForm.ea[nPrevEaIdx].isChosen1 = !mainForm.ea[nPrevEaIdx].isChosen1;
-                                if (mainForm.ea[nPrevEaIdx].isChosen1)
+                                mainForm.ea[nPrevEaIdx].manualReserve.isChosenQ = !mainForm.ea[nPrevEaIdx].manualReserve.isChosenQ;
+                                if (mainForm.ea[nPrevEaIdx].manualReserve.isChosenQ)
                                     registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} Q창 등록됨";
                                 else
                                     registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} Q창 등록해제됨";
@@ -183,8 +183,8 @@ namespace AtoIndicator.View
                             {
                                 nQWNum1 = ++nQWSharedNum;
 
-                                mainForm.ea[nPrevEaIdx].isChosen2 = !mainForm.ea[nPrevEaIdx].isChosen2;
-                                if (mainForm.ea[nPrevEaIdx].isChosen2)
+                                mainForm.ea[nPrevEaIdx].manualReserve.isChosenW = !mainForm.ea[nPrevEaIdx].manualReserve.isChosenW;
+                                if (mainForm.ea[nPrevEaIdx].manualReserve.isChosenW)
                                     registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} W창 등록됨";
                                 else
                                     registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} W창 등록해제됨";
@@ -478,8 +478,8 @@ namespace AtoIndicator.View
                     {
                         nQWNum2 = ++nQWSharedNum;
 
-                        mainForm.ea[nPrevEaIdx].isChosen1 = !mainForm.ea[nPrevEaIdx].isChosen1;
-                        if (mainForm.ea[nPrevEaIdx].isChosen1)
+                        mainForm.ea[nPrevEaIdx].manualReserve.isChosenQ = !mainForm.ea[nPrevEaIdx].manualReserve.isChosenQ;
+                        if (mainForm.ea[nPrevEaIdx].manualReserve.isChosenQ)
                             registerLabel.Text = $"{ mainForm.ea[nPrevEaIdx].sCode} Q창 등록됨";
                         else
                             registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} Q창 등록해제됨";
@@ -494,8 +494,8 @@ namespace AtoIndicator.View
                     {
                         nQWNum2 = ++nQWSharedNum;
 
-                        mainForm.ea[nPrevEaIdx].isChosen2 = !mainForm.ea[nPrevEaIdx].isChosen2;
-                        if (mainForm.ea[nPrevEaIdx].isChosen2)
+                        mainForm.ea[nPrevEaIdx].manualReserve.isChosenW = !mainForm.ea[nPrevEaIdx].manualReserve.isChosenW;
+                        if (mainForm.ea[nPrevEaIdx].manualReserve.isChosenW)
                             registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} W창 등록됨";
                         else
                             registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} W창 등록해제됨";
@@ -1508,7 +1508,7 @@ namespace AtoIndicator.View
                             }
                             else if (isR3) // r3 조건
                             {
-                                isReserveShow = mainForm.ea[i].fPowerJar > 0.01;
+                                isReserveShow = mainForm.ea[i].fakeBuyStrategy.nStrategyNum >= 10 && !mainForm.ea[i].manualReserve.isChosenW;
                             }
                             else if (isR4) // r4 조건
                             {
@@ -1519,9 +1519,9 @@ namespace AtoIndicator.View
                             else if (isRZ)
                             {
                                 if (nRZNum == 1)
-                                    isReserveShow = mainForm.ea[i].isChosen1;
+                                    isReserveShow = mainForm.ea[i].manualReserve.isChosenQ;
                                 else if (nRZNum == 2)
-                                    isReserveShow = mainForm.ea[i].isChosen2;
+                                    isReserveShow = mainForm.ea[i].manualReserve.isChosenW;
                                 else if (nRZNum == 3)
                                     isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isSelected;
                                 else if (nRZNum == 4)
@@ -1604,9 +1604,9 @@ namespace AtoIndicator.View
 
                             for (int restIdx = 0; restIdx < listViewItem.SubItems.Count; restIdx++)
                             {
-                                if (mainForm.ea[i].isChosen1 && (restIdx == 0 || restIdx == 1))
+                                if (mainForm.ea[i].manualReserve.isChosenQ && (restIdx == 0 || restIdx == 1))
                                     listViewItem.SubItems[restIdx].BackColor = Color.Green;
-                                else if (mainForm.ea[i].isChosen2 && (restIdx == 2 || restIdx == 3))
+                                else if (mainForm.ea[i].manualReserve.isChosenW && (restIdx == 2 || restIdx == 3))
                                     listViewItem.SubItems[restIdx].BackColor = Color.Orange;
                                 else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isSelected && restIdx == 5) ||
                                         (mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isChosen1 && restIdx == 6))

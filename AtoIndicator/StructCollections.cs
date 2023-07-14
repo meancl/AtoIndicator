@@ -13,10 +13,6 @@ namespace AtoIndicator
         // ============================================
         public struct EachStock
         {
-
-            public bool isChosen1;
-            public bool isChosen2;
-
             public ManualReservation manualReserve;
 
 
@@ -945,6 +941,10 @@ namespace AtoIndicator
         }
         public class ManualReservation
         {
+            public bool isChosenQ;
+            public bool isChosenW;
+
+
             public ReservationPoint[] reserveArr;
             public int nCurReserve;
 
@@ -2055,7 +2055,7 @@ namespace AtoIndicator
                     arrFakeBuyStrategyName.Add("분당 매수대금 10억이상 .. 1분제한");
                     arrFakeBuyStrategyName.Add("분당 매수대금 20억이상 .. 1분제한");
                     arrFakeBuyStrategyName.Add("분당 매수대금 10억이상 4번 .. 리사이클");
-                    arrFakeBuyStrategyName.Add("분당 거래대금 30억이상 매수 > 매도 3번 .. 리사이클");
+                    arrFakeBuyStrategyName.Add("분당 매수대금 30억이상 3번 .. 리사이클");
                     arrFakeBuyStrategyName.Add("분당 매수대금 15억이상 3번 .. 리사이클");
                     arrFakeBuyStrategyName.Add("분당 매수대금 20억이상 3번 .. 리사이클");
                     arrFakeBuyStrategyName.Add("분당 매수대금 10억이상 5번 .. 리사이클");
