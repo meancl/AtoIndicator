@@ -36,6 +36,9 @@ namespace AtoIndicator.View
             listView1.Columns.Add(new ColumnHeader { Name = sString, Text = "RV" });
             listView1.Columns.Add(new ColumnHeader { Name = sString, Text = "VI" });
 
+            listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "이전분봉" });
+            listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "현재분봉" });
+
             listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "호가차이" });
             listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "체결속도" });
             listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "호가비" });
@@ -46,7 +49,6 @@ namespace AtoIndicator.View
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "히트종류" });
 
             listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "매수정도" });
-            listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "현재봉" });
 
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "실매수" });
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "페매수" });
@@ -554,7 +556,7 @@ namespace AtoIndicator.View
 
 
 
-                
+
 
                 string sTF1 = "";
                 string sTF2 = "";
@@ -1549,12 +1551,13 @@ namespace AtoIndicator.View
                                 mainForm.ea[i].sCodeName,
                                 Math.Round(mainForm.ea[i].fPower, 3).ToString(),
                                 Math.Round(mainForm.ea[i].fStartGap, 3).ToString(),
-
                                 "", // 매수예약
                                 mainForm.ea[i].isViMode.ToString(),
 
-                                Math.Abs(Math.Round((double)(mainForm.ea[i].nTotalSellHogaVolume - mainForm.ea[i].nTotalBuyHogaVolume)  * mainForm.ea[i].nCurHogaPrice / MainForm.HUNDRED_MILLION, 2)).ToString(),
+                                Math.Round((double)(mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nRealDataIdx].nLastFs - mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nRealDataIdx].nStartFs) / mainForm.ea[i].nYesterdayEndPrice, 3).ToString(),
+                                Math.Round((double)(mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nPrevTimeLineIdx].nLastFs - mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nPrevTimeLineIdx].nStartFs) / mainForm.ea[i].nYesterdayEndPrice, 3).ToString(),
 
+                                Math.Abs(Math.Round((double)(mainForm.ea[i].nTotalSellHogaVolume - mainForm.ea[i].nTotalBuyHogaVolume)  * mainForm.ea[i].nCurHogaPrice / MainForm.HUNDRED_MILLION, 2)).ToString(),
                                 Math.Round(mainForm.ea[i].speedStatus.fCur, 2).ToString(),
                                 Math.Round(mainForm.ea[i].fHogaRatio, 2).ToString(),
                                 Math.Round(mainForm.ea[i].priceMoveStatus.fCur, 2).ToString(),
@@ -1563,8 +1566,6 @@ namespace AtoIndicator.View
                                 mainForm.ea[i].fakeStrategyMgr.nCurHitType.ToString(),
 
                                 Math.Round(mainForm.ea[i].pureTradeStatus.fCur , 2).ToString(),
-                                Math.Round((double)(mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nPrevTimeLineIdx].nLastFs - mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nPrevTimeLineIdx].nStartFs) / mainForm.ea[i].nYesterdayEndPrice, 3).ToString(),
-
 
                                 mainForm.ea[i].paperBuyStrategy.nStrategyNum.ToString(),
                                 mainForm.ea[i].fakeBuyStrategy.nStrategyNum.ToString(),
