@@ -378,7 +378,7 @@
             // 
             this.라스트업데이트ToolStripMenuItem.Name = "라스트업데이트ToolStripMenuItem";
             this.라스트업데이트ToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
-            this.라스트업데이트ToolStripMenuItem.Text = "Latest Updated : 2023-07-14";
+            this.라스트업데이트ToolStripMenuItem.Text = "Latest Updated : 2023-07-18";
             // 
             // logTxtBx
             // 

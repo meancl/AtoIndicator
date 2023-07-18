@@ -554,6 +554,7 @@ namespace AtoIndicator.View
 
 
 
+                
 
                 string sTF1 = "";
                 string sTF2 = "";
@@ -1668,9 +1669,23 @@ namespace AtoIndicator.View
                         }
                         else
                         {
-                            if (!timer.Enabled)
-                                timer.Interval = 350 < (endTime - startTime).TotalMilliseconds ? (endTime - startTime).TotalMilliseconds : 350;
+                            double fTimerInterval;
+                            try
+                            {
+                                fTimerInterval = double.Parse(tTimerTxtBox.Text);
+                                if (fTimerInterval <= 0)
+                                    fTimerInterval = 0.35;
+                            }
+                            catch
+                            {
+                                fTimerInterval = 0.35;
+                            }
 
+                            if (fTimerInterval < 0.3) // 300ms로 스피드 하한 설정
+                                fTimerInterval = 0.3;
+
+
+                            timer.Interval = fTimerInterval * 1000;
                             timer.Enabled = true;
                             timerCheckBox.Checked = true;
                         }
