@@ -38,6 +38,7 @@ namespace AtoIndicator.View
             this.passNumTxtBox = new System.Windows.Forms.TextBox();
             this.passLenLabel = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.tTimerTxtBox = new System.Windows.Forms.TextBox();
             this.tRPD2 = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.tRPD1 = new System.Windows.Forms.TextBox();
@@ -273,7 +274,15 @@ namespace AtoIndicator.View
             this.tTF2 = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.tTF1 = new System.Windows.Forms.TextBox();
-            this.tTimerTxtBox = new System.Windows.Forms.TextBox();
+            this.qCheckBox = new System.Windows.Forms.CheckBox();
+            this.wCheckBox = new System.Windows.Forms.CheckBox();
+            this.eCheckBox = new System.Windows.Forms.CheckBox();
+            this.tFABNum2 = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.tFABNum1 = new System.Windows.Forms.TextBox();
+            this.tFABPlusNum2 = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.tFABPlusNum1 = new System.Windows.Forms.TextBox();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -282,9 +291,9 @@ namespace AtoIndicator.View
             // 
             this.groupBox2.Controls.Add(this.listView1);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(414, 0);
+            this.groupBox2.Location = new System.Drawing.Point(411, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1086, 828);
+            this.groupBox2.Size = new System.Drawing.Size(1089, 828);
             this.groupBox2.TabIndex = 20;
             this.groupBox2.TabStop = false;
             // 
@@ -295,7 +304,7 @@ namespace AtoIndicator.View
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(3, 17);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(1080, 808);
+            this.listView1.Size = new System.Drawing.Size(1083, 808);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             // 
@@ -344,6 +353,15 @@ namespace AtoIndicator.View
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.tFABPlusNum2);
+            this.groupBox1.Controls.Add(this.label12);
+            this.groupBox1.Controls.Add(this.tFABPlusNum1);
+            this.groupBox1.Controls.Add(this.tFABNum2);
+            this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.tFABNum1);
+            this.groupBox1.Controls.Add(this.eCheckBox);
+            this.groupBox1.Controls.Add(this.wCheckBox);
+            this.groupBox1.Controls.Add(this.qCheckBox);
             this.groupBox1.Controls.Add(this.tTimerTxtBox);
             this.groupBox1.Controls.Add(this.tRPD2);
             this.groupBox1.Controls.Add(this.label4);
@@ -588,9 +606,16 @@ namespace AtoIndicator.View
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Left;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(414, 828);
+            this.groupBox1.Size = new System.Drawing.Size(411, 828);
             this.groupBox1.TabIndex = 19;
             this.groupBox1.TabStop = false;
+            // 
+            // tTimerTxtBox
+            // 
+            this.tTimerTxtBox.Location = new System.Drawing.Point(31, 51);
+            this.tTimerTxtBox.Name = "tTimerTxtBox";
+            this.tTimerTxtBox.Size = new System.Drawing.Size(39, 21);
+            this.tTimerTxtBox.TabIndex = 523;
             // 
             // tRPD2
             // 
@@ -691,7 +716,7 @@ namespace AtoIndicator.View
             // 
             // tCURFC2
             // 
-            this.tCURFC2.Location = new System.Drawing.Point(350, 668);
+            this.tCURFC2.Location = new System.Drawing.Point(350, 697);
             this.tCURFC2.Name = "tCURFC2";
             this.tCURFC2.Size = new System.Drawing.Size(48, 21);
             this.tCURFC2.TabIndex = 510;
@@ -699,7 +724,7 @@ namespace AtoIndicator.View
             // label67
             // 
             this.label67.AutoSize = true;
-            this.label67.Location = new System.Drawing.Point(192, 671);
+            this.label67.Location = new System.Drawing.Point(192, 700);
             this.label67.Name = "label67";
             this.label67.Size = new System.Drawing.Size(144, 12);
             this.label67.TabIndex = 508;
@@ -707,14 +732,14 @@ namespace AtoIndicator.View
             // 
             // tCURFC1
             // 
-            this.tCURFC1.Location = new System.Drawing.Point(128, 666);
+            this.tCURFC1.Location = new System.Drawing.Point(128, 695);
             this.tCURFC1.Name = "tCURFC1";
             this.tCURFC1.Size = new System.Drawing.Size(48, 21);
             this.tCURFC1.TabIndex = 509;
             // 
             // tCURFT2
             // 
-            this.tCURFT2.Location = new System.Drawing.Point(350, 631);
+            this.tCURFT2.Location = new System.Drawing.Point(350, 660);
             this.tCURFT2.Name = "tCURFT2";
             this.tCURFT2.Size = new System.Drawing.Size(48, 21);
             this.tCURFT2.TabIndex = 507;
@@ -722,7 +747,7 @@ namespace AtoIndicator.View
             // label68
             // 
             this.label68.AutoSize = true;
-            this.label68.Location = new System.Drawing.Point(192, 634);
+            this.label68.Location = new System.Drawing.Point(192, 663);
             this.label68.Name = "label68";
             this.label68.Size = new System.Drawing.Size(128, 12);
             this.label68.TabIndex = 505;
@@ -730,7 +755,7 @@ namespace AtoIndicator.View
             // 
             // tCURFT1
             // 
-            this.tCURFT1.Location = new System.Drawing.Point(128, 630);
+            this.tCURFT1.Location = new System.Drawing.Point(128, 659);
             this.tCURFT1.Name = "tCURFT1";
             this.tCURFT1.Size = new System.Drawing.Size(48, 21);
             this.tCURFT1.TabIndex = 506;
@@ -806,7 +831,7 @@ namespace AtoIndicator.View
             // 
             // tSFD2
             // 
-            this.tSFD2.Location = new System.Drawing.Point(326, 413);
+            this.tSFD2.Location = new System.Drawing.Point(326, 442);
             this.tSFD2.Name = "tSFD2";
             this.tSFD2.Size = new System.Drawing.Size(48, 21);
             this.tSFD2.TabIndex = 494;
@@ -814,7 +839,7 @@ namespace AtoIndicator.View
             // label62
             // 
             this.label62.AutoSize = true;
-            this.label62.Location = new System.Drawing.Point(196, 417);
+            this.label62.Location = new System.Drawing.Point(196, 446);
             this.label62.Name = "label62";
             this.label62.Size = new System.Drawing.Size(101, 12);
             this.label62.TabIndex = 492;
@@ -822,7 +847,7 @@ namespace AtoIndicator.View
             // 
             // tSFD1
             // 
-            this.tSFD1.Location = new System.Drawing.Point(132, 412);
+            this.tSFD1.Location = new System.Drawing.Point(132, 441);
             this.tSFD1.Name = "tSFD1";
             this.tSFD1.Size = new System.Drawing.Size(48, 21);
             this.tSFD1.TabIndex = 493;
@@ -852,7 +877,7 @@ namespace AtoIndicator.View
             // 
             // tPDA2
             // 
-            this.tPDA2.Location = new System.Drawing.Point(338, 383);
+            this.tPDA2.Location = new System.Drawing.Point(338, 412);
             this.tPDA2.Name = "tPDA2";
             this.tPDA2.Size = new System.Drawing.Size(48, 21);
             this.tPDA2.TabIndex = 488;
@@ -860,7 +885,7 @@ namespace AtoIndicator.View
             // label59
             // 
             this.label59.AutoSize = true;
-            this.label59.Location = new System.Drawing.Point(195, 386);
+            this.label59.Location = new System.Drawing.Point(195, 415);
             this.label59.Name = "label59";
             this.label59.Size = new System.Drawing.Size(129, 12);
             this.label59.TabIndex = 486;
@@ -868,7 +893,7 @@ namespace AtoIndicator.View
             // 
             // tPDA1
             // 
-            this.tPDA1.Location = new System.Drawing.Point(131, 380);
+            this.tPDA1.Location = new System.Drawing.Point(131, 409);
             this.tPDA1.Name = "tPDA1";
             this.tPDA1.Size = new System.Drawing.Size(48, 21);
             this.tPDA1.TabIndex = 487;
@@ -898,7 +923,7 @@ namespace AtoIndicator.View
             // 
             // tPUA2
             // 
-            this.tPUA2.Location = new System.Drawing.Point(325, 351);
+            this.tPUA2.Location = new System.Drawing.Point(325, 380);
             this.tPUA2.Name = "tPUA2";
             this.tPUA2.Size = new System.Drawing.Size(48, 21);
             this.tPUA2.TabIndex = 482;
@@ -906,7 +931,7 @@ namespace AtoIndicator.View
             // label61
             // 
             this.label61.AutoSize = true;
-            this.label61.Location = new System.Drawing.Point(195, 356);
+            this.label61.Location = new System.Drawing.Point(195, 385);
             this.label61.Name = "label61";
             this.label61.Size = new System.Drawing.Size(117, 12);
             this.label61.TabIndex = 480;
@@ -914,7 +939,7 @@ namespace AtoIndicator.View
             // 
             // tPUA1
             // 
-            this.tPUA1.Location = new System.Drawing.Point(131, 351);
+            this.tPUA1.Location = new System.Drawing.Point(131, 380);
             this.tPUA1.Name = "tPUA1";
             this.tPUA1.Size = new System.Drawing.Size(48, 21);
             this.tPUA1.TabIndex = 481;
@@ -944,7 +969,7 @@ namespace AtoIndicator.View
             // 
             // tFRA2
             // 
-            this.tFRA2.Location = new System.Drawing.Point(325, 317);
+            this.tFRA2.Location = new System.Drawing.Point(325, 346);
             this.tFRA2.Name = "tFRA2";
             this.tFRA2.Size = new System.Drawing.Size(48, 21);
             this.tFRA2.TabIndex = 476;
@@ -952,7 +977,7 @@ namespace AtoIndicator.View
             // label57
             // 
             this.label57.AutoSize = true;
-            this.label57.Location = new System.Drawing.Point(195, 322);
+            this.label57.Location = new System.Drawing.Point(195, 351);
             this.label57.Name = "label57";
             this.label57.Size = new System.Drawing.Size(117, 12);
             this.label57.TabIndex = 474;
@@ -960,7 +985,7 @@ namespace AtoIndicator.View
             // 
             // tFRA1
             // 
-            this.tFRA1.Location = new System.Drawing.Point(131, 317);
+            this.tFRA1.Location = new System.Drawing.Point(131, 346);
             this.tFRA1.Name = "tFRA1";
             this.tFRA1.Size = new System.Drawing.Size(48, 21);
             this.tFRA1.TabIndex = 475;
@@ -990,7 +1015,7 @@ namespace AtoIndicator.View
             // 
             // tFAA2
             // 
-            this.tFAA2.Location = new System.Drawing.Point(325, 282);
+            this.tFAA2.Location = new System.Drawing.Point(325, 311);
             this.tFAA2.Name = "tFAA2";
             this.tFAA2.Size = new System.Drawing.Size(48, 21);
             this.tFAA2.TabIndex = 470;
@@ -998,7 +1023,7 @@ namespace AtoIndicator.View
             // label55
             // 
             this.label55.AutoSize = true;
-            this.label55.Location = new System.Drawing.Point(195, 287);
+            this.label55.Location = new System.Drawing.Point(195, 316);
             this.label55.Name = "label55";
             this.label55.Size = new System.Drawing.Size(117, 12);
             this.label55.TabIndex = 468;
@@ -1006,7 +1031,7 @@ namespace AtoIndicator.View
             // 
             // tFAA1
             // 
-            this.tFAA1.Location = new System.Drawing.Point(131, 282);
+            this.tFAA1.Location = new System.Drawing.Point(131, 311);
             this.tFAA1.Name = "tFAA1";
             this.tFAA1.Size = new System.Drawing.Size(48, 21);
             this.tFAA1.TabIndex = 469;
@@ -1036,7 +1061,7 @@ namespace AtoIndicator.View
             // 
             // tFBA2
             // 
-            this.tFBA2.Location = new System.Drawing.Point(325, 250);
+            this.tFBA2.Location = new System.Drawing.Point(325, 279);
             this.tFBA2.Name = "tFBA2";
             this.tFBA2.Size = new System.Drawing.Size(48, 21);
             this.tFBA2.TabIndex = 464;
@@ -1044,7 +1069,7 @@ namespace AtoIndicator.View
             // label51
             // 
             this.label51.AutoSize = true;
-            this.label51.Location = new System.Drawing.Point(195, 255);
+            this.label51.Location = new System.Drawing.Point(195, 284);
             this.label51.Name = "label51";
             this.label51.Size = new System.Drawing.Size(117, 12);
             this.label51.TabIndex = 462;
@@ -1052,7 +1077,7 @@ namespace AtoIndicator.View
             // 
             // tFBA1
             // 
-            this.tFBA1.Location = new System.Drawing.Point(131, 250);
+            this.tFBA1.Location = new System.Drawing.Point(131, 279);
             this.tFBA1.Name = "tFBA1";
             this.tFBA1.Size = new System.Drawing.Size(48, 21);
             this.tFBA1.TabIndex = 463;
@@ -1082,7 +1107,7 @@ namespace AtoIndicator.View
             // 
             // tRBA2
             // 
-            this.tRBA2.Location = new System.Drawing.Point(325, 214);
+            this.tRBA2.Location = new System.Drawing.Point(325, 243);
             this.tRBA2.Name = "tRBA2";
             this.tRBA2.Size = new System.Drawing.Size(48, 21);
             this.tRBA2.TabIndex = 458;
@@ -1090,7 +1115,7 @@ namespace AtoIndicator.View
             // label54
             // 
             this.label54.AutoSize = true;
-            this.label54.Location = new System.Drawing.Point(195, 220);
+            this.label54.Location = new System.Drawing.Point(195, 249);
             this.label54.Name = "label54";
             this.label54.Size = new System.Drawing.Size(117, 12);
             this.label54.TabIndex = 456;
@@ -1098,7 +1123,7 @@ namespace AtoIndicator.View
             // 
             // tRBA1
             // 
-            this.tRBA1.Location = new System.Drawing.Point(131, 215);
+            this.tRBA1.Location = new System.Drawing.Point(131, 244);
             this.tRBA1.Name = "tRBA1";
             this.tRBA1.Size = new System.Drawing.Size(48, 21);
             this.tRBA1.TabIndex = 457;
@@ -1552,7 +1577,7 @@ namespace AtoIndicator.View
             // 
             // tCS2
             // 
-            this.tCS2.Location = new System.Drawing.Point(315, 500);
+            this.tCS2.Location = new System.Drawing.Point(315, 529);
             this.tCS2.Name = "tCS2";
             this.tCS2.Size = new System.Drawing.Size(48, 21);
             this.tCS2.TabIndex = 317;
@@ -1560,7 +1585,7 @@ namespace AtoIndicator.View
             // label40
             // 
             this.label40.AutoSize = true;
-            this.label40.Location = new System.Drawing.Point(192, 506);
+            this.label40.Location = new System.Drawing.Point(192, 535);
             this.label40.Name = "label40";
             this.label40.Size = new System.Drawing.Size(97, 12);
             this.label40.TabIndex = 315;
@@ -1568,7 +1593,7 @@ namespace AtoIndicator.View
             // 
             // tCS1
             // 
-            this.tCS1.Location = new System.Drawing.Point(128, 500);
+            this.tCS1.Location = new System.Drawing.Point(128, 529);
             this.tCS1.Name = "tCS1";
             this.tCS1.Size = new System.Drawing.Size(48, 21);
             this.tCS1.TabIndex = 316;
@@ -1598,7 +1623,7 @@ namespace AtoIndicator.View
             // 
             // tPM2
             // 
-            this.tPM2.Location = new System.Drawing.Point(351, 580);
+            this.tPM2.Location = new System.Drawing.Point(351, 609);
             this.tPM2.Name = "tPM2";
             this.tPM2.Size = new System.Drawing.Size(48, 21);
             this.tPM2.TabIndex = 311;
@@ -1606,7 +1631,7 @@ namespace AtoIndicator.View
             // label35
             // 
             this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(192, 583);
+            this.label35.Location = new System.Drawing.Point(192, 612);
             this.label35.Name = "label35";
             this.label35.Size = new System.Drawing.Size(101, 12);
             this.label35.TabIndex = 309;
@@ -1614,14 +1639,14 @@ namespace AtoIndicator.View
             // 
             // tPM1
             // 
-            this.tPM1.Location = new System.Drawing.Point(128, 579);
+            this.tPM1.Location = new System.Drawing.Point(128, 608);
             this.tPM1.Name = "tPM1";
             this.tPM1.Size = new System.Drawing.Size(48, 21);
             this.tPM1.TabIndex = 310;
             // 
             // tCM2
             // 
-            this.tCM2.Location = new System.Drawing.Point(351, 543);
+            this.tCM2.Location = new System.Drawing.Point(351, 572);
             this.tCM2.Name = "tCM2";
             this.tCM2.Size = new System.Drawing.Size(48, 21);
             this.tCM2.TabIndex = 308;
@@ -1629,7 +1654,7 @@ namespace AtoIndicator.View
             // label36
             // 
             this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(192, 548);
+            this.label36.Location = new System.Drawing.Point(192, 577);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(101, 12);
             this.label36.TabIndex = 306;
@@ -1637,7 +1662,7 @@ namespace AtoIndicator.View
             // 
             // tCM1
             // 
-            this.tCM1.Location = new System.Drawing.Point(128, 543);
+            this.tCM1.Location = new System.Drawing.Point(128, 572);
             this.tCM1.Name = "tCM1";
             this.tCM1.Size = new System.Drawing.Size(48, 21);
             this.tCM1.TabIndex = 307;
@@ -2402,7 +2427,7 @@ namespace AtoIndicator.View
             // 
             // tTF2
             // 
-            this.tTF2.Location = new System.Drawing.Point(316, 449);
+            this.tTF2.Location = new System.Drawing.Point(316, 478);
             this.tTF2.Name = "tTF2";
             this.tTF2.Size = new System.Drawing.Size(48, 21);
             this.tTF2.TabIndex = 200;
@@ -2410,7 +2435,7 @@ namespace AtoIndicator.View
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(196, 454);
+            this.label15.Location = new System.Drawing.Point(196, 483);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(93, 12);
             this.label15.TabIndex = 198;
@@ -2418,17 +2443,86 @@ namespace AtoIndicator.View
             // 
             // tTF1
             // 
-            this.tTF1.Location = new System.Drawing.Point(132, 449);
+            this.tTF1.Location = new System.Drawing.Point(132, 478);
             this.tTF1.Name = "tTF1";
             this.tTF1.Size = new System.Drawing.Size(48, 21);
             this.tTF1.TabIndex = 199;
             // 
-            // tTimerTxtBox
+            // qCheckBox
             // 
-            this.tTimerTxtBox.Location = new System.Drawing.Point(31, 51);
-            this.tTimerTxtBox.Name = "tTimerTxtBox";
-            this.tTimerTxtBox.Size = new System.Drawing.Size(39, 21);
-            this.tTimerTxtBox.TabIndex = 523;
+            this.qCheckBox.AutoSize = true;
+            this.qCheckBox.Location = new System.Drawing.Point(157, 152);
+            this.qCheckBox.Name = "qCheckBox";
+            this.qCheckBox.Size = new System.Drawing.Size(71, 16);
+            this.qCheckBox.TabIndex = 524;
+            this.qCheckBox.Text = "q 미포함";
+            this.qCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // wCheckBox
+            // 
+            this.wCheckBox.AutoSize = true;
+            this.wCheckBox.Location = new System.Drawing.Point(157, 175);
+            this.wCheckBox.Name = "wCheckBox";
+            this.wCheckBox.Size = new System.Drawing.Size(74, 16);
+            this.wCheckBox.TabIndex = 525;
+            this.wCheckBox.Text = "w 미포함";
+            this.wCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // eCheckBox
+            // 
+            this.eCheckBox.AutoSize = true;
+            this.eCheckBox.Location = new System.Drawing.Point(157, 198);
+            this.eCheckBox.Name = "eCheckBox";
+            this.eCheckBox.Size = new System.Drawing.Size(71, 16);
+            this.eCheckBox.TabIndex = 526;
+            this.eCheckBox.Text = "e 미포함";
+            this.eCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // tFABNum2
+            // 
+            this.tFABNum2.Location = new System.Drawing.Point(350, 736);
+            this.tFABNum2.Name = "tFABNum2";
+            this.tFABNum2.Size = new System.Drawing.Size(48, 21);
+            this.tFABNum2.TabIndex = 529;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(195, 741);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(131, 12);
+            this.label7.TabIndex = 527;
+            this.label7.Text = "<=  페보조 + 페매수 <=";
+            // 
+            // tFABNum1
+            // 
+            this.tFABNum1.Location = new System.Drawing.Point(131, 736);
+            this.tFABNum1.Name = "tFABNum1";
+            this.tFABNum1.Size = new System.Drawing.Size(48, 21);
+            this.tFABNum1.TabIndex = 528;
+            // 
+            // tFABPlusNum2
+            // 
+            this.tFABPlusNum2.Location = new System.Drawing.Point(350, 775);
+            this.tFABPlusNum2.Name = "tFABPlusNum2";
+            this.tFABPlusNum2.Size = new System.Drawing.Size(48, 21);
+            this.tFABPlusNum2.TabIndex = 532;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(183, 780);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(161, 12);
+            this.label12.TabIndex = 530;
+            this.label12.Text = "<=  페보조 + 페매수 * 1.5 <=";
+            // 
+            // tFABPlusNum1
+            // 
+            this.tFABPlusNum1.Location = new System.Drawing.Point(131, 775);
+            this.tFABPlusNum1.Name = "tFABPlusNum1";
+            this.tFABPlusNum1.Size = new System.Drawing.Size(48, 21);
+            this.tFABPlusNum1.TabIndex = 531;
             // 
             // FastInfo
             // 
@@ -2692,5 +2786,14 @@ namespace AtoIndicator.View
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox tRPD1;
         private System.Windows.Forms.TextBox tTimerTxtBox;
+        private System.Windows.Forms.CheckBox wCheckBox;
+        private System.Windows.Forms.CheckBox qCheckBox;
+        private System.Windows.Forms.CheckBox eCheckBox;
+        private System.Windows.Forms.TextBox tFABPlusNum2;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox tFABPlusNum1;
+        private System.Windows.Forms.TextBox tFABNum2;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox tFABNum1;
     }
 }

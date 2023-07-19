@@ -195,6 +195,23 @@ namespace AtoIndicator.View
                                 nQWNum1 = nQWSharedNum;
                         }
 
+                        if (cUp == 'E')
+                        {
+                            if (nQWNum1 == nQWSharedNum)
+                            {
+                                nQWNum1 = ++nQWSharedNum;
+
+                                mainForm.ea[nPrevEaIdx].manualReserve.isChosenE = !mainForm.ea[nPrevEaIdx].manualReserve.isChosenE;
+                                if (mainForm.ea[nPrevEaIdx].manualReserve.isChosenE)
+                                    registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} E창 등록됨";
+                                else
+                                    registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} E창 등록해제됨";
+                            }
+                            else
+                                nQWNum1 = nQWSharedNum;
+                        }
+
+
                         if (cUp == 191) // ?
                         {
                             mainForm.ea[nPrevEaIdx].manualReserve.ClearAll();
@@ -256,6 +273,12 @@ namespace AtoIndicator.View
                     {
                         timer.Enabled = false;
                         timerCheckBox.Checked = false;
+
+                        wCheckBox.Checked = false;
+                        qCheckBox.Checked = false;
+                        eCheckBox.Checked = false;
+
+                        tTimerTxtBox.Text = "";
 
                         passNumTxtBox.Text = "";
 
@@ -405,6 +428,10 @@ namespace AtoIndicator.View
                         tCURFT2.Text = "";
                         tCURFC1.Text = "";
                         tCURFC2.Text = "";
+                        tFABNum1.Text = "";
+                        tFABNum2.Text = "";
+                        tFABPlusNum1.Text = "";
+                        tFABPlusNum2.Text = "";
                     }
                 }
 
@@ -439,7 +466,7 @@ namespace AtoIndicator.View
                     ShowIndicator();
                 }
 
-                if (cUp == 'R')
+                if (cUp == 'P')
                 {
                     CheckReserve();
                     isRZ = true;
@@ -447,25 +474,33 @@ namespace AtoIndicator.View
                     ShowIndicator();
                 }
 
-                if (cUp == 'S')
+                if (cUp == 'O')
                 {
                     CheckReserve();
                     isRZ = true;
                     nRZNum = 5;
                     ShowIndicator();
                 }
-                if (cUp == 'D')
+
+                if (cUp == 'I')
                 {
                     CheckReserve();
                     isRZ = true;
                     nRZNum = 6;
                     ShowIndicator();
                 }
-                if (cUp == 'F')
+                if (cUp == 'U')
                 {
                     CheckReserve();
                     isRZ = true;
                     nRZNum = 7;
+                    ShowIndicator();
+                }
+                if (cUp == 'Y')
+                {
+                    CheckReserve();
+                    isRZ = true;
+                    nRZNum = 8;
                     ShowIndicator();
                 }
             }
@@ -498,6 +533,23 @@ namespace AtoIndicator.View
                             registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} W창 등록됨";
                         else
                             registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} W창 등록해제됨";
+                    }
+                    else
+                        nQWNum2 = nQWSharedNum;
+                }
+
+
+                if (cUp == 'E')
+                {
+                    if (nQWNum2 == nQWSharedNum)
+                    {
+                        nQWNum2 = ++nQWSharedNum;
+
+                        mainForm.ea[nPrevEaIdx].manualReserve.isChosenE = !mainForm.ea[nPrevEaIdx].manualReserve.isChosenE;
+                        if (mainForm.ea[nPrevEaIdx].manualReserve.isChosenE)
+                            registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} E창 등록됨";
+                        else
+                            registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} E창 등록해제됨";
                     }
                     else
                         nQWNum2 = nQWSharedNum;
@@ -707,6 +759,10 @@ namespace AtoIndicator.View
                 string sCURFT2 = "";
                 string sCURFC1 = "";
                 string sCURFC2 = "";
+                string sFABNum1 = "";
+                string sFABNum2 = "";
+                string sFABPlusNum1 = "";
+                string sFABPlusNum2 = "";
 
 
                 bool isTF1 = false;
@@ -855,6 +911,11 @@ namespace AtoIndicator.View
                 bool isCURFT2 = false;
                 bool isCURFC1 = false;
                 bool isCURFC2 = false;
+                bool isFABNum1 = false;
+                bool isFABNum2 = false;
+                bool isFABPlusNum1 = false;
+                bool isFABPlusNum2 = false;
+
 
                 try
                 {
@@ -1012,7 +1073,10 @@ namespace AtoIndicator.View
                     sCURFT2 = tCURFT2.Text.Trim();
                     sCURFC1 = tCURFC1.Text.Trim();
                     sCURFC2 = tCURFC2.Text.Trim();
-
+                    sFABNum1 = tFABNum1.Text.Trim();
+                    sFABNum2 = tFABNum2.Text.Trim();
+                    sFABPlusNum1 = tFABPlusNum1.Text.Trim();
+                    sFABPlusNum2 = tFABPlusNum2.Text.Trim();
 
                     isTF1 = !sTF1.Equals("");
                     isTF2 = !sTF2.Equals("");
@@ -1160,6 +1224,10 @@ namespace AtoIndicator.View
                     isCURFT2 = !sCURFT2.Equals("");
                     isCURFC1 = !sCURFC1.Equals("");
                     isCURFC2 = !sCURFC2.Equals("");
+                    isFABNum1 = !sFABNum1.Equals("");
+                    isFABNum2 = !sFABNum2.Equals("");
+                    isFABPlusNum1 = !sFABPlusNum1.Equals("");
+                    isFABPlusNum2 = !sFABPlusNum2.Equals("");
 
 
                     nPass = 0; // pass cnt
@@ -1238,6 +1306,8 @@ namespace AtoIndicator.View
                                         isHIT121 || isHIT122,
                                         isCURFT1 || isCURFT2,
                                         isCURFC1 || isCURFC2,
+                                        isFABNum1 || isFABNum2,
+                                        isFABPlusNum1 || isFABPlusNum2,
                     });
 
                     string sPassNum = passNumTxtBox.Text.Trim();
@@ -1271,285 +1341,306 @@ namespace AtoIndicator.View
 
                     for (int i = 0; i < mainForm.nStockLength; i++)
                     {
-                        nPass = 0;
-
-                        isShow = false;
-                        isReserveShow = true;
-
-                        if (isTF1 || isTF2)
-                            nPass += ((isTF1 ? int.Parse(sTF1) <= mainForm.ea[i].fakeStrategyMgr.nTotalFakeCount : true) &&
-                                (isTF2 ? mainForm.ea[i].fakeStrategyMgr.nTotalFakeCount <= int.Parse(sTF2) : true)) ? 1 : 0;
-                        if (isSG1 || isSG2)
-                            nPass += ((isSG1 ? double.Parse(sSG1) <= mainForm.ea[i].fStartGap : true) &&
-                                (isSG2 ? mainForm.ea[i].fStartGap <= double.Parse(sSG2) : true)) ? 1 : 0;
-                        if (isWOG1 || isWOG2)
-                            nPass += ((isWOG1 ? double.Parse(sWOG1) <= mainForm.ea[i].fPowerWithoutGap : true) &&
-                                (isWOG2 ? mainForm.ea[i].fPowerWithoutGap <= double.Parse(sWOG2) : true)) ? 1 : 0;
-                        if (isCP1 || isCP2)
-                            nPass += ((isCP1 ? double.Parse(sCP1) <= mainForm.ea[i].fPower : true) &&
-                                (isCP2 ? mainForm.ea[i].fPower <= double.Parse(sCP2) : true)) ? 1 : 0;
-                        if ((isPD1 || isPD2) && mainForm.ea[i].nYesterdayEndPrice > 0)
-                            nPass += ((isPD1 ? double.Parse(sPD1) <= (double)(mainForm.ea[i].timeLines1m.nMaxUpFs - mainForm.ea[i].nFs) / mainForm.ea[i].nYesterdayEndPrice : true) &&
-                                (isPD2 ? (double)(mainForm.ea[i].timeLines1m.nMaxUpFs - mainForm.ea[i].nFs) / mainForm.ea[i].nYesterdayEndPrice <= double.Parse(sPD2) : true)) ? 1 : 0;
-                        if (isRPD1 || isRPD2)
-                            nPass += ((isRPD1 ? double.Parse(sRPD1) <= mainForm.ea[i].fTodayMaxPower - mainForm.ea[i].fPower : true) &&
-                                (isRPD2 ? mainForm.ea[i].fTodayMaxPower - mainForm.ea[i].fPower <= double.Parse(sRPD2) : true)) ? 1 : 0;
-                        if (isPJ1 || isPJ2)
-                            nPass += ((isPJ1 ? double.Parse(sPJ1) <= mainForm.ea[i].fPowerJar : true) &&
-                                (isPJ2 ? mainForm.ea[i].fPowerJar <= double.Parse(sPJ2) : true)) ? 1 : 0;
-                        if (isUPJ1 || isUPJ2)
-                            nPass += ((isUPJ1 ? double.Parse(sUPJ1) <= mainForm.ea[i].fOnlyUpPowerJar : true) &&
-                                (isUPJ2 ? mainForm.ea[i].fOnlyUpPowerJar <= double.Parse(sUPJ2) : true)) ? 1 : 0;
-                        if (isDPJ1 || isDPJ2)
-                            nPass += ((isDPJ1 ? double.Parse(sDPJ1) <= mainForm.ea[i].fOnlyDownPowerJar : true) &&
-                                (isDPJ2 ? mainForm.ea[i].fOnlyDownPowerJar <= double.Parse(sDPJ2) : true)) ? 1 : 0;
-                        if (isTTM1 || isTTM2)
-                            nPass += ((isTTM1 ? double.Parse(sTTM1) * 100000000 <= mainForm.ea[i].lTotalTradePrice : true) &&
-                                (isTTM2 ? mainForm.ea[i].lTotalTradePrice <= double.Parse(sTTM2) * 100000000 : true)) ? 1 : 0;
-                        if (isBM1 || isBM2)
-                            nPass += ((isBM1 ? double.Parse(sBM1) * 100000000 <= mainForm.ea[i].lOnlyBuyPrice : true) &&
-                                (isBM2 ? mainForm.ea[i].lOnlyBuyPrice <= double.Parse(sBM2) * 100000000 : true)) ? 1 : 0;
-                        if (isSM1 || isSM2)
-                            nPass += ((isSM1 ? double.Parse(sSM1) * 100000000 <= mainForm.ea[i].lOnlySellPrice : true) &&
-                                (isSM2 ? mainForm.ea[i].lOnlySellPrice <= double.Parse(sSM2) * 100000000 : true)) ? 1 : 0;
-                        if (isTA1 || isTA2)
-                            nPass += ((isTA1 ? double.Parse(sTA1) <= mainForm.ea[i].timeLines1m.fTotalMedianAngle : true) &&
-                                (isTA2 ? mainForm.ea[i].timeLines1m.fTotalMedianAngle <= double.Parse(sTA2) : true)) ? 1 : 0;
-                        if (isHA1 || isHA2)
-                            nPass += ((isHA1 ? double.Parse(sHA1) <= mainForm.ea[i].timeLines1m.fHourMedianAngle : true) &&
-                                (isHA2 ? mainForm.ea[i].timeLines1m.fHourMedianAngle <= double.Parse(sHA2) : true)) ? 1 : 0;
-                        if (isRA1 || isRA2)
-                            nPass += ((isRA1 ? double.Parse(sRA1) <= mainForm.ea[i].timeLines1m.fRecentMedianAngle : true) &&
-                                (isRA2 ? mainForm.ea[i].timeLines1m.fRecentMedianAngle <= double.Parse(sRA2) : true)) ? 1 : 0;
-                        if (isDA1 || isDA2)
-                            nPass += ((isDA1 ? double.Parse(sDA1) <= mainForm.ea[i].timeLines1m.fDAngle : true) &&
-                                (isDA2 ? mainForm.ea[i].timeLines1m.fDAngle <= double.Parse(sDA2) : true)) ? 1 : 0;
-                        if (is1P1 || is1P2)
-                            nPass += ((is1P1 ? int.Parse(s1P1) <= mainForm.ea[i].timeLines1m.onePerCandleList.Count : true) &&
-                                (is1P2 ? mainForm.ea[i].timeLines1m.onePerCandleList.Count <= int.Parse(s1P2) : true)) ? 1 : 0;
-                        if (is2P1 || is2P2)
-                            nPass += ((is2P1 ? int.Parse(s2P1) <= mainForm.ea[i].timeLines1m.twoPerCandleList.Count : true) &&
-                                (is2P2 ? mainForm.ea[i].timeLines1m.twoPerCandleList.Count <= int.Parse(s2P2) : true)) ? 1 : 0;
-                        if (is3P1 || is3P2)
-                            nPass += ((is3P1 ? int.Parse(s3P1) <= mainForm.ea[i].timeLines1m.threePerCandleList.Count : true) &&
-                                (is3P2 ? mainForm.ea[i].timeLines1m.threePerCandleList.Count <= int.Parse(s3P2) : true)) ? 1 : 0;
-                        if (is4P1 || is4P2)
-                            nPass += ((is4P1 ? int.Parse(s4P1) <= mainForm.ea[i].timeLines1m.fourPerCandleList.Count : true) &&
-                                (is4P2 ? mainForm.ea[i].timeLines1m.fourPerCandleList.Count <= int.Parse(s4P2) : true)) ? 1 : 0;
-                        if (isVI1 || isVI2)
-                            nPass += ((isVI1 ? int.Parse(sVI1) <= mainForm.ea[i].nViCnt : true) &&
-                                (isVI2 ? mainForm.ea[i].nViCnt <= int.Parse(sVI2) : true)) ? 1 : 0;
-                        if (isRBP1 || isRBP2)
-                            nPass += ((isRBP1 ? int.Parse(sRBP1) <= mainForm.ea[i].fakeStrategyMgr.nAIPassed : true) &&
-                                (isRBP2 ? mainForm.ea[i].fakeStrategyMgr.nAIPassed <= int.Parse(sRBP2) : true)) ? 1 : 0;
-                        if (isTFP1 || isTFP2)
-                            nPass += ((isTFP1 ? int.Parse(sTFP1) <= mainForm.ea[i].fakeStrategyMgr.nFakeAccumPassed : true) &&
-                                (isTFP2 ? mainForm.ea[i].fakeStrategyMgr.nFakeAccumPassed <= int.Parse(sTFP2) : true)) ? 1 : 0;
-                        if (isEP1 || isEP2)
-                            nPass += ((isEP1 ? int.Parse(sEP1) <= mainForm.ea[i].fakeStrategyMgr.nEveryAIPassNum : true) &&
-                                (isEP2 ? mainForm.ea[i].fakeStrategyMgr.nEveryAIPassNum <= int.Parse(sEP2) : true)) ? 1 : 0;
-                        if (isAIS1 || isAIS2)
-                            nPass += ((isAIS1 ? double.Parse(sAIS1) <= mainForm.ea[i].fakeStrategyMgr.fAIScore : true) &&
-                                (isAIS2 ? mainForm.ea[i].fakeStrategyMgr.fAIScore <= double.Parse(sAIS2) : true)) ? 1 : 0;
-                        if (isSC1 || isSC2)
-                            nPass += ((isSC1 ? int.Parse(sSC1) <= mainForm.ea[i].nStopHogaCnt : true) &&
-                                (isSC2 ? mainForm.ea[i].nStopHogaCnt <= int.Parse(sSC2) : true)) ? 1 : 0;
-                        if (isSUDC1 || isSUDC2)
-                            nPass += ((isSUDC1 ? int.Parse(sSUDC1) <= mainForm.ea[i].nStopUpDownCnt : true) &&
-                                (isSUDC2 ? mainForm.ea[i].nStopUpDownCnt <= int.Parse(sSUDC2) : true)) ? 1 : 0;
-                        if (isSUP1 || isSUP2)
-                            nPass += ((isSUP1 ? double.Parse(sSUP1) <= mainForm.ea[i].fStopMaxPower : true) &&
-                                (isSUP2 ? mainForm.ea[i].fStopMaxPower <= double.Parse(sSUP2) : true)) ? 1 : 0;
-                        if (isSDP1 || isSDP2)
-                            nPass += ((isSDP1 ? double.Parse(sSDP1) <= mainForm.ea[i].fStopMinPower : true) &&
-                                (isSDP2 ? mainForm.ea[i].fStopMinPower <= double.Parse(sSDP2) : true)) ? 1 : 0;
-                        if (isSPD1 || isSPD2)
-                            nPass += ((isSPD1 ? double.Parse(sSPD1) <= mainForm.ea[i].fStopMaxMinDiff : true) &&
-                                (isSPD2 ? mainForm.ea[i].fStopMaxMinDiff <= double.Parse(sSPD2) : true)) ? 1 : 0;
-                        if (isEC1 || isEC2)
-                            nPass += ((isEC1 ? int.Parse(sEC1) <= mainForm.ea[i].fakeStrategyMgr.nEveryAICount : true) &&
-                                (isEC2 ? mainForm.ea[i].fakeStrategyMgr.nEveryAICount <= int.Parse(sEC2) : true)) ? 1 : 0;
-                        if (isCM1 || isCM2)
-                            nPass += ((isCM1 ? double.Parse(sCM1) <= (double)(mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nPrevTimeLineIdx].nLastFs - mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nPrevTimeLineIdx].nStartFs) / mainForm.ea[i].nYesterdayEndPrice : true) &&
-                                (isCM2 ? (double)(mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nPrevTimeLineIdx].nLastFs - mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nPrevTimeLineIdx].nStartFs) / mainForm.ea[i].nYesterdayEndPrice <= double.Parse(sCM2) : true)) ? 1 : 0;
-                        if (isPM1 || isPM2)
-                            nPass += ((isPM1 ? double.Parse(sPM1) <= (double)(mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nRealDataIdx].nLastFs - mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nRealDataIdx].nStartFs) / mainForm.ea[i].nYesterdayEndPrice : true) &&
-                                (isPM2 ? (double)(mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nRealDataIdx].nLastFs - mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nRealDataIdx].nStartFs) / mainForm.ea[i].nYesterdayEndPrice <= double.Parse(sPM2) : true)) ? 1 : 0;
-                        if (isCC1 || isCC2)
-                            nPass += ((isCC1 ? int.Parse(sCC1) <= mainForm.ea[i].nChegyulCnt : true) &&
-                                (isCC2 ? mainForm.ea[i].nChegyulCnt <= int.Parse(sCC2) : true)) ? 1 : 0;
-                        if (isCS1 || isCS2)
-                            nPass += ((isCS1 ? double.Parse(sCS1) <= mainForm.ea[i].speedStatus.fCur : true) &&
-                                (isCS2 ? mainForm.ea[i].speedStatus.fCur <= double.Parse(sCS2) : true)) ? 1 : 0;
-                        if (isAMU1 || isAMU2)
-                            nPass += ((isAMU1 ? double.Parse(sAMU1) <= mainForm.ea[i].fPositiveStickPower : true) &&
-                                (isAMU2 ? mainForm.ea[i].fPositiveStickPower <= double.Parse(sAMU2) : true)) ? 1 : 0;
-                        if (isAMD1 || isAMD2)
-                            nPass += ((isAMD1 ? double.Parse(sAMD1) <= mainForm.ea[i].fNegativeStickPower : true) &&
-                                (isAMD2 ? mainForm.ea[i].fNegativeStickPower <= double.Parse(sAMD2) : true)) ? 1 : 0;
-                        if (isHS1 || isHS2)
-                            nPass += ((isHS1 ? double.Parse(sHS1) <= mainForm.ea[i].hogaSpeedStatus.fCur : true) &&
-                                (isHS2 ? mainForm.ea[i].hogaSpeedStatus.fCur <= double.Parse(sHS2) : true)) ? 1 : 0;
-                        if (isPS1 || isPS2)
-                            nPass += ((isPS1 ? double.Parse(sPS1) <= mainForm.ea[i].priceMoveStatus.fCur : true) &&
-                                (isPS2 ? mainForm.ea[i].priceMoveStatus.fCur <= double.Parse(sPS2) : true)) ? 1 : 0;
-                        if (isPUS1 || isPUS2)
-                            nPass += ((isPUS1 ? double.Parse(sPUS1) <= mainForm.ea[i].priceUpMoveStatus.fCur : true) &&
-                                (isPUS2 ? mainForm.ea[i].priceUpMoveStatus.fCur <= double.Parse(sPUS2) : true)) ? 1 : 0;
-                        if (isTS1 || isTS2)
-                            nPass += ((isTS1 ? double.Parse(sTS1) <= mainForm.ea[i].tradeStatus.fCur : true) &&
-                                (isTS2 ? mainForm.ea[i].tradeStatus.fCur <= double.Parse(sTS2) : true)) ? 1 : 0;
-                        if (isTMAX1 || isTMAX2)
-                            nPass += ((isTMAX1 ? double.Parse(sTMAX1) <= mainForm.ea[i].fTodayMaxPower : true) &&
-                                (isTMAX2 ? mainForm.ea[i].fTodayMaxPower <= double.Parse(sTMAX2) : true)) ? 1 : 0;
-                        if (isTMIN1 || isTMIN2)
-                            nPass += ((isTMIN1 ? double.Parse(sTMIN1) <= mainForm.ea[i].fTodayMinPower : true) &&
-                                (isTMIN2 ? mainForm.ea[i].fTodayMinPower <= double.Parse(sTMIN2) : true)) ? 1 : 0;
-                        if (isTMD1 || isTMD2)
-                            nPass += ((isTMD1 ? double.Parse(sTMD1) <= mainForm.ea[i].fTodayMaxPower - mainForm.ea[i].fTodayBottomPower : true) &&
-                                (isTMD2 ? mainForm.ea[i].fTodayMaxPower - mainForm.ea[i].fTodayBottomPower <= double.Parse(sTMD2) : true)) ? 1 : 0;
-                        if (isAI5T1 || isAI5T2)
-                            nPass += ((isAI5T1 ? int.Parse(sAI5T1) <= mainForm.ea[i].fakeStrategyMgr.nAI5Time : true) &&
-                              (isAI5T2 ? mainForm.ea[i].fakeStrategyMgr.nAI5Time <= int.Parse(sAI5T2) : true)) ? 1 : 0;
-                        if (isAI10T1 || isAI10T2)
-                            nPass += ((isAI10T1 ? int.Parse(sAI10T1) <= mainForm.ea[i].fakeStrategyMgr.nAI10Time : true) &&
-                              (isAI10T2 ? mainForm.ea[i].fakeStrategyMgr.nAI10Time <= int.Parse(sAI10T2) : true)) ? 1 : 0;
-                        if (isAI15T1 || isAI15T2)
-                            nPass += ((isAI15T1 ? int.Parse(sAI15T1) <= mainForm.ea[i].fakeStrategyMgr.nAI15Time : true) &&
-                              (isAI15T2 ? mainForm.ea[i].fakeStrategyMgr.nAI15Time <= int.Parse(sAI15T2) : true)) ? 1 : 0;
-                        if (isAI20T1 || isAI20T2)
-                            nPass += ((isAI20T1 ? int.Parse(sAI20T1) <= mainForm.ea[i].fakeStrategyMgr.nAI20Time : true) &&
-                              (isAI20T2 ? mainForm.ea[i].fakeStrategyMgr.nAI20Time <= int.Parse(sAI20T2) : true)) ? 1 : 0;
-                        if (isAI30T1 || isAI30T2)
-                            nPass += ((isAI30T1 ? int.Parse(sAI30T1) <= mainForm.ea[i].fakeStrategyMgr.nAI30Time : true) &&
-                              (isAI30T2 ? mainForm.ea[i].fakeStrategyMgr.nAI30Time <= int.Parse(sAI30T2) : true)) ? 1 : 0;
-                        if (isAI50T1 || isAI50T2)
-                            nPass += ((isAI50T1 ? int.Parse(sAI50T1) <= mainForm.ea[i].fakeStrategyMgr.nAI50Time : true) &&
-                              (isAI50T2 ? mainForm.ea[i].fakeStrategyMgr.nAI50Time <= int.Parse(sAI50T2) : true)) ? 1 : 0;
-                        if (isCRC1 || isCRC2)
-                            nPass += ((isCRC1 ? int.Parse(sCRC1) <= mainForm.ea[i].crushMinuteManager.nCurCnt : true) &&
-                              (isCRC2 ? mainForm.ea[i].crushMinuteManager.nCurCnt <= int.Parse(sCRC2) : true)) ? 1 : 0;
-                        if (isUCRC1 || isUCRC2)
-                            nPass += ((isUCRC1 ? int.Parse(sUCRC1) <= mainForm.ea[i].crushMinuteManager.nUpCnt : true) &&
-                              (isUCRC2 ? mainForm.ea[i].crushMinuteManager.nUpCnt <= int.Parse(sUCRC2) : true)) ? 1 : 0;
-                        if (isT1501 || isT1502)
-                            nPass += ((isT1501 ? int.Parse(sT1501) <= mainForm.ea[i].sequenceStrategy.nSpeed150TotalSec : true) &&
-                              (isT1502 ? mainForm.ea[i].sequenceStrategy.nSpeed150TotalSec <= int.Parse(sT1502) : true)) ? 1 : 0;
-                        if (isC1501 || isC1502)
-                            nPass += ((isC1501 ? int.Parse(sC1501) <= mainForm.ea[i].sequenceStrategy.nSpeed150CurSec : true) &&
-                              (isC1502 ? mainForm.ea[i].sequenceStrategy.nSpeed150CurSec <= int.Parse(sC1502) : true)) ? 1 : 0;
-                        if (isRBA1 || isRBA2)
-                            nPass += ((isRBA1 ? int.Parse(sRBA1) <= mainForm.ea[i].paperBuyStrategy.nStrategyNum : true) &&
-                              (isRBA2 ? mainForm.ea[i].paperBuyStrategy.nStrategyNum <= int.Parse(sRBA2) : true)) ? 1 : 0;
-                        if (isRBD1 || isRBD2)
-                            nPass += ((isRBD1 ? int.Parse(sRBD1) <= mainForm.ea[i].paperBuyStrategy.nMinuteLocationCount : true) &&
-                              (isRBD2 ? mainForm.ea[i].paperBuyStrategy.nMinuteLocationCount <= int.Parse(sRBD2) : true)) ? 1 : 0;
-                        if (isFBA1 || isFBA2)
-                            nPass += ((isFBA1 ? int.Parse(sFBA1) <= mainForm.ea[i].fakeBuyStrategy.nStrategyNum : true) &&
-                              (isFBA2 ? mainForm.ea[i].fakeBuyStrategy.nStrategyNum <= int.Parse(sFBA2) : true)) ? 1 : 0;
-                        if (isFBD1 || isFBD2)
-                            nPass += ((isFBD1 ? int.Parse(sFBD1) <= mainForm.ea[i].fakeBuyStrategy.nMinuteLocationCount : true) &&
-                              (isFBD2 ? mainForm.ea[i].fakeBuyStrategy.nMinuteLocationCount <= int.Parse(sFBD2) : true)) ? 1 : 0;
-                        if (isFAA1 || isFAA2)
-                            nPass += ((isFAA1 ? int.Parse(sFAA1) <= mainForm.ea[i].fakeAssistantStrategy.nStrategyNum : true) &&
-                              (isFAA2 ? mainForm.ea[i].fakeAssistantStrategy.nStrategyNum <= int.Parse(sFAA2) : true)) ? 1 : 0;
-                        if (isFAD1 || isFAD2)
-                            nPass += ((isFAD1 ? int.Parse(sFAD1) <= mainForm.ea[i].fakeAssistantStrategy.nMinuteLocationCount : true) &&
-                              (isFAD2 ? mainForm.ea[i].fakeAssistantStrategy.nMinuteLocationCount <= int.Parse(sFAD2) : true)) ? 1 : 0;
-                        if (isFRA1 || isFRA2)
-                            nPass += ((isFRA1 ? int.Parse(sFRA1) <= mainForm.ea[i].fakeResistStrategy.nStrategyNum : true) &&
-                              (isFRA2 ? mainForm.ea[i].fakeResistStrategy.nStrategyNum <= int.Parse(sFRA2) : true)) ? 1 : 0;
-                        if (isFRD1 || isFRD2)
-                            nPass += ((isFRD1 ? int.Parse(sFRD1) <= mainForm.ea[i].fakeResistStrategy.nMinuteLocationCount : true) &&
-                              (isFRD2 ? mainForm.ea[i].fakeResistStrategy.nMinuteLocationCount <= int.Parse(sFRD2) : true)) ? 1 : 0;
-                        if (isPUA1 || isPUA2)
-                            nPass += ((isPUA1 ? int.Parse(sPUA1) <= mainForm.ea[i].fakeVolatilityStrategy.nStrategyNum : true) &&
-                              (isPUA2 ? mainForm.ea[i].fakeVolatilityStrategy.nStrategyNum <= int.Parse(sPUA2) : true)) ? 1 : 0;
-                        if (isPUD1 || isPUD2)
-                            nPass += ((isPUD1 ? int.Parse(sPUD1) <= mainForm.ea[i].fakeVolatilityStrategy.nMinuteLocationCount : true) &&
-                              (isPUD2 ? mainForm.ea[i].fakeVolatilityStrategy.nMinuteLocationCount <= int.Parse(sPUD2) : true)) ? 1 : 0;
-                        if (isPDA1 || isPDA2)
-                            nPass += ((isPDA1 ? int.Parse(sPDA1) <= mainForm.ea[i].fakeDownStrategy.nStrategyNum : true) &&
-                              (isPDA2 ? mainForm.ea[i].fakeDownStrategy.nStrategyNum <= int.Parse(sPDA2) : true)) ? 1 : 0;
-                        if (isPDD1 || isPDD2)
-                            nPass += ((isPDD1 ? int.Parse(sPDD1) <= mainForm.ea[i].fakeDownStrategy.nMinuteLocationCount : true) &&
-                              (isPDD2 ? mainForm.ea[i].fakeDownStrategy.nMinuteLocationCount <= int.Parse(sPDD2) : true)) ? 1 : 0;
-                        if (isSFD1 || isSFD2)
-                            nPass += ((isSFD1 ? int.Parse(sSFD1) <= mainForm.ea[i].fakeStrategyMgr.nSharedMinuteLocationCount : true) &&
-                              (isSFD2 ? mainForm.ea[i].fakeStrategyMgr.nSharedMinuteLocationCount <= int.Parse(sSFD2) : true)) ? 1 : 0;
-                        if (isHIT51 || isHIT52)
-                            nPass += ((isHIT51 ? int.Parse(sHIT51) <= mainForm.ea[i].fakeStrategyMgr.hitDict25.Count : true) &&
-                              (isHIT52 ? mainForm.ea[i].fakeStrategyMgr.hitDict25.Count <= int.Parse(sHIT52) : true)) ? 1 : 0;
-                        if (isHIT81 || isHIT82)
-                            nPass += ((isHIT81 ? int.Parse(sHIT81) <= mainForm.ea[i].fakeStrategyMgr.hitDict38.Count : true) &&
-                              (isHIT82 ? mainForm.ea[i].fakeStrategyMgr.hitDict38.Count <= int.Parse(sHIT82) : true)) ? 1 : 0;
-                        if (isHIT101 || isHIT102)
-                            nPass += ((isHIT101 ? int.Parse(sHIT101) <= mainForm.ea[i].fakeStrategyMgr.hitDict410.Count : true) &&
-                              (isHIT102 ? mainForm.ea[i].fakeStrategyMgr.hitDict410.Count <= int.Parse(sHIT102) : true)) ? 1 : 0;
-                        if (isHIT121 || isHIT122)
-                            nPass += ((isHIT121 ? int.Parse(sHIT121) <= mainForm.ea[i].fakeStrategyMgr.hitDict312.Count : true) &&
-                              (isHIT122 ? mainForm.ea[i].fakeStrategyMgr.hitDict312.Count <= int.Parse(sHIT122) : true)) ? 1 : 0;
-                        if (isCURFT1 || isCURFT2)
-                            nPass += ((isCURFT1 ? int.Parse(sCURFT1) <= mainForm.ea[i].fakeStrategyMgr.nCurHitType : true) &&
-                              (isCURFT2 ? mainForm.ea[i].fakeStrategyMgr.nCurHitType <= int.Parse(sCURFT2) : true)) ? 1 : 0;
-                        if (isCURFC1 || isCURFC2)
-                            nPass += ((isCURFC1 ? int.Parse(sCURFC1) <= mainForm.ea[i].fakeStrategyMgr.nCurHitNum : true) &&
-                              (isCURFC2 ? mainForm.ea[i].fakeStrategyMgr.nCurHitNum <= int.Parse(sCURFC2) : true)) ? 1 : 0;
-
-
-                        isShow = nPass >= nFinalPassNum;
-
-
-                        if (isReserved) // 예약ㅇ라면
+                        try
                         {
-                            isReserveShow = false;
+                            nPass = 0;
 
-                            if (isR1) // r1 조건
-                            {
-                                isReserveShow = mainForm.ea[i].isViMode;
-                            }
-                            else if (isR2) // r2 조건
-                            {
-                                isReserveShow = mainForm.ea[i].fakeAssistantStrategy.nStrategyNum >= 10 && !mainForm.ea[i].manualReserve.isChosenW;
-                            }
-                            else if (isR3) // r3 조건
-                            {
-                                isReserveShow = mainForm.ea[i].fakeBuyStrategy.nStrategyNum >= 10 && !mainForm.ea[i].manualReserve.isChosenW;
-                            }
-                            else if (isR4) // r4 조건
-                            {
-                                isReserveShow = mainForm.ea[i].fTodayMaxPower >= 0.1 &&
-                                            mainForm.ea[i].fakeStrategyMgr.nTotalFakeCount >= 50 &&
-                                            mainForm.ea[i].fakeBuyStrategy.nMinuteLocationCount >= 2;
-                            }
-                            else if (isRZ)
-                            {
-                                if (nRZNum == 1)
-                                    isReserveShow = mainForm.ea[i].manualReserve.isChosenQ;
-                                else if (nRZNum == 2)
-                                    isReserveShow = mainForm.ea[i].manualReserve.isChosenW;
-                                else if (nRZNum == 3)
-                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isSelected;
-                                else if (nRZNum == 4)
-                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isSelected;
-                                else if (nRZNum == 5)
-                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isSelected;
-                                else if (nRZNum == 6)
-                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isSelected;
-                                else if (nRZNum == 7)
-                                    isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isSelected;
+                            isShow = false;
+                            isReserveShow = true;
 
-                            }
-                            else // 에러
+                            if (isTF1 || isTF2)
+                                nPass += ((isTF1 ? int.Parse(sTF1) <= mainForm.ea[i].fakeStrategyMgr.nTotalFakeCount : true) &&
+                                    (isTF2 ? mainForm.ea[i].fakeStrategyMgr.nTotalFakeCount <= int.Parse(sTF2) : true)) ? 1 : 0;
+                            if (isSG1 || isSG2)
+                                nPass += ((isSG1 ? double.Parse(sSG1) <= mainForm.ea[i].fStartGap : true) &&
+                                    (isSG2 ? mainForm.ea[i].fStartGap <= double.Parse(sSG2) : true)) ? 1 : 0;
+                            if (isWOG1 || isWOG2)
+                                nPass += ((isWOG1 ? double.Parse(sWOG1) <= mainForm.ea[i].fPowerWithoutGap : true) &&
+                                    (isWOG2 ? mainForm.ea[i].fPowerWithoutGap <= double.Parse(sWOG2) : true)) ? 1 : 0;
+                            if (isCP1 || isCP2)
+                                nPass += ((isCP1 ? double.Parse(sCP1) <= mainForm.ea[i].fPower : true) &&
+                                    (isCP2 ? mainForm.ea[i].fPower <= double.Parse(sCP2) : true)) ? 1 : 0;
+                            if ((isPD1 || isPD2) && mainForm.ea[i].nYesterdayEndPrice > 0)
+                                nPass += ((isPD1 ? double.Parse(sPD1) <= (double)(mainForm.ea[i].timeLines1m.nMaxUpFs - mainForm.ea[i].nFs) / mainForm.ea[i].nYesterdayEndPrice : true) &&
+                                    (isPD2 ? (double)(mainForm.ea[i].timeLines1m.nMaxUpFs - mainForm.ea[i].nFs) / mainForm.ea[i].nYesterdayEndPrice <= double.Parse(sPD2) : true)) ? 1 : 0;
+                            if (isRPD1 || isRPD2)
+                                nPass += ((isRPD1 ? double.Parse(sRPD1) <= mainForm.ea[i].fTodayMaxPower - mainForm.ea[i].fPower : true) &&
+                                    (isRPD2 ? mainForm.ea[i].fTodayMaxPower - mainForm.ea[i].fPower <= double.Parse(sRPD2) : true)) ? 1 : 0;
+                            if (isPJ1 || isPJ2)
+                                nPass += ((isPJ1 ? double.Parse(sPJ1) <= mainForm.ea[i].fPowerJar : true) &&
+                                    (isPJ2 ? mainForm.ea[i].fPowerJar <= double.Parse(sPJ2) : true)) ? 1 : 0;
+                            if (isUPJ1 || isUPJ2)
+                                nPass += ((isUPJ1 ? double.Parse(sUPJ1) <= mainForm.ea[i].fOnlyUpPowerJar : true) &&
+                                    (isUPJ2 ? mainForm.ea[i].fOnlyUpPowerJar <= double.Parse(sUPJ2) : true)) ? 1 : 0;
+                            if (isDPJ1 || isDPJ2)
+                                nPass += ((isDPJ1 ? double.Parse(sDPJ1) <= mainForm.ea[i].fOnlyDownPowerJar : true) &&
+                                    (isDPJ2 ? mainForm.ea[i].fOnlyDownPowerJar <= double.Parse(sDPJ2) : true)) ? 1 : 0;
+                            if (isTTM1 || isTTM2)
+                                nPass += ((isTTM1 ? double.Parse(sTTM1) * 100000000 <= mainForm.ea[i].lTotalTradePrice : true) &&
+                                    (isTTM2 ? mainForm.ea[i].lTotalTradePrice <= double.Parse(sTTM2) * 100000000 : true)) ? 1 : 0;
+                            if (isBM1 || isBM2)
+                                nPass += ((isBM1 ? double.Parse(sBM1) * 100000000 <= mainForm.ea[i].lOnlyBuyPrice : true) &&
+                                    (isBM2 ? mainForm.ea[i].lOnlyBuyPrice <= double.Parse(sBM2) * 100000000 : true)) ? 1 : 0;
+                            if (isSM1 || isSM2)
+                                nPass += ((isSM1 ? double.Parse(sSM1) * 100000000 <= mainForm.ea[i].lOnlySellPrice : true) &&
+                                    (isSM2 ? mainForm.ea[i].lOnlySellPrice <= double.Parse(sSM2) * 100000000 : true)) ? 1 : 0;
+                            if (isTA1 || isTA2)
+                                nPass += ((isTA1 ? double.Parse(sTA1) <= mainForm.ea[i].timeLines1m.fTotalMedianAngle : true) &&
+                                    (isTA2 ? mainForm.ea[i].timeLines1m.fTotalMedianAngle <= double.Parse(sTA2) : true)) ? 1 : 0;
+                            if (isHA1 || isHA2)
+                                nPass += ((isHA1 ? double.Parse(sHA1) <= mainForm.ea[i].timeLines1m.fHourMedianAngle : true) &&
+                                    (isHA2 ? mainForm.ea[i].timeLines1m.fHourMedianAngle <= double.Parse(sHA2) : true)) ? 1 : 0;
+                            if (isRA1 || isRA2)
+                                nPass += ((isRA1 ? double.Parse(sRA1) <= mainForm.ea[i].timeLines1m.fRecentMedianAngle : true) &&
+                                    (isRA2 ? mainForm.ea[i].timeLines1m.fRecentMedianAngle <= double.Parse(sRA2) : true)) ? 1 : 0;
+                            if (isDA1 || isDA2)
+                                nPass += ((isDA1 ? double.Parse(sDA1) <= mainForm.ea[i].timeLines1m.fDAngle : true) &&
+                                    (isDA2 ? mainForm.ea[i].timeLines1m.fDAngle <= double.Parse(sDA2) : true)) ? 1 : 0;
+                            if (is1P1 || is1P2)
+                                nPass += ((is1P1 ? int.Parse(s1P1) <= mainForm.ea[i].timeLines1m.onePerCandleList.Count : true) &&
+                                    (is1P2 ? mainForm.ea[i].timeLines1m.onePerCandleList.Count <= int.Parse(s1P2) : true)) ? 1 : 0;
+                            if (is2P1 || is2P2)
+                                nPass += ((is2P1 ? int.Parse(s2P1) <= mainForm.ea[i].timeLines1m.twoPerCandleList.Count : true) &&
+                                    (is2P2 ? mainForm.ea[i].timeLines1m.twoPerCandleList.Count <= int.Parse(s2P2) : true)) ? 1 : 0;
+                            if (is3P1 || is3P2)
+                                nPass += ((is3P1 ? int.Parse(s3P1) <= mainForm.ea[i].timeLines1m.threePerCandleList.Count : true) &&
+                                    (is3P2 ? mainForm.ea[i].timeLines1m.threePerCandleList.Count <= int.Parse(s3P2) : true)) ? 1 : 0;
+                            if (is4P1 || is4P2)
+                                nPass += ((is4P1 ? int.Parse(s4P1) <= mainForm.ea[i].timeLines1m.fourPerCandleList.Count : true) &&
+                                    (is4P2 ? mainForm.ea[i].timeLines1m.fourPerCandleList.Count <= int.Parse(s4P2) : true)) ? 1 : 0;
+                            if (isVI1 || isVI2)
+                                nPass += ((isVI1 ? int.Parse(sVI1) <= mainForm.ea[i].nViCnt : true) &&
+                                    (isVI2 ? mainForm.ea[i].nViCnt <= int.Parse(sVI2) : true)) ? 1 : 0;
+                            if (isRBP1 || isRBP2)
+                                nPass += ((isRBP1 ? int.Parse(sRBP1) <= mainForm.ea[i].fakeStrategyMgr.nAIPassed : true) &&
+                                    (isRBP2 ? mainForm.ea[i].fakeStrategyMgr.nAIPassed <= int.Parse(sRBP2) : true)) ? 1 : 0;
+                            if (isTFP1 || isTFP2)
+                                nPass += ((isTFP1 ? int.Parse(sTFP1) <= mainForm.ea[i].fakeStrategyMgr.nFakeAccumPassed : true) &&
+                                    (isTFP2 ? mainForm.ea[i].fakeStrategyMgr.nFakeAccumPassed <= int.Parse(sTFP2) : true)) ? 1 : 0;
+                            if (isEP1 || isEP2)
+                                nPass += ((isEP1 ? int.Parse(sEP1) <= mainForm.ea[i].fakeStrategyMgr.nEveryAIPassNum : true) &&
+                                    (isEP2 ? mainForm.ea[i].fakeStrategyMgr.nEveryAIPassNum <= int.Parse(sEP2) : true)) ? 1 : 0;
+                            if (isAIS1 || isAIS2)
+                                nPass += ((isAIS1 ? double.Parse(sAIS1) <= mainForm.ea[i].fakeStrategyMgr.fAIScore : true) &&
+                                    (isAIS2 ? mainForm.ea[i].fakeStrategyMgr.fAIScore <= double.Parse(sAIS2) : true)) ? 1 : 0;
+                            if (isSC1 || isSC2)
+                                nPass += ((isSC1 ? int.Parse(sSC1) <= mainForm.ea[i].nStopHogaCnt : true) &&
+                                    (isSC2 ? mainForm.ea[i].nStopHogaCnt <= int.Parse(sSC2) : true)) ? 1 : 0;
+                            if (isSUDC1 || isSUDC2)
+                                nPass += ((isSUDC1 ? int.Parse(sSUDC1) <= mainForm.ea[i].nStopUpDownCnt : true) &&
+                                    (isSUDC2 ? mainForm.ea[i].nStopUpDownCnt <= int.Parse(sSUDC2) : true)) ? 1 : 0;
+                            if (isSUP1 || isSUP2)
+                                nPass += ((isSUP1 ? double.Parse(sSUP1) <= mainForm.ea[i].fStopMaxPower : true) &&
+                                    (isSUP2 ? mainForm.ea[i].fStopMaxPower <= double.Parse(sSUP2) : true)) ? 1 : 0;
+                            if (isSDP1 || isSDP2)
+                                nPass += ((isSDP1 ? double.Parse(sSDP1) <= mainForm.ea[i].fStopMinPower : true) &&
+                                    (isSDP2 ? mainForm.ea[i].fStopMinPower <= double.Parse(sSDP2) : true)) ? 1 : 0;
+                            if (isSPD1 || isSPD2)
+                                nPass += ((isSPD1 ? double.Parse(sSPD1) <= mainForm.ea[i].fStopMaxMinDiff : true) &&
+                                    (isSPD2 ? mainForm.ea[i].fStopMaxMinDiff <= double.Parse(sSPD2) : true)) ? 1 : 0;
+                            if (isEC1 || isEC2)
+                                nPass += ((isEC1 ? int.Parse(sEC1) <= mainForm.ea[i].fakeStrategyMgr.nEveryAICount : true) &&
+                                    (isEC2 ? mainForm.ea[i].fakeStrategyMgr.nEveryAICount <= int.Parse(sEC2) : true)) ? 1 : 0;
+                            if (isCM1 || isCM2)
+                                nPass += ((isCM1 ? double.Parse(sCM1) <= (double)(mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nPrevTimeLineIdx].nLastFs - mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nPrevTimeLineIdx].nStartFs) / mainForm.ea[i].nYesterdayEndPrice : true) &&
+                                    (isCM2 ? (double)(mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nPrevTimeLineIdx].nLastFs - mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nPrevTimeLineIdx].nStartFs) / mainForm.ea[i].nYesterdayEndPrice <= double.Parse(sCM2) : true)) ? 1 : 0;
+                            if (isPM1 || isPM2)
+                                nPass += ((isPM1 ? double.Parse(sPM1) <= (double)(mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nRealDataIdx].nLastFs - mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nRealDataIdx].nStartFs) / mainForm.ea[i].nYesterdayEndPrice : true) &&
+                                    (isPM2 ? (double)(mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nRealDataIdx].nLastFs - mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nRealDataIdx].nStartFs) / mainForm.ea[i].nYesterdayEndPrice <= double.Parse(sPM2) : true)) ? 1 : 0;
+                            if (isCC1 || isCC2)
+                                nPass += ((isCC1 ? int.Parse(sCC1) <= mainForm.ea[i].nChegyulCnt : true) &&
+                                    (isCC2 ? mainForm.ea[i].nChegyulCnt <= int.Parse(sCC2) : true)) ? 1 : 0;
+                            if (isCS1 || isCS2)
+                                nPass += ((isCS1 ? double.Parse(sCS1) <= mainForm.ea[i].speedStatus.fCur : true) &&
+                                    (isCS2 ? mainForm.ea[i].speedStatus.fCur <= double.Parse(sCS2) : true)) ? 1 : 0;
+                            if (isAMU1 || isAMU2)
+                                nPass += ((isAMU1 ? double.Parse(sAMU1) <= mainForm.ea[i].fPositiveStickPower : true) &&
+                                    (isAMU2 ? mainForm.ea[i].fPositiveStickPower <= double.Parse(sAMU2) : true)) ? 1 : 0;
+                            if (isAMD1 || isAMD2)
+                                nPass += ((isAMD1 ? double.Parse(sAMD1) <= mainForm.ea[i].fNegativeStickPower : true) &&
+                                    (isAMD2 ? mainForm.ea[i].fNegativeStickPower <= double.Parse(sAMD2) : true)) ? 1 : 0;
+                            if (isHS1 || isHS2)
+                                nPass += ((isHS1 ? double.Parse(sHS1) <= mainForm.ea[i].hogaSpeedStatus.fCur : true) &&
+                                    (isHS2 ? mainForm.ea[i].hogaSpeedStatus.fCur <= double.Parse(sHS2) : true)) ? 1 : 0;
+                            if (isPS1 || isPS2)
+                                nPass += ((isPS1 ? double.Parse(sPS1) <= mainForm.ea[i].priceMoveStatus.fCur : true) &&
+                                    (isPS2 ? mainForm.ea[i].priceMoveStatus.fCur <= double.Parse(sPS2) : true)) ? 1 : 0;
+                            if (isPUS1 || isPUS2)
+                                nPass += ((isPUS1 ? double.Parse(sPUS1) <= mainForm.ea[i].priceUpMoveStatus.fCur : true) &&
+                                    (isPUS2 ? mainForm.ea[i].priceUpMoveStatus.fCur <= double.Parse(sPUS2) : true)) ? 1 : 0;
+                            if (isTS1 || isTS2)
+                                nPass += ((isTS1 ? double.Parse(sTS1) <= mainForm.ea[i].tradeStatus.fCur : true) &&
+                                    (isTS2 ? mainForm.ea[i].tradeStatus.fCur <= double.Parse(sTS2) : true)) ? 1 : 0;
+                            if (isTMAX1 || isTMAX2)
+                                nPass += ((isTMAX1 ? double.Parse(sTMAX1) <= mainForm.ea[i].fTodayMaxPower : true) &&
+                                    (isTMAX2 ? mainForm.ea[i].fTodayMaxPower <= double.Parse(sTMAX2) : true)) ? 1 : 0;
+                            if (isTMIN1 || isTMIN2)
+                                nPass += ((isTMIN1 ? double.Parse(sTMIN1) <= mainForm.ea[i].fTodayMinPower : true) &&
+                                    (isTMIN2 ? mainForm.ea[i].fTodayMinPower <= double.Parse(sTMIN2) : true)) ? 1 : 0;
+                            if (isTMD1 || isTMD2)
+                                nPass += ((isTMD1 ? double.Parse(sTMD1) <= mainForm.ea[i].fTodayMaxPower - mainForm.ea[i].fTodayBottomPower : true) &&
+                                    (isTMD2 ? mainForm.ea[i].fTodayMaxPower - mainForm.ea[i].fTodayBottomPower <= double.Parse(sTMD2) : true)) ? 1 : 0;
+                            if (isAI5T1 || isAI5T2)
+                                nPass += ((isAI5T1 ? int.Parse(sAI5T1) <= mainForm.ea[i].fakeStrategyMgr.nAI5Time : true) &&
+                                  (isAI5T2 ? mainForm.ea[i].fakeStrategyMgr.nAI5Time <= int.Parse(sAI5T2) : true)) ? 1 : 0;
+                            if (isAI10T1 || isAI10T2)
+                                nPass += ((isAI10T1 ? int.Parse(sAI10T1) <= mainForm.ea[i].fakeStrategyMgr.nAI10Time : true) &&
+                                  (isAI10T2 ? mainForm.ea[i].fakeStrategyMgr.nAI10Time <= int.Parse(sAI10T2) : true)) ? 1 : 0;
+                            if (isAI15T1 || isAI15T2)
+                                nPass += ((isAI15T1 ? int.Parse(sAI15T1) <= mainForm.ea[i].fakeStrategyMgr.nAI15Time : true) &&
+                                  (isAI15T2 ? mainForm.ea[i].fakeStrategyMgr.nAI15Time <= int.Parse(sAI15T2) : true)) ? 1 : 0;
+                            if (isAI20T1 || isAI20T2)
+                                nPass += ((isAI20T1 ? int.Parse(sAI20T1) <= mainForm.ea[i].fakeStrategyMgr.nAI20Time : true) &&
+                                  (isAI20T2 ? mainForm.ea[i].fakeStrategyMgr.nAI20Time <= int.Parse(sAI20T2) : true)) ? 1 : 0;
+                            if (isAI30T1 || isAI30T2)
+                                nPass += ((isAI30T1 ? int.Parse(sAI30T1) <= mainForm.ea[i].fakeStrategyMgr.nAI30Time : true) &&
+                                  (isAI30T2 ? mainForm.ea[i].fakeStrategyMgr.nAI30Time <= int.Parse(sAI30T2) : true)) ? 1 : 0;
+                            if (isAI50T1 || isAI50T2)
+                                nPass += ((isAI50T1 ? int.Parse(sAI50T1) <= mainForm.ea[i].fakeStrategyMgr.nAI50Time : true) &&
+                                  (isAI50T2 ? mainForm.ea[i].fakeStrategyMgr.nAI50Time <= int.Parse(sAI50T2) : true)) ? 1 : 0;
+                            if (isCRC1 || isCRC2)
+                                nPass += ((isCRC1 ? int.Parse(sCRC1) <= mainForm.ea[i].crushMinuteManager.nCurCnt : true) &&
+                                  (isCRC2 ? mainForm.ea[i].crushMinuteManager.nCurCnt <= int.Parse(sCRC2) : true)) ? 1 : 0;
+                            if (isUCRC1 || isUCRC2)
+                                nPass += ((isUCRC1 ? int.Parse(sUCRC1) <= mainForm.ea[i].crushMinuteManager.nUpCnt : true) &&
+                                  (isUCRC2 ? mainForm.ea[i].crushMinuteManager.nUpCnt <= int.Parse(sUCRC2) : true)) ? 1 : 0;
+                            if (isT1501 || isT1502)
+                                nPass += ((isT1501 ? int.Parse(sT1501) <= mainForm.ea[i].sequenceStrategy.nSpeed150TotalSec : true) &&
+                                  (isT1502 ? mainForm.ea[i].sequenceStrategy.nSpeed150TotalSec <= int.Parse(sT1502) : true)) ? 1 : 0;
+                            if (isC1501 || isC1502)
+                                nPass += ((isC1501 ? int.Parse(sC1501) <= mainForm.ea[i].sequenceStrategy.nSpeed150CurSec : true) &&
+                                  (isC1502 ? mainForm.ea[i].sequenceStrategy.nSpeed150CurSec <= int.Parse(sC1502) : true)) ? 1 : 0;
+                            if (isRBA1 || isRBA2)
+                                nPass += ((isRBA1 ? int.Parse(sRBA1) <= mainForm.ea[i].paperBuyStrategy.nStrategyNum : true) &&
+                                  (isRBA2 ? mainForm.ea[i].paperBuyStrategy.nStrategyNum <= int.Parse(sRBA2) : true)) ? 1 : 0;
+                            if (isRBD1 || isRBD2)
+                                nPass += ((isRBD1 ? int.Parse(sRBD1) <= mainForm.ea[i].paperBuyStrategy.nMinuteLocationCount : true) &&
+                                  (isRBD2 ? mainForm.ea[i].paperBuyStrategy.nMinuteLocationCount <= int.Parse(sRBD2) : true)) ? 1 : 0;
+                            if (isFBA1 || isFBA2)
+                                nPass += ((isFBA1 ? int.Parse(sFBA1) <= mainForm.ea[i].fakeBuyStrategy.nStrategyNum : true) &&
+                                  (isFBA2 ? mainForm.ea[i].fakeBuyStrategy.nStrategyNum <= int.Parse(sFBA2) : true)) ? 1 : 0;
+                            if (isFBD1 || isFBD2)
+                                nPass += ((isFBD1 ? int.Parse(sFBD1) <= mainForm.ea[i].fakeBuyStrategy.nMinuteLocationCount : true) &&
+                                  (isFBD2 ? mainForm.ea[i].fakeBuyStrategy.nMinuteLocationCount <= int.Parse(sFBD2) : true)) ? 1 : 0;
+                            if (isFAA1 || isFAA2)
+                                nPass += ((isFAA1 ? int.Parse(sFAA1) <= mainForm.ea[i].fakeAssistantStrategy.nStrategyNum : true) &&
+                                  (isFAA2 ? mainForm.ea[i].fakeAssistantStrategy.nStrategyNum <= int.Parse(sFAA2) : true)) ? 1 : 0;
+                            if (isFAD1 || isFAD2)
+                                nPass += ((isFAD1 ? int.Parse(sFAD1) <= mainForm.ea[i].fakeAssistantStrategy.nMinuteLocationCount : true) &&
+                                  (isFAD2 ? mainForm.ea[i].fakeAssistantStrategy.nMinuteLocationCount <= int.Parse(sFAD2) : true)) ? 1 : 0;
+                            if (isFRA1 || isFRA2)
+                                nPass += ((isFRA1 ? int.Parse(sFRA1) <= mainForm.ea[i].fakeResistStrategy.nStrategyNum : true) &&
+                                  (isFRA2 ? mainForm.ea[i].fakeResistStrategy.nStrategyNum <= int.Parse(sFRA2) : true)) ? 1 : 0;
+                            if (isFRD1 || isFRD2)
+                                nPass += ((isFRD1 ? int.Parse(sFRD1) <= mainForm.ea[i].fakeResistStrategy.nMinuteLocationCount : true) &&
+                                  (isFRD2 ? mainForm.ea[i].fakeResistStrategy.nMinuteLocationCount <= int.Parse(sFRD2) : true)) ? 1 : 0;
+                            if (isPUA1 || isPUA2)
+                                nPass += ((isPUA1 ? int.Parse(sPUA1) <= mainForm.ea[i].fakeVolatilityStrategy.nStrategyNum : true) &&
+                                  (isPUA2 ? mainForm.ea[i].fakeVolatilityStrategy.nStrategyNum <= int.Parse(sPUA2) : true)) ? 1 : 0;
+                            if (isPUD1 || isPUD2)
+                                nPass += ((isPUD1 ? int.Parse(sPUD1) <= mainForm.ea[i].fakeVolatilityStrategy.nMinuteLocationCount : true) &&
+                                  (isPUD2 ? mainForm.ea[i].fakeVolatilityStrategy.nMinuteLocationCount <= int.Parse(sPUD2) : true)) ? 1 : 0;
+                            if (isPDA1 || isPDA2)
+                                nPass += ((isPDA1 ? int.Parse(sPDA1) <= mainForm.ea[i].fakeDownStrategy.nStrategyNum : true) &&
+                                  (isPDA2 ? mainForm.ea[i].fakeDownStrategy.nStrategyNum <= int.Parse(sPDA2) : true)) ? 1 : 0;
+                            if (isPDD1 || isPDD2)
+                                nPass += ((isPDD1 ? int.Parse(sPDD1) <= mainForm.ea[i].fakeDownStrategy.nMinuteLocationCount : true) &&
+                                  (isPDD2 ? mainForm.ea[i].fakeDownStrategy.nMinuteLocationCount <= int.Parse(sPDD2) : true)) ? 1 : 0;
+                            if (isSFD1 || isSFD2)
+                                nPass += ((isSFD1 ? int.Parse(sSFD1) <= mainForm.ea[i].fakeStrategyMgr.nSharedMinuteLocationCount : true) &&
+                                  (isSFD2 ? mainForm.ea[i].fakeStrategyMgr.nSharedMinuteLocationCount <= int.Parse(sSFD2) : true)) ? 1 : 0;
+                            if (isHIT51 || isHIT52)
+                                nPass += ((isHIT51 ? int.Parse(sHIT51) <= mainForm.ea[i].fakeStrategyMgr.hitDict25.Count : true) &&
+                                  (isHIT52 ? mainForm.ea[i].fakeStrategyMgr.hitDict25.Count <= int.Parse(sHIT52) : true)) ? 1 : 0;
+                            if (isHIT81 || isHIT82)
+                                nPass += ((isHIT81 ? int.Parse(sHIT81) <= mainForm.ea[i].fakeStrategyMgr.hitDict38.Count : true) &&
+                                  (isHIT82 ? mainForm.ea[i].fakeStrategyMgr.hitDict38.Count <= int.Parse(sHIT82) : true)) ? 1 : 0;
+                            if (isHIT101 || isHIT102)
+                                nPass += ((isHIT101 ? int.Parse(sHIT101) <= mainForm.ea[i].fakeStrategyMgr.hitDict410.Count : true) &&
+                                  (isHIT102 ? mainForm.ea[i].fakeStrategyMgr.hitDict410.Count <= int.Parse(sHIT102) : true)) ? 1 : 0;
+                            if (isHIT121 || isHIT122)
+                                nPass += ((isHIT121 ? int.Parse(sHIT121) <= mainForm.ea[i].fakeStrategyMgr.hitDict312.Count : true) &&
+                                  (isHIT122 ? mainForm.ea[i].fakeStrategyMgr.hitDict312.Count <= int.Parse(sHIT122) : true)) ? 1 : 0;
+                            if (isCURFT1 || isCURFT2)
+                                nPass += ((isCURFT1 ? int.Parse(sCURFT1) <= mainForm.ea[i].fakeStrategyMgr.nCurHitType : true) &&
+                                  (isCURFT2 ? mainForm.ea[i].fakeStrategyMgr.nCurHitType <= int.Parse(sCURFT2) : true)) ? 1 : 0;
+                            if (isCURFC1 || isCURFC2)
+                                nPass += ((isCURFC1 ? int.Parse(sCURFC1) <= mainForm.ea[i].fakeStrategyMgr.nCurHitNum : true) &&
+                                  (isCURFC2 ? mainForm.ea[i].fakeStrategyMgr.nCurHitNum <= int.Parse(sCURFC2) : true)) ? 1 : 0;
+                            if(isFABNum1 || isFABNum2)
+                                nPass += ((isFABNum1 ? int.Parse(sFABNum1) <= mainForm.ea[i].fakeAssistantStrategy.nStrategyNum + mainForm.ea[i].fakeBuyStrategy.nStrategyNum : true) &&
+                                  (isFABNum2 ? mainForm.ea[i].fakeAssistantStrategy.nStrategyNum + mainForm.ea[i].fakeBuyStrategy.nStrategyNum <= int.Parse(sFABNum2) : true)) ? 1 : 0;
+                            if (isFABPlusNum1 || isFABPlusNum2)
+                                nPass += ((isFABPlusNum1 ? int.Parse(sFABPlusNum1) <= mainForm.ea[i].fakeAssistantStrategy.nStrategyNum + mainForm.ea[i].fakeBuyStrategy.nStrategyNum + mainForm.ea[i].fakeBuyStrategy.nStrategyNum / 2 : true) &&
+                                  (isFABPlusNum2 ? mainForm.ea[i].fakeAssistantStrategy.nStrategyNum + mainForm.ea[i].fakeBuyStrategy.nStrategyNum + mainForm.ea[i].fakeBuyStrategy.nStrategyNum / 2 <= int.Parse(sFABPlusNum2) : true)) ? 1 : 0;
+
+
+
+                            isShow = nPass >= nFinalPassNum;
+
+
+                            if (isReserved) // 예약ㅇ라면
                             {
+                                isReserveShow = false;
 
+                                if (isR1) // r1 조건
+                                {
+                                    isReserveShow = mainForm.ea[i].isViMode;
+                                }
+                                else if (isR2) // r2 조건
+                                {
+                                    isReserveShow = mainForm.ea[i].fakeAssistantStrategy.nStrategyNum >= 10 && !mainForm.ea[i].manualReserve.isChosenW;
+                                }
+                                else if (isR3) // r3 조건
+                                {
+                                    isReserveShow = mainForm.ea[i].fakeBuyStrategy.nStrategyNum >= 10 && !mainForm.ea[i].manualReserve.isChosenW;
+                                }
+                                else if (isR4) // r4 조건
+                                {
+                                    isReserveShow = mainForm.ea[i].fTodayMaxPower >= 0.1 &&
+                                                mainForm.ea[i].fakeStrategyMgr.nTotalFakeCount >= 50 &&
+                                                mainForm.ea[i].fakeBuyStrategy.nMinuteLocationCount >= 2;
+                                }
+                                else if (isRZ)
+                                {
+                                    if (nRZNum == 1)
+                                        isReserveShow = mainForm.ea[i].manualReserve.isChosenQ;
+                                    else if (nRZNum == 2)
+                                        isReserveShow = mainForm.ea[i].manualReserve.isChosenW;
+                                    else if (nRZNum == 3)
+                                        isReserveShow = mainForm.ea[i].manualReserve.isChosenE;
+                                    else if (nRZNum == 4)
+                                        isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isSelected;
+                                    else if (nRZNum == 5)
+                                        isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isSelected;
+                                    else if (nRZNum == 6)
+                                        isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isSelected;
+                                    else if (nRZNum == 7)
+                                        isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isSelected;
+                                    else if (nRZNum == 8)
+                                        isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isSelected;
+
+                                }
+                                else // 에러
+                                {
+
+                                }
                             }
-                        }
 
-                        if (isShow && isReserveShow)
-                        {
-                            nPassLen++;
-                            ListViewItem listViewItem = new ListViewItem(new string[] {
+                            if (qCheckBox.Checked && mainForm.ea[i].manualReserve.isChosenQ)
+                                continue;
+
+                            if (wCheckBox.Checked && mainForm.ea[i].manualReserve.isChosenW)
+                                continue;
+
+                            if (eCheckBox.Checked && mainForm.ea[i].manualReserve.isChosenE)
+                                continue;
+
+
+                            if (isShow && isReserveShow)
+                            {
+                                nPassLen++;
+                                ListViewItem listViewItem = new ListViewItem(new string[] {
                                 mainForm.ea[i].sCode,
                                 mainForm.ea[i].sCodeName,
                                 Math.Round(mainForm.ea[i].fPower, 3).ToString(),
@@ -1585,69 +1676,71 @@ namespace AtoIndicator.View
                             });
 
 
-                            Color myColor;
+                                Color myColor;
 
-                            if (mainForm.ea[i].fPowerJar == 0) //  평균 이율
-                                myColor = Color.FromArgb(255, 255, 255);
-                            else if (mainForm.ea[i].fPowerJar > 0)
-                            {
-                                int nColorStep = (int)(mainForm.ea[i].fPowerJar * 20000);
-                                if (nColorStep > 255)
-                                    nColorStep = 255;
-                                myColor = Color.FromArgb(255, 255 - nColorStep, 255 - nColorStep);
-                            }
-                            else
-                            {
-                                int nColorStep = (int)(Math.Abs(mainForm.ea[i].fPowerJar) * 20000);
-                                if (nColorStep > 255)
-                                    nColorStep = 255;
-                                myColor = Color.FromArgb(255 - nColorStep, 255 - nColorStep, 255);
-                            }
-
-
-                            listViewItem.UseItemStyleForSubItems = false;
-
-                            for (int restIdx = 0; restIdx < listViewItem.SubItems.Count; restIdx++)
-                            {
-                                if (mainForm.ea[i].manualReserve.isChosenQ && (restIdx == 0 || restIdx == 1))
-                                    listViewItem.SubItems[restIdx].BackColor = Color.Green;
-                                else if (mainForm.ea[i].manualReserve.isChosenW && (restIdx == 2 || restIdx == 3))
-                                    listViewItem.SubItems[restIdx].BackColor = Color.Orange;
-                                else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isSelected && restIdx == 5) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isChosen1 && restIdx == 6))
-                                    listViewItem.SubItems[restIdx].BackColor = Color.BlueViolet;
-                                else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isSelected && restIdx == 7) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isChosen1 && restIdx == 8))
-                                    listViewItem.SubItems[restIdx].BackColor = Color.Gold;
-                                else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isSelected && restIdx == 9) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isChosen1 && restIdx == 10))
-                                    listViewItem.SubItems[restIdx].BackColor = Color.Magenta;
-                                else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isSelected && restIdx == 11) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen1 && restIdx == 12) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen2 && restIdx == 13))
-                                    listViewItem.SubItems[restIdx].BackColor = Color.DarkGray;
-                                else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isSelected && restIdx == 14) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen1 && restIdx == 15) ||
-                                        (mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen2 && restIdx == 16))
-                                    listViewItem.SubItems[restIdx].BackColor = Color.Purple;
-                                else if (restIdx == 4 && (mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isBuyReserved ||
-                                                            mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isBuyReserved ||
-                                                            mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isBuyReserved ||
-                                                            mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isBuyReserved))
+                                if (mainForm.ea[i].fPowerJar == 0) //  평균 이율
+                                    myColor = Color.FromArgb(255, 255, 255);
+                                else if (mainForm.ea[i].fPowerJar > 0)
                                 {
-                                    listViewItem.SubItems[restIdx].BackColor = Color.Black;
+                                    int nColorStep = (int)(mainForm.ea[i].fPowerJar * 20000);
+                                    if (nColorStep > 255)
+                                        nColorStep = 255;
+                                    myColor = Color.FromArgb(255, 255 - nColorStep, 255 - nColorStep);
                                 }
                                 else
-                                    listViewItem.SubItems[restIdx].BackColor = myColor;
+                                {
+                                    int nColorStep = (int)(Math.Abs(mainForm.ea[i].fPowerJar) * 20000);
+                                    if (nColorStep > 255)
+                                        nColorStep = 255;
+                                    myColor = Color.FromArgb(255 - nColorStep, 255 - nColorStep, 255);
+                                }
+
+
+                                listViewItem.UseItemStyleForSubItems = false;
+
+                                for (int restIdx = 0; restIdx < listViewItem.SubItems.Count; restIdx++)
+                                {
+                                    if (mainForm.ea[i].manualReserve.isChosenQ && (restIdx == 0))
+                                        listViewItem.SubItems[restIdx].BackColor = Color.Green;
+                                    else if (mainForm.ea[i].manualReserve.isChosenW && (restIdx == 1))
+                                        listViewItem.SubItems[restIdx].BackColor = Color.Orange;
+                                    else if (mainForm.ea[i].manualReserve.isChosenE && (restIdx == 2 || restIdx == 3))
+                                        listViewItem.SubItems[restIdx].BackColor = Color.SkyBlue;
+                                    else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isSelected && restIdx == 5) ||
+                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isChosen1 && restIdx == 6))
+                                        listViewItem.SubItems[restIdx].BackColor = Color.BlueViolet;
+                                    else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isSelected && restIdx == 7) ||
+                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isChosen1 && restIdx == 8))
+                                        listViewItem.SubItems[restIdx].BackColor = Color.Gold;
+                                    else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isSelected && restIdx == 9) ||
+                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isChosen1 && restIdx == 10))
+                                        listViewItem.SubItems[restIdx].BackColor = Color.Magenta;
+                                    else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isSelected && restIdx == 11) ||
+                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen1 && restIdx == 12) ||
+                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen2 && restIdx == 13))
+                                        listViewItem.SubItems[restIdx].BackColor = Color.DarkGray;
+                                    else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isSelected && restIdx == 14) ||
+                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen1 && restIdx == 15) ||
+                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen2 && restIdx == 16))
+                                        listViewItem.SubItems[restIdx].BackColor = Color.Purple;
+                                    else if (restIdx == 4 && (mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isBuyReserved ||
+                                                                mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isBuyReserved ||
+                                                                mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isBuyReserved ||
+                                                                mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isBuyReserved))
+                                    {
+                                        listViewItem.SubItems[restIdx].BackColor = Color.Black;
+                                    }
+                                    else
+                                        listViewItem.SubItems[restIdx].BackColor = myColor;
+                                }
+
+
+                                listViewItemList.Add(listViewItem);
                             }
+                        }
+                        catch
+                        {
 
-
-
-
-
-
-
-                            listViewItemList.Add(listViewItem);
                         }
 
                     }

@@ -943,6 +943,7 @@ namespace AtoIndicator
         {
             public bool isChosenQ;
             public bool isChosenW;
+            public bool isChosenE;
 
 
             public ReservationPoint[] reserveArr;
