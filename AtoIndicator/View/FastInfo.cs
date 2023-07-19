@@ -104,7 +104,7 @@ namespace AtoIndicator.View
             this.confirmButton.Click += ReserveButtonClickHandler;
 
             tooltip1.SetToolTip(reserve1Btn, "vi모드");
-            tooltip2.SetToolTip(reserve2Btn, "현재 1퍼");
+            tooltip2.SetToolTip(reserve2Btn, "페이크보조갯수 10 w지정 No");
             tooltip3.SetToolTip(reserve3Btn, "페이크매수갯수 10 W지정 No");
             tooltip4.SetToolTip(reserve4Btn, "페이크매수분포2 페이크갯수 50 맥스파워 0.1");
 
@@ -195,15 +195,12 @@ namespace AtoIndicator.View
                                 nQWNum1 = nQWSharedNum;
                         }
 
+                        if (cUp == 191) // ?
+                        {
+                            mainForm.ea[nPrevEaIdx].manualReserve.ClearAll();
+                            registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} 전체예약 취소";
+                        }
                     }
-
-
-                    if (cUp == 191) // ?
-                    {
-                        mainForm.ea[nPrevEaIdx].manualReserve.ClearAll();
-                        registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} 전체예약 취소";
-                    }
-
 
                 }
             }
@@ -504,6 +501,12 @@ namespace AtoIndicator.View
                     }
                     else
                         nQWNum2 = nQWSharedNum;
+                }
+
+                if (cUp == 191) // ?
+                {
+                    mainForm.ea[nPrevEaIdx].manualReserve.ClearAll();
+                    registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} 전체예약 취소";
                 }
             }
 
@@ -1507,7 +1510,7 @@ namespace AtoIndicator.View
                             }
                             else if (isR2) // r2 조건
                             {
-                                isReserveShow = (double)(mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nPrevTimeLineIdx].nLastFs - mainForm.ea[i].timeLines1m.arrTimeLine[mainForm.ea[i].timeLines1m.nPrevTimeLineIdx].nStartFs) / mainForm.ea[i].nYesterdayEndPrice >= 0.01;
+                                isReserveShow = mainForm.ea[i].fakeAssistantStrategy.nStrategyNum >= 10 && !mainForm.ea[i].manualReserve.isChosenW;
                             }
                             else if (isR3) // r3 조건
                             {

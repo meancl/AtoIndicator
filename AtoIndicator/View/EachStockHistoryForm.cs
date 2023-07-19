@@ -24,15 +24,15 @@ namespace AtoIndicator.View.EachStockHistory
         public bool isMinuteVisible = false;
         public bool isBuyedBlockVisible = false;
 
-        public bool isBuyArrowVisible = true;
-        public bool isSellArrowVisible = true;
+        public bool isBuyArrowVisible = false;
+        public bool isSellArrowVisible = false;
         public bool isFakeBuyArrowVisible = true;
-        public bool isFakeResistArrowVisible = true;
+        public bool isFakeResistArrowVisible = false;
         public bool isFakeAssistantArrowVisible = true;
-        public bool isFakeVolatilityArrowVisible = true;
-        public bool isFakeDownArrowVisible = true;
-        public bool isPaperBuyArrowVisible = true;
-        public bool isPaperSellArrowVisible = true;
+        public bool isFakeVolatilityArrowVisible = false;
+        public bool isFakeDownArrowVisible = false;
+        public bool isPaperBuyArrowVisible = false;
+        public bool isPaperSellArrowVisible = false;
 
         public bool isAllArrowVisible = true;
 
