@@ -1393,6 +1393,13 @@ namespace AtoIndicator.View.EachStockHistory
             string sTitle = $"[전체] {mainForm.nSharedTime} {curEa.sCode} {curEa.sCodeName} {curEa.sMarketGubunTag}";
             string sMessage =
                 $"현재 매매횟수 : {curEa.paperBuyStrategy.nStrategyNum}{NEW_LINE}" +
+                $"===================================================={NEW_LINE}" +
+
+                $"시가총액 : {curEa.lMarketCap / (double)MainForm.HUNDRED_MILLION}(억원){NEW_LINE}" +
+                $"* 총 거래대금 : {curEa.lTotalTradePrice / (double)MainForm.HUNDRED_MILLION}(억원){NEW_LINE}" +
+                $"총 매수대금 : {curEa.lOnlyBuyPrice / (double)MainForm.HUNDRED_MILLION}(억원){NEW_LINE}" +
+                $"총 매도대금 : {curEa.lOnlySellPrice / (double)MainForm.HUNDRED_MILLION}(억원){NEW_LINE}" +
+
                 $"=====================  랭킹  ========================={NEW_LINE}" +
                 $"----------------------- 총 -------------------------------{NEW_LINE}" +
                 $"누적속도 순위 : {curEa.rankSystem.nAccumCountRanking}{NEW_LINE}" +
@@ -1501,10 +1508,6 @@ namespace AtoIndicator.View.EachStockHistory
                 $"체결 대 순체결 : {curEa.fTradePerPure}{NEW_LINE}" +
                 $"체결 누적빈도 : {curEa.nChegyulCnt}{NEW_LINE}" +
                 $"호가 누적빈도 : {curEa.nHogaCnt}{NEW_LINE}" +
-                $"시가총액 : {curEa.lMarketCap / (double)MainForm.HUNDRED_MILLION}(억원){NEW_LINE}" +
-                $"* 총 거래대금 : {curEa.lTotalTradePrice / (double)MainForm.HUNDRED_MILLION}(억원){NEW_LINE}" +
-                $"총 매수대금 : {curEa.lOnlyBuyPrice / (double)MainForm.HUNDRED_MILLION}(억원){NEW_LINE}" +
-                $"총 매도대금 : {curEa.lOnlySellPrice / (double)MainForm.HUNDRED_MILLION}(억원){NEW_LINE}" +
                 $"----------------- 상태변수 --------------------{NEW_LINE}" +
                 $"실시간 호가비율상태 : {curEa.hogaRatioStatus.fCur}{NEW_LINE}" +
                 $"실시간 호가속도상태 : {curEa.hogaSpeedStatus.fCur}{NEW_LINE}" +
