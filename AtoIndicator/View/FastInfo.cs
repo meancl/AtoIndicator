@@ -91,6 +91,9 @@ namespace AtoIndicator.View
             ToolTip tooltip11 = new ToolTip();
 
 
+            timerDownButton.Click += TimerButtonClickHandler;
+            timerUpButton.Click += TimerButtonClickHandler;
+
             this.write1Btn.Click += WriteButtonClickHandler;
             this.write2Btn.Click += WriteButtonClickHandler;
             this.write3Btn.Click += WriteButtonClickHandler;
@@ -117,6 +120,7 @@ namespace AtoIndicator.View
 
             this.FormClosed += FormClosedHandler;
 
+            timer = new System.Timers.Timer(nTimerMilliSec);
             timer.Elapsed += delegate (Object s, System.Timers.ElapsedEventArgs e)
             {
                 UpdateTable();
@@ -211,6 +215,21 @@ namespace AtoIndicator.View
                                 nQWNum1 = nQWSharedNum;
                         }
 
+                        if (cUp == 'R')
+                        {
+                            if (nQWNum1 == nQWSharedNum)
+                            {
+                                nQWNum1 = ++nQWSharedNum;
+
+                                mainForm.ea[nPrevEaIdx].manualReserve.isChosenR = !mainForm.ea[nPrevEaIdx].manualReserve.isChosenR;
+                                if (mainForm.ea[nPrevEaIdx].manualReserve.isChosenR)
+                                    registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} R창 등록됨";
+                                else
+                                    registerLabel.Text = $"{listView1.FocusedItem.SubItems[0].Text.Trim()} R창 등록해제됨";
+                            }
+                            else
+                                nQWNum1 = nQWSharedNum;
+                        }
 
                         if (cUp == 191) // ?
                         {
@@ -277,8 +296,8 @@ namespace AtoIndicator.View
                         wCheckBox.Checked = false;
                         qCheckBox.Checked = false;
                         eCheckBox.Checked = false;
+                        rCheckBox.Checked = false;
 
-                        tTimerTxtBox.Text = "";
 
                         passNumTxtBox.Text = "";
 
@@ -466,7 +485,7 @@ namespace AtoIndicator.View
                     ShowIndicator();
                 }
 
-                if (cUp == 'P')
+                if (cUp == 'R')
                 {
                     CheckReserve();
                     isRZ = true;
@@ -474,7 +493,7 @@ namespace AtoIndicator.View
                     ShowIndicator();
                 }
 
-                if (cUp == 'O')
+                if (cUp == 'P')
                 {
                     CheckReserve();
                     isRZ = true;
@@ -482,25 +501,33 @@ namespace AtoIndicator.View
                     ShowIndicator();
                 }
 
-                if (cUp == 'I')
+                if (cUp == 'O')
                 {
                     CheckReserve();
                     isRZ = true;
                     nRZNum = 6;
                     ShowIndicator();
                 }
-                if (cUp == 'U')
+
+                if (cUp == 'I')
                 {
                     CheckReserve();
                     isRZ = true;
                     nRZNum = 7;
                     ShowIndicator();
                 }
-                if (cUp == 'Y')
+                if (cUp == 'U')
                 {
                     CheckReserve();
                     isRZ = true;
                     nRZNum = 8;
+                    ShowIndicator();
+                }
+                if (cUp == 'Y')
+                {
+                    CheckReserve();
+                    isRZ = true;
+                    nRZNum = 9;
                     ShowIndicator();
                 }
             }
@@ -550,6 +577,22 @@ namespace AtoIndicator.View
                             registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} E창 등록됨";
                         else
                             registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} E창 등록해제됨";
+                    }
+                    else
+                        nQWNum2 = nQWSharedNum;
+                }
+
+                if (cUp == 'R')
+                {
+                    if (nQWNum2 == nQWSharedNum)
+                    {
+                        nQWNum2 = ++nQWSharedNum;
+
+                        mainForm.ea[nPrevEaIdx].manualReserve.isChosenR = !mainForm.ea[nPrevEaIdx].manualReserve.isChosenR;
+                        if (mainForm.ea[nPrevEaIdx].manualReserve.isChosenR)
+                            registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} R창 등록됨";
+                        else
+                            registerLabel.Text = $"{mainForm.ea[nPrevEaIdx].sCode} R창 등록해제됨";
                     }
                     else
                         nQWNum2 = nQWSharedNum;
@@ -1610,14 +1653,16 @@ namespace AtoIndicator.View
                                     else if (nRZNum == 3)
                                         isReserveShow = mainForm.ea[i].manualReserve.isChosenE;
                                     else if (nRZNum == 4)
-                                        isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isSelected;
+                                        isReserveShow = mainForm.ea[i].manualReserve.isChosenR;
                                     else if (nRZNum == 5)
-                                        isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isSelected;
+                                        isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isSelected;
                                     else if (nRZNum == 6)
-                                        isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isSelected;
+                                        isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isSelected;
                                     else if (nRZNum == 7)
-                                        isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isSelected;
+                                        isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isSelected;
                                     else if (nRZNum == 8)
+                                        isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isSelected;
+                                    else if (nRZNum == 9)
                                         isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isSelected;
 
                                 }
@@ -1636,6 +1681,8 @@ namespace AtoIndicator.View
                             if (eCheckBox.Checked && mainForm.ea[i].manualReserve.isChosenE)
                                 continue;
 
+                            if (rCheckBox.Checked && mainForm.ea[i].manualReserve.isChosenR)
+                                continue;
 
                             if (isShow && isReserveShow)
                             {
@@ -1704,8 +1751,10 @@ namespace AtoIndicator.View
                                         listViewItem.SubItems[restIdx].BackColor = Color.Green;
                                     else if (mainForm.ea[i].manualReserve.isChosenW && (restIdx == 1))
                                         listViewItem.SubItems[restIdx].BackColor = Color.Orange;
-                                    else if (mainForm.ea[i].manualReserve.isChosenE && (restIdx == 2 || restIdx == 3))
+                                    else if (mainForm.ea[i].manualReserve.isChosenE && (restIdx == 2))
                                         listViewItem.SubItems[restIdx].BackColor = Color.SkyBlue;
+                                    else if (mainForm.ea[i].manualReserve.isChosenR && (restIdx == 3))
+                                        listViewItem.SubItems[restIdx].BackColor = Color.GreenYellow;
                                     else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isSelected && restIdx == 5) ||
                                             (mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isChosen1 && restIdx == 6))
                                         listViewItem.SubItems[restIdx].BackColor = Color.BlueViolet;
@@ -1766,23 +1815,8 @@ namespace AtoIndicator.View
                         }
                         else
                         {
-                            double fTimerInterval;
-                            try
-                            {
-                                fTimerInterval = double.Parse(tTimerTxtBox.Text);
-                                if (fTimerInterval <= 0)
-                                    fTimerInterval = 0.35;
-                            }
-                            catch
-                            {
-                                fTimerInterval = 0.35;
-                            }
 
-                            if (fTimerInterval < 0.3) // 300ms로 스피드 하한 설정
-                                fTimerInterval = 0.3;
-
-
-                            timer.Interval = fTimerInterval * 1000;
+                            timer.Interval = nTimerMilliSec;
                             timer.Enabled = true;
                             timerCheckBox.Checked = true;
                         }
@@ -1816,7 +1850,7 @@ namespace AtoIndicator.View
 
         public int nDoneCnt = 0;
 
-        public System.Timers.Timer timer = new System.Timers.Timer();
+        public System.Timers.Timer timer;
 
         public bool isReserved = false;
         public bool isR1 = false;
@@ -1862,6 +1896,37 @@ namespace AtoIndicator.View
             else if (sender.Equals(write5Btn))
             {
                 tAIS1.Text = "10";
+            }
+        }
+
+        public int nTimerMilliSec = 300;
+        public const int TIMER_MOVING = 100;
+
+        public void TimerButtonClickHandler(object sender, EventArgs e)
+        {
+            try
+            {
+                if (sender.Equals(timerUpButton))
+                {
+                    nTimerMilliSec += TIMER_MOVING;
+                    timer.Interval = nTimerMilliSec;
+                    timerLabel.Text = nTimerMilliSec.ToString();
+                }
+                else if (sender.Equals(timerDownButton))
+                {
+                    if (nTimerMilliSec > 100)
+                    {
+                        nTimerMilliSec -= TIMER_MOVING;
+                        timer.Interval = nTimerMilliSec;
+                        timerLabel.Text = nTimerMilliSec.ToString();
+                    }
+                }
+            }
+            catch
+            {
+                nTimerMilliSec = 300;
+                timer.Interval = nTimerMilliSec;
+                timerLabel.Text = nTimerMilliSec.ToString();
             }
         }
 

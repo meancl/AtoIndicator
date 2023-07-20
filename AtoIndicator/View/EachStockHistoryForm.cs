@@ -24,15 +24,15 @@ namespace AtoIndicator.View.EachStockHistory
         public bool isMinuteVisible = false;
         public bool isBuyedBlockVisible = false;
 
-        public bool isBuyArrowVisible = false;
-        public bool isSellArrowVisible = false;
+        public bool isBuyArrowVisible = true;
+        public bool isSellArrowVisible = true;
         public bool isFakeBuyArrowVisible = true;
-        public bool isFakeResistArrowVisible = false;
+        public bool isFakeResistArrowVisible = true;
         public bool isFakeAssistantArrowVisible = true;
-        public bool isFakeVolatilityArrowVisible = false;
-        public bool isFakeDownArrowVisible = false;
-        public bool isPaperBuyArrowVisible = false;
-        public bool isPaperSellArrowVisible = false;
+        public bool isFakeVolatilityArrowVisible = true;
+        public bool isFakeDownArrowVisible = true;
+        public bool isPaperBuyArrowVisible = true;
+        public bool isPaperSellArrowVisible = true;
 
         public bool isAllArrowVisible = true;
 
@@ -51,7 +51,7 @@ namespace AtoIndicator.View.EachStockHistory
 
         public bool isArrowGrouping = true;
 
-        public System.Timers.Timer timer = new System.Timers.Timer(100); // 타이머 선택이유는 비동기기 떄문에 Windows.Forms.Timer는 크로스 쓰레드 문제가 없는대신 UI쓰레드에서 돌아감
+        public System.Timers.Timer timer; // 타이머 선택이유는 비동기기 떄문에 Windows.Forms.Timer는 크로스 쓰레드 문제가 없는대신 UI쓰레드에서 돌아감
         public int d = 0;
 
         public string NEW_LINE = Environment.NewLine;
@@ -125,6 +125,7 @@ namespace AtoIndicator.View.EachStockHistory
 
             SendToFrontSeriesName("MinuteStick");
 
+            timer = new System.Timers.Timer(nTimerMilliSec);
             timer.Elapsed += delegate (Object sender, System.Timers.ElapsedEventArgs e)
             {
                 updateDelegate();
@@ -334,6 +335,9 @@ namespace AtoIndicator.View.EachStockHistory
             historyChart.Paint += ChartOnPaintHandler;
             historyChart.Resize += ChartResizeHandler;
 
+            timerUpButton.Click += TimerButtonClickHandler;
+            timerDownButton.Click += TimerButtonClickHandler;
+
             this.KeyPreview = true;
             this.KeyDown += KeyDownHandler;
             this.KeyUp += KeyUpHandler;
@@ -379,6 +383,7 @@ namespace AtoIndicator.View.EachStockHistory
         {
             try // 해당 폼이 닫혀도 실시간버튼을 통해 timer스레드가 updateDelegate를 실행시키면 오류가 발생하기 때문
             {
+
                 curEa = mainForm.ea[nCurIdx];
 
                 if (totalClockLabel.InvokeRequired)
@@ -3471,8 +3476,36 @@ namespace AtoIndicator.View.EachStockHistory
 
         // 
 
+        public int nTimerMilliSec = 100;
+        public const int TIMER_MOVING = 100;
 
-
+        public void TimerButtonClickHandler(object sender, EventArgs e)
+        {
+            try
+            {
+                if (sender.Equals(timerUpButton))
+                {
+                    nTimerMilliSec += TIMER_MOVING;
+                    timer.Interval = nTimerMilliSec;
+                    timerLabel.Text = nTimerMilliSec.ToString();
+                }
+                else if (sender.Equals(timerDownButton))
+                {
+                    if (nTimerMilliSec > 100)
+                    {
+                        nTimerMilliSec -= TIMER_MOVING;
+                        timer.Interval = nTimerMilliSec;
+                        timerLabel.Text = nTimerMilliSec.ToString();
+                    }
+                }
+            }
+            catch
+            {
+                nTimerMilliSec = 100;
+                timer.Interval = nTimerMilliSec;
+                timerLabel.Text = nTimerMilliSec.ToString();
+            }
+        }
 
 
         public void SetCurGraphics()

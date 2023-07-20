@@ -703,3 +703,31 @@
    위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
    위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
 
+2023-07-21 오전 12:15:21 ## Msg : '0'은(는) 'Interval'에 사용할 수 없는 값입니다. 'Interval'은 0보다 커야 합니다.
+======================================================
+   위치: System.Timers.Timer.set_Interval(Double value)
+   위치: AtoIndicator.View.EachStockHistory.EachStockHistoryForm.TimerButtonClickHandler(Object sender, EventArgs e) 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\EachStockHistoryForm.cs:줄 3492
+   위치: System.Windows.Forms.Control.OnClick(EventArgs e)
+   위치: System.Windows.Forms.Button.OnClick(EventArgs e)
+   위치: System.Windows.Forms.Button.OnMouseUp(MouseEventArgs mevent)
+   위치: System.Windows.Forms.Control.WmMouseUp(Message& m, MouseButtons button, Int32 clicks)
+   위치: System.Windows.Forms.Control.WndProc(Message& m)
+   위치: System.Windows.Forms.ButtonBase.WndProc(Message& m)
+   위치: System.Windows.Forms.Button.WndProc(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   위치: System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   위치: System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+   위치: System.Windows.Forms.UnsafeNativeMethods.DispatchMessageW(MSG& msg)
+   위치: System.Windows.Forms.Application.ComponentManager.System.Windows.Forms.UnsafeNativeMethods.IMsoComponentManager.FPushMessageLoop(IntPtr dwComponentID, Int32 reason, Int32 pvLoopData)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoopInner(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.ThreadContext.RunMessageLoop(Int32 reason, ApplicationContext context)
+   위치: System.Windows.Forms.Application.RunDialog(Form form)
+   위치: System.Windows.Forms.Form.ShowDialog(IWin32Window owner)
+   위치: System.Windows.Forms.Form.ShowDialog()
+   위치: AtoIndicator.View.FastInfo.<>c__DisplayClass37_0.<CallThreadEachStockHistoryForm>b__0() 파일 C:\Users\MJ\source\repos\AtoIndicator\AtoIndicator\View\FastInfo.cs:줄 2098
+   위치: System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   위치: System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   위치: System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   위치: System.Threading.ThreadHelper.ThreadStart()
+
