@@ -2030,14 +2030,18 @@ namespace AtoIndicator
                         int nTv = int.Parse(axKHOpenAPI1.GetCommRealData(sCode, 15)); // 거래량
                         double fTs = double.Parse(axKHOpenAPI1.GetCommRealData(sCode, 228)); // 체결강도
                         double fPower = double.Parse(axKHOpenAPI1.GetCommRealData(sCode, 12)) / 100; // 등락율
-                        double fTradeRatioCompared = double.Parse(axKHOpenAPI1.GetCommRealData(sCode, 30));
 
                         ea[nCurIdx].nFs = nFs;
                         ea[nCurIdx].nFb = nFb;
                         ea[nCurIdx].nTv = nTv;
                         ea[nCurIdx].fTs = fTs;
                         ea[nCurIdx].fPower = fPower;
+
+                        double fTradeRatioCompared = double.Parse(axKHOpenAPI1.GetCommRealData(sCode, 30)); // 전일거래량대비(비율)
                         ea[nCurIdx].fTradeRatioCompared = fTradeRatioCompared;
+
+                        double fTradeRatioComparedWithTime = double.Parse(axKHOpenAPI1.GetCommRealData(sCode, 851)); // 전일 동시간 거래량 비율
+                        ea[nCurIdx].fTradeRatioComparedWithTime = fTradeRatioComparedWithTime;
                     }
                     catch
                     {
@@ -2457,8 +2461,6 @@ namespace AtoIndicator
                     // 파워는 최우선매수호가와 초기가격의 손익률로 계산한다
 
 
-
-
                     // 가격변화 실시간 처리
                     ea[nCurIdx].fPowerJar += ea[nCurIdx].fPowerDiff;
                     ea[nCurIdx].fOnlyDownPowerJar += ea[nCurIdx].fPowerDiff;
@@ -2479,6 +2481,34 @@ namespace AtoIndicator
                         ea[nCurIdx].fMinusCnt07++;
                         ea[nCurIdx].fMinusCnt09++;
                     }
+
+
+                    // 2000폭탄, 5000폭탄 체크 
+                    long lBombPrice = ea[nCurIdx].nTv * ea[nCurIdx].nFs;
+                    int nBombTimeDiff = SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].nPrevTimeForBomb);
+
+                    for(int t = 0; t < nBombTimeDiff; t++)
+                    {
+                        ea[nCurIdx].nPositiveBomb2000 = Max(ea[nCurIdx].nPositiveBomb2000 - 1, 0);
+                        ea[nCurIdx].nPositiveBomb5000 = Max(ea[nCurIdx].nPositiveBomb5000 - 1, 0);
+                        ea[nCurIdx].nNegativeBomb2000 = Max(ea[nCurIdx].nNegativeBomb2000 - 1, 0);
+                        ea[nCurIdx].nNegativeBomb5000 = Max(ea[nCurIdx].nNegativeBomb5000 - 1, 0);
+
+                        ea[nCurIdx].nPrevTimeForBomb = nSharedTime;
+                    }
+                    if(lBombPrice >= 2 * TEN_MILLION)
+                    {
+                        ea[nCurIdx].nPositiveBomb2000++;
+                        if (lBombPrice >= 5 * TEN_MILLION)
+                            ea[nCurIdx].nPositiveBomb5000++;
+                    }
+                    else if(lBombPrice <= -2 * TEN_MILLION)
+                    {
+                        ea[nCurIdx].nNegativeBomb2000++;
+                        if (lBombPrice <= -5 * TEN_MILLION)
+                            ea[nCurIdx].nNegativeBomb5000++;
+                    }
+
                     #endregion
 
                     #region HIT 관리

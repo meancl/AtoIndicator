@@ -149,6 +149,7 @@ namespace AtoIndicator
             public double fPrevPowerWithoutGap; // 이전 시초가 등락율;
             public double fPowerDiff;
             public double fTradeRatioCompared;
+            public double fTradeRatioComparedWithTime;
 
             // ----------------------------------
             // 체결상태 변수
@@ -178,6 +179,12 @@ namespace AtoIndicator
             public double fNegativeStickPower;
             public int nFirstVolume;
             public long lFirstPrice;
+
+            public int nPrevTimeForBomb;
+            public int nPositiveBomb2000;
+            public int nPositiveBomb5000;
+            public int nNegativeBomb2000;
+            public int nNegativeBomb5000;
 
             public int nRealMaxPrice;
             // ----------------------------------

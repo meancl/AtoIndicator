@@ -1367,10 +1367,18 @@ namespace AtoIndicator.View.EachStockHistory
                         curTradePriceLabel.Text = $"대금 : {Math.Round(curEa.tradeStatus.fCur, 2)}";
                         curHogaRatioLabel.Text = $"호가비 : {Math.Round(curEa.hogaRatioStatus.fCur, 2)}";
                         curHitNumLabel.Text = $"히트 : {curEa.fakeStrategyMgr.nCurHitNum}";
+
                         if (curEa.isViMode)
                             isViLabel.Text = "VI";
                         else
                             isViLabel.Text = "";
+
+                        fTradeComparedLabel.Text = $"전일대비 : {Math.Round(curEa.fTradeRatioCompared, 2)}";
+                        fTradeComparedWithTimeLabel.Text = $"동시간 전일대비 : {Math.Round(curEa.fTradeRatioComparedWithTime, 2)}";
+                        nPositiveBomb2000Label.Text = $"+폭탄2000 : {curEa.nPositiveBomb2000}";
+                        nPositiveBomb5000Label.Text = $"+폭탄5000 : {curEa.nPositiveBomb5000}";
+                        nNegativeBomb2000Label.Text = $"-폭탄2000 : {curEa.nNegativeBomb2000}";
+                        nNegativeBomb5000Label.Text = $"-폭탄5000 : {curEa.nNegativeBomb5000}";
 
                         SetChartViewRange(0, nLastMinuteIdx + 2, curEa.nFs, curEa.nFs, "TotalArea");
                     } // END ---- if (curEa.timeLines1m.nRealDataIdx > 0)
@@ -2742,19 +2750,16 @@ namespace AtoIndicator.View.EachStockHistory
 
             if (cUp == 17) // ctrl
             {
-                ctrlLabel.Text = "CTL : No";
                 isCtrlPushed = false;
             }
 
             if (cUp == 32) // space
             {
-                spaceLabel.Text = "SPC : No";
                 isSpacePushed = false;
             }
 
             if (cUp == 16) // shift
             {
-                shiftLabel.Text = "SHT : No";
                 isShiftPushed = false;
             }
 
@@ -2778,7 +2783,6 @@ namespace AtoIndicator.View.EachStockHistory
             {
                 if (cUp == 191) // enter
                 {
-                    questionLabel.Text = "QST : No";
                     isQuestionPushed = false;
                 }
             }
@@ -3195,26 +3199,22 @@ namespace AtoIndicator.View.EachStockHistory
 
             if (cPressed == 17) // ctrl
             {
-                ctrlLabel.Text = "CTL : Yes";
                 isCtrlPushed = true;
             }
 
             if (cPressed == 16) // shift
             {
-                shiftLabel.Text = "SHT : Yes";
                 isShiftPushed = true;
             }
 
             if (cPressed == 32) // space 
             {
-                spaceLabel.Text = "SPC : Yes";
                 isSpacePushed = true;
             }
             if (!isCtrlPushed)
             {
                 if (cPressed == 191) // enter 
                 {
-                    questionLabel.Text = "QST : Yes";
                     isQuestionPushed = true;
                 }
             }
@@ -3290,6 +3290,8 @@ namespace AtoIndicator.View.EachStockHistory
         }
 
         public int nMouseWheel = 0;
+
+
         public void MouseWheelEventHandler(object sender, MouseEventArgs e)
         {
             if (e.Delta > 0) // Scrolled up
