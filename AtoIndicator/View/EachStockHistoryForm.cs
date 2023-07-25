@@ -1374,7 +1374,8 @@ namespace AtoIndicator.View.EachStockHistory
                             isViLabel.Text = "";
 
                         fTradeComparedLabel.Text = $"전일대비 : {Math.Round(curEa.fTradeRatioCompared, 2)}";
-                        fTradeComparedWithTimeLabel.Text = $"동시간 전일대비 : {Math.Round(curEa.fTradeRatioComparedWithTime, 2)}";
+                        fTradeComparedWithTimeLabel.Text = $"동시간 대비 : {Math.Round(curEa.fTradeRatioComparedWithTime, 2)}";
+                        fTradeStrengthLabel.Text = $"체결강도 : {Math.Round(curEa.fTs, 2)}";
                         nPositiveBomb2000Label.Text = $"+폭탄2000 : {curEa.nPositiveBomb2000}";
                         nPositiveBomb5000Label.Text = $"+폭탄5000 : {curEa.nPositiveBomb5000}";
                         nNegativeBomb2000Label.Text = $"-폭탄2000 : {curEa.nNegativeBomb2000}";
