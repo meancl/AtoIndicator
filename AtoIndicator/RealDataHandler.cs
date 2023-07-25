@@ -1040,6 +1040,13 @@ namespace AtoIndicator
                         }// END ---- 이평선
                         #endregion
 
+                        // 체결정보
+                        {
+                            ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fTradeCompared = ea[i].fTradeRatioCompared;
+                            ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fTradeComparedWithTime = ea[i].fTradeRatioComparedWithTime;
+                            ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fTradeStrength = ea[i].fTs;
+                        }
+
                         #region 전고점 계산
                         // ===========================================================================================================
                         // 전고점 Part

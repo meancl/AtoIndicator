@@ -1084,6 +1084,10 @@ namespace AtoIndicator
             public double fOverMaGap2;
 
 
+            public double fTradeCompared;
+            public double fTradeComparedWithTime;
+            public double fTradeStrength;
+
         }
         public struct CrushManager
         {

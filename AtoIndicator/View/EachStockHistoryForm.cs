@@ -659,6 +659,9 @@ namespace AtoIndicator.View.EachStockHistory
                                     $"Ma20m++ : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nUpTimeOverMa0}{NEW_LINE}" +
                                     $"Ma1h++ : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nUpTimeOverMa1}{NEW_LINE}" +
                                     $"Ma2h++ : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nUpTimeOverMa2}{NEW_LINE}" +
+                                    $"전일대비 : {Math.Round(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fTradeCompared, 3)}{NEW_LINE}" + 
+                                    $"전일 동시간 대비 : {Math.Round(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fTradeComparedWithTime, 3)}{NEW_LINE}" + 
+                                    $"체결강도 : {Math.Round(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fTradeStrength, 3)}{NEW_LINE}" + 
                                     $"*총순위 : {curEa.rankSystem.arrRanking[nLastMinuteIdx].nSummationRanking}위( {curEa.rankSystem.arrRanking[nLastMinuteIdx].nSummationMove} ){NEW_LINE}" +
                                     $"*분당순위 : {curEa.rankSystem.arrRanking[nLastMinuteIdx].nMinuteRanking} 위";
                                 nLastMinuteIdx++;

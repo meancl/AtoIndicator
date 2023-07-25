@@ -451,6 +451,13 @@ namespace AtoIndicator.View
                         tFABNum2.Text = "";
                         tFABPlusNum1.Text = "";
                         tFABPlusNum2.Text = "";
+                        tTradeCompared1.Text = "";
+                        tTradeCompared2.Text = "";
+                        tTradeComparedWithTime1.Text = "";
+                        tTradeComparedWithTime2.Text = "";
+                        tTradeStrength1.Text = "";
+                        tTradeStrength2.Text = "";
+
                     }
                 }
 
@@ -806,7 +813,12 @@ namespace AtoIndicator.View
                 string sFABNum2 = "";
                 string sFABPlusNum1 = "";
                 string sFABPlusNum2 = "";
-
+                string sTradeCompared1 = "";
+                string sTradeCompared2 = "";
+                string sTradeComparedWithTime1 = "";
+                string sTradeComparedWithTime2 = "";
+                string sTradeStrength1 = "";
+                string sTradeStrength2 = "";
 
                 bool isTF1 = false;
                 bool isTF2 = false;
@@ -958,7 +970,12 @@ namespace AtoIndicator.View
                 bool isFABNum2 = false;
                 bool isFABPlusNum1 = false;
                 bool isFABPlusNum2 = false;
-
+                bool isTradeCompared1 = false;
+                bool isTradeCompared2 = false;
+                bool isTradeComparedWithTime1 = false;
+                bool isTradeComparedWithTime2 = false;
+                bool isTradeStrength1 = false;
+                bool isTradeStrength2 = false;
 
                 try
                 {
@@ -1120,6 +1137,13 @@ namespace AtoIndicator.View
                     sFABNum2 = tFABNum2.Text.Trim();
                     sFABPlusNum1 = tFABPlusNum1.Text.Trim();
                     sFABPlusNum2 = tFABPlusNum2.Text.Trim();
+                    sTradeCompared1 = tTradeCompared1.Text.Trim();
+                    sTradeCompared2 = tTradeCompared2.Text.Trim();
+                    sTradeComparedWithTime1 = tTradeComparedWithTime1.Text.Trim();
+                    sTradeComparedWithTime2 = tTradeComparedWithTime2.Text.Trim();
+                    sTradeStrength1 = tTradeStrength1.Text.Trim();
+                    sTradeStrength2 = tTradeStrength2.Text.Trim();
+
 
                     isTF1 = !sTF1.Equals("");
                     isTF2 = !sTF2.Equals("");
@@ -1271,7 +1295,12 @@ namespace AtoIndicator.View
                     isFABNum2 = !sFABNum2.Equals("");
                     isFABPlusNum1 = !sFABPlusNum1.Equals("");
                     isFABPlusNum2 = !sFABPlusNum2.Equals("");
-
+                    isTradeCompared1 = !sTradeCompared1.Equals("");
+                    isTradeCompared2 = !sTradeCompared2.Equals("");
+                    isTradeComparedWithTime1 = !sTradeComparedWithTime1.Equals("");
+                    isTradeComparedWithTime2 = !sTradeComparedWithTime2.Equals("");
+                    isTradeStrength1 = !sTradeStrength1.Equals("");
+                    isTradeStrength2 = !sTradeStrength2.Equals("");
 
                     nPass = 0; // pass cnt
                     nPassLen = 0;
@@ -1351,6 +1380,9 @@ namespace AtoIndicator.View
                                         isCURFC1 || isCURFC2,
                                         isFABNum1 || isFABNum2,
                                         isFABPlusNum1 || isFABPlusNum2,
+                                        isTradeCompared1 || isTradeCompared2,
+                                        isTradeComparedWithTime1 || isTradeComparedWithTime2,
+                                        isTradeStrength1 || isTradeStrength2,
                     });
 
                     string sPassNum = passNumTxtBox.Text.Trim();
@@ -1616,8 +1648,15 @@ namespace AtoIndicator.View
                             if (isFABPlusNum1 || isFABPlusNum2)
                                 nPass += ((isFABPlusNum1 ? int.Parse(sFABPlusNum1) <= mainForm.ea[i].fakeAssistantStrategy.nStrategyNum + mainForm.ea[i].fakeBuyStrategy.nStrategyNum + mainForm.ea[i].fakeBuyStrategy.nStrategyNum / 2 : true) &&
                                   (isFABPlusNum2 ? mainForm.ea[i].fakeAssistantStrategy.nStrategyNum + mainForm.ea[i].fakeBuyStrategy.nStrategyNum + mainForm.ea[i].fakeBuyStrategy.nStrategyNum / 2 <= int.Parse(sFABPlusNum2) : true)) ? 1 : 0;
-
-
+                            if (isTradeCompared1 || isTradeCompared2)
+                                nPass += ((isTradeCompared1 ? double.Parse(sTradeCompared1) <= mainForm.ea[i].fTradeRatioCompared : true) &&
+                                  (isTradeCompared2 ? mainForm.ea[i].fTradeRatioCompared <= double.Parse(sTradeCompared2) : true)) ? 1 : 0;
+                            if (isTradeComparedWithTime1 || isTradeComparedWithTime2)
+                                nPass += ((isTradeComparedWithTime1 ? double.Parse(sTradeComparedWithTime1) <= mainForm.ea[i].fTradeRatioComparedWithTime : true) &&
+                                  (isTradeComparedWithTime2 ? mainForm.ea[i].fTradeRatioComparedWithTime <= double.Parse(sTradeComparedWithTime2) : true)) ? 1 : 0;
+                            if (isTradeStrength1 || isTradeStrength2)
+                                nPass += ((isTradeStrength1 ? double.Parse(sTradeStrength1) <= mainForm.ea[i].fTs : true) &&
+                                  (isTradeStrength2 ? mainForm.ea[i].fTs <= double.Parse(sTradeStrength2) : true)) ? 1 : 0;
 
                             isShow = nPass >= nFinalPassNum;
 

@@ -38,6 +38,9 @@ namespace AtoIndicator.View
             this.passNumTxtBox = new System.Windows.Forms.TextBox();
             this.passLenLabel = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.timerLabel = new System.Windows.Forms.Label();
+            this.timerUpButton = new System.Windows.Forms.Button();
+            this.timerDownButton = new System.Windows.Forms.Button();
             this.rCheckBox = new System.Windows.Forms.CheckBox();
             this.tFABPlusNum2 = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
@@ -283,9 +286,15 @@ namespace AtoIndicator.View
             this.tTF2 = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.tTF1 = new System.Windows.Forms.TextBox();
-            this.timerDownButton = new System.Windows.Forms.Button();
-            this.timerUpButton = new System.Windows.Forms.Button();
-            this.timerLabel = new System.Windows.Forms.Label();
+            this.tTradeCompared2 = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.tTradeCompared1 = new System.Windows.Forms.TextBox();
+            this.tTradeComparedWithTime2 = new System.Windows.Forms.TextBox();
+            this.label66 = new System.Windows.Forms.Label();
+            this.tTradeComparedWithTime1 = new System.Windows.Forms.TextBox();
+            this.tTradeStrength2 = new System.Windows.Forms.TextBox();
+            this.label71 = new System.Windows.Forms.Label();
+            this.tTradeStrength1 = new System.Windows.Forms.TextBox();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -294,11 +303,9 @@ namespace AtoIndicator.View
             // 
             this.groupBox2.Controls.Add(this.listView1);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(470, 0);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.groupBox2.Location = new System.Drawing.Point(418, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox2.Size = new System.Drawing.Size(1244, 1035);
+            this.groupBox2.Size = new System.Drawing.Size(1082, 828);
             this.groupBox2.TabIndex = 20;
             this.groupBox2.TabStop = false;
             // 
@@ -307,19 +314,17 @@ namespace AtoIndicator.View
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView1.FullRowSelect = true;
             this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(3, 22);
-            this.listView1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.listView1.Location = new System.Drawing.Point(3, 17);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(1238, 1009);
+            this.listView1.Size = new System.Drawing.Size(1076, 808);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             // 
             // confirmButton
             // 
-            this.confirmButton.Location = new System.Drawing.Point(207, 79);
-            this.confirmButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.confirmButton.Location = new System.Drawing.Point(181, 63);
             this.confirmButton.Name = "confirmButton";
-            this.confirmButton.Size = new System.Drawing.Size(190, 49);
+            this.confirmButton.Size = new System.Drawing.Size(166, 39);
             this.confirmButton.TabIndex = 35;
             this.confirmButton.Text = "확정";
             this.confirmButton.UseVisualStyleBackColor = true;
@@ -327,40 +332,48 @@ namespace AtoIndicator.View
             // doneLabel
             // 
             this.doneLabel.AutoSize = true;
-            this.doneLabel.Location = new System.Drawing.Point(366, 142);
+            this.doneLabel.Location = new System.Drawing.Point(320, 114);
             this.doneLabel.Name = "doneLabel";
-            this.doneLabel.Size = new System.Drawing.Size(40, 15);
+            this.doneLabel.Size = new System.Drawing.Size(33, 12);
             this.doneLabel.TabIndex = 46;
             this.doneLabel.Text = "done";
             // 
             // label23
             // 
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(139, 39);
+            this.label23.Location = new System.Drawing.Point(122, 31);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(72, 15);
+            this.label23.Size = new System.Drawing.Size(57, 12);
             this.label23.TabIndex = 47;
             this.label23.Text = "패스 넘버";
             // 
             // passNumTxtBox
             // 
-            this.passNumTxtBox.Location = new System.Drawing.Point(242, 38);
-            this.passNumTxtBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.passNumTxtBox.Location = new System.Drawing.Point(212, 30);
             this.passNumTxtBox.Name = "passNumTxtBox";
-            this.passNumTxtBox.Size = new System.Drawing.Size(114, 25);
+            this.passNumTxtBox.Size = new System.Drawing.Size(100, 21);
             this.passNumTxtBox.TabIndex = 48;
             // 
             // passLenLabel
             // 
             this.passLenLabel.AutoSize = true;
-            this.passLenLabel.Location = new System.Drawing.Point(177, 142);
+            this.passLenLabel.Location = new System.Drawing.Point(155, 114);
             this.passLenLabel.Name = "passLenLabel";
-            this.passLenLabel.Size = new System.Drawing.Size(52, 15);
+            this.passLenLabel.Size = new System.Drawing.Size(43, 12);
             this.passLenLabel.TabIndex = 49;
             this.passLenLabel.Text = "pass 0";
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.tTradeStrength2);
+            this.groupBox1.Controls.Add(this.label71);
+            this.groupBox1.Controls.Add(this.tTradeStrength1);
+            this.groupBox1.Controls.Add(this.tTradeComparedWithTime2);
+            this.groupBox1.Controls.Add(this.label66);
+            this.groupBox1.Controls.Add(this.tTradeComparedWithTime1);
+            this.groupBox1.Controls.Add(this.tTradeCompared2);
+            this.groupBox1.Controls.Add(this.label14);
+            this.groupBox1.Controls.Add(this.tTradeCompared1);
             this.groupBox1.Controls.Add(this.timerLabel);
             this.groupBox1.Controls.Add(this.timerUpButton);
             this.groupBox1.Controls.Add(this.timerDownButton);
@@ -616,81 +629,102 @@ namespace AtoIndicator.View
             this.groupBox1.Controls.Add(this.confirmButton);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Left;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox1.Size = new System.Drawing.Size(470, 1035);
+            this.groupBox1.Size = new System.Drawing.Size(418, 828);
             this.groupBox1.TabIndex = 19;
             this.groupBox1.TabStop = false;
+            // 
+            // timerLabel
+            // 
+            this.timerLabel.AutoSize = true;
+            this.timerLabel.Location = new System.Drawing.Point(42, 61);
+            this.timerLabel.Name = "timerLabel";
+            this.timerLabel.Size = new System.Drawing.Size(23, 12);
+            this.timerLabel.TabIndex = 536;
+            this.timerLabel.Text = "300";
+            // 
+            // timerUpButton
+            // 
+            this.timerUpButton.Location = new System.Drawing.Point(74, 58);
+            this.timerUpButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.timerUpButton.Name = "timerUpButton";
+            this.timerUpButton.Size = new System.Drawing.Size(22, 18);
+            this.timerUpButton.TabIndex = 535;
+            this.timerUpButton.Text = "▶";
+            this.timerUpButton.UseVisualStyleBackColor = true;
+            // 
+            // timerDownButton
+            // 
+            this.timerDownButton.Location = new System.Drawing.Point(5, 58);
+            this.timerDownButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.timerDownButton.Name = "timerDownButton";
+            this.timerDownButton.Size = new System.Drawing.Size(22, 18);
+            this.timerDownButton.TabIndex = 534;
+            this.timerDownButton.Text = "◀";
+            this.timerDownButton.UseVisualStyleBackColor = true;
             // 
             // rCheckBox
             // 
             this.rCheckBox.AutoSize = true;
-            this.rCheckBox.Location = new System.Drawing.Point(319, 219);
-            this.rCheckBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.rCheckBox.Location = new System.Drawing.Point(279, 175);
             this.rCheckBox.Name = "rCheckBox";
-            this.rCheckBox.Size = new System.Drawing.Size(89, 19);
+            this.rCheckBox.Size = new System.Drawing.Size(72, 16);
             this.rCheckBox.TabIndex = 533;
             this.rCheckBox.Text = "R 미포함";
             this.rCheckBox.UseVisualStyleBackColor = true;
             // 
             // tFABPlusNum2
             // 
-            this.tFABPlusNum2.Location = new System.Drawing.Point(400, 969);
-            this.tFABPlusNum2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tFABPlusNum2.Location = new System.Drawing.Point(350, 775);
             this.tFABPlusNum2.Name = "tFABPlusNum2";
-            this.tFABPlusNum2.Size = new System.Drawing.Size(54, 25);
+            this.tFABPlusNum2.Size = new System.Drawing.Size(48, 21);
             this.tFABPlusNum2.TabIndex = 532;
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(209, 975);
+            this.label12.Location = new System.Drawing.Point(183, 780);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(204, 15);
+            this.label12.Size = new System.Drawing.Size(161, 12);
             this.label12.TabIndex = 530;
             this.label12.Text = "<=  페보조 + 페매수 * 1.5 <=";
             // 
             // tFABPlusNum1
             // 
-            this.tFABPlusNum1.Location = new System.Drawing.Point(150, 969);
-            this.tFABPlusNum1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tFABPlusNum1.Location = new System.Drawing.Point(131, 775);
             this.tFABPlusNum1.Name = "tFABPlusNum1";
-            this.tFABPlusNum1.Size = new System.Drawing.Size(54, 25);
+            this.tFABPlusNum1.Size = new System.Drawing.Size(48, 21);
             this.tFABPlusNum1.TabIndex = 531;
             // 
             // tFABNum2
             // 
-            this.tFABNum2.Location = new System.Drawing.Point(400, 920);
-            this.tFABNum2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tFABNum2.Location = new System.Drawing.Point(350, 736);
             this.tFABNum2.Name = "tFABNum2";
-            this.tFABNum2.Size = new System.Drawing.Size(54, 25);
+            this.tFABNum2.Size = new System.Drawing.Size(48, 21);
             this.tFABNum2.TabIndex = 529;
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(223, 926);
+            this.label7.Location = new System.Drawing.Point(195, 741);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(166, 15);
+            this.label7.Size = new System.Drawing.Size(131, 12);
             this.label7.TabIndex = 527;
             this.label7.Text = "<=  페보조 + 페매수 <=";
             // 
             // tFABNum1
             // 
-            this.tFABNum1.Location = new System.Drawing.Point(150, 920);
-            this.tFABNum1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tFABNum1.Location = new System.Drawing.Point(131, 736);
             this.tFABNum1.Name = "tFABNum1";
-            this.tFABNum1.Size = new System.Drawing.Size(54, 25);
+            this.tFABNum1.Size = new System.Drawing.Size(48, 21);
             this.tFABNum1.TabIndex = 528;
             // 
             // eCheckBox
             // 
             this.eCheckBox.AutoSize = true;
-            this.eCheckBox.Location = new System.Drawing.Point(179, 219);
-            this.eCheckBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.eCheckBox.Location = new System.Drawing.Point(157, 175);
             this.eCheckBox.Name = "eCheckBox";
-            this.eCheckBox.Size = new System.Drawing.Size(88, 19);
+            this.eCheckBox.Size = new System.Drawing.Size(72, 16);
             this.eCheckBox.TabIndex = 526;
             this.eCheckBox.Text = "E 미포함";
             this.eCheckBox.UseVisualStyleBackColor = true;
@@ -698,10 +732,9 @@ namespace AtoIndicator.View
             // wCheckBox
             // 
             this.wCheckBox.AutoSize = true;
-            this.wCheckBox.Location = new System.Drawing.Point(319, 190);
-            this.wCheckBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.wCheckBox.Location = new System.Drawing.Point(279, 152);
             this.wCheckBox.Name = "wCheckBox";
-            this.wCheckBox.Size = new System.Drawing.Size(93, 19);
+            this.wCheckBox.Size = new System.Drawing.Size(74, 16);
             this.wCheckBox.TabIndex = 525;
             this.wCheckBox.Text = "W 미포함";
             this.wCheckBox.UseVisualStyleBackColor = true;
@@ -709,79 +742,74 @@ namespace AtoIndicator.View
             // qCheckBox
             // 
             this.qCheckBox.AutoSize = true;
-            this.qCheckBox.Location = new System.Drawing.Point(179, 190);
-            this.qCheckBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.qCheckBox.Location = new System.Drawing.Point(157, 152);
             this.qCheckBox.Name = "qCheckBox";
-            this.qCheckBox.Size = new System.Drawing.Size(91, 19);
+            this.qCheckBox.Size = new System.Drawing.Size(73, 16);
             this.qCheckBox.TabIndex = 524;
             this.qCheckBox.Text = "Q 미포함";
             this.qCheckBox.UseVisualStyleBackColor = true;
             // 
             // tRPD2
             // 
-            this.tRPD2.Location = new System.Drawing.Point(752, 975);
-            this.tRPD2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tRPD2.Location = new System.Drawing.Point(658, 780);
             this.tRPD2.Name = "tRPD2";
-            this.tRPD2.Size = new System.Drawing.Size(54, 25);
+            this.tRPD2.Size = new System.Drawing.Size(48, 21);
             this.tRPD2.TabIndex = 522;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(587, 985);
+            this.label4.Location = new System.Drawing.Point(514, 788);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(153, 15);
+            this.label4.Size = new System.Drawing.Size(121, 12);
             this.label4.TabIndex = 520;
             this.label4.Text = "<=  실시간최대차  <=";
             // 
             // tRPD1
             // 
-            this.tRPD1.Location = new System.Drawing.Point(497, 979);
-            this.tRPD1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tRPD1.Location = new System.Drawing.Point(435, 783);
             this.tRPD1.Name = "tRPD1";
-            this.tRPD1.Size = new System.Drawing.Size(54, 25);
+            this.tRPD1.Size = new System.Drawing.Size(48, 21);
             this.tRPD1.TabIndex = 521;
             // 
             // tHIT122
             // 
-            this.tHIT122.Location = new System.Drawing.Point(747, 228);
-            this.tHIT122.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tHIT122.Location = new System.Drawing.Point(654, 182);
             this.tHIT122.Name = "tHIT122";
-            this.tHIT122.Size = new System.Drawing.Size(54, 25);
+            this.tHIT122.Size = new System.Drawing.Size(48, 21);
             this.tHIT122.TabIndex = 519;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(567, 231);
+            this.label1.Location = new System.Drawing.Point(496, 185);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(182, 15);
+            this.label1.Size = new System.Drawing.Size(143, 12);
             this.label1.TabIndex = 517;
             this.label1.Text = "<=  히트312 누적횟수  <=";
             // 
             // tHIT121
             // 
-            this.tHIT121.Location = new System.Drawing.Point(494, 225);
-            this.tHIT121.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tHIT121.Location = new System.Drawing.Point(432, 180);
             this.tHIT121.Name = "tHIT121";
-            this.tHIT121.Size = new System.Drawing.Size(54, 25);
+            this.tHIT121.Size = new System.Drawing.Size(48, 21);
             this.tHIT121.TabIndex = 518;
             // 
             // label70
             // 
             this.label70.AutoSize = true;
-            this.label70.Location = new System.Drawing.Point(14, 305);
+            this.label70.Location = new System.Drawing.Point(12, 244);
             this.label70.Name = "label70";
-            this.label70.Size = new System.Drawing.Size(96, 15);
+            this.label70.Size = new System.Drawing.Size(77, 12);
             this.label70.TabIndex = 516;
             this.label70.Text = "* 필터 버튼 *";
             // 
             // label69
             // 
             this.label69.AutoSize = true;
-            this.label69.Location = new System.Drawing.Point(14, 594);
+            this.label69.Location = new System.Drawing.Point(12, 475);
             this.label69.Name = "label69";
-            this.label69.Size = new System.Drawing.Size(96, 15);
+            this.label69.Size = new System.Drawing.Size(77, 12);
             this.label69.TabIndex = 515;
             this.label69.Text = "* 적기 버튼 *";
             // 
@@ -789,1411 +817,1307 @@ namespace AtoIndicator.View
             // 
             this.timeLabel.AutoSize = true;
             this.timeLabel.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.timeLabel.Location = new System.Drawing.Point(8, 9);
+            this.timeLabel.Location = new System.Drawing.Point(7, 7);
             this.timeLabel.Name = "timeLabel";
-            this.timeLabel.Size = new System.Drawing.Size(0, 20);
+            this.timeLabel.Size = new System.Drawing.Size(0, 16);
             this.timeLabel.TabIndex = 514;
             // 
             // registerLabel
             // 
             this.registerLabel.AutoSize = true;
-            this.registerLabel.Location = new System.Drawing.Point(9, 142);
+            this.registerLabel.Location = new System.Drawing.Point(8, 114);
             this.registerLabel.Name = "registerLabel";
-            this.registerLabel.Size = new System.Drawing.Size(0, 15);
+            this.registerLabel.Size = new System.Drawing.Size(0, 12);
             this.registerLabel.TabIndex = 513;
             // 
             // keyLabel
             // 
             this.keyLabel.AutoSize = true;
-            this.keyLabel.Location = new System.Drawing.Point(9, 202);
+            this.keyLabel.Location = new System.Drawing.Point(8, 162);
             this.keyLabel.Name = "keyLabel";
-            this.keyLabel.Size = new System.Drawing.Size(0, 15);
+            this.keyLabel.Size = new System.Drawing.Size(0, 12);
             this.keyLabel.TabIndex = 512;
             // 
             // zzimLabel
             // 
             this.zzimLabel.AutoSize = true;
-            this.zzimLabel.Location = new System.Drawing.Point(9, 172);
+            this.zzimLabel.Location = new System.Drawing.Point(8, 138);
             this.zzimLabel.Name = "zzimLabel";
-            this.zzimLabel.Size = new System.Drawing.Size(0, 15);
+            this.zzimLabel.Size = new System.Drawing.Size(0, 12);
             this.zzimLabel.TabIndex = 511;
             // 
             // tCURFC2
             // 
-            this.tCURFC2.Location = new System.Drawing.Point(400, 871);
-            this.tCURFC2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tCURFC2.Location = new System.Drawing.Point(350, 697);
             this.tCURFC2.Name = "tCURFC2";
-            this.tCURFC2.Size = new System.Drawing.Size(54, 25);
+            this.tCURFC2.Size = new System.Drawing.Size(48, 21);
             this.tCURFC2.TabIndex = 510;
             // 
             // label67
             // 
             this.label67.AutoSize = true;
-            this.label67.Location = new System.Drawing.Point(219, 875);
+            this.label67.Location = new System.Drawing.Point(192, 700);
             this.label67.Name = "label67";
-            this.label67.Size = new System.Drawing.Size(174, 15);
+            this.label67.Size = new System.Drawing.Size(144, 12);
             this.label67.TabIndex = 508;
             this.label67.Text = "<=  cur Arrow 총갯수  <=";
             // 
             // tCURFC1
             // 
-            this.tCURFC1.Location = new System.Drawing.Point(146, 869);
-            this.tCURFC1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tCURFC1.Location = new System.Drawing.Point(128, 695);
             this.tCURFC1.Name = "tCURFC1";
-            this.tCURFC1.Size = new System.Drawing.Size(54, 25);
+            this.tCURFC1.Size = new System.Drawing.Size(48, 21);
             this.tCURFC1.TabIndex = 509;
             // 
             // tCURFT2
             // 
-            this.tCURFT2.Location = new System.Drawing.Point(400, 825);
-            this.tCURFT2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tCURFT2.Location = new System.Drawing.Point(350, 660);
             this.tCURFT2.Name = "tCURFT2";
-            this.tCURFT2.Size = new System.Drawing.Size(54, 25);
+            this.tCURFT2.Size = new System.Drawing.Size(48, 21);
             this.tCURFT2.TabIndex = 507;
             // 
             // label68
             // 
             this.label68.AutoSize = true;
-            this.label68.Location = new System.Drawing.Point(219, 829);
+            this.label68.Location = new System.Drawing.Point(192, 663);
             this.label68.Name = "label68";
-            this.label68.Size = new System.Drawing.Size(154, 15);
+            this.label68.Size = new System.Drawing.Size(128, 12);
             this.label68.TabIndex = 505;
             this.label68.Text = "<= cur Arrow 종류  <=";
             // 
             // tCURFT1
             // 
-            this.tCURFT1.Location = new System.Drawing.Point(146, 824);
-            this.tCURFT1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tCURFT1.Location = new System.Drawing.Point(128, 659);
             this.tCURFT1.Name = "tCURFT1";
-            this.tCURFT1.Size = new System.Drawing.Size(54, 25);
+            this.tCURFT1.Size = new System.Drawing.Size(48, 21);
             this.tCURFT1.TabIndex = 506;
             // 
             // tHIT102
             // 
-            this.tHIT102.Location = new System.Drawing.Point(747, 262);
-            this.tHIT102.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tHIT102.Location = new System.Drawing.Point(654, 210);
             this.tHIT102.Name = "tHIT102";
-            this.tHIT102.Size = new System.Drawing.Size(54, 25);
+            this.tHIT102.Size = new System.Drawing.Size(48, 21);
             this.tHIT102.TabIndex = 503;
             // 
             // label65
             // 
             this.label65.AutoSize = true;
-            this.label65.Location = new System.Drawing.Point(567, 268);
+            this.label65.Location = new System.Drawing.Point(496, 214);
             this.label65.Name = "label65";
-            this.label65.Size = new System.Drawing.Size(182, 15);
+            this.label65.Size = new System.Drawing.Size(143, 12);
             this.label65.TabIndex = 501;
             this.label65.Text = "<=  히트410 누적횟수  <=";
             // 
             // tHIT101
             // 
-            this.tHIT101.Location = new System.Drawing.Point(494, 261);
-            this.tHIT101.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tHIT101.Location = new System.Drawing.Point(432, 209);
             this.tHIT101.Name = "tHIT101";
-            this.tHIT101.Size = new System.Drawing.Size(54, 25);
+            this.tHIT101.Size = new System.Drawing.Size(48, 21);
             this.tHIT101.TabIndex = 502;
             // 
             // tHIT82
             // 
-            this.tHIT82.Location = new System.Drawing.Point(750, 188);
-            this.tHIT82.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tHIT82.Location = new System.Drawing.Point(656, 150);
             this.tHIT82.Name = "tHIT82";
-            this.tHIT82.Size = new System.Drawing.Size(54, 25);
+            this.tHIT82.Size = new System.Drawing.Size(48, 21);
             this.tHIT82.TabIndex = 500;
             // 
             // label64
             // 
             this.label64.AutoSize = true;
-            this.label64.Location = new System.Drawing.Point(569, 191);
+            this.label64.Location = new System.Drawing.Point(498, 153);
             this.label64.Name = "label64";
-            this.label64.Size = new System.Drawing.Size(174, 15);
+            this.label64.Size = new System.Drawing.Size(137, 12);
             this.label64.TabIndex = 498;
             this.label64.Text = "<=  히트38 누적횟수  <=";
             // 
             // tHIT81
             // 
-            this.tHIT81.Location = new System.Drawing.Point(496, 185);
-            this.tHIT81.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tHIT81.Location = new System.Drawing.Point(434, 148);
             this.tHIT81.Name = "tHIT81";
-            this.tHIT81.Size = new System.Drawing.Size(54, 25);
+            this.tHIT81.Size = new System.Drawing.Size(48, 21);
             this.tHIT81.TabIndex = 499;
             // 
             // tHIT52
             // 
-            this.tHIT52.Location = new System.Drawing.Point(750, 150);
-            this.tHIT52.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tHIT52.Location = new System.Drawing.Point(656, 120);
             this.tHIT52.Name = "tHIT52";
-            this.tHIT52.Size = new System.Drawing.Size(54, 25);
+            this.tHIT52.Size = new System.Drawing.Size(48, 21);
             this.tHIT52.TabIndex = 497;
             // 
             // label63
             // 
             this.label63.AutoSize = true;
-            this.label63.Location = new System.Drawing.Point(569, 152);
+            this.label63.Location = new System.Drawing.Point(498, 122);
             this.label63.Name = "label63";
-            this.label63.Size = new System.Drawing.Size(174, 15);
+            this.label63.Size = new System.Drawing.Size(137, 12);
             this.label63.TabIndex = 495;
             this.label63.Text = "<=  히트25 누적횟수  <=";
             // 
             // tHIT51
             // 
-            this.tHIT51.Location = new System.Drawing.Point(496, 148);
-            this.tHIT51.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tHIT51.Location = new System.Drawing.Point(434, 118);
             this.tHIT51.Name = "tHIT51";
-            this.tHIT51.Size = new System.Drawing.Size(54, 25);
+            this.tHIT51.Size = new System.Drawing.Size(48, 21);
             this.tHIT51.TabIndex = 496;
             // 
             // tSFD2
             // 
-            this.tSFD2.Location = new System.Drawing.Point(373, 552);
-            this.tSFD2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tSFD2.Location = new System.Drawing.Point(326, 442);
             this.tSFD2.Name = "tSFD2";
-            this.tSFD2.Size = new System.Drawing.Size(54, 25);
+            this.tSFD2.Size = new System.Drawing.Size(48, 21);
             this.tSFD2.TabIndex = 494;
             // 
             // label62
             // 
             this.label62.AutoSize = true;
-            this.label62.Location = new System.Drawing.Point(224, 558);
+            this.label62.Location = new System.Drawing.Point(196, 446);
             this.label62.Name = "label62";
-            this.label62.Size = new System.Drawing.Size(128, 15);
+            this.label62.Size = new System.Drawing.Size(101, 12);
             this.label62.TabIndex = 492;
             this.label62.Text = "<=  공유 분포  <=";
             // 
             // tSFD1
             // 
-            this.tSFD1.Location = new System.Drawing.Point(151, 551);
-            this.tSFD1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tSFD1.Location = new System.Drawing.Point(132, 441);
             this.tSFD1.Name = "tSFD1";
-            this.tSFD1.Size = new System.Drawing.Size(54, 25);
+            this.tSFD1.Size = new System.Drawing.Size(48, 21);
             this.tSFD1.TabIndex = 493;
             // 
             // tPDD2
             // 
-            this.tPDD2.Location = new System.Drawing.Point(730, 485);
-            this.tPDD2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPDD2.Location = new System.Drawing.Point(639, 388);
             this.tPDD2.Name = "tPDD2";
-            this.tPDD2.Size = new System.Drawing.Size(54, 25);
+            this.tPDD2.Size = new System.Drawing.Size(48, 21);
             this.tPDD2.TabIndex = 491;
             // 
             // label58
             // 
             this.label58.AutoSize = true;
-            this.label58.Location = new System.Drawing.Point(567, 488);
+            this.label58.Location = new System.Drawing.Point(496, 390);
             this.label58.Name = "label58";
-            this.label58.Size = new System.Drawing.Size(158, 15);
+            this.label58.Size = new System.Drawing.Size(125, 12);
             this.label58.TabIndex = 489;
             this.label58.Text = "<=  가격다운 분포  <=";
             // 
             // tPDD1
             // 
-            this.tPDD1.Location = new System.Drawing.Point(494, 482);
-            this.tPDD1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPDD1.Location = new System.Drawing.Point(432, 386);
             this.tPDD1.Name = "tPDD1";
-            this.tPDD1.Size = new System.Drawing.Size(54, 25);
+            this.tPDD1.Size = new System.Drawing.Size(48, 21);
             this.tPDD1.TabIndex = 490;
             // 
             // tPDA2
             // 
-            this.tPDA2.Location = new System.Drawing.Point(386, 515);
-            this.tPDA2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPDA2.Location = new System.Drawing.Point(338, 412);
             this.tPDA2.Name = "tPDA2";
-            this.tPDA2.Size = new System.Drawing.Size(54, 25);
+            this.tPDA2.Size = new System.Drawing.Size(48, 21);
             this.tPDA2.TabIndex = 488;
             // 
             // label59
             // 
             this.label59.AutoSize = true;
-            this.label59.Location = new System.Drawing.Point(223, 519);
+            this.label59.Location = new System.Drawing.Point(195, 415);
             this.label59.Name = "label59";
-            this.label59.Size = new System.Drawing.Size(158, 15);
+            this.label59.Size = new System.Drawing.Size(129, 12);
             this.label59.TabIndex = 486;
             this.label59.Text = "<=  가격다운 arrow <=";
             // 
             // tPDA1
             // 
-            this.tPDA1.Location = new System.Drawing.Point(150, 511);
-            this.tPDA1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPDA1.Location = new System.Drawing.Point(131, 409);
             this.tPDA1.Name = "tPDA1";
-            this.tPDA1.Size = new System.Drawing.Size(54, 25);
+            this.tPDA1.Size = new System.Drawing.Size(48, 21);
             this.tPDA1.TabIndex = 487;
             // 
             // tPUD2
             // 
-            this.tPUD2.Location = new System.Drawing.Point(715, 446);
-            this.tPUD2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPUD2.Location = new System.Drawing.Point(626, 357);
             this.tPUD2.Name = "tPUD2";
-            this.tPUD2.Size = new System.Drawing.Size(54, 25);
+            this.tPUD2.Size = new System.Drawing.Size(48, 21);
             this.tPUD2.TabIndex = 485;
             // 
             // label60
             // 
             this.label60.AutoSize = true;
-            this.label60.Location = new System.Drawing.Point(567, 450);
+            this.label60.Location = new System.Drawing.Point(496, 360);
             this.label60.Name = "label60";
-            this.label60.Size = new System.Drawing.Size(143, 15);
+            this.label60.Size = new System.Drawing.Size(113, 12);
             this.label60.TabIndex = 483;
             this.label60.Text = "<=  가격업 분포  <=";
             // 
             // tPUD1
             // 
-            this.tPUD1.Location = new System.Drawing.Point(494, 444);
-            this.tPUD1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPUD1.Location = new System.Drawing.Point(432, 355);
             this.tPUD1.Name = "tPUD1";
-            this.tPUD1.Size = new System.Drawing.Size(54, 25);
+            this.tPUD1.Size = new System.Drawing.Size(48, 21);
             this.tPUD1.TabIndex = 484;
             // 
             // tPUA2
             // 
-            this.tPUA2.Location = new System.Drawing.Point(371, 475);
-            this.tPUA2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPUA2.Location = new System.Drawing.Point(325, 380);
             this.tPUA2.Name = "tPUA2";
-            this.tPUA2.Size = new System.Drawing.Size(54, 25);
+            this.tPUA2.Size = new System.Drawing.Size(48, 21);
             this.tPUA2.TabIndex = 482;
             // 
             // label61
             // 
             this.label61.AutoSize = true;
-            this.label61.Location = new System.Drawing.Point(223, 481);
+            this.label61.Location = new System.Drawing.Point(195, 385);
             this.label61.Name = "label61";
-            this.label61.Size = new System.Drawing.Size(143, 15);
+            this.label61.Size = new System.Drawing.Size(117, 12);
             this.label61.TabIndex = 480;
             this.label61.Text = "<=  가격업 arrow <=";
             // 
             // tPUA1
             // 
-            this.tPUA1.Location = new System.Drawing.Point(150, 475);
-            this.tPUA1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPUA1.Location = new System.Drawing.Point(131, 380);
             this.tPUA1.Name = "tPUA1";
-            this.tPUA1.Size = new System.Drawing.Size(54, 25);
+            this.tPUA1.Size = new System.Drawing.Size(48, 21);
             this.tPUA1.TabIndex = 481;
             // 
             // tFRD2
             // 
-            this.tFRD2.Location = new System.Drawing.Point(715, 410);
-            this.tFRD2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tFRD2.Location = new System.Drawing.Point(626, 328);
             this.tFRD2.Name = "tFRD2";
-            this.tFRD2.Size = new System.Drawing.Size(54, 25);
+            this.tFRD2.Size = new System.Drawing.Size(48, 21);
             this.tFRD2.TabIndex = 479;
             // 
             // label56
             // 
             this.label56.AutoSize = true;
-            this.label56.Location = new System.Drawing.Point(567, 414);
+            this.label56.Location = new System.Drawing.Point(496, 331);
             this.label56.Name = "label56";
-            this.label56.Size = new System.Drawing.Size(143, 15);
+            this.label56.Size = new System.Drawing.Size(113, 12);
             this.label56.TabIndex = 477;
             this.label56.Text = "<=  페저항 분포  <=";
             // 
             // tFRD1
             // 
-            this.tFRD1.Location = new System.Drawing.Point(494, 408);
-            this.tFRD1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tFRD1.Location = new System.Drawing.Point(432, 326);
             this.tFRD1.Name = "tFRD1";
-            this.tFRD1.Size = new System.Drawing.Size(54, 25);
+            this.tFRD1.Size = new System.Drawing.Size(48, 21);
             this.tFRD1.TabIndex = 478;
             // 
             // tFRA2
             // 
-            this.tFRA2.Location = new System.Drawing.Point(371, 432);
-            this.tFRA2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tFRA2.Location = new System.Drawing.Point(325, 346);
             this.tFRA2.Name = "tFRA2";
-            this.tFRA2.Size = new System.Drawing.Size(54, 25);
+            this.tFRA2.Size = new System.Drawing.Size(48, 21);
             this.tFRA2.TabIndex = 476;
             // 
             // label57
             // 
             this.label57.AutoSize = true;
-            this.label57.Location = new System.Drawing.Point(223, 439);
+            this.label57.Location = new System.Drawing.Point(195, 351);
             this.label57.Name = "label57";
-            this.label57.Size = new System.Drawing.Size(143, 15);
+            this.label57.Size = new System.Drawing.Size(117, 12);
             this.label57.TabIndex = 474;
             this.label57.Text = "<=  페저항 arrow <=";
             // 
             // tFRA1
             // 
-            this.tFRA1.Location = new System.Drawing.Point(150, 432);
-            this.tFRA1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tFRA1.Location = new System.Drawing.Point(131, 346);
             this.tFRA1.Name = "tFRA1";
-            this.tFRA1.Size = new System.Drawing.Size(54, 25);
+            this.tFRA1.Size = new System.Drawing.Size(48, 21);
             this.tFRA1.TabIndex = 475;
             // 
             // tFAD2
             // 
-            this.tFAD2.Location = new System.Drawing.Point(715, 378);
-            this.tFAD2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tFAD2.Location = new System.Drawing.Point(626, 302);
             this.tFAD2.Name = "tFAD2";
-            this.tFAD2.Size = new System.Drawing.Size(54, 25);
+            this.tFAD2.Size = new System.Drawing.Size(48, 21);
             this.tFAD2.TabIndex = 473;
             // 
             // label52
             // 
             this.label52.AutoSize = true;
-            this.label52.Location = new System.Drawing.Point(567, 381);
+            this.label52.Location = new System.Drawing.Point(496, 305);
             this.label52.Name = "label52";
-            this.label52.Size = new System.Drawing.Size(143, 15);
+            this.label52.Size = new System.Drawing.Size(113, 12);
             this.label52.TabIndex = 471;
             this.label52.Text = "<=  페보조 분포  <=";
             // 
             // tFAD1
             // 
-            this.tFAD1.Location = new System.Drawing.Point(494, 375);
-            this.tFAD1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tFAD1.Location = new System.Drawing.Point(432, 300);
             this.tFAD1.Name = "tFAD1";
-            this.tFAD1.Size = new System.Drawing.Size(54, 25);
+            this.tFAD1.Size = new System.Drawing.Size(48, 21);
             this.tFAD1.TabIndex = 472;
             // 
             // tFAA2
             // 
-            this.tFAA2.Location = new System.Drawing.Point(371, 389);
-            this.tFAA2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tFAA2.Location = new System.Drawing.Point(325, 311);
             this.tFAA2.Name = "tFAA2";
-            this.tFAA2.Size = new System.Drawing.Size(54, 25);
+            this.tFAA2.Size = new System.Drawing.Size(48, 21);
             this.tFAA2.TabIndex = 470;
             // 
             // label55
             // 
             this.label55.AutoSize = true;
-            this.label55.Location = new System.Drawing.Point(223, 395);
+            this.label55.Location = new System.Drawing.Point(195, 316);
             this.label55.Name = "label55";
-            this.label55.Size = new System.Drawing.Size(143, 15);
+            this.label55.Size = new System.Drawing.Size(117, 12);
             this.label55.TabIndex = 468;
             this.label55.Text = "<=  페보조 arrow <=";
             // 
             // tFAA1
             // 
-            this.tFAA1.Location = new System.Drawing.Point(150, 389);
-            this.tFAA1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tFAA1.Location = new System.Drawing.Point(131, 311);
             this.tFAA1.Name = "tFAA1";
-            this.tFAA1.Size = new System.Drawing.Size(54, 25);
+            this.tFAA1.Size = new System.Drawing.Size(48, 21);
             this.tFAA1.TabIndex = 469;
             // 
             // tFBD2
             // 
-            this.tFBD2.Location = new System.Drawing.Point(715, 342);
-            this.tFBD2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tFBD2.Location = new System.Drawing.Point(626, 274);
             this.tFBD2.Name = "tFBD2";
-            this.tFBD2.Size = new System.Drawing.Size(54, 25);
+            this.tFBD2.Size = new System.Drawing.Size(48, 21);
             this.tFBD2.TabIndex = 467;
             // 
             // label50
             // 
             this.label50.AutoSize = true;
-            this.label50.Location = new System.Drawing.Point(567, 346);
+            this.label50.Location = new System.Drawing.Point(496, 277);
             this.label50.Name = "label50";
-            this.label50.Size = new System.Drawing.Size(143, 15);
+            this.label50.Size = new System.Drawing.Size(113, 12);
             this.label50.TabIndex = 465;
             this.label50.Text = "<=  페매수 분포  <=";
             // 
             // tFBD1
             // 
-            this.tFBD1.Location = new System.Drawing.Point(494, 339);
-            this.tFBD1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tFBD1.Location = new System.Drawing.Point(432, 271);
             this.tFBD1.Name = "tFBD1";
-            this.tFBD1.Size = new System.Drawing.Size(54, 25);
+            this.tFBD1.Size = new System.Drawing.Size(48, 21);
             this.tFBD1.TabIndex = 466;
             // 
             // tFBA2
             // 
-            this.tFBA2.Location = new System.Drawing.Point(371, 349);
-            this.tFBA2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tFBA2.Location = new System.Drawing.Point(325, 279);
             this.tFBA2.Name = "tFBA2";
-            this.tFBA2.Size = new System.Drawing.Size(54, 25);
+            this.tFBA2.Size = new System.Drawing.Size(48, 21);
             this.tFBA2.TabIndex = 464;
             // 
             // label51
             // 
             this.label51.AutoSize = true;
-            this.label51.Location = new System.Drawing.Point(223, 355);
+            this.label51.Location = new System.Drawing.Point(195, 284);
             this.label51.Name = "label51";
-            this.label51.Size = new System.Drawing.Size(143, 15);
+            this.label51.Size = new System.Drawing.Size(117, 12);
             this.label51.TabIndex = 462;
             this.label51.Text = "<=  페매수 arrow <=";
             // 
             // tFBA1
             // 
-            this.tFBA1.Location = new System.Drawing.Point(150, 349);
-            this.tFBA1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tFBA1.Location = new System.Drawing.Point(131, 279);
             this.tFBA1.Name = "tFBA1";
-            this.tFBA1.Size = new System.Drawing.Size(54, 25);
+            this.tFBA1.Size = new System.Drawing.Size(48, 21);
             this.tFBA1.TabIndex = 463;
             // 
             // tRBD2
             // 
-            this.tRBD2.Location = new System.Drawing.Point(715, 308);
-            this.tRBD2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tRBD2.Location = new System.Drawing.Point(626, 246);
             this.tRBD2.Name = "tRBD2";
-            this.tRBD2.Size = new System.Drawing.Size(54, 25);
+            this.tRBD2.Size = new System.Drawing.Size(48, 21);
             this.tRBD2.TabIndex = 461;
             // 
             // label53
             // 
             this.label53.AutoSize = true;
-            this.label53.Location = new System.Drawing.Point(567, 311);
+            this.label53.Location = new System.Drawing.Point(496, 249);
             this.label53.Name = "label53";
-            this.label53.Size = new System.Drawing.Size(143, 15);
+            this.label53.Size = new System.Drawing.Size(113, 12);
             this.label53.TabIndex = 459;
             this.label53.Text = "<=  실매수 분포  <=";
             // 
             // tRBD1
             // 
-            this.tRBD1.Location = new System.Drawing.Point(494, 305);
-            this.tRBD1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tRBD1.Location = new System.Drawing.Point(432, 244);
             this.tRBD1.Name = "tRBD1";
-            this.tRBD1.Size = new System.Drawing.Size(54, 25);
+            this.tRBD1.Size = new System.Drawing.Size(48, 21);
             this.tRBD1.TabIndex = 460;
             // 
             // tRBA2
             // 
-            this.tRBA2.Location = new System.Drawing.Point(371, 304);
-            this.tRBA2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tRBA2.Location = new System.Drawing.Point(325, 243);
             this.tRBA2.Name = "tRBA2";
-            this.tRBA2.Size = new System.Drawing.Size(54, 25);
+            this.tRBA2.Size = new System.Drawing.Size(48, 21);
             this.tRBA2.TabIndex = 458;
             // 
             // label54
             // 
             this.label54.AutoSize = true;
-            this.label54.Location = new System.Drawing.Point(223, 311);
+            this.label54.Location = new System.Drawing.Point(195, 249);
             this.label54.Name = "label54";
-            this.label54.Size = new System.Drawing.Size(143, 15);
+            this.label54.Size = new System.Drawing.Size(117, 12);
             this.label54.TabIndex = 456;
             this.label54.Text = "<=  실매수 arrow <=";
             // 
             // tRBA1
             // 
-            this.tRBA1.Location = new System.Drawing.Point(150, 305);
-            this.tRBA1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tRBA1.Location = new System.Drawing.Point(131, 244);
             this.tRBA1.Name = "tRBA1";
-            this.tRBA1.Size = new System.Drawing.Size(54, 25);
+            this.tRBA1.Size = new System.Drawing.Size(48, 21);
             this.tRBA1.TabIndex = 457;
             // 
             // tC1502
             // 
-            this.tC1502.Location = new System.Drawing.Point(1416, 582);
-            this.tC1502.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tC1502.Location = new System.Drawing.Point(1239, 466);
             this.tC1502.Name = "tC1502";
-            this.tC1502.Size = new System.Drawing.Size(54, 25);
+            this.tC1502.Size = new System.Drawing.Size(48, 21);
             this.tC1502.TabIndex = 455;
             // 
             // label84
             // 
             this.label84.AutoSize = true;
-            this.label84.Location = new System.Drawing.Point(1278, 588);
+            this.label84.Location = new System.Drawing.Point(1118, 470);
             this.label84.Name = "label84";
-            this.label84.Size = new System.Drawing.Size(107, 15);
+            this.label84.Size = new System.Drawing.Size(83, 12);
             this.label84.TabIndex = 453;
             this.label84.Text = "<= 현재150 <=";
             // 
             // tC1501
             // 
-            this.tC1501.Location = new System.Drawing.Point(1205, 582);
-            this.tC1501.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tC1501.Location = new System.Drawing.Point(1054, 466);
             this.tC1501.Name = "tC1501";
-            this.tC1501.Size = new System.Drawing.Size(54, 25);
+            this.tC1501.Size = new System.Drawing.Size(48, 21);
             this.tC1501.TabIndex = 454;
             // 
             // tT1502
             // 
-            this.tT1502.Location = new System.Drawing.Point(1416, 538);
-            this.tT1502.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tT1502.Location = new System.Drawing.Point(1239, 430);
             this.tT1502.Name = "tT1502";
-            this.tT1502.Size = new System.Drawing.Size(54, 25);
+            this.tT1502.Size = new System.Drawing.Size(48, 21);
             this.tT1502.TabIndex = 452;
             // 
             // label85
             // 
             this.label85.AutoSize = true;
-            this.label85.Location = new System.Drawing.Point(1278, 542);
+            this.label85.Location = new System.Drawing.Point(1118, 434);
             this.label85.Name = "label85";
-            this.label85.Size = new System.Drawing.Size(117, 15);
+            this.label85.Size = new System.Drawing.Size(91, 12);
             this.label85.TabIndex = 450;
             this.label85.Text = "<=  토탈150  <=";
             // 
             // tT1501
             // 
-            this.tT1501.Location = new System.Drawing.Point(1205, 538);
-            this.tT1501.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tT1501.Location = new System.Drawing.Point(1054, 430);
             this.tT1501.Name = "tT1501";
-            this.tT1501.Size = new System.Drawing.Size(54, 25);
+            this.tT1501.Size = new System.Drawing.Size(48, 21);
             this.tT1501.TabIndex = 451;
             // 
             // tUCRC2
             // 
-            this.tUCRC2.Location = new System.Drawing.Point(1455, 840);
-            this.tUCRC2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tUCRC2.Location = new System.Drawing.Point(1273, 672);
             this.tUCRC2.Name = "tUCRC2";
-            this.tUCRC2.Size = new System.Drawing.Size(54, 25);
+            this.tUCRC2.Size = new System.Drawing.Size(48, 21);
             this.tUCRC2.TabIndex = 446;
             // 
             // label82
             // 
             this.label82.AutoSize = true;
-            this.label82.Location = new System.Drawing.Point(1278, 845);
+            this.label82.Location = new System.Drawing.Point(1118, 676);
             this.label82.Name = "label82";
-            this.label82.Size = new System.Drawing.Size(173, 15);
+            this.label82.Size = new System.Drawing.Size(137, 12);
             this.label82.TabIndex = 444;
             this.label82.Text = "<=  전고점 업카운트  <=";
             // 
             // tUCRC1
             // 
-            this.tUCRC1.Location = new System.Drawing.Point(1205, 839);
-            this.tUCRC1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tUCRC1.Location = new System.Drawing.Point(1054, 671);
             this.tUCRC1.Name = "tUCRC1";
-            this.tUCRC1.Size = new System.Drawing.Size(54, 25);
+            this.tUCRC1.Size = new System.Drawing.Size(48, 21);
             this.tUCRC1.TabIndex = 445;
             // 
             // tCRC2
             // 
-            this.tCRC2.Location = new System.Drawing.Point(1441, 795);
-            this.tCRC2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tCRC2.Location = new System.Drawing.Point(1261, 636);
             this.tCRC2.Name = "tCRC2";
-            this.tCRC2.Size = new System.Drawing.Size(54, 25);
+            this.tCRC2.Size = new System.Drawing.Size(48, 21);
             this.tCRC2.TabIndex = 443;
             // 
             // label83
             // 
             this.label83.AutoSize = true;
-            this.label83.Location = new System.Drawing.Point(1278, 800);
+            this.label83.Location = new System.Drawing.Point(1118, 640);
             this.label83.Name = "label83";
-            this.label83.Size = new System.Drawing.Size(158, 15);
+            this.label83.Size = new System.Drawing.Size(125, 12);
             this.label83.TabIndex = 441;
             this.label83.Text = "<=  전고점 카운트  <=";
             // 
             // tCRC1
             // 
-            this.tCRC1.Location = new System.Drawing.Point(1205, 795);
-            this.tCRC1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tCRC1.Location = new System.Drawing.Point(1054, 636);
             this.tCRC1.Name = "tCRC1";
-            this.tCRC1.Size = new System.Drawing.Size(54, 25);
+            this.tCRC1.Size = new System.Drawing.Size(48, 21);
             this.tCRC1.TabIndex = 442;
             // 
             // tAI50T2
             // 
-            this.tAI50T2.Location = new System.Drawing.Point(1120, 915);
-            this.tAI50T2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAI50T2.Location = new System.Drawing.Point(976, 632);
             this.tAI50T2.Name = "tAI50T2";
-            this.tAI50T2.Size = new System.Drawing.Size(54, 25);
+            this.tAI50T2.Size = new System.Drawing.Size(48, 21);
             this.tAI50T2.TabIndex = 440;
             // 
             // label80
             // 
             this.label80.AutoSize = true;
-            this.label80.Location = new System.Drawing.Point(938, 919);
+            this.label80.Location = new System.Drawing.Point(817, 635);
             this.label80.Name = "label80";
-            this.label80.Size = new System.Drawing.Size(131, 15);
+            this.label80.Size = new System.Drawing.Size(104, 12);
             this.label80.TabIndex = 438;
             this.label80.Text = "<=  AI 50 시간  <=";
             // 
             // tAI50T1
             // 
-            this.tAI50T1.Location = new System.Drawing.Point(865, 912);
-            this.tAI50T1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAI50T1.Location = new System.Drawing.Point(753, 630);
             this.tAI50T1.Name = "tAI50T1";
-            this.tAI50T1.Size = new System.Drawing.Size(54, 25);
+            this.tAI50T1.Size = new System.Drawing.Size(48, 21);
             this.tAI50T1.TabIndex = 439;
             // 
             // tAI30T2
             // 
-            this.tAI30T2.Location = new System.Drawing.Point(1120, 878);
-            this.tAI30T2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAI30T2.Location = new System.Drawing.Point(976, 602);
             this.tAI30T2.Name = "tAI30T2";
-            this.tAI30T2.Size = new System.Drawing.Size(54, 25);
+            this.tAI30T2.Size = new System.Drawing.Size(48, 21);
             this.tAI30T2.TabIndex = 437;
             // 
             // label75
             // 
             this.label75.AutoSize = true;
-            this.label75.Location = new System.Drawing.Point(938, 882);
+            this.label75.Location = new System.Drawing.Point(817, 606);
             this.label75.Name = "label75";
-            this.label75.Size = new System.Drawing.Size(131, 15);
+            this.label75.Size = new System.Drawing.Size(104, 12);
             this.label75.TabIndex = 435;
             this.label75.Text = "<=  AI 30 시간  <=";
             // 
             // tAI30T1
             // 
-            this.tAI30T1.Location = new System.Drawing.Point(865, 875);
-            this.tAI30T1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAI30T1.Location = new System.Drawing.Point(753, 600);
             this.tAI30T1.Name = "tAI30T1";
-            this.tAI30T1.Size = new System.Drawing.Size(54, 25);
+            this.tAI30T1.Size = new System.Drawing.Size(48, 21);
             this.tAI30T1.TabIndex = 436;
             // 
             // tAI20T2
             // 
-            this.tAI20T2.Location = new System.Drawing.Point(1120, 832);
-            this.tAI20T2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAI20T2.Location = new System.Drawing.Point(976, 566);
             this.tAI20T2.Name = "tAI20T2";
-            this.tAI20T2.Size = new System.Drawing.Size(54, 25);
+            this.tAI20T2.Size = new System.Drawing.Size(48, 21);
             this.tAI20T2.TabIndex = 434;
             // 
             // label76
             // 
             this.label76.AutoSize = true;
-            this.label76.Location = new System.Drawing.Point(938, 838);
+            this.label76.Location = new System.Drawing.Point(817, 570);
             this.label76.Name = "label76";
-            this.label76.Size = new System.Drawing.Size(126, 15);
+            this.label76.Size = new System.Drawing.Size(100, 12);
             this.label76.TabIndex = 432;
             this.label76.Text = "<=  AI 20 시간 <=";
             // 
             // tAI20T1
             // 
-            this.tAI20T1.Location = new System.Drawing.Point(865, 832);
-            this.tAI20T1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAI20T1.Location = new System.Drawing.Point(753, 566);
             this.tAI20T1.Name = "tAI20T1";
-            this.tAI20T1.Size = new System.Drawing.Size(54, 25);
+            this.tAI20T1.Size = new System.Drawing.Size(48, 21);
             this.tAI20T1.TabIndex = 433;
             // 
             // tAI15T2
             // 
-            this.tAI15T2.Location = new System.Drawing.Point(1120, 791);
-            this.tAI15T2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAI15T2.Location = new System.Drawing.Point(976, 533);
             this.tAI15T2.Name = "tAI15T2";
-            this.tAI15T2.Size = new System.Drawing.Size(54, 25);
+            this.tAI15T2.Size = new System.Drawing.Size(48, 21);
             this.tAI15T2.TabIndex = 431;
             // 
             // label77
             // 
             this.label77.AutoSize = true;
-            this.label77.Location = new System.Drawing.Point(938, 794);
+            this.label77.Location = new System.Drawing.Point(817, 535);
             this.label77.Name = "label77";
-            this.label77.Size = new System.Drawing.Size(131, 15);
+            this.label77.Size = new System.Drawing.Size(104, 12);
             this.label77.TabIndex = 429;
             this.label77.Text = "<=  AI 15 시간  <=";
             // 
             // tAI15T1
             // 
-            this.tAI15T1.Location = new System.Drawing.Point(865, 788);
-            this.tAI15T1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAI15T1.Location = new System.Drawing.Point(753, 530);
             this.tAI15T1.Name = "tAI15T1";
-            this.tAI15T1.Size = new System.Drawing.Size(54, 25);
+            this.tAI15T1.Size = new System.Drawing.Size(48, 21);
             this.tAI15T1.TabIndex = 430;
             // 
             // tAI10T2
             // 
-            this.tAI10T2.Location = new System.Drawing.Point(1120, 744);
-            this.tAI10T2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAI10T2.Location = new System.Drawing.Point(976, 495);
             this.tAI10T2.Name = "tAI10T2";
-            this.tAI10T2.Size = new System.Drawing.Size(54, 25);
+            this.tAI10T2.Size = new System.Drawing.Size(48, 21);
             this.tAI10T2.TabIndex = 428;
             // 
             // label78
             // 
             this.label78.AutoSize = true;
-            this.label78.Location = new System.Drawing.Point(938, 748);
+            this.label78.Location = new System.Drawing.Point(817, 498);
             this.label78.Name = "label78";
-            this.label78.Size = new System.Drawing.Size(126, 15);
+            this.label78.Size = new System.Drawing.Size(100, 12);
             this.label78.TabIndex = 426;
             this.label78.Text = "<=  AI 10 시간 <=";
             // 
             // tAI10T1
             // 
-            this.tAI10T1.Location = new System.Drawing.Point(865, 742);
-            this.tAI10T1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAI10T1.Location = new System.Drawing.Point(753, 494);
             this.tAI10T1.Name = "tAI10T1";
-            this.tAI10T1.Size = new System.Drawing.Size(54, 25);
+            this.tAI10T1.Size = new System.Drawing.Size(48, 21);
             this.tAI10T1.TabIndex = 427;
             // 
             // tAI5T2
             // 
-            this.tAI5T2.Location = new System.Drawing.Point(1120, 698);
-            this.tAI5T2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAI5T2.Location = new System.Drawing.Point(976, 458);
             this.tAI5T2.Name = "tAI5T2";
-            this.tAI5T2.Size = new System.Drawing.Size(54, 25);
+            this.tAI5T2.Size = new System.Drawing.Size(48, 21);
             this.tAI5T2.TabIndex = 425;
             // 
             // label79
             // 
             this.label79.AutoSize = true;
-            this.label79.Location = new System.Drawing.Point(938, 702);
+            this.label79.Location = new System.Drawing.Point(817, 462);
             this.label79.Name = "label79";
-            this.label79.Size = new System.Drawing.Size(123, 15);
+            this.label79.Size = new System.Drawing.Size(98, 12);
             this.label79.TabIndex = 423;
             this.label79.Text = "<=  AI 5 시간  <=";
             // 
             // tAI5T1
             // 
-            this.tAI5T1.Location = new System.Drawing.Point(865, 695);
-            this.tAI5T1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAI5T1.Location = new System.Drawing.Point(753, 456);
             this.tAI5T1.Name = "tAI5T1";
-            this.tAI5T1.Size = new System.Drawing.Size(54, 25);
+            this.tAI5T1.Size = new System.Drawing.Size(48, 21);
             this.tAI5T1.TabIndex = 424;
             // 
             // reserve4Btn
             // 
-            this.reserve4Btn.Location = new System.Drawing.Point(24, 505);
+            this.reserve4Btn.Location = new System.Drawing.Point(21, 404);
             this.reserve4Btn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.reserve4Btn.Name = "reserve4Btn";
-            this.reserve4Btn.Size = new System.Drawing.Size(59, 42);
+            this.reserve4Btn.Size = new System.Drawing.Size(52, 34);
             this.reserve4Btn.TabIndex = 420;
             this.reserve4Btn.Text = "예약4";
             this.reserve4Btn.UseVisualStyleBackColor = true;
             // 
             // tTMD2
             // 
-            this.tTMD2.Location = new System.Drawing.Point(752, 905);
-            this.tTMD2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tTMD2.Location = new System.Drawing.Point(658, 724);
             this.tTMD2.Name = "tTMD2";
-            this.tTMD2.Size = new System.Drawing.Size(54, 25);
+            this.tTMD2.Size = new System.Drawing.Size(48, 21);
             this.tTMD2.TabIndex = 344;
             // 
             // label49
             // 
             this.label49.AutoSize = true;
-            this.label49.Location = new System.Drawing.Point(570, 911);
+            this.label49.Location = new System.Drawing.Point(499, 729);
             this.label49.Name = "label49";
-            this.label49.Size = new System.Drawing.Size(173, 15);
+            this.label49.Size = new System.Drawing.Size(137, 12);
             this.label49.TabIndex = 342;
             this.label49.Text = "<=  오늘 맥스민 차이 <=";
             // 
             // tTMD1
             // 
-            this.tTMD1.Location = new System.Drawing.Point(497, 905);
-            this.tTMD1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tTMD1.Location = new System.Drawing.Point(435, 724);
             this.tTMD1.Name = "tTMD1";
-            this.tTMD1.Size = new System.Drawing.Size(54, 25);
+            this.tTMD1.Size = new System.Drawing.Size(48, 21);
             this.tTMD1.TabIndex = 343;
             // 
             // tTMIN2
             // 
-            this.tTMIN2.Location = new System.Drawing.Point(752, 864);
-            this.tTMIN2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tTMIN2.Location = new System.Drawing.Point(658, 691);
             this.tTMIN2.Name = "tTMIN2";
-            this.tTMIN2.Size = new System.Drawing.Size(54, 25);
+            this.tTMIN2.Size = new System.Drawing.Size(48, 21);
             this.tTMIN2.TabIndex = 341;
             // 
             // label47
             // 
             this.label47.AutoSize = true;
-            this.label47.Location = new System.Drawing.Point(570, 866);
+            this.label47.Location = new System.Drawing.Point(499, 693);
             this.label47.Name = "label47";
-            this.label47.Size = new System.Drawing.Size(143, 15);
+            this.label47.Size = new System.Drawing.Size(113, 12);
             this.label47.TabIndex = 339;
             this.label47.Text = "<=  오늘 미니멈  <=";
             // 
             // tTMIN1
             // 
-            this.tTMIN1.Location = new System.Drawing.Point(497, 860);
-            this.tTMIN1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tTMIN1.Location = new System.Drawing.Point(435, 688);
             this.tTMIN1.Name = "tTMIN1";
-            this.tTMIN1.Size = new System.Drawing.Size(54, 25);
+            this.tTMIN1.Size = new System.Drawing.Size(48, 21);
             this.tTMIN1.TabIndex = 340;
             // 
             // tTMAX2
             // 
-            this.tTMAX2.Location = new System.Drawing.Point(752, 816);
-            this.tTMAX2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tTMAX2.Location = new System.Drawing.Point(658, 653);
             this.tTMAX2.Name = "tTMAX2";
-            this.tTMAX2.Size = new System.Drawing.Size(54, 25);
+            this.tTMAX2.Size = new System.Drawing.Size(48, 21);
             this.tTMAX2.TabIndex = 338;
             // 
             // label48
             // 
             this.label48.AutoSize = true;
-            this.label48.Location = new System.Drawing.Point(570, 824);
+            this.label48.Location = new System.Drawing.Point(499, 659);
             this.label48.Name = "label48";
-            this.label48.Size = new System.Drawing.Size(123, 15);
+            this.label48.Size = new System.Drawing.Size(97, 12);
             this.label48.TabIndex = 336;
             this.label48.Text = "<=  오늘 맥스 <=";
             // 
             // tTMAX1
             // 
-            this.tTMAX1.Location = new System.Drawing.Point(497, 816);
-            this.tTMAX1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tTMAX1.Location = new System.Drawing.Point(435, 653);
             this.tTMAX1.Name = "tTMAX1";
-            this.tTMAX1.Size = new System.Drawing.Size(54, 25);
+            this.tTMAX1.Size = new System.Drawing.Size(48, 21);
             this.tTMAX1.TabIndex = 337;
             // 
             // tTS2
             // 
-            this.tTS2.Location = new System.Drawing.Point(1120, 28);
-            this.tTS2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tTS2.Location = new System.Drawing.Point(980, 22);
             this.tTS2.Name = "tTS2";
-            this.tTS2.Size = new System.Drawing.Size(54, 25);
+            this.tTS2.Size = new System.Drawing.Size(48, 21);
             this.tTS2.TabIndex = 335;
             // 
             // label43
             // 
             this.label43.AutoSize = true;
-            this.label43.Location = new System.Drawing.Point(938, 31);
+            this.label43.Location = new System.Drawing.Point(821, 25);
             this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(150, 15);
+            this.label43.Size = new System.Drawing.Size(119, 12);
             this.label43.TabIndex = 333;
             this.label43.Text = "<=  체결 상태(억) <=";
             // 
             // tTS1
             // 
-            this.tTS1.Location = new System.Drawing.Point(865, 25);
-            this.tTS1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tTS1.Location = new System.Drawing.Point(757, 20);
             this.tTS1.Name = "tTS1";
-            this.tTS1.Size = new System.Drawing.Size(54, 25);
+            this.tTS1.Size = new System.Drawing.Size(48, 21);
             this.tTS1.TabIndex = 334;
             // 
             // tPUS2
             // 
-            this.tPUS2.Location = new System.Drawing.Point(1120, 629);
-            this.tPUS2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPUS2.Location = new System.Drawing.Point(977, 416);
             this.tPUS2.Name = "tPUS2";
-            this.tPUS2.Size = new System.Drawing.Size(54, 25);
+            this.tPUS2.Size = new System.Drawing.Size(48, 21);
             this.tPUS2.TabIndex = 332;
             // 
             // label44
             // 
             this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(938, 632);
+            this.label44.Location = new System.Drawing.Point(818, 419);
             this.label44.Name = "label44";
-            this.label44.Size = new System.Drawing.Size(148, 15);
+            this.label44.Size = new System.Drawing.Size(117, 12);
             this.label44.TabIndex = 330;
             this.label44.Text = "<=  가격 업 속도  <=";
             // 
             // tPUS1
             // 
-            this.tPUS1.Location = new System.Drawing.Point(865, 628);
-            this.tPUS1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPUS1.Location = new System.Drawing.Point(754, 415);
             this.tPUS1.Name = "tPUS1";
-            this.tPUS1.Size = new System.Drawing.Size(54, 25);
+            this.tPUS1.Size = new System.Drawing.Size(48, 21);
             this.tPUS1.TabIndex = 331;
             // 
             // tPS2
             // 
-            this.tPS2.Location = new System.Drawing.Point(1120, 582);
-            this.tPS2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPS2.Location = new System.Drawing.Point(977, 379);
             this.tPS2.Name = "tPS2";
-            this.tPS2.Size = new System.Drawing.Size(54, 25);
+            this.tPS2.Size = new System.Drawing.Size(48, 21);
             this.tPS2.TabIndex = 329;
             // 
             // label45
             // 
             this.label45.AutoSize = true;
-            this.label45.Location = new System.Drawing.Point(938, 589);
+            this.label45.Location = new System.Drawing.Point(818, 384);
             this.label45.Name = "label45";
-            this.label45.Size = new System.Drawing.Size(123, 15);
+            this.label45.Size = new System.Drawing.Size(97, 12);
             this.label45.TabIndex = 327;
             this.label45.Text = "<=  가격 속도 <=";
             // 
             // tPS1
             // 
-            this.tPS1.Location = new System.Drawing.Point(865, 582);
-            this.tPS1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPS1.Location = new System.Drawing.Point(754, 379);
             this.tPS1.Name = "tPS1";
-            this.tPS1.Size = new System.Drawing.Size(54, 25);
+            this.tPS1.Size = new System.Drawing.Size(48, 21);
             this.tPS1.TabIndex = 328;
             // 
             // tHS2
             // 
-            this.tHS2.Location = new System.Drawing.Point(1119, 102);
-            this.tHS2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tHS2.Location = new System.Drawing.Point(979, 51);
             this.tHS2.Name = "tHS2";
-            this.tHS2.Size = new System.Drawing.Size(54, 25);
+            this.tHS2.Size = new System.Drawing.Size(48, 21);
             this.tHS2.TabIndex = 326;
             // 
             // label46
             // 
             this.label46.AutoSize = true;
-            this.label46.Location = new System.Drawing.Point(937, 106);
+            this.label46.Location = new System.Drawing.Point(820, 54);
             this.label46.Name = "label46";
-            this.label46.Size = new System.Drawing.Size(128, 15);
+            this.label46.Size = new System.Drawing.Size(101, 12);
             this.label46.TabIndex = 324;
             this.label46.Text = "<=  호가 속도  <=";
             // 
             // tHS1
             // 
-            this.tHS1.Location = new System.Drawing.Point(864, 100);
-            this.tHS1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tHS1.Location = new System.Drawing.Point(756, 49);
             this.tHS1.Name = "tHS1";
-            this.tHS1.Size = new System.Drawing.Size(54, 25);
+            this.tHS1.Size = new System.Drawing.Size(48, 21);
             this.tHS1.TabIndex = 325;
             // 
             // tAMD2
             // 
-            this.tAMD2.Location = new System.Drawing.Point(1120, 542);
-            this.tAMD2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAMD2.Location = new System.Drawing.Point(977, 347);
             this.tAMD2.Name = "tAMD2";
-            this.tAMD2.Size = new System.Drawing.Size(54, 25);
+            this.tAMD2.Size = new System.Drawing.Size(48, 21);
             this.tAMD2.TabIndex = 323;
             // 
             // label42
             // 
             this.label42.AutoSize = true;
-            this.label42.Location = new System.Drawing.Point(938, 545);
+            this.label42.Location = new System.Drawing.Point(818, 349);
             this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(163, 15);
+            this.label42.Size = new System.Drawing.Size(129, 12);
             this.label42.TabIndex = 321;
             this.label42.Text = "<=  분봉  누적다운  <=";
             // 
             // tAMD1
             // 
-            this.tAMD1.Location = new System.Drawing.Point(865, 539);
-            this.tAMD1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAMD1.Location = new System.Drawing.Point(754, 344);
             this.tAMD1.Name = "tAMD1";
-            this.tAMD1.Size = new System.Drawing.Size(54, 25);
+            this.tAMD1.Size = new System.Drawing.Size(48, 21);
             this.tAMD1.TabIndex = 322;
             // 
             // tAMU2
             // 
-            this.tAMU2.Location = new System.Drawing.Point(1120, 495);
-            this.tAMU2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAMU2.Location = new System.Drawing.Point(977, 309);
             this.tAMU2.Name = "tAMU2";
-            this.tAMU2.Size = new System.Drawing.Size(54, 25);
+            this.tAMU2.Size = new System.Drawing.Size(48, 21);
             this.tAMU2.TabIndex = 320;
             // 
             // label39
             // 
             this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(938, 499);
+            this.label39.Location = new System.Drawing.Point(818, 312);
             this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(148, 15);
+            this.label39.Size = new System.Drawing.Size(117, 12);
             this.label39.TabIndex = 318;
             this.label39.Text = "<=  분봉 누적 업  <=";
             // 
             // tAMU1
             // 
-            this.tAMU1.Location = new System.Drawing.Point(865, 492);
-            this.tAMU1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAMU1.Location = new System.Drawing.Point(754, 307);
             this.tAMU1.Name = "tAMU1";
-            this.tAMU1.Size = new System.Drawing.Size(54, 25);
+            this.tAMU1.Size = new System.Drawing.Size(48, 21);
             this.tAMU1.TabIndex = 319;
             // 
             // tCS2
             // 
-            this.tCS2.Location = new System.Drawing.Point(360, 661);
-            this.tCS2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tCS2.Location = new System.Drawing.Point(315, 529);
             this.tCS2.Name = "tCS2";
-            this.tCS2.Size = new System.Drawing.Size(54, 25);
+            this.tCS2.Size = new System.Drawing.Size(48, 21);
             this.tCS2.TabIndex = 317;
             // 
             // label40
             // 
             this.label40.AutoSize = true;
-            this.label40.Location = new System.Drawing.Point(219, 669);
+            this.label40.Location = new System.Drawing.Point(192, 535);
             this.label40.Name = "label40";
-            this.label40.Size = new System.Drawing.Size(123, 15);
+            this.label40.Size = new System.Drawing.Size(97, 12);
             this.label40.TabIndex = 315;
             this.label40.Text = "<=  체결 속도 <=";
             // 
             // tCS1
             // 
-            this.tCS1.Location = new System.Drawing.Point(146, 661);
-            this.tCS1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tCS1.Location = new System.Drawing.Point(128, 529);
             this.tCS1.Name = "tCS1";
-            this.tCS1.Size = new System.Drawing.Size(54, 25);
+            this.tCS1.Size = new System.Drawing.Size(48, 21);
             this.tCS1.TabIndex = 316;
             // 
             // tCC2
             // 
-            this.tCC2.Location = new System.Drawing.Point(1119, 428);
-            this.tCC2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tCC2.Location = new System.Drawing.Point(978, 274);
             this.tCC2.Name = "tCC2";
-            this.tCC2.Size = new System.Drawing.Size(54, 25);
+            this.tCC2.Size = new System.Drawing.Size(48, 21);
             this.tCC2.TabIndex = 314;
             // 
             // label41
             // 
             this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(937, 432);
+            this.label41.Location = new System.Drawing.Point(819, 278);
             this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(143, 15);
+            this.label41.Size = new System.Drawing.Size(113, 12);
             this.label41.TabIndex = 312;
             this.label41.Text = "<=  체결 카운트  <=";
             // 
             // tCC1
             // 
-            this.tCC1.Location = new System.Drawing.Point(864, 426);
-            this.tCC1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tCC1.Location = new System.Drawing.Point(755, 273);
             this.tCC1.Name = "tCC1";
-            this.tCC1.Size = new System.Drawing.Size(54, 25);
+            this.tCC1.Size = new System.Drawing.Size(48, 21);
             this.tCC1.TabIndex = 313;
             // 
             // tPM2
             // 
-            this.tPM2.Location = new System.Drawing.Point(401, 761);
-            this.tPM2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPM2.Location = new System.Drawing.Point(351, 609);
             this.tPM2.Name = "tPM2";
-            this.tPM2.Size = new System.Drawing.Size(54, 25);
+            this.tPM2.Size = new System.Drawing.Size(48, 21);
             this.tPM2.TabIndex = 311;
             // 
             // label35
             // 
             this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(219, 765);
+            this.label35.Location = new System.Drawing.Point(192, 612);
             this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(128, 15);
+            this.label35.Size = new System.Drawing.Size(101, 12);
             this.label35.TabIndex = 309;
             this.label35.Text = "<=  이전 분봉  <=";
             // 
             // tPM1
             // 
-            this.tPM1.Location = new System.Drawing.Point(146, 760);
-            this.tPM1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPM1.Location = new System.Drawing.Point(128, 608);
             this.tPM1.Name = "tPM1";
-            this.tPM1.Size = new System.Drawing.Size(54, 25);
+            this.tPM1.Size = new System.Drawing.Size(48, 21);
             this.tPM1.TabIndex = 310;
             // 
             // tCM2
             // 
-            this.tCM2.Location = new System.Drawing.Point(401, 715);
-            this.tCM2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tCM2.Location = new System.Drawing.Point(351, 572);
             this.tCM2.Name = "tCM2";
-            this.tCM2.Size = new System.Drawing.Size(54, 25);
+            this.tCM2.Size = new System.Drawing.Size(48, 21);
             this.tCM2.TabIndex = 308;
             // 
             // label36
             // 
             this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(219, 721);
+            this.label36.Location = new System.Drawing.Point(192, 577);
             this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(128, 15);
+            this.label36.Size = new System.Drawing.Size(101, 12);
             this.label36.TabIndex = 306;
             this.label36.Text = "<=  현재 분봉  <=";
             // 
             // tCM1
             // 
-            this.tCM1.Location = new System.Drawing.Point(146, 715);
-            this.tCM1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tCM1.Location = new System.Drawing.Point(128, 572);
             this.tCM1.Name = "tCM1";
-            this.tCM1.Size = new System.Drawing.Size(54, 25);
+            this.tCM1.Size = new System.Drawing.Size(48, 21);
             this.tCM1.TabIndex = 307;
             // 
             // tEC2
             // 
-            this.tEC2.Location = new System.Drawing.Point(1432, 626);
-            this.tEC2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tEC2.Location = new System.Drawing.Point(1253, 501);
             this.tEC2.Name = "tEC2";
-            this.tEC2.Size = new System.Drawing.Size(54, 25);
+            this.tEC2.Size = new System.Drawing.Size(48, 21);
             this.tEC2.TabIndex = 305;
             // 
             // label37
             // 
             this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(1278, 632);
+            this.label37.Location = new System.Drawing.Point(1118, 506);
             this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(148, 15);
+            this.label37.Size = new System.Drawing.Size(117, 12);
             this.label37.TabIndex = 303;
             this.label37.Text = "<= 에브리 카운트 <=";
             // 
             // tEC1
             // 
-            this.tEC1.Location = new System.Drawing.Point(1205, 626);
-            this.tEC1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tEC1.Location = new System.Drawing.Point(1054, 501);
             this.tEC1.Name = "tEC1";
-            this.tEC1.Size = new System.Drawing.Size(54, 25);
+            this.tEC1.Size = new System.Drawing.Size(48, 21);
             this.tEC1.TabIndex = 304;
             // 
             // tSPD2
             // 
-            this.tSPD2.Location = new System.Drawing.Point(1119, 370);
-            this.tSPD2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tSPD2.Location = new System.Drawing.Point(978, 228);
             this.tSPD2.Name = "tSPD2";
-            this.tSPD2.Size = new System.Drawing.Size(54, 25);
+            this.tSPD2.Size = new System.Drawing.Size(48, 21);
             this.tSPD2.TabIndex = 302;
             // 
             // label38
             // 
             this.label38.AutoSize = true;
-            this.label38.Location = new System.Drawing.Point(937, 376);
+            this.label38.Location = new System.Drawing.Point(819, 233);
             this.label38.Name = "label38";
-            this.label38.Size = new System.Drawing.Size(153, 15);
+            this.label38.Size = new System.Drawing.Size(121, 12);
             this.label38.TabIndex = 300;
             this.label38.Text = "<=  스탑 파워차이 <=";
             // 
             // tSPD1
             // 
-            this.tSPD1.Location = new System.Drawing.Point(864, 370);
-            this.tSPD1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tSPD1.Location = new System.Drawing.Point(755, 228);
             this.tSPD1.Name = "tSPD1";
-            this.tSPD1.Size = new System.Drawing.Size(54, 25);
+            this.tSPD1.Size = new System.Drawing.Size(48, 21);
             this.tSPD1.TabIndex = 301;
             // 
             // tSDP2
             // 
-            this.tSDP2.Location = new System.Drawing.Point(1119, 331);
-            this.tSDP2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tSDP2.Location = new System.Drawing.Point(978, 197);
             this.tSDP2.Name = "tSDP2";
-            this.tSDP2.Size = new System.Drawing.Size(54, 25);
+            this.tSDP2.Size = new System.Drawing.Size(48, 21);
             this.tSDP2.TabIndex = 299;
             // 
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(937, 335);
+            this.label22.Location = new System.Drawing.Point(819, 200);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(158, 15);
+            this.label22.Size = new System.Drawing.Size(125, 12);
             this.label22.TabIndex = 297;
             this.label22.Text = "<=  스탑 다운파워  <=";
             // 
             // tSDP1
             // 
-            this.tSDP1.Location = new System.Drawing.Point(864, 329);
-            this.tSDP1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tSDP1.Location = new System.Drawing.Point(755, 195);
             this.tSDP1.Name = "tSDP1";
-            this.tSDP1.Size = new System.Drawing.Size(54, 25);
+            this.tSDP1.Size = new System.Drawing.Size(48, 21);
             this.tSDP1.TabIndex = 298;
             // 
             // tSUP2
             // 
-            this.tSUP2.Location = new System.Drawing.Point(1119, 285);
-            this.tSUP2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tSUP2.Location = new System.Drawing.Point(978, 160);
             this.tSUP2.Name = "tSUP2";
-            this.tSUP2.Size = new System.Drawing.Size(54, 25);
+            this.tSUP2.Size = new System.Drawing.Size(48, 21);
             this.tSUP2.TabIndex = 296;
             // 
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(937, 291);
+            this.label24.Location = new System.Drawing.Point(819, 165);
             this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(143, 15);
+            this.label24.Size = new System.Drawing.Size(113, 12);
             this.label24.TabIndex = 294;
             this.label24.Text = "<=  스탑 업파워  <=";
             // 
             // tSUP1
             // 
-            this.tSUP1.Location = new System.Drawing.Point(864, 285);
-            this.tSUP1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tSUP1.Location = new System.Drawing.Point(755, 160);
             this.tSUP1.Name = "tSUP1";
-            this.tSUP1.Size = new System.Drawing.Size(54, 25);
+            this.tSUP1.Size = new System.Drawing.Size(48, 21);
             this.tSUP1.TabIndex = 295;
             // 
             // tSUDC2
             // 
-            this.tSUDC2.Location = new System.Drawing.Point(1119, 242);
-            this.tSUDC2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tSUDC2.Location = new System.Drawing.Point(978, 126);
             this.tSUDC2.Name = "tSUDC2";
-            this.tSUDC2.Size = new System.Drawing.Size(54, 25);
+            this.tSUDC2.Size = new System.Drawing.Size(48, 21);
             this.tSUDC2.TabIndex = 293;
             // 
             // label33
             // 
             this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(937, 246);
+            this.label33.Location = new System.Drawing.Point(819, 129);
             this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(183, 15);
+            this.label33.Size = new System.Drawing.Size(145, 12);
             this.label33.TabIndex = 291;
             this.label33.Text = "<=  스탑업다운카운트  <=";
             // 
             // tSUDC1
             // 
-            this.tSUDC1.Location = new System.Drawing.Point(864, 240);
-            this.tSUDC1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tSUDC1.Location = new System.Drawing.Point(755, 124);
             this.tSUDC1.Name = "tSUDC1";
-            this.tSUDC1.Size = new System.Drawing.Size(54, 25);
+            this.tSUDC1.Size = new System.Drawing.Size(48, 21);
             this.tSUDC1.TabIndex = 292;
             // 
             // tSC2
             // 
-            this.tSC2.Location = new System.Drawing.Point(1119, 196);
-            this.tSC2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tSC2.Location = new System.Drawing.Point(978, 89);
             this.tSC2.Name = "tSC2";
-            this.tSC2.Size = new System.Drawing.Size(54, 25);
+            this.tSC2.Size = new System.Drawing.Size(48, 21);
             this.tSC2.TabIndex = 290;
             // 
             // label34
             // 
             this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(937, 202);
+            this.label34.Location = new System.Drawing.Point(819, 94);
             this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(138, 15);
+            this.label34.Size = new System.Drawing.Size(109, 12);
             this.label34.TabIndex = 288;
             this.label34.Text = "<=  스탑카운트  <=";
             // 
             // tSC1
             // 
-            this.tSC1.Location = new System.Drawing.Point(864, 196);
-            this.tSC1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tSC1.Location = new System.Drawing.Point(755, 89);
             this.tSC1.Name = "tSC1";
-            this.tSC1.Size = new System.Drawing.Size(54, 25);
+            this.tSC1.Size = new System.Drawing.Size(48, 21);
             this.tSC1.TabIndex = 289;
             // 
             // tAIS2
             // 
-            this.tAIS2.Location = new System.Drawing.Point(1416, 889);
-            this.tAIS2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAIS2.Location = new System.Drawing.Point(1239, 711);
             this.tAIS2.Name = "tAIS2";
-            this.tAIS2.Size = new System.Drawing.Size(54, 25);
+            this.tAIS2.Size = new System.Drawing.Size(48, 21);
             this.tAIS2.TabIndex = 287;
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(1278, 895);
+            this.label13.Location = new System.Drawing.Point(1118, 716);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(110, 15);
+            this.label13.Size = new System.Drawing.Size(88, 12);
             this.label13.TabIndex = 285;
             this.label13.Text = "<=  AI 점수  <=";
             // 
             // tAIS1
             // 
-            this.tAIS1.Location = new System.Drawing.Point(1203, 889);
-            this.tAIS1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tAIS1.Location = new System.Drawing.Point(1053, 711);
             this.tAIS1.Name = "tAIS1";
-            this.tAIS1.Size = new System.Drawing.Size(54, 25);
+            this.tAIS1.Size = new System.Drawing.Size(48, 21);
             this.tAIS1.TabIndex = 286;
             // 
             // tEP2
             // 
-            this.tEP2.Location = new System.Drawing.Point(709, 600);
-            this.tEP2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tEP2.Location = new System.Drawing.Point(620, 480);
             this.tEP2.Name = "tEP2";
-            this.tEP2.Size = new System.Drawing.Size(54, 25);
+            this.tEP2.Size = new System.Drawing.Size(48, 21);
             this.tEP2.TabIndex = 284;
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(569, 608);
+            this.label11.Location = new System.Drawing.Point(498, 486);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(138, 15);
+            this.label11.Size = new System.Drawing.Size(109, 12);
             this.label11.TabIndex = 282;
             this.label11.Text = "<=  에브리패스  <=";
             // 
             // tEP1
             // 
-            this.tEP1.Location = new System.Drawing.Point(496, 600);
-            this.tEP1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tEP1.Location = new System.Drawing.Point(434, 480);
             this.tEP1.Name = "tEP1";
-            this.tEP1.Size = new System.Drawing.Size(54, 25);
+            this.tEP1.Size = new System.Drawing.Size(48, 21);
             this.tEP1.TabIndex = 283;
             // 
             // tTFP2
             // 
-            this.tTFP2.Location = new System.Drawing.Point(711, 556);
-            this.tTFP2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tTFP2.Location = new System.Drawing.Point(622, 445);
             this.tTFP2.Name = "tTFP2";
-            this.tTFP2.Size = new System.Drawing.Size(54, 25);
+            this.tTFP2.Size = new System.Drawing.Size(48, 21);
             this.tTFP2.TabIndex = 281;
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(571, 562);
+            this.label10.Location = new System.Drawing.Point(500, 450);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(138, 15);
+            this.label10.Size = new System.Drawing.Size(109, 12);
             this.label10.TabIndex = 279;
             this.label10.Text = "<=  페이크패스  <=";
             // 
             // tTFP1
             // 
-            this.tTFP1.Location = new System.Drawing.Point(497, 556);
-            this.tTFP1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tTFP1.Location = new System.Drawing.Point(435, 445);
             this.tTFP1.Name = "tTFP1";
-            this.tTFP1.Size = new System.Drawing.Size(54, 25);
+            this.tTFP1.Size = new System.Drawing.Size(48, 21);
             this.tTFP1.TabIndex = 280;
             // 
             // tRBP2
             // 
-            this.tRBP2.Location = new System.Drawing.Point(710, 516);
-            this.tRBP2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tRBP2.Location = new System.Drawing.Point(621, 413);
             this.tRBP2.Name = "tRBP2";
-            this.tRBP2.Size = new System.Drawing.Size(54, 25);
+            this.tRBP2.Size = new System.Drawing.Size(48, 21);
             this.tRBP2.TabIndex = 278;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(571, 522);
+            this.label8.Location = new System.Drawing.Point(500, 418);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(138, 15);
+            this.label8.Size = new System.Drawing.Size(109, 12);
             this.label8.TabIndex = 276;
             this.label8.Text = "<=  실매수패스  <=";
             // 
             // tRBP1
             // 
-            this.tRBP1.Location = new System.Drawing.Point(497, 519);
-            this.tRBP1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tRBP1.Location = new System.Drawing.Point(435, 415);
             this.tRBP1.Name = "tRBP1";
-            this.tRBP1.Size = new System.Drawing.Size(54, 25);
+            this.tRBP1.Size = new System.Drawing.Size(48, 21);
             this.tRBP1.TabIndex = 277;
             // 
             // tVI2
             // 
-            this.tVI2.Location = new System.Drawing.Point(704, 642);
-            this.tVI2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tVI2.Location = new System.Drawing.Point(616, 514);
             this.tVI2.Name = "tVI2";
-            this.tVI2.Size = new System.Drawing.Size(54, 25);
+            this.tVI2.Size = new System.Drawing.Size(48, 21);
             this.tVI2.TabIndex = 272;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(567, 648);
+            this.label2.Location = new System.Drawing.Point(496, 518);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(124, 15);
+            this.label2.Size = new System.Drawing.Size(100, 12);
             this.label2.TabIndex = 270;
             this.label2.Text = "<=  VI 카운트  <=";
             // 
             // tVI1
             // 
-            this.tVI1.Location = new System.Drawing.Point(494, 642);
-            this.tVI1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tVI1.Location = new System.Drawing.Point(432, 514);
             this.tVI1.Name = "tVI1";
-            this.tVI1.Size = new System.Drawing.Size(54, 25);
+            this.tVI1.Size = new System.Drawing.Size(48, 21);
             this.tVI1.TabIndex = 271;
             // 
             // reserve3Btn
             // 
-            this.reserve3Btn.Location = new System.Drawing.Point(24, 446);
+            this.reserve3Btn.Location = new System.Drawing.Point(21, 357);
             this.reserve3Btn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.reserve3Btn.Name = "reserve3Btn";
-            this.reserve3Btn.Size = new System.Drawing.Size(59, 42);
+            this.reserve3Btn.Size = new System.Drawing.Size(52, 34);
             this.reserve3Btn.TabIndex = 269;
             this.reserve3Btn.Text = "예약3";
             this.reserve3Btn.UseVisualStyleBackColor = true;
             // 
             // reserve2Btn
             // 
-            this.reserve2Btn.Location = new System.Drawing.Point(24, 390);
+            this.reserve2Btn.Location = new System.Drawing.Point(21, 312);
             this.reserve2Btn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.reserve2Btn.Name = "reserve2Btn";
-            this.reserve2Btn.Size = new System.Drawing.Size(59, 40);
+            this.reserve2Btn.Size = new System.Drawing.Size(52, 32);
             this.reserve2Btn.TabIndex = 268;
             this.reserve2Btn.Text = "예약2";
             this.reserve2Btn.UseVisualStyleBackColor = true;
             // 
             // reserve1Btn
             // 
-            this.reserve1Btn.Location = new System.Drawing.Point(24, 335);
+            this.reserve1Btn.Location = new System.Drawing.Point(21, 268);
             this.reserve1Btn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.reserve1Btn.Name = "reserve1Btn";
-            this.reserve1Btn.Size = new System.Drawing.Size(59, 38);
+            this.reserve1Btn.Size = new System.Drawing.Size(52, 30);
             this.reserve1Btn.TabIndex = 267;
             this.reserve1Btn.Text = "예약1";
             this.reserve1Btn.UseVisualStyleBackColor = true;
             // 
             // write5Btn
             // 
-            this.write5Btn.Location = new System.Drawing.Point(27, 835);
+            this.write5Btn.Location = new System.Drawing.Point(24, 668);
             this.write5Btn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.write5Btn.Name = "write5Btn";
-            this.write5Btn.Size = new System.Drawing.Size(59, 42);
+            this.write5Btn.Size = new System.Drawing.Size(52, 34);
             this.write5Btn.TabIndex = 266;
             this.write5Btn.Text = "적기5";
             this.write5Btn.UseVisualStyleBackColor = true;
             // 
             // write4Btn
             // 
-            this.write4Btn.Location = new System.Drawing.Point(27, 780);
+            this.write4Btn.Location = new System.Drawing.Point(24, 624);
             this.write4Btn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.write4Btn.Name = "write4Btn";
-            this.write4Btn.Size = new System.Drawing.Size(59, 40);
+            this.write4Btn.Size = new System.Drawing.Size(52, 32);
             this.write4Btn.TabIndex = 265;
             this.write4Btn.Text = "적기4";
             this.write4Btn.UseVisualStyleBackColor = true;
             // 
             // write3Btn
             // 
-            this.write3Btn.Location = new System.Drawing.Point(27, 726);
+            this.write3Btn.Location = new System.Drawing.Point(24, 581);
             this.write3Btn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.write3Btn.Name = "write3Btn";
-            this.write3Btn.Size = new System.Drawing.Size(59, 38);
+            this.write3Btn.Size = new System.Drawing.Size(52, 30);
             this.write3Btn.TabIndex = 264;
             this.write3Btn.Text = "적기3";
             this.write3Btn.UseVisualStyleBackColor = true;
             // 
             // write2Btn
             // 
-            this.write2Btn.Location = new System.Drawing.Point(27, 674);
+            this.write2Btn.Location = new System.Drawing.Point(24, 539);
             this.write2Btn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.write2Btn.Name = "write2Btn";
-            this.write2Btn.Size = new System.Drawing.Size(59, 38);
+            this.write2Btn.Size = new System.Drawing.Size(52, 30);
             this.write2Btn.TabIndex = 263;
             this.write2Btn.Text = "적기2";
             this.write2Btn.UseVisualStyleBackColor = true;
@@ -2201,534 +2125,537 @@ namespace AtoIndicator.View
             // timerCheckBox
             // 
             this.timerCheckBox.AutoSize = true;
-            this.timerCheckBox.Location = new System.Drawing.Point(11, 44);
+            this.timerCheckBox.Location = new System.Drawing.Point(10, 35);
             this.timerCheckBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.timerCheckBox.Name = "timerCheckBox";
-            this.timerCheckBox.Size = new System.Drawing.Size(74, 19);
+            this.timerCheckBox.Size = new System.Drawing.Size(60, 16);
             this.timerCheckBox.TabIndex = 262;
             this.timerCheckBox.Text = "타이머";
             this.timerCheckBox.UseVisualStyleBackColor = true;
             // 
             // write1Btn
             // 
-            this.write1Btn.Location = new System.Drawing.Point(27, 620);
+            this.write1Btn.Location = new System.Drawing.Point(24, 496);
             this.write1Btn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.write1Btn.Name = "write1Btn";
-            this.write1Btn.Size = new System.Drawing.Size(59, 42);
+            this.write1Btn.Size = new System.Drawing.Size(52, 34);
             this.write1Btn.TabIndex = 261;
             this.write1Btn.Text = "적기1";
             this.write1Btn.UseVisualStyleBackColor = true;
             // 
             // t4P2
             // 
-            this.t4P2.Location = new System.Drawing.Point(1417, 335);
-            this.t4P2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.t4P2.Location = new System.Drawing.Point(1240, 268);
             this.t4P2.Name = "t4P2";
-            this.t4P2.Size = new System.Drawing.Size(54, 25);
+            this.t4P2.Size = new System.Drawing.Size(48, 21);
             this.t4P2.TabIndex = 260;
             // 
             // label31
             // 
             this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(1279, 341);
+            this.label31.Location = new System.Drawing.Point(1119, 273);
             this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(136, 15);
+            this.label31.Size = new System.Drawing.Size(107, 12);
             this.label31.TabIndex = 258;
             this.label31.Text = "<=  4퍼 카운트  <=";
             // 
             // t4P1
             // 
-            this.t4P1.Location = new System.Drawing.Point(1206, 335);
-            this.t4P1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.t4P1.Location = new System.Drawing.Point(1055, 268);
             this.t4P1.Name = "t4P1";
-            this.t4P1.Size = new System.Drawing.Size(54, 25);
+            this.t4P1.Size = new System.Drawing.Size(48, 21);
             this.t4P1.TabIndex = 259;
             // 
             // t3P2
             // 
-            this.t3P2.Location = new System.Drawing.Point(1417, 291);
-            this.t3P2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.t3P2.Location = new System.Drawing.Point(1240, 233);
             this.t3P2.Name = "t3P2";
-            this.t3P2.Size = new System.Drawing.Size(54, 25);
+            this.t3P2.Size = new System.Drawing.Size(48, 21);
             this.t3P2.TabIndex = 257;
             // 
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(1279, 298);
+            this.label32.Location = new System.Drawing.Point(1119, 238);
             this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(136, 15);
+            this.label32.Size = new System.Drawing.Size(107, 12);
             this.label32.TabIndex = 255;
             this.label32.Text = "<=  3퍼 카운트  <=";
             // 
             // t3P1
             // 
-            this.t3P1.Location = new System.Drawing.Point(1206, 291);
-            this.t3P1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.t3P1.Location = new System.Drawing.Point(1055, 233);
             this.t3P1.Name = "t3P1";
-            this.t3P1.Size = new System.Drawing.Size(54, 25);
+            this.t3P1.Size = new System.Drawing.Size(48, 21);
             this.t3P1.TabIndex = 256;
             // 
             // t2P2
             // 
-            this.t2P2.Location = new System.Drawing.Point(1417, 246);
-            this.t2P2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.t2P2.Location = new System.Drawing.Point(1240, 197);
             this.t2P2.Name = "t2P2";
-            this.t2P2.Size = new System.Drawing.Size(54, 25);
+            this.t2P2.Size = new System.Drawing.Size(48, 21);
             this.t2P2.TabIndex = 254;
             // 
             // label30
             // 
             this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(1279, 252);
+            this.label30.Location = new System.Drawing.Point(1119, 202);
             this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(136, 15);
+            this.label30.Size = new System.Drawing.Size(107, 12);
             this.label30.TabIndex = 252;
             this.label30.Text = "<=  2퍼 카운트  <=";
             // 
             // t2P1
             // 
-            this.t2P1.Location = new System.Drawing.Point(1206, 246);
-            this.t2P1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.t2P1.Location = new System.Drawing.Point(1055, 197);
             this.t2P1.Name = "t2P1";
-            this.t2P1.Size = new System.Drawing.Size(54, 25);
+            this.t2P1.Size = new System.Drawing.Size(48, 21);
             this.t2P1.TabIndex = 253;
             // 
             // t1P2
             // 
-            this.t1P2.Location = new System.Drawing.Point(1417, 202);
-            this.t1P2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.t1P2.Location = new System.Drawing.Point(1240, 162);
             this.t1P2.Name = "t1P2";
-            this.t1P2.Size = new System.Drawing.Size(54, 25);
+            this.t1P2.Size = new System.Drawing.Size(48, 21);
             this.t1P2.TabIndex = 245;
             // 
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(1279, 209);
+            this.label25.Location = new System.Drawing.Point(1119, 167);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(136, 15);
+            this.label25.Size = new System.Drawing.Size(107, 12);
             this.label25.TabIndex = 243;
             this.label25.Text = "<=  1퍼 카운트  <=";
             // 
             // t1P1
             // 
-            this.t1P1.Location = new System.Drawing.Point(1206, 202);
-            this.t1P1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.t1P1.Location = new System.Drawing.Point(1055, 162);
             this.t1P1.Name = "t1P1";
-            this.t1P1.Size = new System.Drawing.Size(54, 25);
+            this.t1P1.Size = new System.Drawing.Size(48, 21);
             this.t1P1.TabIndex = 244;
             // 
             // tDA2
             // 
-            this.tDA2.Location = new System.Drawing.Point(1417, 150);
-            this.tDA2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tDA2.Location = new System.Drawing.Point(1240, 120);
             this.tDA2.Name = "tDA2";
-            this.tDA2.Size = new System.Drawing.Size(54, 25);
+            this.tDA2.Size = new System.Drawing.Size(48, 21);
             this.tDA2.TabIndex = 242;
             // 
             // label26
             // 
             this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(1279, 156);
+            this.label26.Location = new System.Drawing.Point(1119, 125);
             this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(101, 15);
+            this.label26.Size = new System.Drawing.Size(83, 12);
             this.label26.TabIndex = 240;
             this.label26.Text = "<= d angle <=";
             // 
             // tDA1
             // 
-            this.tDA1.Location = new System.Drawing.Point(1206, 150);
-            this.tDA1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tDA1.Location = new System.Drawing.Point(1055, 120);
             this.tDA1.Name = "tDA1";
-            this.tDA1.Size = new System.Drawing.Size(54, 25);
+            this.tDA1.Size = new System.Drawing.Size(48, 21);
             this.tDA1.TabIndex = 241;
             // 
             // tRA2
             // 
-            this.tRA2.Location = new System.Drawing.Point(1417, 111);
-            this.tRA2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tRA2.Location = new System.Drawing.Point(1240, 89);
             this.tRA2.Name = "tRA2";
-            this.tRA2.Size = new System.Drawing.Size(54, 25);
+            this.tRA2.Size = new System.Drawing.Size(48, 21);
             this.tRA2.TabIndex = 239;
             // 
             // label27
             // 
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(1279, 116);
+            this.label27.Location = new System.Drawing.Point(1119, 93);
             this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(97, 15);
+            this.label27.Size = new System.Drawing.Size(80, 12);
             this.label27.TabIndex = 237;
             this.label27.Text = "<= r angle <=";
             // 
             // tRA1
             // 
-            this.tRA1.Location = new System.Drawing.Point(1206, 111);
-            this.tRA1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tRA1.Location = new System.Drawing.Point(1055, 89);
             this.tRA1.Name = "tRA1";
-            this.tRA1.Size = new System.Drawing.Size(54, 25);
+            this.tRA1.Size = new System.Drawing.Size(48, 21);
             this.tRA1.TabIndex = 238;
             // 
             // tHA2
             // 
-            this.tHA2.Location = new System.Drawing.Point(1417, 66);
-            this.tHA2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tHA2.Location = new System.Drawing.Point(1240, 53);
             this.tHA2.Name = "tHA2";
-            this.tHA2.Size = new System.Drawing.Size(54, 25);
+            this.tHA2.Size = new System.Drawing.Size(48, 21);
             this.tHA2.TabIndex = 236;
             // 
             // label28
             // 
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(1279, 71);
+            this.label28.Location = new System.Drawing.Point(1119, 57);
             this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(111, 15);
+            this.label28.Size = new System.Drawing.Size(91, 12);
             this.label28.TabIndex = 234;
             this.label28.Text = "<=  h angle  <=";
             // 
             // tHA1
             // 
-            this.tHA1.Location = new System.Drawing.Point(1206, 66);
-            this.tHA1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tHA1.Location = new System.Drawing.Point(1055, 53);
             this.tHA1.Name = "tHA1";
-            this.tHA1.Size = new System.Drawing.Size(54, 25);
+            this.tHA1.Size = new System.Drawing.Size(48, 21);
             this.tHA1.TabIndex = 235;
             // 
             // tTA2
             // 
-            this.tTA2.Location = new System.Drawing.Point(1417, 26);
-            this.tTA2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tTA2.Location = new System.Drawing.Point(1240, 21);
             this.tTA2.Name = "tTA2";
-            this.tTA2.Size = new System.Drawing.Size(54, 25);
+            this.tTA2.Size = new System.Drawing.Size(48, 21);
             this.tTA2.TabIndex = 233;
             // 
             // label29
             // 
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(1279, 31);
+            this.label29.Location = new System.Drawing.Point(1119, 25);
             this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(97, 15);
+            this.label29.Size = new System.Drawing.Size(79, 12);
             this.label29.TabIndex = 231;
             this.label29.Text = "<= t angle <=";
             // 
             // tTA1
             // 
-            this.tTA1.Location = new System.Drawing.Point(1206, 26);
-            this.tTA1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tTA1.Location = new System.Drawing.Point(1055, 21);
             this.tTA1.Name = "tTA1";
-            this.tTA1.Size = new System.Drawing.Size(54, 25);
+            this.tTA1.Size = new System.Drawing.Size(48, 21);
             this.tTA1.TabIndex = 232;
             // 
             // tSM2
             // 
-            this.tSM2.Location = new System.Drawing.Point(723, 105);
-            this.tSM2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tSM2.Location = new System.Drawing.Point(633, 84);
             this.tSM2.Name = "tSM2";
-            this.tSM2.Size = new System.Drawing.Size(54, 25);
+            this.tSM2.Size = new System.Drawing.Size(48, 21);
             this.tSM2.TabIndex = 230;
             // 
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(570, 112);
+            this.label19.Location = new System.Drawing.Point(499, 90);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(140, 15);
+            this.label19.Size = new System.Drawing.Size(111, 12);
             this.label19.TabIndex = 228;
             this.label19.Text = "<= 매도대금(억) <=";
             // 
             // tSM1
             // 
-            this.tSM1.Location = new System.Drawing.Point(497, 105);
-            this.tSM1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tSM1.Location = new System.Drawing.Point(435, 84);
             this.tSM1.Name = "tSM1";
-            this.tSM1.Size = new System.Drawing.Size(54, 25);
+            this.tSM1.Size = new System.Drawing.Size(48, 21);
             this.tSM1.TabIndex = 229;
             // 
             // tBM2
             // 
-            this.tBM2.Location = new System.Drawing.Point(722, 68);
-            this.tBM2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tBM2.Location = new System.Drawing.Point(632, 54);
             this.tBM2.Name = "tBM2";
-            this.tBM2.Size = new System.Drawing.Size(54, 25);
+            this.tBM2.Size = new System.Drawing.Size(48, 21);
             this.tBM2.TabIndex = 227;
             // 
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(569, 72);
+            this.label20.Location = new System.Drawing.Point(498, 58);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(145, 15);
+            this.label20.Size = new System.Drawing.Size(115, 12);
             this.label20.TabIndex = 225;
             this.label20.Text = "<=  매수대금(억) <=";
             // 
             // tBM1
             // 
-            this.tBM1.Location = new System.Drawing.Point(496, 68);
-            this.tBM1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tBM1.Location = new System.Drawing.Point(434, 54);
             this.tBM1.Name = "tBM1";
-            this.tBM1.Size = new System.Drawing.Size(54, 25);
+            this.tBM1.Size = new System.Drawing.Size(48, 21);
             this.tBM1.TabIndex = 226;
             // 
             // tTTM2
             // 
-            this.tTTM2.Location = new System.Drawing.Point(730, 25);
-            this.tTTM2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tTTM2.Location = new System.Drawing.Point(639, 20);
             this.tTTM2.Name = "tTTM2";
-            this.tTTM2.Size = new System.Drawing.Size(54, 25);
+            this.tTTM2.Size = new System.Drawing.Size(48, 21);
             this.tTTM2.TabIndex = 224;
             // 
             // label21
             // 
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(569, 35);
+            this.label21.Location = new System.Drawing.Point(498, 28);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(155, 15);
+            this.label21.Size = new System.Drawing.Size(123, 12);
             this.label21.TabIndex = 222;
             this.label21.Text = "<= 총거래대금(억) <=";
             // 
             // tTTM1
             // 
-            this.tTTM1.Location = new System.Drawing.Point(496, 29);
-            this.tTTM1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tTTM1.Location = new System.Drawing.Point(434, 23);
             this.tTTM1.Name = "tTTM1";
-            this.tTTM1.Size = new System.Drawing.Size(54, 25);
+            this.tTTM1.Size = new System.Drawing.Size(48, 21);
             this.tTTM1.TabIndex = 223;
             // 
             // tDPJ2
             // 
-            this.tDPJ2.Location = new System.Drawing.Point(721, 759);
-            this.tDPJ2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tDPJ2.Location = new System.Drawing.Point(631, 607);
             this.tDPJ2.Name = "tDPJ2";
-            this.tDPJ2.Size = new System.Drawing.Size(54, 25);
+            this.tDPJ2.Size = new System.Drawing.Size(48, 21);
             this.tDPJ2.TabIndex = 221;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(569, 764);
+            this.label6.Location = new System.Drawing.Point(498, 611);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(147, 15);
+            this.label6.Size = new System.Drawing.Size(125, 12);
             this.label6.TabIndex = 219;
             this.label6.Text = "<= downPowerJar <=";
             // 
             // tDPJ1
             // 
-            this.tDPJ1.Location = new System.Drawing.Point(496, 759);
-            this.tDPJ1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tDPJ1.Location = new System.Drawing.Point(434, 607);
             this.tDPJ1.Name = "tDPJ1";
-            this.tDPJ1.Size = new System.Drawing.Size(54, 25);
+            this.tDPJ1.Size = new System.Drawing.Size(48, 21);
             this.tDPJ1.TabIndex = 220;
             // 
             // tUPJ2
             // 
-            this.tUPJ2.Location = new System.Drawing.Point(721, 714);
-            this.tUPJ2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tUPJ2.Location = new System.Drawing.Point(631, 571);
             this.tUPJ2.Name = "tUPJ2";
-            this.tUPJ2.Size = new System.Drawing.Size(54, 25);
+            this.tUPJ2.Size = new System.Drawing.Size(48, 21);
             this.tUPJ2.TabIndex = 218;
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(569, 719);
+            this.label9.Location = new System.Drawing.Point(498, 575);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(138, 15);
+            this.label9.Size = new System.Drawing.Size(116, 12);
             this.label9.TabIndex = 216;
             this.label9.Text = "<=  upPowerJar  <=";
             // 
             // tUPJ1
             // 
-            this.tUPJ1.Location = new System.Drawing.Point(496, 714);
-            this.tUPJ1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tUPJ1.Location = new System.Drawing.Point(434, 571);
             this.tUPJ1.Name = "tUPJ1";
-            this.tUPJ1.Size = new System.Drawing.Size(54, 25);
+            this.tUPJ1.Size = new System.Drawing.Size(48, 21);
             this.tUPJ1.TabIndex = 217;
             // 
             // tPJ2
             // 
-            this.tPJ2.Location = new System.Drawing.Point(707, 675);
-            this.tPJ2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPJ2.Location = new System.Drawing.Point(619, 540);
             this.tPJ2.Name = "tPJ2";
-            this.tPJ2.Size = new System.Drawing.Size(54, 25);
+            this.tPJ2.Size = new System.Drawing.Size(48, 21);
             this.tPJ2.TabIndex = 215;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(570, 681);
+            this.label3.Location = new System.Drawing.Point(499, 545);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(110, 15);
+            this.label3.Size = new System.Drawing.Size(93, 12);
             this.label3.TabIndex = 213;
             this.label3.Text = "<= powerJar <=";
             // 
             // tPJ1
             // 
-            this.tPJ1.Location = new System.Drawing.Point(496, 675);
-            this.tPJ1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPJ1.Location = new System.Drawing.Point(434, 540);
             this.tPJ1.Name = "tPJ1";
-            this.tPJ1.Size = new System.Drawing.Size(54, 25);
+            this.tPJ1.Size = new System.Drawing.Size(48, 21);
             this.tPJ1.TabIndex = 214;
             // 
             // tPD2
             // 
-            this.tPD2.Location = new System.Drawing.Point(752, 941);
-            this.tPD2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPD2.Location = new System.Drawing.Point(658, 753);
             this.tPD2.Name = "tPD2";
-            this.tPD2.Size = new System.Drawing.Size(54, 25);
+            this.tPD2.Size = new System.Drawing.Size(48, 21);
             this.tPD2.TabIndex = 212;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(587, 951);
+            this.label5.Location = new System.Drawing.Point(514, 761);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(138, 15);
+            this.label5.Size = new System.Drawing.Size(109, 12);
             this.label5.TabIndex = 210;
             this.label5.Text = "<=  분봉 최대차 <=";
             // 
             // tPD1
             // 
-            this.tPD1.Location = new System.Drawing.Point(497, 944);
-            this.tPD1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tPD1.Location = new System.Drawing.Point(435, 755);
             this.tPD1.Name = "tPD1";
-            this.tPD1.Size = new System.Drawing.Size(54, 25);
+            this.tPD1.Size = new System.Drawing.Size(48, 21);
             this.tPD1.TabIndex = 211;
             // 
             // tCP2
             // 
-            this.tCP2.Location = new System.Drawing.Point(1416, 488);
-            this.tCP2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tCP2.Location = new System.Drawing.Point(1239, 390);
             this.tCP2.Name = "tCP2";
-            this.tCP2.Size = new System.Drawing.Size(54, 25);
+            this.tCP2.Size = new System.Drawing.Size(48, 21);
             this.tCP2.TabIndex = 209;
             // 
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(1278, 491);
+            this.label16.Location = new System.Drawing.Point(1118, 393);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(113, 15);
+            this.label16.Size = new System.Drawing.Size(89, 12);
             this.label16.TabIndex = 207;
             this.label16.Text = "<= 현재파워 <=";
             // 
             // tCP1
             // 
-            this.tCP1.Location = new System.Drawing.Point(1205, 488);
-            this.tCP1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tCP1.Location = new System.Drawing.Point(1054, 390);
             this.tCP1.Name = "tCP1";
-            this.tCP1.Size = new System.Drawing.Size(54, 25);
+            this.tCP1.Size = new System.Drawing.Size(48, 21);
             this.tCP1.TabIndex = 208;
             // 
             // tWOG2
             // 
-            this.tWOG2.Location = new System.Drawing.Point(1416, 441);
-            this.tWOG2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tWOG2.Location = new System.Drawing.Point(1239, 353);
             this.tWOG2.Name = "tWOG2";
-            this.tWOG2.Size = new System.Drawing.Size(54, 25);
+            this.tWOG2.Size = new System.Drawing.Size(48, 21);
             this.tWOG2.TabIndex = 206;
             // 
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(1278, 448);
+            this.label17.Location = new System.Drawing.Point(1118, 358);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(108, 15);
+            this.label17.Size = new System.Drawing.Size(85, 12);
             this.label17.TabIndex = 204;
             this.label17.Text = "<=  갭제외  <=";
             // 
             // tWOG1
             // 
-            this.tWOG1.Location = new System.Drawing.Point(1205, 441);
-            this.tWOG1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tWOG1.Location = new System.Drawing.Point(1054, 353);
             this.tWOG1.Name = "tWOG1";
-            this.tWOG1.Size = new System.Drawing.Size(54, 25);
+            this.tWOG1.Size = new System.Drawing.Size(48, 21);
             this.tWOG1.TabIndex = 205;
             // 
             // tSG2
             // 
-            this.tSG2.Location = new System.Drawing.Point(1416, 401);
-            this.tSG2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tSG2.Location = new System.Drawing.Point(1239, 321);
             this.tSG2.Name = "tSG2";
-            this.tSG2.Size = new System.Drawing.Size(54, 25);
+            this.tSG2.Size = new System.Drawing.Size(48, 21);
             this.tSG2.TabIndex = 203;
             // 
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(1278, 408);
+            this.label18.Location = new System.Drawing.Point(1118, 326);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(98, 15);
+            this.label18.Size = new System.Drawing.Size(77, 12);
             this.label18.TabIndex = 201;
             this.label18.Text = "<= 초기갭 <=";
             // 
             // tSG1
             // 
-            this.tSG1.Location = new System.Drawing.Point(1205, 401);
-            this.tSG1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tSG1.Location = new System.Drawing.Point(1054, 321);
             this.tSG1.Name = "tSG1";
-            this.tSG1.Size = new System.Drawing.Size(54, 25);
+            this.tSG1.Size = new System.Drawing.Size(48, 21);
             this.tSG1.TabIndex = 202;
             // 
             // tTF2
             // 
-            this.tTF2.Location = new System.Drawing.Point(361, 598);
-            this.tTF2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tTF2.Location = new System.Drawing.Point(316, 478);
             this.tTF2.Name = "tTF2";
-            this.tTF2.Size = new System.Drawing.Size(54, 25);
+            this.tTF2.Size = new System.Drawing.Size(48, 21);
             this.tTF2.TabIndex = 200;
             // 
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(224, 604);
+            this.label15.Location = new System.Drawing.Point(196, 483);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(118, 15);
+            this.label15.Size = new System.Drawing.Size(93, 12);
             this.label15.TabIndex = 198;
             this.label15.Text = "<= 총 페이크 <=";
             // 
             // tTF1
             // 
-            this.tTF1.Location = new System.Drawing.Point(151, 598);
-            this.tTF1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tTF1.Location = new System.Drawing.Point(132, 478);
             this.tTF1.Name = "tTF1";
-            this.tTF1.Size = new System.Drawing.Size(54, 25);
+            this.tTF1.Size = new System.Drawing.Size(48, 21);
             this.tTF1.TabIndex = 199;
             // 
-            // timerDownButton
+            // tTradeCompared2
             // 
-            this.timerDownButton.Location = new System.Drawing.Point(6, 72);
-            this.timerDownButton.Name = "timerDownButton";
-            this.timerDownButton.Size = new System.Drawing.Size(25, 23);
-            this.timerDownButton.TabIndex = 534;
-            this.timerDownButton.Text = "◀";
-            this.timerDownButton.UseVisualStyleBackColor = true;
+            this.tTradeCompared2.Location = new System.Drawing.Point(976, 703);
+            this.tTradeCompared2.Name = "tTradeCompared2";
+            this.tTradeCompared2.Size = new System.Drawing.Size(48, 21);
+            this.tTradeCompared2.TabIndex = 539;
             // 
-            // timerUpButton
+            // label14
             // 
-            this.timerUpButton.Location = new System.Drawing.Point(85, 72);
-            this.timerUpButton.Name = "timerUpButton";
-            this.timerUpButton.Size = new System.Drawing.Size(25, 23);
-            this.timerUpButton.TabIndex = 535;
-            this.timerUpButton.Text = "▶";
-            this.timerUpButton.UseVisualStyleBackColor = true;
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(817, 706);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(97, 12);
+            this.label14.TabIndex = 537;
+            this.label14.Text = "<=  전일대비  <=";
             // 
-            // timerLabel
+            // tTradeCompared1
             // 
-            this.timerLabel.AutoSize = true;
-            this.timerLabel.Location = new System.Drawing.Point(48, 76);
-            this.timerLabel.Name = "timerLabel";
-            this.timerLabel.Size = new System.Drawing.Size(31, 15);
-            this.timerLabel.TabIndex = 536;
-            this.timerLabel.Text = "300";
+            this.tTradeCompared1.Location = new System.Drawing.Point(753, 701);
+            this.tTradeCompared1.Name = "tTradeCompared1";
+            this.tTradeCompared1.Size = new System.Drawing.Size(48, 21);
+            this.tTradeCompared1.TabIndex = 538;
+            // 
+            // tTradeComparedWithTime2
+            // 
+            this.tTradeComparedWithTime2.Location = new System.Drawing.Point(976, 732);
+            this.tTradeComparedWithTime2.Name = "tTradeComparedWithTime2";
+            this.tTradeComparedWithTime2.Size = new System.Drawing.Size(48, 21);
+            this.tTradeComparedWithTime2.TabIndex = 542;
+            // 
+            // label66
+            // 
+            this.label66.AutoSize = true;
+            this.label66.Location = new System.Drawing.Point(817, 735);
+            this.label66.Name = "label66";
+            this.label66.Size = new System.Drawing.Size(109, 12);
+            this.label66.TabIndex = 540;
+            this.label66.Text = "<=  동시간대비  <=";
+            // 
+            // tTradeComparedWithTime1
+            // 
+            this.tTradeComparedWithTime1.Location = new System.Drawing.Point(753, 730);
+            this.tTradeComparedWithTime1.Name = "tTradeComparedWithTime1";
+            this.tTradeComparedWithTime1.Size = new System.Drawing.Size(48, 21);
+            this.tTradeComparedWithTime1.TabIndex = 541;
+            // 
+            // tTradeStrength2
+            // 
+            this.tTradeStrength2.Location = new System.Drawing.Point(976, 759);
+            this.tTradeStrength2.Name = "tTradeStrength2";
+            this.tTradeStrength2.Size = new System.Drawing.Size(48, 21);
+            this.tTradeStrength2.TabIndex = 545;
+            // 
+            // label71
+            // 
+            this.label71.AutoSize = true;
+            this.label71.Location = new System.Drawing.Point(817, 762);
+            this.label71.Name = "label71";
+            this.label71.Size = new System.Drawing.Size(97, 12);
+            this.label71.TabIndex = 543;
+            this.label71.Text = "<=  체결강도  <=";
+            // 
+            // tTradeStrength1
+            // 
+            this.tTradeStrength1.Location = new System.Drawing.Point(753, 757);
+            this.tTradeStrength1.Name = "tTradeStrength1";
+            this.tTradeStrength1.Size = new System.Drawing.Size(48, 21);
+            this.tTradeStrength1.TabIndex = 544;
             // 
             // FastInfo
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1714, 1035);
+            this.ClientSize = new System.Drawing.Size(1500, 828);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "FastInfo";
             this.Text = "FastInfo";
             this.groupBox2.ResumeLayout(false);
@@ -2996,5 +2923,14 @@ namespace AtoIndicator.View
         private System.Windows.Forms.Button timerUpButton;
         private System.Windows.Forms.Button timerDownButton;
         private System.Windows.Forms.Label timerLabel;
+        private System.Windows.Forms.TextBox tTradeStrength2;
+        private System.Windows.Forms.Label label71;
+        private System.Windows.Forms.TextBox tTradeStrength1;
+        private System.Windows.Forms.TextBox tTradeComparedWithTime2;
+        private System.Windows.Forms.Label label66;
+        private System.Windows.Forms.TextBox tTradeComparedWithTime1;
+        private System.Windows.Forms.TextBox tTradeCompared2;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox tTradeCompared1;
     }
 }
