@@ -2390,6 +2390,9 @@ namespace AtoIndicator.View.EachStockHistory
                                         sReserveChosenMsg += $" 타임아웃";
                                     }
                                 }
+                                else
+                                    sReserveChosenMsg += $" ...({curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].nBoostTimeWheel})";
+
                                 if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
                                     reserveChosenLabel.Text = sReserveChosenMsg;
                             }
