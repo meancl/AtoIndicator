@@ -149,7 +149,6 @@ namespace AtoIndicator
             public double fPrevPowerWithoutGap; // 이전 시초가 등락율;
             public double fPowerDiff;
             public double fTradeRatioCompared;
-            public double fTradeRatioComparedWithTime;
 
             // ----------------------------------
             // 체결상태 변수
@@ -180,11 +179,6 @@ namespace AtoIndicator
             public int nFirstVolume;
             public long lFirstPrice;
 
-            public int nPrevTimeForBomb;
-            public int nPositiveBomb2000;
-            public int nPositiveBomb5000;
-            public int nNegativeBomb2000;
-            public int nNegativeBomb5000;
 
             public int nRealMaxPrice;
             // ----------------------------------
@@ -960,7 +954,7 @@ namespace AtoIndicator
             public ManualReservation()
             {
                 nCurReserve = INIT_RESERVE;
-                reserveArr = new ReservationPoint[INIT_RESERVE]; 
+                reserveArr = new ReservationPoint[INIT_RESERVE];
             }
             public void ClearAll()
             {
@@ -981,17 +975,25 @@ namespace AtoIndicator
             public double fCritLine2;
             public int nChosenTime;
 
+            public int nBoostTimeWheel; // 부스팅 휠
+            public bool isBoostTimeOut; // 부스팅 타임아웃
+            public int nBoostStartTime;
             public void Clear()
             {
-                nBuyReserveNumStock = 0;
-                isBuyReserved = false;
-                isSelected = false;
+                nBuyReserveNumStock = 0; // 매수예약 갯수
+                isBuyReserved = false; // 매수예약
+                isSelected = false; // 선택
                 isChosen1 = false;
                 isChosen2 = false;
                 nSelectedTime = 0;
                 fCritLine1 = 0;
                 fCritLine2 = 0;
                 nChosenTime = 0;
+
+                // 부스팅
+                nBoostTimeWheel = 0;
+                isBoostTimeOut = false;
+                nBoostStartTime = 0;
             }
         }
         // ============================================
@@ -1085,7 +1087,6 @@ namespace AtoIndicator
 
 
             public double fTradeCompared;
-            public double fTradeComparedWithTime;
             public double fTradeStrength;
 
         }
@@ -1672,16 +1673,16 @@ namespace AtoIndicator
         }
         public struct FeeManager
         {
-            
+
             public double fTotalBuyFeeCutOff;
             public double fTotalSellFeeCutOff;
-           
-         
+
+
             public double fOnceSellTaxCutOff1;
             public double fOnceSellTaxCutOff2;
 
-            
-            
+
+
             /*
              세금은 코스피의 경우 거래세 , 특농세 각각 계산하고 원 절사하고 더함
              코스닥의 경우 그냥 거래세만 곱하고 원 절사하고 더함
@@ -1719,12 +1720,12 @@ namespace AtoIndicator
             public int GetSellTax(int nPrice, int nVolume, int nMarketType)
             {
                 double sellCommission;
-                
+
                 if (nMarketType == KOSPI_ID)
                 {
                     double sellTax1;
                     double sellTax2;
-                    
+
                     sellTax1 = nPrice * nVolume * KOSPI_STOCK_TAX1; // 15.3
                     fOnceSellTaxCutOff1 += sellTax1 - (int)sellTax1;  // 15.3 - 15 = 0.3
                     sellTax1 = (int)sellTax1; // 15
@@ -1765,8 +1766,8 @@ namespace AtoIndicator
             public int GetRoughBuyFee(int nPrice, int nVolume)
             {
                 double EPSILON = 0.000001;
-                double retFee = nPrice  * nVolume * KIWOOM_STOCK_FEE; 
-                return (int)(retFee + ((retFee % 1 > EPSILON) ? 1 :0)); 
+                double retFee = nPrice * nVolume * KIWOOM_STOCK_FEE;
+                return (int)(retFee + ((retFee % 1 > EPSILON) ? 1 : 0));
             }
 
         }

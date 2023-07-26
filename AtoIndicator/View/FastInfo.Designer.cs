@@ -38,6 +38,12 @@ namespace AtoIndicator.View
             this.passNumTxtBox = new System.Windows.Forms.TextBox();
             this.passLenLabel = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.tTradeStrength2 = new System.Windows.Forms.TextBox();
+            this.label71 = new System.Windows.Forms.Label();
+            this.tTradeStrength1 = new System.Windows.Forms.TextBox();
+            this.tTradeCompared2 = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.tTradeCompared1 = new System.Windows.Forms.TextBox();
             this.timerLabel = new System.Windows.Forms.Label();
             this.timerUpButton = new System.Windows.Forms.Button();
             this.timerDownButton = new System.Windows.Forms.Button();
@@ -286,15 +292,6 @@ namespace AtoIndicator.View
             this.tTF2 = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.tTF1 = new System.Windows.Forms.TextBox();
-            this.tTradeCompared2 = new System.Windows.Forms.TextBox();
-            this.label14 = new System.Windows.Forms.Label();
-            this.tTradeCompared1 = new System.Windows.Forms.TextBox();
-            this.tTradeComparedWithTime2 = new System.Windows.Forms.TextBox();
-            this.label66 = new System.Windows.Forms.Label();
-            this.tTradeComparedWithTime1 = new System.Windows.Forms.TextBox();
-            this.tTradeStrength2 = new System.Windows.Forms.TextBox();
-            this.label71 = new System.Windows.Forms.Label();
-            this.tTradeStrength1 = new System.Windows.Forms.TextBox();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -368,9 +365,6 @@ namespace AtoIndicator.View
             this.groupBox1.Controls.Add(this.tTradeStrength2);
             this.groupBox1.Controls.Add(this.label71);
             this.groupBox1.Controls.Add(this.tTradeStrength1);
-            this.groupBox1.Controls.Add(this.tTradeComparedWithTime2);
-            this.groupBox1.Controls.Add(this.label66);
-            this.groupBox1.Controls.Add(this.tTradeComparedWithTime1);
             this.groupBox1.Controls.Add(this.tTradeCompared2);
             this.groupBox1.Controls.Add(this.label14);
             this.groupBox1.Controls.Add(this.tTradeCompared1);
@@ -633,6 +627,52 @@ namespace AtoIndicator.View
             this.groupBox1.Size = new System.Drawing.Size(418, 828);
             this.groupBox1.TabIndex = 19;
             this.groupBox1.TabStop = false;
+            // 
+            // tTradeStrength2
+            // 
+            this.tTradeStrength2.Location = new System.Drawing.Point(976, 733);
+            this.tTradeStrength2.Name = "tTradeStrength2";
+            this.tTradeStrength2.Size = new System.Drawing.Size(48, 21);
+            this.tTradeStrength2.TabIndex = 545;
+            // 
+            // label71
+            // 
+            this.label71.AutoSize = true;
+            this.label71.Location = new System.Drawing.Point(817, 736);
+            this.label71.Name = "label71";
+            this.label71.Size = new System.Drawing.Size(97, 12);
+            this.label71.TabIndex = 543;
+            this.label71.Text = "<=  체결강도  <=";
+            // 
+            // tTradeStrength1
+            // 
+            this.tTradeStrength1.Location = new System.Drawing.Point(753, 731);
+            this.tTradeStrength1.Name = "tTradeStrength1";
+            this.tTradeStrength1.Size = new System.Drawing.Size(48, 21);
+            this.tTradeStrength1.TabIndex = 544;
+            // 
+            // tTradeCompared2
+            // 
+            this.tTradeCompared2.Location = new System.Drawing.Point(976, 703);
+            this.tTradeCompared2.Name = "tTradeCompared2";
+            this.tTradeCompared2.Size = new System.Drawing.Size(48, 21);
+            this.tTradeCompared2.TabIndex = 539;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(817, 706);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(97, 12);
+            this.label14.TabIndex = 537;
+            this.label14.Text = "<=  전일대비  <=";
+            // 
+            // tTradeCompared1
+            // 
+            this.tTradeCompared1.Location = new System.Drawing.Point(753, 701);
+            this.tTradeCompared1.Name = "tTradeCompared1";
+            this.tTradeCompared1.Size = new System.Drawing.Size(48, 21);
+            this.tTradeCompared1.TabIndex = 538;
             // 
             // timerLabel
             // 
@@ -2580,75 +2620,6 @@ namespace AtoIndicator.View
             this.tTF1.Size = new System.Drawing.Size(48, 21);
             this.tTF1.TabIndex = 199;
             // 
-            // tTradeCompared2
-            // 
-            this.tTradeCompared2.Location = new System.Drawing.Point(976, 703);
-            this.tTradeCompared2.Name = "tTradeCompared2";
-            this.tTradeCompared2.Size = new System.Drawing.Size(48, 21);
-            this.tTradeCompared2.TabIndex = 539;
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(817, 706);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(97, 12);
-            this.label14.TabIndex = 537;
-            this.label14.Text = "<=  전일대비  <=";
-            // 
-            // tTradeCompared1
-            // 
-            this.tTradeCompared1.Location = new System.Drawing.Point(753, 701);
-            this.tTradeCompared1.Name = "tTradeCompared1";
-            this.tTradeCompared1.Size = new System.Drawing.Size(48, 21);
-            this.tTradeCompared1.TabIndex = 538;
-            // 
-            // tTradeComparedWithTime2
-            // 
-            this.tTradeComparedWithTime2.Location = new System.Drawing.Point(976, 732);
-            this.tTradeComparedWithTime2.Name = "tTradeComparedWithTime2";
-            this.tTradeComparedWithTime2.Size = new System.Drawing.Size(48, 21);
-            this.tTradeComparedWithTime2.TabIndex = 542;
-            // 
-            // label66
-            // 
-            this.label66.AutoSize = true;
-            this.label66.Location = new System.Drawing.Point(817, 735);
-            this.label66.Name = "label66";
-            this.label66.Size = new System.Drawing.Size(109, 12);
-            this.label66.TabIndex = 540;
-            this.label66.Text = "<=  동시간대비  <=";
-            // 
-            // tTradeComparedWithTime1
-            // 
-            this.tTradeComparedWithTime1.Location = new System.Drawing.Point(753, 730);
-            this.tTradeComparedWithTime1.Name = "tTradeComparedWithTime1";
-            this.tTradeComparedWithTime1.Size = new System.Drawing.Size(48, 21);
-            this.tTradeComparedWithTime1.TabIndex = 541;
-            // 
-            // tTradeStrength2
-            // 
-            this.tTradeStrength2.Location = new System.Drawing.Point(976, 759);
-            this.tTradeStrength2.Name = "tTradeStrength2";
-            this.tTradeStrength2.Size = new System.Drawing.Size(48, 21);
-            this.tTradeStrength2.TabIndex = 545;
-            // 
-            // label71
-            // 
-            this.label71.AutoSize = true;
-            this.label71.Location = new System.Drawing.Point(817, 762);
-            this.label71.Name = "label71";
-            this.label71.Size = new System.Drawing.Size(97, 12);
-            this.label71.TabIndex = 543;
-            this.label71.Text = "<=  체결강도  <=";
-            // 
-            // tTradeStrength1
-            // 
-            this.tTradeStrength1.Location = new System.Drawing.Point(753, 757);
-            this.tTradeStrength1.Name = "tTradeStrength1";
-            this.tTradeStrength1.Size = new System.Drawing.Size(48, 21);
-            this.tTradeStrength1.TabIndex = 544;
-            // 
             // FastInfo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -2926,9 +2897,6 @@ namespace AtoIndicator.View
         private System.Windows.Forms.TextBox tTradeStrength2;
         private System.Windows.Forms.Label label71;
         private System.Windows.Forms.TextBox tTradeStrength1;
-        private System.Windows.Forms.TextBox tTradeComparedWithTime2;
-        private System.Windows.Forms.Label label66;
-        private System.Windows.Forms.TextBox tTradeComparedWithTime1;
         private System.Windows.Forms.TextBox tTradeCompared2;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox tTradeCompared1;

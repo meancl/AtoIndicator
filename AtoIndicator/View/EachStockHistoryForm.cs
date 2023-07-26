@@ -659,9 +659,8 @@ namespace AtoIndicator.View.EachStockHistory
                                     $"Ma20m++ : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nUpTimeOverMa0}{NEW_LINE}" +
                                     $"Ma1h++ : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nUpTimeOverMa1}{NEW_LINE}" +
                                     $"Ma2h++ : {curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].nUpTimeOverMa2}{NEW_LINE}" +
-                                    $"전일대비 : {Math.Round(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fTradeCompared, 3)}{NEW_LINE}" + 
-                                    $"전일 동시간 대비 : {Math.Round(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fTradeComparedWithTime, 3)}{NEW_LINE}" + 
-                                    $"체결강도 : {Math.Round(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fTradeStrength, 3)}{NEW_LINE}" + 
+                                    $"전일대비 : {Math.Round(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fTradeCompared, 3)}{NEW_LINE}" +
+                                    $"체결강도 : {Math.Round(curEa.timeLines1m.arrTimeLine[nLastMinuteIdx].fTradeStrength, 3)}{NEW_LINE}" +
                                     $"*총순위 : {curEa.rankSystem.arrRanking[nLastMinuteIdx].nSummationRanking}위( {curEa.rankSystem.arrRanking[nLastMinuteIdx].nSummationMove} ){NEW_LINE}" +
                                     $"*분당순위 : {curEa.rankSystem.arrRanking[nLastMinuteIdx].nMinuteRanking} 위";
                                 nLastMinuteIdx++;
@@ -1377,12 +1376,7 @@ namespace AtoIndicator.View.EachStockHistory
                             isViLabel.Text = "";
 
                         fTradeComparedLabel.Text = $"전일대비 : {Math.Round(curEa.fTradeRatioCompared, 2)}";
-                        fTradeComparedWithTimeLabel.Text = $"동시간 대비 : {Math.Round(curEa.fTradeRatioComparedWithTime, 2)}";
                         fTradeStrengthLabel.Text = $"체결강도 : {Math.Round(curEa.fTs, 2)}";
-                        nPositiveBomb2000Label.Text = $"+폭탄2000 : {curEa.nPositiveBomb2000}";
-                        nPositiveBomb5000Label.Text = $"+폭탄5000 : {curEa.nPositiveBomb5000}";
-                        nNegativeBomb2000Label.Text = $"-폭탄2000 : {curEa.nNegativeBomb2000}";
-                        nNegativeBomb5000Label.Text = $"-폭탄5000 : {curEa.nNegativeBomb5000}";
 
                         SetChartViewRange(0, nLastMinuteIdx + 2, curEa.nFs, curEa.nFs, "TotalArea");
                     } // END ---- if (curEa.timeLines1m.nRealDataIdx > 0)
@@ -2192,13 +2186,29 @@ namespace AtoIndicator.View.EachStockHistory
                                         curEa.manualReserve.reserveArr[MainForm.DOWN_RESERVE].nSelectedTime = mainForm.nSharedTime;
                                         curEa.manualReserve.reserveArr[MainForm.DOWN_RESERVE].fCritLine1 = yCoord;
                                     }
-                                    else if (curEa.manualReserve.nCurReserve == MainForm.SUPPORT_RESERVE)
+                                    else if (curEa.manualReserve.nCurReserve == MainForm.BOOST_UP_RESERVE)
                                     {
-                                        curEa.manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].Clear();
-                                        curEa.manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isSelected = true;
-                                        curEa.manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isChosen1 = true;
-                                        curEa.manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].nSelectedTime = mainForm.nSharedTime;
-                                        curEa.manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].fCritLine1 = yCoord;
+                                        if (curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine1 == 0)
+                                        {
+                                            curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].Clear();
+                                            curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine1 = yCoord;
+                                        }
+                                        else
+                                        {
+                                            if (curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine2 == 0)
+                                            {
+                                                curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine2 = yCoord;
+                                                if (curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine1 > curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine2)
+                                                {
+                                                    double tmpVal = curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine1;
+                                                    curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine1 = curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine2;
+                                                    curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine2 = tmpVal;
+                                                }
+                                                curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isSelected = true;
+                                                curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].nSelectedTime = mainForm.nSharedTime;
+                                                curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].nBoostTimeWheel = ((nMouseWheel <= 0) ? MainForm.DEFAULT_BOOST_UP_TIME : nMouseWheel);
+                                            }
+                                        }
                                     }
                                     else if (curEa.manualReserve.nCurReserve == MainForm.NO_FLOOR_RESERVE)
                                     {
@@ -2320,7 +2330,7 @@ namespace AtoIndicator.View.EachStockHistory
                                     e.Graphics.DrawLine(new Pen(Color.BlueViolet, 3), reservationX1, reservationY1, reservationX2, reservationY1);
                                     priceViewLabel.Text = $"이상가격 : {Math.Round(curEa.manualReserve.reserveArr[MainForm.UP_RESERVE].fCritLine1, 2)}";
                                 }
-                                sReserveMsg = (curEa.manualReserve.reserveArr[MainForm.UP_RESERVE].isBuyReserved) ? "이상 매수예약 : Yes" : "이상 매수예약 : No";
+                                sReserveMsg = (curEa.manualReserve.reserveArr[MainForm.UP_RESERVE].isBuyReserved) ? $"이상 매수예약 : Yes({curEa.manualReserve.reserveArr[MainForm.UP_RESERVE].nBuyReserveNumStock})" : "이상 매수예약 : No";
                                 if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
                                     realBuyReserveLabel.Text = sReserveMsg;
 
@@ -2337,7 +2347,7 @@ namespace AtoIndicator.View.EachStockHistory
                                     priceViewLabel.Text = $"이하가격 : {Math.Round(curEa.manualReserve.reserveArr[MainForm.DOWN_RESERVE].fCritLine1, 2)}";
                                 }
 
-                                sReserveMsg = (curEa.manualReserve.reserveArr[MainForm.DOWN_RESERVE].isBuyReserved) ? "이하 매수예약 : Yes" : "이하 매수예약 : No";
+                                sReserveMsg = (curEa.manualReserve.reserveArr[MainForm.DOWN_RESERVE].isBuyReserved) ? $"이하 매수예약 : Yes({curEa.manualReserve.reserveArr[MainForm.DOWN_RESERVE].nBuyReserveNumStock})" : "이하 매수예약 : No";
                                 if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
                                     realBuyReserveLabel.Text = sReserveMsg;
 
@@ -2345,20 +2355,41 @@ namespace AtoIndicator.View.EachStockHistory
                                 if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
                                     reserveChosenLabel.Text = sReserveChosenMsg;
                             }
-                            else if (curEa.manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isSelected && curEa.manualReserve.nCurReserve == MainForm.SUPPORT_RESERVE)
+                            else if (curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine1 > 0 && curEa.manualReserve.nCurReserve == MainForm.BOOST_UP_RESERVE)
                             {
-                                if (curEa.manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].fCritLine1 > 0)
+                                if (curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine1 > 0)
                                 {
-                                    reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].fCritLine1);
+                                    reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine1);
                                     e.Graphics.DrawLine(new Pen(Color.Magenta, 3), reservationX1, reservationY1, reservationX2, reservationY1);
-                                    priceViewLabel.Text = $"지지가격 : {Math.Round(curEa.manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].fCritLine1, 2)}";
+                                    priceViewLabel.Text = $"부스트 가격 : ({Math.Round(curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine1, 2)}, 0)";
                                 }
 
-                                sReserveMsg = $"지지시간 : {(curEa.manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isChosen1 ? SubTimeToTime(mainForm.nSharedTime, curEa.manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].nSelectedTime) : -1)}";
+                                if (curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine2 > 0)
+                                {
+                                    reservationY1 = (int)historyChart.ChartAreas["TotalArea"].AxisY.ValueToPixelPosition(curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine2);
+                                    e.Graphics.DrawLine(new Pen(Color.Magenta, 3), reservationX1, reservationY1, reservationX2, reservationY1);
+                                    priceViewLabel.Text = $"부스트 가격 : ({Math.Round(curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine1, 2)}, {Math.Round(curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine2, 2)})";
+                                }
+
+                                sReserveMsg = (curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isBuyReserved) ? $"부스트 매수예약 : Yes({curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].nBuyReserveNumStock})" : "부스트 매수예약 : No";
                                 if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
                                     realBuyReserveLabel.Text = sReserveMsg;
-
-                                sReserveChosenMsg = $"지지채택 : {curEa.manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isChosen1}";
+                                sReserveChosenMsg = $"부스트 (1) :{curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isChosen1}";
+                                if (curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isChosen1)
+                                {
+                                    if (!curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isChosen2 && !curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isBoostTimeOut)
+                                    {
+                                        sReserveChosenMsg += $" 진행 중..({SubTimeToTimeAndSec(AddTimeBySec(curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].nBoostStartTime, curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].nBoostTimeWheel), mainForm.nSharedTime)})";
+                                    }
+                                    else if (curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isChosen2)
+                                    {
+                                        sReserveChosenMsg += " (2) : true";
+                                    }
+                                    else // 타임 아웃
+                                    {
+                                        sReserveChosenMsg += $" 타임아웃";
+                                    }
+                                }
                                 if (!reserveChosenLabel.Text.Equals(sReserveChosenMsg))
                                     reserveChosenLabel.Text = sReserveChosenMsg;
                             }
@@ -2378,7 +2409,7 @@ namespace AtoIndicator.View.EachStockHistory
                                     priceViewLabel.Text = $"점프가격 : ({Math.Round(curEa.manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].fCritLine1, 2)}, {Math.Round(curEa.manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].fCritLine2, 2)})";
                                 }
 
-                                sReserveMsg = (curEa.manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isBuyReserved) ? "점프 매수예약 : Yes" : "점프 매수예약 : No";
+                                sReserveMsg = (curEa.manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isBuyReserved) ? $"점프 매수예약 : Yes({curEa.manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].nBuyReserveNumStock})" : "점프 매수예약 : No";
                                 if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
                                     realBuyReserveLabel.Text = sReserveMsg;
                                 sReserveChosenMsg = $"점프 아래 :{curEa.manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen1}, 위 : {curEa.manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen2}";
@@ -2401,7 +2432,7 @@ namespace AtoIndicator.View.EachStockHistory
                                 }
 
 
-                                sReserveMsg = (curEa.manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isBuyReserved) ? "돌파 매수예약 : Yes" : "돌파 매수예약 : No";
+                                sReserveMsg = (curEa.manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isBuyReserved) ? $"돌파 매수예약 : Yes({curEa.manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].nBuyReserveNumStock})" : "돌파 매수예약 : No";
                                 if (!realBuyReserveLabel.Text.Equals(sReserveMsg))
                                     realBuyReserveLabel.Text = sReserveMsg;
                                 sReserveChosenMsg = $"돌파 아래 : {curEa.manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen1}, 위 : {curEa.manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen2}";
@@ -2939,8 +2970,8 @@ namespace AtoIndicator.View.EachStockHistory
                     }
                     if (cUp == 51)
                     {
-                        curEa.manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].Clear();
-                        realBuyReserveLabel.Text = "지지예약 취소";
+                        curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].Clear();
+                        realBuyReserveLabel.Text = "부스트예약 취소";
                         reserveChosenLabel.Text = "";
                         priceViewLabel.Text = "";
                     }
@@ -2961,6 +2992,8 @@ namespace AtoIndicator.View.EachStockHistory
                 }
                 else
                 {
+                    if (cUp == 51 && curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine1 > 0 && !curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isSelected)
+                        curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].fCritLine1 = 0;
                     if (cUp == 52 && curEa.manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].fCritLine1 > 0 && !curEa.manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isSelected)
                         curEa.manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].fCritLine1 = 0;
                     if (cUp == 53 && curEa.manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].fCritLine1 > 0 && !curEa.manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isSelected)
@@ -3154,9 +3187,14 @@ namespace AtoIndicator.View.EachStockHistory
                     }
                     curEa.manualReserve.nCurReserve = MainForm.DOWN_RESERVE;
                 }
-                else if (cPressed == 51) // 지지는 매수예약 없음
+                else if (cPressed == 51)
                 {
-                    curEa.manualReserve.nCurReserve = MainForm.SUPPORT_RESERVE;
+                    if (isShiftPushed && !curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isChosen2 && curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isSelected && !curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isBoostTimeOut)
+                    {
+                        curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].nBuyReserveNumStock = nMouseWheel;
+                        curEa.manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isBuyReserved = true;
+                    }
+                    curEa.manualReserve.nCurReserve = MainForm.BOOST_UP_RESERVE;
                 }
                 else if (cPressed == 52)
                 {

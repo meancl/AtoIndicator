@@ -59,8 +59,8 @@ namespace AtoIndicator
             InitAto(); // 초기화 메서드
 
             PrintLog("로그인 시도");
-            axKHOpenAPI1.CommConnect(); 
-            
+            axKHOpenAPI1.CommConnect();
+
         }
         public void FormClosedHandler(Object sender, FormClosedEventArgs e)
         {

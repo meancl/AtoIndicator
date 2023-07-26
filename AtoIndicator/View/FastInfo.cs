@@ -453,8 +453,6 @@ namespace AtoIndicator.View
                         tFABPlusNum2.Text = "";
                         tTradeCompared1.Text = "";
                         tTradeCompared2.Text = "";
-                        tTradeComparedWithTime1.Text = "";
-                        tTradeComparedWithTime2.Text = "";
                         tTradeStrength1.Text = "";
                         tTradeStrength2.Text = "";
 
@@ -815,8 +813,6 @@ namespace AtoIndicator.View
                 string sFABPlusNum2 = "";
                 string sTradeCompared1 = "";
                 string sTradeCompared2 = "";
-                string sTradeComparedWithTime1 = "";
-                string sTradeComparedWithTime2 = "";
                 string sTradeStrength1 = "";
                 string sTradeStrength2 = "";
 
@@ -972,8 +968,6 @@ namespace AtoIndicator.View
                 bool isFABPlusNum2 = false;
                 bool isTradeCompared1 = false;
                 bool isTradeCompared2 = false;
-                bool isTradeComparedWithTime1 = false;
-                bool isTradeComparedWithTime2 = false;
                 bool isTradeStrength1 = false;
                 bool isTradeStrength2 = false;
 
@@ -1139,8 +1133,6 @@ namespace AtoIndicator.View
                     sFABPlusNum2 = tFABPlusNum2.Text.Trim();
                     sTradeCompared1 = tTradeCompared1.Text.Trim();
                     sTradeCompared2 = tTradeCompared2.Text.Trim();
-                    sTradeComparedWithTime1 = tTradeComparedWithTime1.Text.Trim();
-                    sTradeComparedWithTime2 = tTradeComparedWithTime2.Text.Trim();
                     sTradeStrength1 = tTradeStrength1.Text.Trim();
                     sTradeStrength2 = tTradeStrength2.Text.Trim();
 
@@ -1297,8 +1289,6 @@ namespace AtoIndicator.View
                     isFABPlusNum2 = !sFABPlusNum2.Equals("");
                     isTradeCompared1 = !sTradeCompared1.Equals("");
                     isTradeCompared2 = !sTradeCompared2.Equals("");
-                    isTradeComparedWithTime1 = !sTradeComparedWithTime1.Equals("");
-                    isTradeComparedWithTime2 = !sTradeComparedWithTime2.Equals("");
                     isTradeStrength1 = !sTradeStrength1.Equals("");
                     isTradeStrength2 = !sTradeStrength2.Equals("");
 
@@ -1381,7 +1371,6 @@ namespace AtoIndicator.View
                                         isFABNum1 || isFABNum2,
                                         isFABPlusNum1 || isFABPlusNum2,
                                         isTradeCompared1 || isTradeCompared2,
-                                        isTradeComparedWithTime1 || isTradeComparedWithTime2,
                                         isTradeStrength1 || isTradeStrength2,
                     });
 
@@ -1651,9 +1640,6 @@ namespace AtoIndicator.View
                             if (isTradeCompared1 || isTradeCompared2)
                                 nPass += ((isTradeCompared1 ? double.Parse(sTradeCompared1) <= mainForm.ea[i].fTradeRatioCompared : true) &&
                                   (isTradeCompared2 ? mainForm.ea[i].fTradeRatioCompared <= double.Parse(sTradeCompared2) : true)) ? 1 : 0;
-                            if (isTradeComparedWithTime1 || isTradeComparedWithTime2)
-                                nPass += ((isTradeComparedWithTime1 ? double.Parse(sTradeComparedWithTime1) <= mainForm.ea[i].fTradeRatioComparedWithTime : true) &&
-                                  (isTradeComparedWithTime2 ? mainForm.ea[i].fTradeRatioComparedWithTime <= double.Parse(sTradeComparedWithTime2) : true)) ? 1 : 0;
                             if (isTradeStrength1 || isTradeStrength2)
                                 nPass += ((isTradeStrength1 ? double.Parse(sTradeStrength1) <= mainForm.ea[i].fTs : true) &&
                                   (isTradeStrength2 ? mainForm.ea[i].fTs <= double.Parse(sTradeStrength2) : true)) ? 1 : 0;
@@ -1698,7 +1684,7 @@ namespace AtoIndicator.View
                                     else if (nRZNum == 6)
                                         isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isSelected;
                                     else if (nRZNum == 7)
-                                        isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isSelected;
+                                        isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isSelected;
                                     else if (nRZNum == 8)
                                         isReserveShow = mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isSelected;
                                     else if (nRZNum == 9)
@@ -1800,16 +1786,18 @@ namespace AtoIndicator.View
                                     else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isSelected && restIdx == 7) ||
                                             (mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isChosen1 && restIdx == 8))
                                         listViewItem.SubItems[restIdx].BackColor = Color.Gold;
-                                    else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isSelected && restIdx == 9) ||
-                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.SUPPORT_RESERVE].isChosen1 && restIdx == 10))
+                                    else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isSelected && restIdx == 9) ||
+                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isChosen1 && restIdx == 10) ||
+                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isChosen2 && restIdx == 11) ||
+                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isBoostTimeOut && restIdx == 12 ))
                                         listViewItem.SubItems[restIdx].BackColor = Color.Magenta;
-                                    else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isSelected && restIdx == 11) ||
-                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen1 && restIdx == 12) ||
-                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen2 && restIdx == 13))
+                                    else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isSelected && restIdx == 13) ||
+                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen1 && restIdx == 14) ||
+                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isChosen2 && restIdx == 15))
                                         listViewItem.SubItems[restIdx].BackColor = Color.DarkGray;
-                                    else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isSelected && restIdx == 14) ||
-                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen1 && restIdx == 15) ||
-                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen2 && restIdx == 16))
+                                    else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isSelected && restIdx == 16) ||
+                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen1 && restIdx == 17) ||
+                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isChosen2 && restIdx == 18))
                                         listViewItem.SubItems[restIdx].BackColor = Color.Purple;
                                     else if (restIdx == 4 && (mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isBuyReserved ||
                                                                 mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isBuyReserved ||

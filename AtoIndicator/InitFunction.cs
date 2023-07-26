@@ -19,8 +19,8 @@ namespace AtoIndicator
         // DB화되면 변경해야함
 
         //public int[] eachStockIdxArray; // Array[개인구조체 종목코드] => 개인구조체 인덱스
-        public Dictionary<string, int> eachStockDict = new  Dictionary<string, int>();
-        public Dictionary<string, int> eachStockNameDict = new  Dictionary<string, int>();
+        public Dictionary<string, int> eachStockDict = new Dictionary<string, int>();
+        public Dictionary<string, int> eachStockNameDict = new Dictionary<string, int>();
 
         public const int INIT_CODEIDX_NUM = -1; // eachStockIdxArray 초기화 상수
         public EachStock[] ea;  // 각 주식이 가지는 실시간용 구조체(개인구조체)
@@ -37,7 +37,7 @@ namespace AtoIndicator
 
 
 
-        
+
         public StrategyNames strategyName;
         public Dictionary<(int, string), int> strategyNameDict = new Dictionary<(int, string), int>(); // {(시그널타입, "전략명") : DB내 전략번호}
 
@@ -93,23 +93,23 @@ namespace AtoIndicator
 
             strategyName = new StrategyNames();
             strategyHistoryList = new List<StrategyHistory>[strategyName.arrPaperBuyStrategyName.Count]; // 전략매매후 정보를 담는 list
-         
+
 
             for (int i = 0; i < nStockLength; i++)
             {
-                ea[i].fakeDownStrategy = new FakeDownStrategy(FAKE_DOWN_SIGNAL, strategyName.arrFakeDownStrategyName.Count); 
+                ea[i].fakeDownStrategy = new FakeDownStrategy(FAKE_DOWN_SIGNAL, strategyName.arrFakeDownStrategyName.Count);
                 ea[i].fakeVolatilityStrategy = new FakeVolatilityStrategy(FAKE_VOLATILE_SIGNAL, strategyName.arrFakeVolatilityStrategyName.Count);
                 ea[i].fakeBuyStrategy = new FakeBuyStrategy(FAKE_BUY_SIGNAL, strategyName.arrFakeBuyStrategyName.Count);
                 ea[i].fakeResistStrategy = new FakeResistStrategy(FAKE_RESIST_SIGNAL, strategyName.arrFakeResistStrategyName.Count);
                 ea[i].fakeAssistantStrategy = new FakeAssistantStrategy(FAKE_ASSISTANT_SIGNAL, strategyName.arrFakeAssistantStrategyName.Count);
                 ea[i].paperBuyStrategy = new PaperBuyStrategy(PAPER_BUY_SIGNAL, strategyName.arrPaperBuyStrategyName.Count);
-                
+
             }
             // 각 전략마다 기록용 리스트 생성
             for (int i = 0; i < strategyName.arrPaperBuyStrategyName.Count; i++)
                 strategyHistoryList[i] = new List<StrategyHistory>();
 
-            
+
             // 전략명을 Key로 DB에서 전략번호를 받아온다.
             using (var db = new myDbContext())
             {
@@ -122,7 +122,7 @@ namespace AtoIndicator
                 StrategyNameDict cls;
 
                 Dictionary<int, int> nStrategyGroupLastIdx = new Dictionary<int, int>();
-                var signalList = new []
+                var signalList = new[]
                 {
                     PAPER_BUY_SIGNAL,
                     FAKE_BUY_SIGNAL,
@@ -132,7 +132,7 @@ namespace AtoIndicator
                     FAKE_DOWN_SIGNAL,
                     PAPER_SELL_SIGNAL,
                 };
-                for(int i = 0; i< signalList.Length; i++)
+                for (int i = 0; i < signalList.Length; i++)
                 {
                     nStrategyGroupLastIdx[signalList[i]] = -1;
                 }
@@ -151,12 +151,12 @@ namespace AtoIndicator
                         if (strategyName.GetStrategyExistsByIdx(signal, i))
                         {
                             sCurStrategy = strategyName.GetStrategyNameByIdx(signal, i);
-                            
+
                             if (sCurStrategy == null)
                                 continue;
 
                             var dataExist = db.strategyNameDict.FirstOrDefault(x => x.nStrategyGroupNum == signal && x.sStrategyName.Equals(sCurStrategy));
-                            
+
                             if (dataExist == null)
                             {
                                 var dataNumDuplicated = db.strategyNameDict.FirstOrDefault(x => x.nStrategyGroupNum == signal && x.nStrategyNameIdx == nStrategyGroupLastIdx[signal] + 1);

@@ -129,11 +129,11 @@ namespace AtoIndicator
         public const int PAPER_BUY_SIGNAL = 10;
         public const int PAPER_SELL_SIGNAL = 11;
 
+        public const int DEFAULT_BOOST_UP_TIME = 5;
 
-        
         public const int UP_RESERVE = 0;
         public const int DOWN_RESERVE = 1;
-        public const int SUPPORT_RESERVE = 2;
+        public const int BOOST_UP_RESERVE = 2;
         public const int NO_FLOOR_RESERVE = 3;
         public const int YES_FLOOR_RESERVE = 4;
         public const int INIT_RESERVE = 5;
@@ -1043,7 +1043,6 @@ namespace AtoIndicator
                         // 체결정보
                         {
                             ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fTradeCompared = ea[i].fTradeRatioCompared;
-                            ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fTradeComparedWithTime = ea[i].fTradeRatioComparedWithTime;
                             ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fTradeStrength = ea[i].fTs;
                         }
 
@@ -2044,11 +2043,9 @@ namespace AtoIndicator
                         ea[nCurIdx].fTs = fTs;
                         ea[nCurIdx].fPower = fPower;
 
-                        double fTradeRatioCompared = double.Parse(axKHOpenAPI1.GetCommRealData(sCode, 30)); // 전일거래량대비(비율)
+                        double fTradeRatioCompared = Math.Abs(double.Parse(axKHOpenAPI1.GetCommRealData(sCode, 30))); // 전일거래량대비(비율)
                         ea[nCurIdx].fTradeRatioCompared = fTradeRatioCompared;
 
-                        double fTradeRatioComparedWithTime = double.Parse(axKHOpenAPI1.GetCommRealData(sCode, 851)); // 전일 동시간 거래량 비율
-                        ea[nCurIdx].fTradeRatioComparedWithTime = fTradeRatioComparedWithTime;
                     }
                     catch
                     {
@@ -2489,33 +2486,6 @@ namespace AtoIndicator
                         ea[nCurIdx].fMinusCnt09++;
                     }
 
-
-                    // 2000폭탄, 5000폭탄 체크 
-                    long lBombPrice = ea[nCurIdx].nTv * ea[nCurIdx].nFs;
-                    int nBombTimeDiff = SubTimeToTimeAndSec(nSharedTime, ea[nCurIdx].nPrevTimeForBomb);
-
-                    for(int t = 0; t < nBombTimeDiff; t++)
-                    {
-                        ea[nCurIdx].nPositiveBomb2000 = Max(ea[nCurIdx].nPositiveBomb2000 - 1, 0);
-                        ea[nCurIdx].nPositiveBomb5000 = Max(ea[nCurIdx].nPositiveBomb5000 - 1, 0);
-                        ea[nCurIdx].nNegativeBomb2000 = Max(ea[nCurIdx].nNegativeBomb2000 - 1, 0);
-                        ea[nCurIdx].nNegativeBomb5000 = Max(ea[nCurIdx].nNegativeBomb5000 - 1, 0);
-
-                        ea[nCurIdx].nPrevTimeForBomb = nSharedTime;
-                    }
-                    if(lBombPrice >= 2 * TEN_MILLION)
-                    {
-                        ea[nCurIdx].nPositiveBomb2000++;
-                        if (lBombPrice >= 5 * TEN_MILLION)
-                            ea[nCurIdx].nPositiveBomb5000++;
-                    }
-                    else if(lBombPrice <= -2 * TEN_MILLION)
-                    {
-                        ea[nCurIdx].nNegativeBomb2000++;
-                        if (lBombPrice <= -5 * TEN_MILLION)
-                            ea[nCurIdx].nNegativeBomb5000++;
-                    }
-
                     #endregion
 
                     #region HIT 관리
@@ -2616,12 +2586,33 @@ namespace AtoIndicator
                             }
                         }
 
-                        if (ea[nCurIdx].manualReserve.reserveArr[SUPPORT_RESERVE].isSelected && ea[nCurIdx].manualReserve.reserveArr[SUPPORT_RESERVE].isChosen1)
+                        if (ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isSelected && !ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isChosen2 && !ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isBoostTimeOut)
                         {
-                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[SUPPORT_RESERVE].fCritLine1)
+                            if (!ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isChosen1 && ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].fCritLine1)
                             {
-                                ea[nCurIdx].manualReserve.reserveArr[SUPPORT_RESERVE].isChosen1 = false;
-                                ea[nCurIdx].manualReserve.reserveArr[SUPPORT_RESERVE].nChosenTime = nSharedTime;
+                                ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isChosen1 = true;
+                                ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].nBoostStartTime = nSharedTime;
+                            }
+
+                            if (ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isChosen1)
+                            {
+                                if (SubTimeToTimeAndSec(AddTimeBySec(ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].nBoostStartTime, ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].nBoostTimeWheel), nSharedTime) > 0)
+                                {
+                                    if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].fCritLine2)
+                                    {
+                                        ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isChosen2 = true;
+                                        ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].nChosenTime = nSharedTime;
+                                        if (ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isBuyReserved)
+                                        {
+                                            ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isBuyReserved = false;
+                                            RequestMachineBuy(nCurIdx, nQty: ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].nBuyReserveNumStock);
+                                        }
+                                    }
+                                }
+                                else // 타임아웃
+                                {
+                                    ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isBoostTimeOut = true;
+                                }
                             }
                         }
 
@@ -4766,7 +4757,7 @@ namespace AtoIndicator
                                         }
                                         else //  판매중도 판매완료도 아닌 상황
                                         {
-                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].fPowerWithFee = GetProfitPercent(ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedPrice * ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume , ea[nCurIdx].nFb * ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume, ea[nCurIdx].nMarketGubun)/ 100; // 수수료 포함 손익율
+                                            ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].fPowerWithFee = GetProfitPercent(ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedPrice * ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume, ea[nCurIdx].nFb * ea[nCurIdx].paperBuyStrategy.paperTradeSlot[i].nBuyedVolume, ea[nCurIdx].nMarketGubun) / 100; // 수수료 포함 손익율
 
                                             SetThisPaperSell(ea[nCurIdx].paperBuyStrategy, nCurIdx, i);
                                         }
