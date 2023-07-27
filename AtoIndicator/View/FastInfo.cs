@@ -1801,6 +1801,7 @@ namespace AtoIndicator.View
                                         listViewItem.SubItems[restIdx].BackColor = Color.Purple;
                                     else if (restIdx == 4 && (mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isBuyReserved ||
                                                                 mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isBuyReserved ||
+                                                                mainForm.ea[i].manualReserve.reserveArr[MainForm.BOOST_UP_RESERVE].isBuyReserved ||
                                                                 mainForm.ea[i].manualReserve.reserveArr[MainForm.NO_FLOOR_RESERVE].isBuyReserved ||
                                                                 mainForm.ea[i].manualReserve.reserveArr[MainForm.YES_FLOOR_RESERVE].isBuyReserved))
                                     {
