@@ -292,6 +292,8 @@ namespace AtoIndicator.View
             this.tTF2 = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.tTF1 = new System.Windows.Forms.TextBox();
+            this.label66 = new System.Windows.Forms.Label();
+            this.InitTargetButton = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -362,6 +364,8 @@ namespace AtoIndicator.View
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.InitTargetButton);
+            this.groupBox1.Controls.Add(this.label66);
             this.groupBox1.Controls.Add(this.tTradeStrength2);
             this.groupBox1.Controls.Add(this.label71);
             this.groupBox1.Controls.Add(this.tTradeStrength1);
@@ -2620,6 +2624,26 @@ namespace AtoIndicator.View
             this.tTF1.Size = new System.Drawing.Size(48, 21);
             this.tTF1.TabIndex = 199;
             // 
+            // label66
+            // 
+            this.label66.AutoSize = true;
+            this.label66.Location = new System.Drawing.Point(12, 724);
+            this.label66.Name = "label66";
+            this.label66.Size = new System.Drawing.Size(89, 12);
+            this.label66.TabIndex = 546;
+            this.label66.Text = "* 초기화 버튼 *";
+            // 
+            // InitTargetButton
+            // 
+            this.InitTargetButton.Location = new System.Drawing.Point(24, 747);
+            this.InitTargetButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.InitTargetButton.Name = "InitTargetButton";
+            this.InitTargetButton.Size = new System.Drawing.Size(52, 34);
+            this.InitTargetButton.TabIndex = 547;
+            this.InitTargetButton.Text = "타겟 초기화";
+            this.InitTargetButton.UseVisualStyleBackColor = true;
+            this.InitTargetButton.Click += new System.EventHandler(this.InitTargetButton_Click);
+            // 
             // FastInfo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -2900,5 +2924,7 @@ namespace AtoIndicator.View
         private System.Windows.Forms.TextBox tTradeCompared2;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox tTradeCompared1;
+        private System.Windows.Forms.Button InitTargetButton;
+        private System.Windows.Forms.Label label66;
     }
 }

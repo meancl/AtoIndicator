@@ -18,6 +18,7 @@ namespace AtoIndicator.View
     public partial class FastInfo : Form
     {
         public MainForm mainForm;
+        public int[] targetTimeArr;
 
         public FastInfo(MainForm mainForm)
         {
@@ -44,11 +45,14 @@ namespace AtoIndicator.View
             listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "호가비" });
             listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "가격속도" });
             listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "대금정도" });
+            listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "매수정도" });
 
+            listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "타겟 T" });
+            
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "히트갯수" });
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "히트종류" });
 
-            listView1.Columns.Add(new ColumnHeader { Name = sDouble, Text = "매수정도" });
+            
 
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "실매수" });
             listView1.Columns.Add(new ColumnHeader { Name = sInt, Text = "페매수" });
@@ -71,6 +75,9 @@ namespace AtoIndicator.View
             listView1.ColumnClick += ColumnClickHandler;
             listView1.KeyUp += ListViewKeyUpHandller;
 
+            targetTimeArr = new int[mainForm.nStockLength];
+            for (int i = 0; i< mainForm.nStockLength; i++)
+                targetTimeArr[i] = 0;
 
             this.KeyPreview = true;
             this.KeyUp += KeyUpHandler;
@@ -1711,6 +1718,7 @@ namespace AtoIndicator.View
 
                             if (isShow && isReserveShow)
                             {
+                                targetTimeArr[i]++;
                                 nPassLen++;
                                 ListViewItem listViewItem = new ListViewItem(new string[] {
                                 mainForm.ea[i].sCode,
@@ -1728,10 +1736,12 @@ namespace AtoIndicator.View
                                 Math.Round(mainForm.ea[i].fHogaRatio, 2).ToString(),
                                 Math.Round(mainForm.ea[i].priceMoveStatus.fCur, 2).ToString(),
                                 Math.Round(mainForm.ea[i].tradeStatus.fCur , 2).ToString(),
+                                Math.Round(mainForm.ea[i].pureTradeStatus.fCur , 2).ToString(),
+
+                                targetTimeArr[i].ToString(), 
+
                                 mainForm.ea[i].fakeStrategyMgr.nCurHitNum.ToString(),
                                 mainForm.ea[i].fakeStrategyMgr.nCurHitType.ToString(),
-
-                                Math.Round(mainForm.ea[i].pureTradeStatus.fCur , 2).ToString(),
 
                                 mainForm.ea[i].paperBuyStrategy.nStrategyNum.ToString(),
                                 mainForm.ea[i].fakeBuyStrategy.nStrategyNum.ToString(),
@@ -1817,7 +1827,10 @@ namespace AtoIndicator.View
                         }
                         catch
                         {
-
+                            registerLabel.Text = "오류 발생";
+                            timer.Enabled = false;
+                            timerCheckBox.Checked = false;
+                            return;
                         }
 
                     }
@@ -2148,8 +2161,13 @@ namespace AtoIndicator.View
             catch { }
         }
 
+
         #endregion
 
-
+        private void InitTargetButton_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < mainForm.nStockLength; i++)
+                targetTimeArr[i] = 0;
+        }
     }
 }
