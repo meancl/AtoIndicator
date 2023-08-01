@@ -39,12 +39,19 @@ namespace AtoIndicator
             onManualToolStripMenuItem.Click += ToolTipItemClickHandler;
             offManualToolStripMenuItem.Click += ToolTipItemClickHandler;
             curRecordToolStripMenuItem.Click += ToolTipItemClickHandler;
+            indicatorToolStripMenuItem.Click += ToolTipItemClickHandler;
             depositToolStripMenuItem.Click += ToolTipItemClickHandler;
             holdingsToolStripMenuItem.Click += ToolTipItemClickHandler;
             todayResultStripMenuItem.Click += ToolTipItemClickHandler;
             realTimeLogStripMenuItem.Click += ToolTipItemClickHandler;
             configStripMenuItem.Click += ToolTipItemClickHandler;
             offMarketToolStripMenuItem.Click += ToolTipItemClickHandler;
+            risingToolStripMenuItem.Click += ToolTipItemClickHandler;
+            bottomUpToolStripMenuItem.Click += ToolTipItemClickHandler;
+            scalpingToolStripMenuItem.Click += ToolTipItemClickHandler;
+            fixedToolStripMenuItem.Click += ToolTipItemClickHandler;
+            noneToolStripMenuItem.Click += ToolTipItemClickHandler;
+
 
             checkChartButton.Click += Button_Click;
 

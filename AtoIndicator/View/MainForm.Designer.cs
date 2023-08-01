@@ -68,6 +68,13 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.isMarketLabel = new System.Windows.Forms.Label();
             this.isHoldingsLabel = new System.Windows.Forms.Label();
+            this.디폴트매도ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.risingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bottomUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scalpingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fixedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.noneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.indicatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).BeginInit();
             this.manualGroupBox.SuspendLayout();
@@ -282,8 +289,10 @@
             this.curRecordToolStripMenuItem,
             this.강제장시작ToolStripMenuItem1,
             this.todayResultStripMenuItem,
+            this.indicatorToolStripMenuItem,
             this.realTimeLogStripMenuItem,
             this.configStripMenuItem,
+            this.디폴트매도ToolStripMenuItem,
             this.라스트업데이트ToolStripMenuItem});
             this.메뉴ToolStripMenuItem.Name = "메뉴ToolStripMenuItem";
             this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
@@ -360,7 +369,7 @@
             // 
             this.todayResultStripMenuItem.Name = "todayResultStripMenuItem";
             this.todayResultStripMenuItem.Size = new System.Drawing.Size(231, 22);
-            this.todayResultStripMenuItem.Text = "당일실현손익( T )";
+            this.todayResultStripMenuItem.Text = "테스트( T )";
             // 
             // realTimeLogStripMenuItem
             // 
@@ -421,6 +430,54 @@
             this.isHoldingsLabel.Size = new System.Drawing.Size(100, 11);
             this.isHoldingsLabel.TabIndex = 26;
             this.isHoldingsLabel.Text = "잔고확인 : false";
+            // 
+            // 디폴트매도ToolStripMenuItem
+            // 
+            this.디폴트매도ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.risingToolStripMenuItem,
+            this.bottomUpToolStripMenuItem,
+            this.scalpingToolStripMenuItem,
+            this.fixedToolStripMenuItem,
+            this.noneToolStripMenuItem});
+            this.디폴트매도ToolStripMenuItem.Name = "디폴트매도ToolStripMenuItem";
+            this.디폴트매도ToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.디폴트매도ToolStripMenuItem.Text = "디폴트 매도 설정";
+            // 
+            // risingToolStripMenuItem
+            // 
+            this.risingToolStripMenuItem.Name = "risingToolStripMenuItem";
+            this.risingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.risingToolStripMenuItem.Text = "라이징 매도";
+            // 
+            // bottomUpToolStripMenuItem
+            // 
+            this.bottomUpToolStripMenuItem.Name = "bottomUpToolStripMenuItem";
+            this.bottomUpToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.bottomUpToolStripMenuItem.Text = "바텀업 매도";
+            // 
+            // scalpingToolStripMenuItem
+            // 
+            this.scalpingToolStripMenuItem.Name = "scalpingToolStripMenuItem";
+            this.scalpingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.scalpingToolStripMenuItem.Text = "스캘핑 매도";
+            // 
+            // fixedToolStripMenuItem
+            // 
+            this.fixedToolStripMenuItem.Name = "fixedToolStripMenuItem";
+            this.fixedToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.fixedToolStripMenuItem.Text = "고정형 매도";
+            // 
+            // noneToolStripMenuItem
+            // 
+            this.noneToolStripMenuItem.Name = "noneToolStripMenuItem";
+            this.noneToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.noneToolStripMenuItem.Text = "None";
+            // 
+            // indicatorToolStripMenuItem
+            // 
+            this.indicatorToolStripMenuItem.Name = "indicatorToolStripMenuItem";
+            this.indicatorToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.indicatorToolStripMenuItem.Text = "지표( I )";
             // 
             // MainForm
             // 
@@ -495,6 +552,13 @@
         private System.Windows.Forms.Label isMarketLabel;
         private System.Windows.Forms.Label isHoldingsLabel;
         private System.Windows.Forms.ToolStripMenuItem 라스트업데이트ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 디폴트매도ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem risingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem bottomUpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scalpingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fixedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem noneToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem indicatorToolStripMenuItem;
     }
 }
 

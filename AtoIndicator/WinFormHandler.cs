@@ -312,6 +312,8 @@ namespace AtoIndicator
 
             isTradeEnd = false;
         }
+        public int nSellMethodSetting;
+
         public void ToolTipItemClickHandler(object sender, EventArgs e)
         {
             ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
@@ -340,6 +342,10 @@ namespace AtoIndicator
             {
                 CallThreadTradeRecordForm();
             }
+            else if (menuItem.Name.Equals("indicatorToolStripMenuItem"))
+            {
+                CallThreadFastInfo();
+            }
             else if (menuItem.Name.Equals("onManualToolStripMenuItem"))
             {
                 manualGroupBox.Visible = true;
@@ -357,6 +363,36 @@ namespace AtoIndicator
             else if (menuItem.Name.Equals("configStripMenuItem"))
             {
                 ShowConfiguration();
+            }
+            else if (menuItem.Name.Equals("risingToolStripMenuItem"))
+            {
+                PrintLog("디폴트 매도방식을 Rising으로 변경합니다.");
+                for (int i = 0; i < nStockLength; i++)
+                    ea[i].myTradeManager.eDefaultTradeCategory = TradeMethodCategory.RisingMethod;
+            }
+            else if (menuItem.Name.Equals("bottomUpToolStripMenuItem"))
+            {
+                PrintLog("디폴트 매도방식을 BottomUp으로 변경합니다.");
+                for (int i = 0; i < nStockLength; i++)
+                    ea[i].myTradeManager.eDefaultTradeCategory = TradeMethodCategory.BottomUpMethod;
+            }
+            else if (menuItem.Name.Equals("scalpingToolStripMenuItem"))
+            {
+                PrintLog("디폴트 매도방식을 Scalping으로 변경합니다.");
+                for (int i = 0; i < nStockLength; i++)
+                    ea[i].myTradeManager.eDefaultTradeCategory = TradeMethodCategory.ScalpingMethod;
+            }
+            else if (menuItem.Name.Equals("fixedToolStripMenuItem"))
+            {
+                PrintLog("디폴트 매도방식을 Fixed으로 변경합니다.");
+                for (int i = 0; i < nStockLength; i++)
+                    ea[i].myTradeManager.eDefaultTradeCategory = TradeMethodCategory.FixedMethod;
+            }
+            else if (menuItem.Name.Equals("noneToolStripMenuItem"))
+            {
+                PrintLog("디폴트 매도방식을 None으로 변경합니다.");
+                for (int i = 0; i < nStockLength; i++)
+                    ea[i].myTradeManager.eDefaultTradeCategory = TradeMethodCategory.None;
             }
 
         }
