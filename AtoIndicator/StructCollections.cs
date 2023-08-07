@@ -969,31 +969,19 @@ namespace AtoIndicator
             public int nBuyReserveNumStock;
             public bool isSelected;
             public bool isChosen1;
-            public bool isChosen2;
             public int nSelectedTime;
             public double fCritLine1;
-            public double fCritLine2;
             public int nChosenTime;
 
-            public int nBoostTimeWheel; // 부스팅 휠
-            public bool isBoostTimeOut; // 부스팅 타임아웃
-            public int nBoostStartTime;
             public void Clear()
             {
                 nBuyReserveNumStock = 0; // 매수예약 갯수
                 isBuyReserved = false; // 매수예약
                 isSelected = false; // 선택
                 isChosen1 = false;
-                isChosen2 = false;
                 nSelectedTime = 0;
                 fCritLine1 = 0;
-                fCritLine2 = 0;
                 nChosenTime = 0;
-
-                // 부스팅
-                nBoostTimeWheel = 0;
-                isBoostTimeOut = false;
-                nBoostStartTime = 0;
             }
         }
         // ============================================

@@ -133,9 +133,8 @@ namespace AtoIndicator
 
         public const int UP_RESERVE = 0;
         public const int DOWN_RESERVE = 1;
-        public const int BOOST_UP_RESERVE = 2;
-        public const int NO_FLOOR_RESERVE = 3;
-        public const int YES_FLOOR_RESERVE = 4;
+        public const int MA_DOWN_RESERVE = 2;
+        public const int MA_UP_RESERVE = 3;
         public const int INIT_RESERVE = 5;
 
         public const string SEND_ORDER_ERROR_CHECK_PREFIX = "둥둥둥";
@@ -1174,6 +1173,46 @@ namespace AtoIndicator
                         } // END ---- 분봉 Sequence Strategy 분기문
                         #endregion
 
+                        #region MA 예약 확인
+                        {
+                            // MA 다운 
+                            if (ea[i].manualReserve.reserveArr[MA_DOWN_RESERVE].isSelected && !ea[i].manualReserve.reserveArr[MA_DOWN_RESERVE].isChosen1)
+                            {
+                                if (ea[i].nFs <= ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMa0 &&
+                                    ea[i].nFs <= ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMa1 &&
+                                    ea[i].nFs <= ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMa2 
+                                    )
+                                {
+                                    if (ea[i].manualReserve.reserveArr[MA_DOWN_RESERVE].isBuyReserved)
+                                    {
+                                        ea[i].manualReserve.reserveArr[MA_DOWN_RESERVE].isBuyReserved = false;
+                                        RequestMachineBuy(i, nQty: ea[i].manualReserve.reserveArr[MA_DOWN_RESERVE].nBuyReserveNumStock);
+                                    }
+                                    ea[i].manualReserve.reserveArr[MA_DOWN_RESERVE].isChosen1 = true;
+                                    ea[i].manualReserve.reserveArr[MA_DOWN_RESERVE].nChosenTime = nSharedTime;
+                                }
+                            }
+
+                            // MA 업 
+                            if (ea[i].manualReserve.reserveArr[MA_UP_RESERVE].isSelected && !ea[i].manualReserve.reserveArr[MA_UP_RESERVE].isChosen1)
+                            {
+                                if (ea[i].nFs >= ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMa0 &&
+                                    ea[i].nFs >= ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMa1 &&
+                                    ea[i].nFs >= ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMa2
+                                    )
+                                {
+                                    if (ea[i].manualReserve.reserveArr[MA_UP_RESERVE].isBuyReserved)
+                                    {
+                                        ea[i].manualReserve.reserveArr[MA_UP_RESERVE].isBuyReserved = false;
+                                        RequestMachineBuy(i, nQty: ea[i].manualReserve.reserveArr[MA_UP_RESERVE].nBuyReserveNumStock);
+                                    }
+                                    ea[i].manualReserve.reserveArr[MA_UP_RESERVE].isChosen1 = true;
+                                    ea[i].manualReserve.reserveArr[MA_UP_RESERVE].nChosenTime = nSharedTime;
+                                }
+                            }
+
+                        }
+                        #endregion
                     }// END ---- 개인구조체 업데이트
                     #endregion
 
@@ -2585,81 +2624,6 @@ namespace AtoIndicator
                                 ea[nCurIdx].manualReserve.reserveArr[DOWN_RESERVE].nChosenTime = nSharedTime;
                             }
                         }
-
-                        if (ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isSelected && !ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isChosen2 && !ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isBoostTimeOut)
-                        {
-                            if (!ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isChosen1 && ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].fCritLine1)
-                            {
-                                ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isChosen1 = true;
-                                ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].nBoostStartTime = nSharedTime;
-                            }
-
-                            if (ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isChosen1)
-                            {
-                                if (SubTimeToTimeAndSec(AddTimeBySec(ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].nBoostStartTime, ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].nBoostTimeWheel), nSharedTime) > 0)
-                                {
-                                    if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].fCritLine2)
-                                    {
-                                        ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isChosen2 = true;
-                                        ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].nChosenTime = nSharedTime;
-                                        if (ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isBuyReserved)
-                                        {
-                                            ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isBuyReserved = false;
-                                            RequestMachineBuy(nCurIdx, nQty: ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].nBuyReserveNumStock);
-                                        }
-                                    }
-                                }
-                                else // 타임아웃
-                                {
-                                    ea[nCurIdx].manualReserve.reserveArr[BOOST_UP_RESERVE].isBoostTimeOut = true;
-                                }
-                            }
-                        }
-
-                        if (ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].isSelected && !ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].isChosen1 && !ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].isChosen2)
-                        {
-                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].fCritLine1)
-                            {
-                                ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].isChosen1 = true;
-                                ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].nChosenTime = nSharedTime;
-                            }
-
-                            if (!ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].isChosen1 && ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].fCritLine2)
-                            {
-                                if (ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].isBuyReserved)
-                                {
-                                    ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].isBuyReserved = false;
-                                    RequestMachineBuy(nCurIdx, nQty: ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].nBuyReserveNumStock);
-                                }
-                                ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].isChosen2 = true;
-                                ea[nCurIdx].manualReserve.reserveArr[NO_FLOOR_RESERVE].nChosenTime = nSharedTime;
-                            }
-                        }
-
-                        if (ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].isSelected && !ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].isChosen2)
-                        {
-                            if (ea[nCurIdx].nFs <= ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].fCritLine1)
-                            {
-                                ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].isChosen1 = true;
-                                ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].nChosenTime = nSharedTime;
-                            }
-
-                            if (ea[nCurIdx].nFs >= ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].fCritLine2)
-                            {
-                                if (ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].isChosen1)
-                                {
-                                    if (ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].isBuyReserved)
-                                    {
-                                        ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].isBuyReserved = false;
-                                        RequestMachineBuy(nCurIdx, nQty: ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].nBuyReserveNumStock);
-                                    }
-                                }
-
-                                ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].isChosen2 = true;
-                                ea[nCurIdx].manualReserve.reserveArr[YES_FLOOR_RESERVE].nChosenTime = nSharedTime;
-                            }
-                        }
-
                     }
                     #endregion
 
@@ -4701,7 +4665,6 @@ namespace AtoIndicator
 
 
                         #endregion
-
 
                         #region 모의 매매장
                         if (isZooSikCheGyul)
