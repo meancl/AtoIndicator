@@ -1780,14 +1780,19 @@ namespace AtoIndicator.View
 
                                 for (int restIdx = 0; restIdx < listViewItem.SubItems.Count; restIdx++)
                                 {
-                                    if (mainForm.ea[i].manualReserve.isChosenQ && (restIdx == 0))
+                                    if (mainForm.ea[i].manualReserve.isChosenQ && restIdx == 0)
                                         listViewItem.SubItems[restIdx].BackColor = Color.Green;
-                                    else if (mainForm.ea[i].manualReserve.isChosenW && (restIdx == 1))
+                                    else if (mainForm.ea[i].manualReserve.isChosenW && restIdx == 1)
                                         listViewItem.SubItems[restIdx].BackColor = Color.Orange;
-                                    else if (mainForm.ea[i].manualReserve.isChosenE && (restIdx == 2))
+                                    else if (mainForm.ea[i].manualReserve.isChosenE && restIdx == 2)
                                         listViewItem.SubItems[restIdx].BackColor = Color.SkyBlue;
-                                    else if (mainForm.ea[i].manualReserve.isChosenR && (restIdx == 3))
+                                    else if (mainForm.ea[i].manualReserve.isChosenR && restIdx == 3)
                                         listViewItem.SubItems[restIdx].BackColor = Color.GreenYellow;
+                                    else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isBuyReserved ||
+                                              mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isBuyReserved ||
+                                              mainForm.ea[i].manualReserve.reserveArr[MainForm.MA_DOWN_RESERVE].isBuyReserved ||
+                                              mainForm.ea[i].manualReserve.reserveArr[MainForm.MA_UP_RESERVE].isBuyReserved) && restIdx == 4)
+                                        listViewItem.SubItems[restIdx].BackColor = Color.Black;
                                     else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isSelected && restIdx == 5) ||
                                             (mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isChosen1 && restIdx == 6))
                                         listViewItem.SubItems[restIdx].BackColor = Color.BlueViolet;
@@ -1797,16 +1802,9 @@ namespace AtoIndicator.View
                                     else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.MA_DOWN_RESERVE].isSelected && restIdx == 9) ||
                                             (mainForm.ea[i].manualReserve.reserveArr[MainForm.MA_DOWN_RESERVE].isChosen1 && restIdx == 10))
                                         listViewItem.SubItems[restIdx].BackColor = Color.Magenta;
-                                    else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.MA_UP_RESERVE].isSelected && restIdx == 13) ||
-                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.MA_UP_RESERVE].isChosen1 && restIdx == 14))
+                                    else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.MA_UP_RESERVE].isSelected && restIdx == 11) ||
+                                            (mainForm.ea[i].manualReserve.reserveArr[MainForm.MA_UP_RESERVE].isChosen1 && restIdx == 12))
                                         listViewItem.SubItems[restIdx].BackColor = Color.DarkGray;
-                                    else if (restIdx == 4 && (mainForm.ea[i].manualReserve.reserveArr[MainForm.UP_RESERVE].isBuyReserved ||
-                                                                mainForm.ea[i].manualReserve.reserveArr[MainForm.DOWN_RESERVE].isBuyReserved ||
-                                                                mainForm.ea[i].manualReserve.reserveArr[MainForm.MA_DOWN_RESERVE].isBuyReserved ||
-                                                                mainForm.ea[i].manualReserve.reserveArr[MainForm.MA_UP_RESERVE].isBuyReserved))
-                                    {
-                                        listViewItem.SubItems[restIdx].BackColor = Color.Black;
-                                    }
                                     else
                                         listViewItem.SubItems[restIdx].BackColor = myColor;
                                 }
