@@ -134,7 +134,8 @@ namespace AtoIndicator
         public const int UP_RESERVE = 0;
         public const int DOWN_RESERVE = 1;
         public const int MA_DOWN_RESERVE = 2;
-        public const int MA_UP_RESERVE = 3;
+        public const int MA_RESERVE_POSITION_RESERVE = 3;
+        public const int MA_UP_RESERVE = 4;
         public const int INIT_RESERVE = 5;
 
         public const string SEND_ORDER_ERROR_CHECK_PREFIX = "둥둥둥";
@@ -1175,6 +1176,19 @@ namespace AtoIndicator
 
                         #region MA 예약 확인
                         {
+
+                            // MA 역배열
+                            if(ea[i].manualReserve.reserveArr[MA_RESERVE_POSITION_RESERVE].isSelected && !ea[i].manualReserve.reserveArr[MA_RESERVE_POSITION_RESERVE].isChosen1)
+                            {
+                                if (ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMa0 <= ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMa2 &&
+                                    ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMa1 <= ea[i].timeLines1m.arrTimeLine[nTimeLineIdx].fOverMa2
+                                    )
+                                {
+                                    ea[i].manualReserve.reserveArr[MA_RESERVE_POSITION_RESERVE].isChosen1 = true;
+                                    ea[i].manualReserve.reserveArr[MA_RESERVE_POSITION_RESERVE].nChosenTime = nSharedTime;
+                                }
+                            }
+
                             // MA 다운 
                             if (ea[i].manualReserve.reserveArr[MA_DOWN_RESERVE].isSelected && !ea[i].manualReserve.reserveArr[MA_DOWN_RESERVE].isChosen1)
                             {

@@ -96,12 +96,12 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.accountComboBox);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(6, 46);
+            this.groupBox1.Location = new System.Drawing.Point(7, 58);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.groupBox1.Size = new System.Drawing.Size(317, 216);
+            this.groupBox1.Size = new System.Drawing.Size(362, 270);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "내 정보";
@@ -109,106 +109,107 @@
             // screenNumLabel
             // 
             this.screenNumLabel.AutoSize = true;
-            this.screenNumLabel.Location = new System.Drawing.Point(122, 181);
+            this.screenNumLabel.Location = new System.Drawing.Point(139, 226);
             this.screenNumLabel.Name = "screenNumLabel";
-            this.screenNumLabel.Size = new System.Drawing.Size(11, 12);
+            this.screenNumLabel.Size = new System.Drawing.Size(15, 15);
             this.screenNumLabel.TabIndex = 18;
             this.screenNumLabel.Text = "0";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(23, 181);
+            this.label7.Location = new System.Drawing.Point(26, 226);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(81, 12);
+            this.label7.Size = new System.Drawing.Size(102, 15);
             this.label7.TabIndex = 17;
             this.label7.Text = "화면번호 갯수";
             // 
             // marketGubunLabel
             // 
             this.marketGubunLabel.AutoSize = true;
-            this.marketGubunLabel.Location = new System.Drawing.Point(122, 30);
+            this.marketGubunLabel.Location = new System.Drawing.Point(139, 38);
             this.marketGubunLabel.Name = "marketGubunLabel";
-            this.marketGubunLabel.Size = new System.Drawing.Size(0, 12);
+            this.marketGubunLabel.Size = new System.Drawing.Size(0, 15);
             this.marketGubunLabel.TabIndex = 16;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(23, 30);
+            this.label6.Location = new System.Drawing.Point(26, 38);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(53, 12);
+            this.label6.Size = new System.Drawing.Size(67, 15);
             this.label6.TabIndex = 15;
             this.label6.Text = "투자구분";
             // 
             // depositCalcLabel
             // 
             this.depositCalcLabel.AutoSize = true;
-            this.depositCalcLabel.Location = new System.Drawing.Point(122, 155);
+            this.depositCalcLabel.Location = new System.Drawing.Point(139, 194);
             this.depositCalcLabel.Name = "depositCalcLabel";
-            this.depositCalcLabel.Size = new System.Drawing.Size(33, 12);
+            this.depositCalcLabel.Size = new System.Drawing.Size(42, 15);
             this.depositCalcLabel.TabIndex = 14;
             this.depositCalcLabel.Text = "0(원)";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(23, 155);
+            this.label5.Location = new System.Drawing.Point(26, 194);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(77, 12);
+            this.label5.Size = new System.Drawing.Size(97, 15);
             this.label5.TabIndex = 13;
             this.label5.Text = "계산용예수금";
             // 
             // myNameLabel
             // 
             this.myNameLabel.AutoSize = true;
-            this.myNameLabel.Location = new System.Drawing.Point(122, 93);
+            this.myNameLabel.Location = new System.Drawing.Point(139, 116);
             this.myNameLabel.Name = "myNameLabel";
-            this.myNameLabel.Size = new System.Drawing.Size(41, 12);
+            this.myNameLabel.Size = new System.Drawing.Size(52, 15);
             this.myNameLabel.TabIndex = 10;
             this.myNameLabel.Text = "아무개";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(23, 93);
+            this.label4.Location = new System.Drawing.Point(26, 116);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(41, 12);
+            this.label4.Size = new System.Drawing.Size(52, 15);
             this.label4.TabIndex = 9;
             this.label4.Text = "예금주";
             // 
             // myDepositLabel
             // 
             this.myDepositLabel.AutoSize = true;
-            this.myDepositLabel.Location = new System.Drawing.Point(122, 126);
+            this.myDepositLabel.Location = new System.Drawing.Point(139, 158);
             this.myDepositLabel.Name = "myDepositLabel";
-            this.myDepositLabel.Size = new System.Drawing.Size(33, 12);
+            this.myDepositLabel.Size = new System.Drawing.Size(42, 15);
             this.myDepositLabel.TabIndex = 8;
             this.myDepositLabel.Text = "0(원)";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(23, 126);
+            this.label2.Location = new System.Drawing.Point(26, 158);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(41, 12);
+            this.label2.Size = new System.Drawing.Size(52, 15);
             this.label2.TabIndex = 7;
             this.label2.Text = "예수금";
             // 
             // accountComboBox
             // 
             this.accountComboBox.FormattingEnabled = true;
-            this.accountComboBox.Location = new System.Drawing.Point(124, 62);
+            this.accountComboBox.Location = new System.Drawing.Point(142, 78);
+            this.accountComboBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.accountComboBox.Name = "accountComboBox";
-            this.accountComboBox.Size = new System.Drawing.Size(121, 20);
+            this.accountComboBox.Size = new System.Drawing.Size(138, 23);
             this.accountComboBox.TabIndex = 1;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(23, 62);
+            this.label1.Location = new System.Drawing.Point(26, 78);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(53, 12);
+            this.label1.Size = new System.Drawing.Size(67, 15);
             this.label1.TabIndex = 0;
             this.label1.Text = "계좌번호";
             // 
@@ -216,42 +217,44 @@
             // 
             this.axKHOpenAPI1.Enabled = true;
             this.axKHOpenAPI1.Location = new System.Drawing.Point(378, 359);
+            this.axKHOpenAPI1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.axKHOpenAPI1.Name = "axKHOpenAPI1";
             this.axKHOpenAPI1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axKHOpenAPI1.OcxState")));
-            this.axKHOpenAPI1.Size = new System.Drawing.Size(744, 380);
+            this.axKHOpenAPI1.Size = new System.Drawing.Size(930, 475);
             this.axKHOpenAPI1.TabIndex = 3;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(17, 27);
+            this.label3.Location = new System.Drawing.Point(19, 34);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(72, 12);
+            this.label3.Size = new System.Drawing.Size(90, 15);
             this.label3.TabIndex = 16;
             this.label3.Text = "코드 or 이름";
             // 
             // sCodeToBuyTextBox
             // 
-            this.sCodeToBuyTextBox.Location = new System.Drawing.Point(118, 24);
+            this.sCodeToBuyTextBox.Location = new System.Drawing.Point(135, 30);
+            this.sCodeToBuyTextBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.sCodeToBuyTextBox.Name = "sCodeToBuyTextBox";
-            this.sCodeToBuyTextBox.Size = new System.Drawing.Size(100, 21);
+            this.sCodeToBuyTextBox.Size = new System.Drawing.Size(114, 25);
             this.sCodeToBuyTextBox.TabIndex = 18;
             // 
             // totalClockLabel
             // 
             this.totalClockLabel.AutoSize = true;
             this.totalClockLabel.Font = new System.Drawing.Font("굴림", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.totalClockLabel.Location = new System.Drawing.Point(962, 9);
+            this.totalClockLabel.Location = new System.Drawing.Point(1099, 11);
             this.totalClockLabel.Name = "totalClockLabel";
-            this.totalClockLabel.Size = new System.Drawing.Size(0, 19);
+            this.totalClockLabel.Size = new System.Drawing.Size(0, 24);
             this.totalClockLabel.TabIndex = 20;
             // 
             // checkChartButton
             // 
-            this.checkChartButton.Location = new System.Drawing.Point(170, 63);
+            this.checkChartButton.Location = new System.Drawing.Point(194, 79);
             this.checkChartButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.checkChartButton.Name = "checkChartButton";
-            this.checkChartButton.Size = new System.Drawing.Size(107, 34);
+            this.checkChartButton.Size = new System.Drawing.Size(122, 42);
             this.checkChartButton.TabIndex = 21;
             this.checkChartButton.Text = "개별진행확인";
             this.checkChartButton.UseVisualStyleBackColor = true;
@@ -261,9 +264,11 @@
             this.manualGroupBox.Controls.Add(this.label3);
             this.manualGroupBox.Controls.Add(this.checkChartButton);
             this.manualGroupBox.Controls.Add(this.sCodeToBuyTextBox);
-            this.manualGroupBox.Location = new System.Drawing.Point(9, 406);
+            this.manualGroupBox.Location = new System.Drawing.Point(10, 508);
+            this.manualGroupBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.manualGroupBox.Name = "manualGroupBox";
-            this.manualGroupBox.Size = new System.Drawing.Size(317, 115);
+            this.manualGroupBox.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.manualGroupBox.Size = new System.Drawing.Size(362, 144);
             this.manualGroupBox.TabIndex = 22;
             this.manualGroupBox.TabStop = false;
             this.manualGroupBox.Text = "수동작업";
@@ -276,7 +281,8 @@
             this.메뉴ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1148, 24);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(1312, 28);
             this.menuStrip1.TabIndex = 23;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -295,7 +301,7 @@
             this.디폴트매도ToolStripMenuItem,
             this.라스트업데이트ToolStripMenuItem});
             this.메뉴ToolStripMenuItem.Name = "메뉴ToolStripMenuItem";
-            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
+            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
             this.메뉴ToolStripMenuItem.Text = "메뉴";
             // 
             // 수동매수ToolStripMenuItem
@@ -304,37 +310,37 @@
             this.onManualToolStripMenuItem,
             this.offManualToolStripMenuItem});
             this.수동매수ToolStripMenuItem.Name = "수동매수ToolStripMenuItem";
-            this.수동매수ToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.수동매수ToolStripMenuItem.Size = new System.Drawing.Size(284, 26);
             this.수동매수ToolStripMenuItem.Text = "수동작업( M )";
             // 
             // onManualToolStripMenuItem
             // 
             this.onManualToolStripMenuItem.Name = "onManualToolStripMenuItem";
-            this.onManualToolStripMenuItem.Size = new System.Drawing.Size(89, 22);
+            this.onManualToolStripMenuItem.Size = new System.Drawing.Size(111, 26);
             this.onManualToolStripMenuItem.Text = "on";
             // 
             // offManualToolStripMenuItem
             // 
             this.offManualToolStripMenuItem.Name = "offManualToolStripMenuItem";
-            this.offManualToolStripMenuItem.Size = new System.Drawing.Size(89, 22);
+            this.offManualToolStripMenuItem.Size = new System.Drawing.Size(111, 26);
             this.offManualToolStripMenuItem.Text = "off";
             // 
             // depositToolStripMenuItem
             // 
             this.depositToolStripMenuItem.Name = "depositToolStripMenuItem";
-            this.depositToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.depositToolStripMenuItem.Size = new System.Drawing.Size(284, 26);
             this.depositToolStripMenuItem.Text = "예수금확인( D )";
             // 
             // holdingsToolStripMenuItem
             // 
             this.holdingsToolStripMenuItem.Name = "holdingsToolStripMenuItem";
-            this.holdingsToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.holdingsToolStripMenuItem.Size = new System.Drawing.Size(284, 26);
             this.holdingsToolStripMenuItem.Text = "보유종목확인( H )";
             // 
             // curRecordToolStripMenuItem
             // 
             this.curRecordToolStripMenuItem.Name = "curRecordToolStripMenuItem";
-            this.curRecordToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.curRecordToolStripMenuItem.Size = new System.Drawing.Size(284, 26);
             this.curRecordToolStripMenuItem.Text = "현황기록( R )";
             // 
             // 강제장시작ToolStripMenuItem1
@@ -344,49 +350,49 @@
             this.onMarketWithBuyAccToolStripMenuItem,
             this.offMarketToolStripMenuItem});
             this.강제장시작ToolStripMenuItem1.Name = "강제장시작ToolStripMenuItem1";
-            this.강제장시작ToolStripMenuItem1.Size = new System.Drawing.Size(231, 22);
+            this.강제장시작ToolStripMenuItem1.Size = new System.Drawing.Size(284, 26);
             this.강제장시작ToolStripMenuItem1.Text = "강제장시작 여부";
             // 
             // onMarketToolStripMenuItem
             // 
             this.onMarketToolStripMenuItem.Name = "onMarketToolStripMenuItem";
-            this.onMarketToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.onMarketToolStripMenuItem.Size = new System.Drawing.Size(242, 26);
             this.onMarketToolStripMenuItem.Text = "매수 금지 장시작";
             // 
             // onMarketWithBuyAccToolStripMenuItem
             // 
             this.onMarketWithBuyAccToolStripMenuItem.Name = "onMarketWithBuyAccToolStripMenuItem";
-            this.onMarketWithBuyAccToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.onMarketWithBuyAccToolStripMenuItem.Size = new System.Drawing.Size(242, 26);
             this.onMarketWithBuyAccToolStripMenuItem.Text = "매수 허용 장시작";
             // 
             // offMarketToolStripMenuItem
             // 
             this.offMarketToolStripMenuItem.Name = "offMarketToolStripMenuItem";
-            this.offMarketToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.offMarketToolStripMenuItem.Size = new System.Drawing.Size(242, 26);
             this.offMarketToolStripMenuItem.Text = "매수 금지 임시 장마감";
             // 
             // todayResultStripMenuItem
             // 
             this.todayResultStripMenuItem.Name = "todayResultStripMenuItem";
-            this.todayResultStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.todayResultStripMenuItem.Size = new System.Drawing.Size(284, 26);
             this.todayResultStripMenuItem.Text = "테스트( T )";
             // 
             // indicatorToolStripMenuItem
             // 
             this.indicatorToolStripMenuItem.Name = "indicatorToolStripMenuItem";
-            this.indicatorToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.indicatorToolStripMenuItem.Size = new System.Drawing.Size(284, 26);
             this.indicatorToolStripMenuItem.Text = "지표( I )";
             // 
             // realTimeLogStripMenuItem
             // 
             this.realTimeLogStripMenuItem.Name = "realTimeLogStripMenuItem";
-            this.realTimeLogStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.realTimeLogStripMenuItem.Size = new System.Drawing.Size(284, 26);
             this.realTimeLogStripMenuItem.Text = "실시간 로그( L )";
             // 
             // configStripMenuItem
             // 
             this.configStripMenuItem.Name = "configStripMenuItem";
-            this.configStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.configStripMenuItem.Size = new System.Drawing.Size(284, 26);
             this.configStripMenuItem.Text = "설정( C )";
             // 
             // 디폴트매도ToolStripMenuItem
@@ -398,54 +404,55 @@
             this.fixedToolStripMenuItem,
             this.noneToolStripMenuItem});
             this.디폴트매도ToolStripMenuItem.Name = "디폴트매도ToolStripMenuItem";
-            this.디폴트매도ToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.디폴트매도ToolStripMenuItem.Size = new System.Drawing.Size(284, 26);
             this.디폴트매도ToolStripMenuItem.Text = "디폴트 매도 설정";
             // 
             // risingToolStripMenuItem
             // 
             this.risingToolStripMenuItem.Name = "risingToolStripMenuItem";
-            this.risingToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.risingToolStripMenuItem.Size = new System.Drawing.Size(172, 26);
             this.risingToolStripMenuItem.Text = "라이징 매도";
             // 
             // bottomUpToolStripMenuItem
             // 
             this.bottomUpToolStripMenuItem.Name = "bottomUpToolStripMenuItem";
-            this.bottomUpToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.bottomUpToolStripMenuItem.Size = new System.Drawing.Size(172, 26);
             this.bottomUpToolStripMenuItem.Text = "바텀업 매도";
             // 
             // scalpingToolStripMenuItem
             // 
             this.scalpingToolStripMenuItem.Name = "scalpingToolStripMenuItem";
-            this.scalpingToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.scalpingToolStripMenuItem.Size = new System.Drawing.Size(172, 26);
             this.scalpingToolStripMenuItem.Text = "스캘핑 매도";
             // 
             // fixedToolStripMenuItem
             // 
             this.fixedToolStripMenuItem.Name = "fixedToolStripMenuItem";
-            this.fixedToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.fixedToolStripMenuItem.Size = new System.Drawing.Size(172, 26);
             this.fixedToolStripMenuItem.Text = "고정형 매도";
             // 
             // noneToolStripMenuItem
             // 
             this.noneToolStripMenuItem.Name = "noneToolStripMenuItem";
-            this.noneToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.noneToolStripMenuItem.Size = new System.Drawing.Size(172, 26);
             this.noneToolStripMenuItem.Text = "None";
             // 
             // 라스트업데이트ToolStripMenuItem
             // 
             this.라스트업데이트ToolStripMenuItem.Name = "라스트업데이트ToolStripMenuItem";
-            this.라스트업데이트ToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
-            this.라스트업데이트ToolStripMenuItem.Text = "Latest Updated : 2023-08-07";
+            this.라스트업데이트ToolStripMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.라스트업데이트ToolStripMenuItem.Text = "Latest Updated : 2023-08-08";
             // 
             // logTxtBx
             // 
             this.logTxtBx.Dock = System.Windows.Forms.DockStyle.Fill;
             this.logTxtBx.Location = new System.Drawing.Point(0, 0);
+            this.logTxtBx.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.logTxtBx.Multiline = true;
             this.logTxtBx.Name = "logTxtBx";
             this.logTxtBx.ReadOnly = true;
             this.logTxtBx.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.logTxtBx.Size = new System.Drawing.Size(795, 476);
+            this.logTxtBx.Size = new System.Drawing.Size(909, 595);
             this.logTxtBx.TabIndex = 0;
             // 
             // panel1
@@ -454,18 +461,19 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.Controls.Add(this.logTxtBx);
-            this.panel1.Location = new System.Drawing.Point(341, 45);
+            this.panel1.Location = new System.Drawing.Point(390, 56);
+            this.panel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(795, 476);
+            this.panel1.Size = new System.Drawing.Size(909, 595);
             this.panel1.TabIndex = 24;
             // 
             // isMarketLabel
             // 
             this.isMarketLabel.AutoSize = true;
             this.isMarketLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.isMarketLabel.Location = new System.Drawing.Point(15, 273);
+            this.isMarketLabel.Location = new System.Drawing.Point(17, 341);
             this.isMarketLabel.Name = "isMarketLabel";
-            this.isMarketLabel.Size = new System.Drawing.Size(88, 11);
+            this.isMarketLabel.Size = new System.Drawing.Size(106, 14);
             this.isMarketLabel.TabIndex = 25;
             this.isMarketLabel.Text = "장시작 : false";
             // 
@@ -473,17 +481,17 @@
             // 
             this.isHoldingsLabel.AutoSize = true;
             this.isHoldingsLabel.Font = new System.Drawing.Font("굴림", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.isHoldingsLabel.Location = new System.Drawing.Point(201, 273);
+            this.isHoldingsLabel.Location = new System.Drawing.Point(230, 341);
             this.isHoldingsLabel.Name = "isHoldingsLabel";
-            this.isHoldingsLabel.Size = new System.Drawing.Size(100, 11);
+            this.isHoldingsLabel.Size = new System.Drawing.Size(121, 14);
             this.isHoldingsLabel.TabIndex = 26;
             this.isHoldingsLabel.Text = "잔고확인 : false";
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1148, 533);
+            this.ClientSize = new System.Drawing.Size(1312, 666);
             this.Controls.Add(this.isHoldingsLabel);
             this.Controls.Add(this.isMarketLabel);
             this.Controls.Add(this.panel1);
