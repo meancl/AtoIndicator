@@ -1806,7 +1806,7 @@ namespace AtoIndicator.View
                                         listViewItem.SubItems[restIdx].BackColor = Color.Turquoise;
                                     else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.MA_RESERVE_POSITION_RESERVE].isSelected && restIdx == 11) ||
                                             (mainForm.ea[i].manualReserve.reserveArr[MainForm.MA_RESERVE_POSITION_RESERVE].isChosen1 && restIdx == 12))
-                                        listViewItem.SubItems[restIdx].BackColor = Color.Coral;
+                                        listViewItem.SubItems[restIdx].BackColor = Color.Olive;
                                     else if ((mainForm.ea[i].manualReserve.reserveArr[MainForm.MA_UP_RESERVE].isSelected && restIdx == 13) ||
                                             (mainForm.ea[i].manualReserve.reserveArr[MainForm.MA_UP_RESERVE].isChosen1 && restIdx == 14))
                                         listViewItem.SubItems[restIdx].BackColor = Color.Teal;
