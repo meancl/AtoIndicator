@@ -152,7 +152,7 @@ namespace AtoIndicator.View
             this.Dispose();
         }
 
-
+        public bool isShiftMode;
         public bool isCtrlMode;
         public int nQWSharedNum = 0;
         public int nQWNum1 = 0;
@@ -261,6 +261,9 @@ namespace AtoIndicator.View
             }
             if (cDown == 16) // shift
             {
+                isShiftMode = true;
+                zzimLabel.Text = "shift on";
+                this.ActiveControl = this.passLenLabel;
             }
         }
         public void KeyUpHandler(object sender, KeyEventArgs k)
@@ -269,12 +272,19 @@ namespace AtoIndicator.View
 
             keyLabel.Text = $"{cUp}";
 
-            if (cUp == 27) // esc or space
+            if (isShiftMode && cUp == 27) // esc 
+            {
+                timer.Enabled = false;
                 this.Close();
+            }
+               
 
 
             if (cUp == 16) // shift
             {
+                isShiftMode = false;
+                zzimLabel.Text = "shift off";
+                this.ActiveControl = this.passLenLabel;
             }
 
             if (cUp == 17) // ctrl
